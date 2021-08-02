@@ -1,0 +1,19 @@
+#App {
+  padding-top: 10%;
+  padding-left: 5%;
+  padding-right: 5%;
+  text-align: center;
+}
+
+#logoImage {
+  width: 50%;
+}
+
+#hello {
+  font-size: 32px;
+  font-family:monospace;
+}
+#button {
+  /* background-color: blue;
+  border-color: blue; */
+}
