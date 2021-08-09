@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import ImageInfoProvider from "./ImageInfos";
-import GLHelper, { DrawInfo } from "./webGLUtils";
+import GLHelper, { DrawInfo, Camera } from "./webGLUtils";
 import io from "socket.io-client";
-import PeerManager from "./RTCGameUtils";
+import PeerManager, { IPlayer } from "./RTCGameUtils";
 
 const qs = require("query-string");
 
@@ -34,15 +34,15 @@ const SpaceMain = (props: RouteComponentProps) => {
       return;
     }
 
-    const camera: DrawInfo = {
-      tex: null,
-      width: canvas.clientWidth,
-      height: canvas.clientHeight,
-      centerPosX: canvas.clientWidth / 2,
-      centerPosY: canvas.clientHeight / 2,
-      scale: 0.3,
-      rotateRadian: 0,
-    };
+    const camera = new Camera(
+      canvas.clientWidth,
+      canvas.clientHeight,
+      canvas.clientWidth / 2,
+      canvas.clientHeight / 2,
+      1,
+      0,
+      imageInfoProvider.background
+    );
 
     const glHelper = new GLHelper(
       gl,
@@ -64,6 +64,14 @@ const SpaceMain = (props: RouteComponentProps) => {
           return;
         }
 
+        const divContainer = document.querySelector(
+          "#divContainer"
+        ) as HTMLDivElement;
+        if (!divContainer) {
+          console.error("divContainer can not found");
+          return;
+        }
+
         const socket = io("http://localhost:8080");
         if (!socket) {
           console.error("socket connection fail");
@@ -76,6 +84,11 @@ const SpaceMain = (props: RouteComponentProps) => {
           query.nickname,
           query.avatarIdx,
           audioContainer,
+          divContainer,
+          {
+            x: imageInfoProvider.background.width / 2,
+            y: imageInfoProvider.background.height / 2,
+          },
           query.roomId
         );
 
@@ -85,72 +98,102 @@ const SpaceMain = (props: RouteComponentProps) => {
           height: imageInfoProvider.background.height,
           centerPosX: imageInfoProvider.background.width / 2,
           centerPosY: imageInfoProvider.background.height / 2,
+          centerPositionPixelOffsetX: 0,
+          centerPositionPixelOffsetY: 0,
           scale: 1,
           rotateRadian: 0,
         };
 
         const drawBackround = () => glHelper.drawImage(backgroundDrawInfo);
 
+        /////////////////////////////////////////////////
+        // event setting start //////////////////////////
+        window.addEventListener("resize", (e) => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          glHelper.projectionWidth = window.innerWidth;
+          glHelper.projectionHeight = window.innerHeight;
+          glHelper.gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+          camera.width = window.innerWidth;
+          camera.height = window.innerHeight;
+          camera.centerPosX = window.innerWidth / 2;
+          camera.centerPosY = window.innerHeight / 2;
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "+") {
+            camera.upScale(0.1);
+          } else if (e.key === "-") {
+            camera.upScale(-0.1);
+          }
+        });
+
+        //for Desktop
+        divContainer.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          peerManger.me.isMoving = true;
+          peerManger.me.touchStartPos = { x: e.clientX, y: e.clientY };
+        });
+
+        divContainer.addEventListener("mousemove", (e) => {
+          e.preventDefault();
+          peerManger.me.touchingPos = { x: e.clientX, y: e.clientY };
+        });
+
+        divContainer.addEventListener("mouseup", (e) => {
+          e.preventDefault();
+          peerManger.me.isMoving = false;
+        });
+
+        //for Phone
+        divContainer.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          peerManger.me.isMoving = true;
+          peerManger.me.touchStartPos = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+          };
+        });
+
+        divContainer.addEventListener("touchmove", (e) => {
+          e.preventDefault();
+          peerManger.me.touchingPos = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+          };
+        });
+
+        divContainer.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          peerManger.me.isMoving = false;
+        });
+
         const requestAnimation = () => {
           drawBackround();
-          peerManger.me.update(0);
-          const meFaceDrawInfo: DrawInfo = {
-            tex: imageInfoProvider.animals[peerManger.me.idx].imageInfos[0].tex,
-            width:
-              imageInfoProvider.animals[peerManger.me.idx].imageInfos[0].width,
-            height:
-              imageInfoProvider.animals[peerManger.me.idx].imageInfos[0].height,
-            centerPosX:
-              peerManger.me.centerPos.x +
-              imageInfoProvider.animals[peerManger.me.idx].imageInfos[0]
-                .centerPositionPixelOffsetX,
-            centerPosY:
-              peerManger.me.centerPos.y +
-              imageInfoProvider.animals[peerManger.me.idx].imageInfos[0]
-                .centerPositionPixelOffsetY,
-            scale: 1 + peerManger.me.volume / 200,
-            rotateRadian: peerManger.me.rotateRadian,
-          };
-          glHelper.drawImage(meFaceDrawInfo);
+          peerManger.me.update(Date.now() - peerManger.lastUpdateTimeStamp);
+          peerManger.peers.forEach((peer) => {
+            if (peer.dc.readyState === "open")
+              peer.dc.send(JSON.stringify(peerManger.me));
+            glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
+            peer.updateSoundFromVec2(peerManger.me.centerPos);
+          });
+          peerManger.lastUpdateTimeStamp = Date.now();
+          camera.updateCenterPosFromPlayer(peerManger.me);
+          glHelper.drawAnimal(
+            imageInfoProvider,
+            peerManger.me,
+
+            peerManger.me.div
+          );
+
           requestAnimationFrame(requestAnimation);
         };
+        peerManger.lastUpdateTimeStamp = Date.now();
         requestAnimationFrame(requestAnimation);
-
-        console.log("all clear!");
       })
       .catch((error) => {
         console.error(`mediaStream error :${error.toString()}`);
       });
-
-    // const drawFace = () =>
-    //   glHelper.drawImage({
-    //     tex: imageInfoProvider.animals[0].imageInfos[0].tex,
-    //     width: imageInfoProvider.animals[0].imageInfos[0].width,
-    //     height: imageInfoProvider.animals[0].imageInfos[0].height,
-    //     centerPosX:
-    //       imageInfoProvider.animals[0].imageInfos[0].width / 2 +
-    //       imageInfoProvider.animals[0].imageInfos[0].centerPositionPixelOffsetX,
-    //     centerPosY:
-    //       imageInfoProvider.animals[0].imageInfos[0].height / 2 +
-    //       imageInfoProvider.animals[0].imageInfos[0].centerPositionPixelOffsetY,
-    //     scale: 1,
-    //     rotateRadian: 0,
-    //   });
-
-    // const drawTail = () =>
-    //   glHelper.drawImage({
-    //     tex: imageInfoProvider.animals[0].imageInfos[1].tex,
-    //     width: imageInfoProvider.animals[0].imageInfos[1].width,
-    //     height: imageInfoProvider.animals[0].imageInfos[1].height,
-    //     centerPosX:
-    //       imageInfoProvider.animals[0].imageInfos[1].width / 2 +
-    //       imageInfoProvider.animals[0].imageInfos[1].centerPositionPixelOffsetX,
-    //     centerPosY:
-    //       imageInfoProvider.animals[0].imageInfos[1].height / 2 +
-    //       imageInfoProvider.animals[0].imageInfos[1].centerPositionPixelOffsetY,
-    //     scale: 1,
-    //     rotateRadian: 0,
-    //   });
   }, []);
   return (
     <>

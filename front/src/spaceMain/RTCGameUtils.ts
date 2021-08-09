@@ -1,11 +1,11 @@
 import { Socket } from "socket.io-client";
 
-interface Vec2 {
+export interface Vec2 {
   x: number;
   y: number;
 }
 
-interface IPlayer {
+export interface IPlayer {
   nickname: string;
   idx: number;
   centerPos: Vec2;
@@ -21,8 +21,11 @@ class Me implements IPlayer {
   rotateRadian: number;
   volume: number;
   //
+  div: HTMLDivElement;
   velocity: number;
   normalizedDirectionVector: Vec2;
+  touchStartPos: Vec2;
+  touchingPos: Vec2;
   isMoving: boolean;
 
   analyser: AnalyserNode;
@@ -31,7 +34,8 @@ class Me implements IPlayer {
     idx: number,
     centerPos: Vec2,
     velocity: number,
-    stream: MediaStream
+    stream: MediaStream,
+    divContainer: HTMLDivElement
   ) {
     this.nickname = nickname;
     this.idx = idx;
@@ -40,7 +44,14 @@ class Me implements IPlayer {
     this.normalizedDirectionVector = { x: 0, y: 1 };
     this.rotateRadian = 0;
     this.volume = 0;
+    this.touchStartPos = { x: 0, y: 0 };
+    this.touchingPos = { x: 0, y: 0 };
     this.isMoving = false;
+
+    this.div = document.createElement("div") as HTMLDivElement;
+    this.div.className = "canvasOverlay";
+    this.div.innerText = this.nickname;
+    divContainer.appendChild(this.div);
 
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
@@ -51,6 +62,26 @@ class Me implements IPlayer {
   }
 
   update(millis: number) {
+    if (this.isMoving) {
+      const newDir: Vec2 = {
+        x: this.touchingPos.x - this.touchStartPos.x,
+        y: this.touchingPos.y - this.touchStartPos.y,
+      };
+      if (newDir.x === 0 && newDir.y === 0) return;
+
+      const len = Math.sqrt(Math.pow(newDir.x, 2) + Math.pow(newDir.y, 2));
+      newDir.x = newDir.x / len;
+      newDir.y = newDir.y / len;
+      this.normalizedDirectionVector = newDir;
+
+      this.centerPos.x +=
+        this.velocity * this.normalizedDirectionVector.x * millis;
+      this.centerPos.y +=
+        this.velocity * this.normalizedDirectionVector.y * millis;
+      this.div.style.left = Math.floor(this.centerPos.x) + "px";
+      this.div.style.top = Math.floor(this.centerPos.y + 100) + "px";
+    }
+
     const array = new Uint8Array(this.analyser.frequencyBinCount);
     this.analyser.getByteFrequencyData(array);
     this.volume =
@@ -58,10 +89,6 @@ class Me implements IPlayer {
         return acc + cur;
       }, 0) / array.length;
 
-    this.centerPos.x =
-      this.velocity * this.normalizedDirectionVector.x * millis;
-    this.centerPos.y =
-      this.velocity * this.normalizedDirectionVector.y * millis;
     this.rotateRadian = Math.atan2(
       this.normalizedDirectionVector.x,
       this.normalizedDirectionVector.y
@@ -86,6 +113,8 @@ export class Peer extends RTCPeerConnection implements IPlayer {
   socketId: string;
   dc: RTCDataChannel;
   connectedAudioElement: HTMLAudioElement;
+  div: HTMLDivElement;
+  maxSoundDistance: number;
   //IPlayer
   nickname: string;
   idx: number;
@@ -93,15 +122,25 @@ export class Peer extends RTCPeerConnection implements IPlayer {
   rotateRadian: number;
   volume: number;
   //
+
+  isDeleted: boolean;
+
   constructor(
     connectedClientSocketId: string,
     socketId: string,
     audioContainer: Element,
+    divContainer: HTMLDivElement,
     pcConfig?: RTCConfiguration
   ) {
     super(pcConfig);
     this.connectedClientSocketId = connectedClientSocketId;
     this.socketId = socketId;
+    this.isDeleted = false;
+    this.maxSoundDistance = 500;
+    // div setting
+    this.div = document.createElement("div") as HTMLDivElement;
+    this.div.className = "canvasOverlay";
+    divContainer.append(this.div);
 
     //IPlayer
     this.centerPos = { x: 0, y: 0 };
@@ -120,6 +159,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
         this.idx = data.idx;
         this.rotateRadian = data.rotateRadian;
         this.volume = data.volume;
+        this.div.innerText = data.nickname;
       };
       receviedDC.onopen = (event) => {
         console.log("dataChannel created");
@@ -138,6 +178,17 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     audioContainer.appendChild(this.connectedAudioElement);
     //
   }
+
+  updateSoundFromVec2(pos: Vec2) {
+    const distance = Math.sqrt(
+      Math.pow(this.centerPos.x - pos.x, 2) +
+        Math.pow(this.centerPos.y - pos.y, 2)
+    );
+    this.connectedAudioElement.volume = Math.max(
+      0,
+      1 - distance / this.maxSoundDistance
+    );
+  }
 }
 
 export default class PeerManager {
@@ -155,16 +206,27 @@ export default class PeerManager {
   me: Me;
   lastUpdateTimeStamp: number;
   audioContainer: Element;
+  divContainer: HTMLDivElement;
   constructor(
     socket: Socket,
     localStream: MediaStream,
     nickname: string,
     idx: number,
     audioContainer: Element,
+    divContainer: HTMLDivElement,
+    meCenterPos: Vec2,
     roomId?: string,
     pcConfig?: RTCConfiguration
   ) {
-    this.me = new Me(nickname, idx, { x: 0, y: 0 }, 0.2, localStream);
+    this.divContainer = divContainer;
+    this.me = new Me(
+      nickname,
+      idx,
+      meCenterPos,
+      0.2,
+      localStream,
+      divContainer
+    );
     this.lastUpdateTimeStamp = Date.now();
     this.localStream = localStream;
     this.socket = socket;
@@ -259,6 +321,7 @@ export default class PeerManager {
       connectedClientSocketId,
       socketId,
       this.audioContainer,
+      this.divContainer,
       this.pcConfig
     );
 
@@ -289,10 +352,12 @@ export default class PeerManager {
         targetPeer.connectionState === "disconnected" ||
         targetPeer.connectionState === "failed"
       ) {
-        targetPeer.connectedAudioElement.muted = true;
-        targetPeer.connectedAudioElement.srcObject = null;
         this.peers.delete(targetPeer.connectedClientSocketId);
-      } else if (targetPeer.connectionState === "connected") {
+        if (!targetPeer.isDeleted) {
+          this.divContainer.removeChild(targetPeer.div);
+          this.audioContainer.removeChild(targetPeer.connectedAudioElement);
+          targetPeer.isDeleted = true;
+        }
       }
     });
     return newPeer;
