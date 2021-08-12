@@ -4,6 +4,7 @@ import ImageInfoProvider from "./ImageInfos";
 import GLHelper, { DrawInfo, Camera } from "./webGLUtils";
 import io from "socket.io-client";
 import PeerManager, { IPlayer } from "./RTCGameUtils";
+import Navigation from "./Navigation";
 
 const qs = require("query-string");
 
@@ -204,6 +205,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       ></canvas>
       <div id="divContainer"></div>
       <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
+      <Navigation {...props}/>
     </>
   );
 };
