@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { message, Button } from "antd";
+import './home.css';
 
 const Logo = () => {
   return <img id="logoImage" src="./assets/home/homeLogo.png" />;
