@@ -5,45 +5,11 @@ import './spaceMain.css'
 import { Menu, Dropdown, message, Button } from 'antd';
 import { AudioOutlined, AudioMutedOutlined, EllipsisOutlined, UpOutlined, DesktopOutlined, LogoutOutlined, LeftCircleFilled, RightCircleFilled } from '@ant-design/icons';
 
-// const Panel = () => {
-//   // const [ onMessage, setOnMessage] = useState(false)
-//   const onClickLink = () => {
-//     // 복사 시켜줘야한다. 성공했는지 못했는지는 분기해주자.
-//     message.success('복사 성공!')
-//   }
-//   const onClickUsers = () => {
-//     // setUsers(true)
-//     console.log('user!!')
-//   }
-//   const onClickMessage = () => {
-//     console.log('message!!!')
-//   }
-//   return (
-//     <Menu>
-//     <Menu.Item key="0">
-//       <button onClick={onClickLink}>참여 링크 복사</button>
-//     </Menu.Item>
-//     <Menu.Item key="1">
-//       <button onClick={onClickUsers}>사용자</button>
-//       {/* { onUsers ? console.log('버튼 클릭 됨') : console.log('ㄴㄴ') } */}
-//     </Menu.Item> 
-//     <Menu.Item key="3">
-//     <button onClick={onClickMessage}>메시지</button>
-//     </Menu.Item>
-//   </Menu>
-//   )
-// }
-
 const Navigation = (props: RouteComponentProps) => {
   const [ onUsers, setOnUsers ] = useState(true);
   const [ onMessage, setOnMessage] = useState(false)
 
   const profile = () => {
-    // const [ profile, setProfile ] = useState(false);
-  
-    // const onClick = () => {
-    //   setProfile(true);
-    // }
     const changeImage = () => {
       return (
         './assets/spaceMain/animal/brownHorseFaceMute.png'
