@@ -3,7 +3,13 @@ export enum ImageInfoEnum {
   FACE_SPEAK,
   FACE_SPEAK_MOUSE,
   BODY,
-  OBSTACLE,
+  OBJECT,
+  BACKGROUND,
+}
+
+export enum ObjectCollisionFigureEnum {
+  SQUARE,
+  CIRCLE,
 }
 
 export interface ImageInfo {
@@ -13,23 +19,71 @@ export interface ImageInfo {
   height: number;
   centerPositionPixelOffsetX: number;
   centerPositionPixelOffsetY: number;
+  originCenterPositionX: number;
+  originCenterPositionY: number;
   type: ImageInfoEnum;
   unionPixelWidth: number;
   unionPixelHeight: number;
 }
 
-interface ObjectInfo {
+interface AnimalInfo {
   name: string;
   idx: number;
   imageInfos: ImageInfo[];
 }
 
+interface BackgroundInfo {
+  name: string;
+  idx: number;
+  backgroundImageInfo: ImageInfo;
+  objectInfos: ImageInfo[];
+  objectArray: number[][];
+}
+
 const backgroundMetaData = [
   {
+    name: "SeeAndMountainVer1",
+    idx: 0,
     src: "./assets/spaceMain/background/SeeAndMountainVer1.png",
+    width: 2400,
+    height: 2400,
+    objectInfos: [
+      {
+        src: "./assets/spaceMain/object/green_grass.png",
+        type: ImageInfoEnum.OBJECT,
+        unionPixelWidth: 64,
+        unionPixelHeight: 64,
+        centerPositionX: 1000,
+        centerPositionY: 1000,
+        figureType: ObjectCollisionFigureEnum.SQUARE,
+        arrayFillValue: 1,
+        width: 64,
+        height: 64,
+        radius: 0,
+      },
+
+      {
+        src: "./assets/spaceMain/object/green_grass.png",
+        type: ImageInfoEnum.OBJECT,
+        unionPixelWidth: 64,
+        unionPixelHeight: 64,
+        centerPositionX: 1100,
+        centerPositionY: 1100,
+        figureType: ObjectCollisionFigureEnum.SQUARE,
+        arrayFillValue: 1,
+        width: 64,
+        height: 64,
+        radius: 0,
+      },
+    ],
   },
   {
+    name: "SeeAndMountainVer2",
+    idx: 1,
     src: "./assets/spaceMain/background/SeeAndMountainVer2.png",
+    width: 2400,
+    height: 2400,
+    objectInfos: [],
   },
 ];
 
@@ -157,21 +211,59 @@ const animalMetaData = [
 ];
 
 class ImageInfoProvider {
-  background: ImageInfo;
-  animals: ObjectInfo[];
+  background: BackgroundInfo;
+  animals: AnimalInfo[];
   gl: WebGLRenderingContext;
 
   constructor(gl: WebGLRenderingContext, backgroundIdx: number) {
     this.gl = gl;
-    this.background = this.makeImageInfoFromUrl(
-      backgroundMetaData[backgroundIdx].src,
-      ImageInfoEnum.OBSTACLE,
-      1,
-      1
-    )!;
+
+    this.background = {
+      name: backgroundMetaData[backgroundIdx].name,
+      idx: backgroundMetaData[backgroundIdx].idx,
+      backgroundImageInfo: this.makeImageInfoFromUrl(
+        backgroundMetaData[backgroundIdx].src,
+        ImageInfoEnum.BACKGROUND,
+        backgroundMetaData[backgroundIdx].width,
+        backgroundMetaData[backgroundIdx].height
+      )!,
+      objectInfos: [],
+      objectArray: Array.from(
+        Array(backgroundMetaData[backgroundIdx].width),
+        () => Array(backgroundMetaData[backgroundIdx].height).fill(0)
+      ),
+    };
+
+    backgroundMetaData[backgroundIdx].objectInfos.forEach((objectInfo) => {
+      const newObjectInfo = this.makeImageInfoFromUrl(
+        objectInfo.src,
+        objectInfo.type,
+        objectInfo.unionPixelWidth,
+        objectInfo.width
+      )!;
+      newObjectInfo.originCenterPositionX = objectInfo.centerPositionX;
+      newObjectInfo.originCenterPositionY = objectInfo.centerPositionY;
+      this.background.objectInfos.push(newObjectInfo);
+      if (objectInfo.figureType === ObjectCollisionFigureEnum.SQUARE) {
+        for (
+          let i = objectInfo.centerPositionX - objectInfo.width / 2;
+          i < objectInfo.centerPositionX + objectInfo.width / 2;
+          i++
+        ) {
+          for (
+            let j = objectInfo.centerPositionY - objectInfo.height / 2;
+            j < objectInfo.centerPositionY + objectInfo.height / 2;
+            j++
+          ) {
+            this.background.objectArray[i][j] = objectInfo.arrayFillValue;
+          }
+        }
+      }
+    });
+
     this.animals = [];
     animalMetaData.forEach((objInfo) => {
-      const newAnimal: ObjectInfo = {
+      const newAnimal: AnimalInfo = {
         name: objInfo.name,
         idx: objInfo.idx,
         imageInfos: [],
@@ -241,6 +333,8 @@ class ImageInfoProvider {
       height: 1,
       centerPositionPixelOffsetX: 0,
       centerPositionPixelOffsetY: 0,
+      originCenterPositionX: 0,
+      originCenterPositionY: 0,
       type: type,
       unionPixelWidth: unionPixelWidth,
       unionPixelHeight: unionPixelHeight,

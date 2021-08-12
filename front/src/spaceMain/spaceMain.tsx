@@ -41,7 +41,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       canvas.clientHeight / 2,
       1,
       0,
-      imageInfoProvider.background
+      imageInfoProvider.background.backgroundImageInfo
     );
 
     const glHelper = new GLHelper(
@@ -86,18 +86,20 @@ const SpaceMain = (props: RouteComponentProps) => {
           audioContainer,
           divContainer,
           {
-            x: imageInfoProvider.background.width / 2,
-            y: imageInfoProvider.background.height / 2,
+            x: imageInfoProvider.background.backgroundImageInfo.width / 2,
+            y: imageInfoProvider.background.backgroundImageInfo.height / 2,
           },
           query.roomId
         );
 
         const backgroundDrawInfo: DrawInfo = {
-          tex: imageInfoProvider.background.tex,
-          width: imageInfoProvider.background.width,
-          height: imageInfoProvider.background.height,
-          centerPosX: imageInfoProvider.background.width / 2,
-          centerPosY: imageInfoProvider.background.height / 2,
+          tex: imageInfoProvider.background.backgroundImageInfo.tex,
+          width: imageInfoProvider.background.backgroundImageInfo.width,
+          height: imageInfoProvider.background.backgroundImageInfo.height,
+          centerPosX:
+            imageInfoProvider.background.backgroundImageInfo.width / 2,
+          centerPosY:
+            imageInfoProvider.background.backgroundImageInfo.height / 2,
           centerPositionPixelOffsetX: 0,
           centerPositionPixelOffsetY: 0,
           scale: 1,
@@ -105,6 +107,21 @@ const SpaceMain = (props: RouteComponentProps) => {
         };
 
         const drawBackround = () => glHelper.drawImage(backgroundDrawInfo);
+        const drawObject = () => {
+          imageInfoProvider.background.objectInfos.forEach((objectInfo) => {
+            glHelper.drawImage({
+              tex: objectInfo.tex,
+              width: objectInfo.width,
+              height: objectInfo.height,
+              centerPosX: objectInfo.originCenterPositionX,
+              centerPosY: objectInfo.originCenterPositionY,
+              centerPositionPixelOffsetX: 0,
+              centerPositionPixelOffsetY: 0,
+              scale: 1,
+              rotateRadian: 0,
+            });
+          });
+        };
 
         /////////////////////////////////////////////////
         // event setting start //////////////////////////
@@ -133,6 +150,16 @@ const SpaceMain = (props: RouteComponentProps) => {
           e.preventDefault();
           peerManger.me.isMoving = true;
           peerManger.me.touchStartPos = { x: e.clientX, y: e.clientY };
+
+          let x =
+            camera.centerPosX +
+            (e.clientX - camera.originWidth / 2) / camera.scale;
+          let y =
+            camera.centerPosY +
+            (e.clientY - camera.originHeight / 2) / camera.scale;
+          x = Math.round(x);
+          y = Math.round(y);
+          console.log(x, y, imageInfoProvider.background.objectArray[x][y]);
         });
 
         divContainer.addEventListener("mousemove", (e) => {
@@ -170,6 +197,7 @@ const SpaceMain = (props: RouteComponentProps) => {
 
         const requestAnimation = () => {
           drawBackround();
+          drawObject();
           peerManger.me.update(Date.now() - peerManger.lastUpdateTimeStamp);
           peerManger.peers.forEach((peer) => {
             if (peer.dc.readyState === "open")
@@ -182,7 +210,6 @@ const SpaceMain = (props: RouteComponentProps) => {
           glHelper.drawAnimal(
             imageInfoProvider,
             peerManger.me,
-
             peerManger.me.div
           );
 
