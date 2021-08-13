@@ -15,26 +15,29 @@ interface SpaceMainQuery {
 }
 
 const SpaceMain = (props: RouteComponentProps) => {
-  const query = qs.parse(props.location.search) as SpaceMainQuery;
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
+  const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
 
+  // 랜더링할 때 처음 한번만 실행.
   useEffect(() => {
     if (!canvasRef.current) {
       console.error("set canvas HTML Error");
       return;
     }
     const canvas = canvasRef.current;
+    // webgl을 사용하기 위해 Context를 가져옴 아몰랑
     const gl = canvas.getContext("webgl");
     if (!gl) {
       console.error("getContext Error");
       return;
     }
-    const imageInfoProvider = new ImageInfoProvider(gl, 0);
+    const imageInfoProvider = new ImageInfoProvider(gl, 0); // image와 관련된 정보들을 모두 저장
     if (!imageInfoProvider) {
       console.error("makeImageInfoProvider fail");
       return;
     }
 
+    //카메라 객체 초기화
     const camera = new Camera(
       canvas.clientWidth,
       canvas.clientHeight,
@@ -45,6 +48,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       imageInfoProvider.background
     );
 
+    //webGL관련 작업 처리(그리기 전 준비 끝리
     const glHelper = new GLHelper(
       gl,
       window.innerWidth,
@@ -56,8 +60,9 @@ const SpaceMain = (props: RouteComponentProps) => {
       return;
     }
 
+    //내 오디오 연결 가져오고,
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
+      .getUserMedia({ video: false, audio: true }) // 오디오 연결
       .then((stream: MediaStream) => {
         const audioContainer = document.querySelector("#audioContainer");
         if (!audioContainer) {
@@ -65,6 +70,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           return;
         }
 
+        // 이름표
         const divContainer = document.querySelector(
           "#divContainer"
         ) as HTMLDivElement;
@@ -73,12 +79,15 @@ const SpaceMain = (props: RouteComponentProps) => {
           return;
         }
 
-        const socket = io("http://localhost:8080");
+        // 백엔드와 연결, socket을 통해 백엔드와 소통
+        // const socket = io("http://localhost:8080");
+        const socket = io("https://under5.site:8080");
         if (!socket) {
           console.error("socket connection fail");
           return;
         }
 
+        // 나, 너 그리고 우리를 관리하는 객체
         const peerManger = new PeerManager(
           socket,
           stream,
@@ -93,6 +102,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           query.roomId
         );
 
+        // 배경을 그리기 위해 필요한 정보
         const backgroundDrawInfo: DrawInfo = {
           tex: imageInfoProvider.background.tex,
           width: imageInfoProvider.background.width,
@@ -105,6 +115,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           rotateRadian: 0,
         };
 
+        // webGL에서 이미지 처리하는 거 여깄음ㅋ
         const drawBackround = () => glHelper.drawImage(backgroundDrawInfo);
 
         /////////////////////////////////////////////////
@@ -169,6 +180,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           peerManger.me.isMoving = false;
         });
 
+        //계속해서 화면에 장면을 그려줌
         const requestAnimation = () => {
           drawBackround();
           peerManger.me.update(Date.now() - peerManger.lastUpdateTimeStamp);
@@ -183,10 +195,8 @@ const SpaceMain = (props: RouteComponentProps) => {
           glHelper.drawAnimal(
             imageInfoProvider,
             peerManger.me,
-
             peerManger.me.div
           );
-
           requestAnimationFrame(requestAnimation);
         };
         peerManger.lastUpdateTimeStamp = Date.now();
@@ -205,7 +215,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       ></canvas>
       <div id="divContainer"></div>
       <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
-      <Navigation {...props}/>
+      <Navigation {...props} />
     </>
   );
 };

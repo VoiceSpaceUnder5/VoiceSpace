@@ -6,21 +6,21 @@ const m3 = require("m3.js");
 const vs = `
 	attribute vec2 a_texcoord;
 	varying vec2 v_texcoord;
-	
+
 	attribute vec2 a_position;
 	uniform mat3 u_matrix;
 	void main() {
 	  gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
-	  //gl_Position = vec4( (vec3(a_position, 1).xy * u_matrix), 0, 1); 
+	  //gl_Position = vec4( (vec3(a_position, 1).xy * u_matrix), 0, 1);
 	  v_texcoord = a_texcoord;
 	}
 `;
 
 const fs = `
-	precision mediump float; 
-	varying vec2 v_texcoord; 
+	precision mediump float;
+	varying vec2 v_texcoord;
 	uniform sampler2D u_texture;
-	
+
 	void main() {
 	// 	if (v_texcoord.x < 0.0 ||
 	// 		v_texcoord.y < 0.0 ||
@@ -327,13 +327,13 @@ class GLHelper {
   ) {
     let divWidth = this.projectionWidth;
     let divHeight = this.projectionHeight;
-    let faceIdx = 1;
+    let faceIdx = 1; // Mute 얼굴
 
     if (this.SpeakThrashHold < player.volume) {
-      faceIdx = 2;
+      faceIdx = 2; // 말하는 얼굴
       if (this.SpeakMouseThrashHold < player.volume) faceIdx = 3;
     }
-    const drawIdxs = [0, faceIdx];
+    const drawIdxs = [0, faceIdx]; // 0은 몸통
     drawIdxs.forEach((i) => {
       // tail part start
       this.gl.bindTexture(
@@ -347,7 +347,6 @@ class GLHelper {
       );
 
       let cameraMat = m3.identity();
-      cameraMat = m3.identity();
       cameraMat = m3.translate(
         cameraMat,
         this.camera.centerPosX - this.camera.width / 2,
@@ -360,6 +359,7 @@ class GLHelper {
       );
       cameraMat = m3.inverse(cameraMat);
 
+      // 위치에 맞게 동물 이동 및 회전
       let imageMat = m3.identity();
       imageMat = m3.translate(
         imageMat,
@@ -383,6 +383,7 @@ class GLHelper {
           .centerPositionPixelOffsetY
       );
 
+      // 얼굴이면 볼륨 반영
       if (i === faceIdx) {
         imageMat = m3.scale(
           imageMat,
