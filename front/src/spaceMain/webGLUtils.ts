@@ -1,5 +1,6 @@
-import ImageInfoProvider, { ImageInfo, ImageInfoEnum } from "./ImageInfos";
+import ImageInfoProvider, { ImageInfo } from "./ImageInfos";
 import { IPlayer } from "./RTCGameUtils";
+import { Vec2 } from "./RTCGameUtils";
 
 const m3 = require("m3.js");
 
@@ -216,7 +217,7 @@ class GLHelper {
   applyMatrixLocation: WebGLUniformLocation | null;
   projectionWidth: number;
   projectionHeight: number;
-  camera: DrawInfo;
+  camera: Camera;
 
   //value
   divHeightOffsetY: number;
@@ -224,11 +225,16 @@ class GLHelper {
   SpeakThrashHold: number;
   SpeakMouseThrashHold: number;
 
+  //Matrix
+  projectionMatrix: number[];
+  cameraMatrix: number[];
+  imageMatrix: number[];
+
   constructor(
     gl: WebGLRenderingContext,
     projectionWidth: number,
     projectionHeight: number,
-    camera: DrawInfo
+    camera: Camera
   ) {
     this.gl = gl;
     this.applyMatrixLocation = null;
@@ -240,7 +246,11 @@ class GLHelper {
     this.volumeDivideValue = 250;
     this.SpeakThrashHold = 30;
     this.SpeakMouseThrashHold = 50;
-    //
+    //Matrix
+    this.projectionMatrix = [];
+    this.cameraMatrix = [];
+    this.imageMatrix = [];
+
     const program = createProgramFromSource(this.gl, vs, fs);
     if (!program) {
       return;
@@ -262,62 +272,169 @@ class GLHelper {
     this.applyMatrixLocation = matrixLocation;
   }
 
-  drawImage(drawImageInfo: DrawInfo) {
-    this.gl.bindTexture(this.gl.TEXTURE_2D, drawImageInfo.tex);
+  getWorldPositionFromScreenPosition(screenX: number, screenY: number): Vec2 {
+    let x =
+      this.camera.centerPosX +
+      (screenX - this.camera.originWidth / 2) / this.camera.scale;
+    let y =
+      this.camera.centerPosY +
+      (screenY - this.camera.originHeight / 2) / this.camera.scale;
 
-    let projectionMat = m3.projection(
+    return {
+      x: x,
+      y: y,
+    };
+  }
+
+  getMy4VertexWorldPosition(
+    imageInfoProvider: ImageInfoProvider,
+    me: IPlayer,
+    scale: number = 1
+  ): Vec2[] {
+    const result: Vec2[] = [];
+
+    const originVertex = [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ];
+    const targetImageInfo = imageInfoProvider.animals[me.idx].imageInfos[1];
+
+    this.updateImageMatrixFromDrawInfo({
+      tex: null,
+      width: targetImageInfo.width,
+      height: targetImageInfo.height,
+      centerPosX: me.centerPos.x,
+      centerPosY: me.centerPos.y,
+      scale: scale,
+      rotateRadian: me.rotateRadian,
+      centerPositionPixelOffsetX: targetImageInfo.centerPositionPixelOffsetX,
+      centerPositionPixelOffsetY: targetImageInfo.centerPositionPixelOffsetY,
+    });
+    originVertex.forEach((arr) => {
+      const posX =
+        this.imageMatrix[0] * arr[0] +
+        this.imageMatrix[3] * arr[1] +
+        this.imageMatrix[6];
+      const posY =
+        this.imageMatrix[1] * arr[0] +
+        this.imageMatrix[4] * arr[1] +
+        this.imageMatrix[7];
+      result.push({
+        x: posX,
+        y: posY,
+      });
+    });
+    return result;
+  }
+
+  updateProjectionMatrix() {
+    this.projectionMatrix = m3.projection(
       this.projectionWidth,
       this.projectionHeight
     );
+  }
 
-    let cameraMat = m3.identity();
-    cameraMat = m3.identity();
-    cameraMat = m3.translate(
-      cameraMat,
+  updateCameraMatrix() {
+    this.cameraMatrix = m3.identity();
+    this.cameraMatrix = m3.identity();
+    this.cameraMatrix = m3.translate(
+      this.cameraMatrix,
       this.camera.centerPosX - this.camera.width / 2,
       this.camera.centerPosY - this.camera.height / 2
     ); // 2d 이동
-    cameraMat = m3.scale(
-      cameraMat,
+    this.cameraMatrix = m3.scale(
+      this.cameraMatrix,
       1 / this.camera.scale,
       1 / this.camera.scale
     );
-    cameraMat = m3.inverse(cameraMat);
+    this.cameraMatrix = m3.inverse(this.cameraMatrix);
+  }
 
-    let imageMat = m3.identity();
-    imageMat = m3.translate(
-      imageMat,
+  updateImageMatrixFromDrawInfo(drawImageInfo: DrawInfo) {
+    this.imageMatrix = m3.identity();
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
       drawImageInfo.centerPosX - drawImageInfo.width / 2,
       drawImageInfo.centerPosY - drawImageInfo.height / 2
     ); // 2d 이동
-    imageMat = m3.translate(
-      imageMat,
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
       drawImageInfo.width / 2,
       drawImageInfo.height / 2
     );
 
-    imageMat = m3.rotate(imageMat, drawImageInfo.rotateRadian); // rotate
-    imageMat = m3.translate(
-      imageMat,
+    this.imageMatrix = m3.rotate(this.imageMatrix, drawImageInfo.rotateRadian); // rotate
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
       drawImageInfo.centerPositionPixelOffsetX,
       drawImageInfo.centerPositionPixelOffsetY
     );
 
-    imageMat = m3.scale(imageMat, drawImageInfo.scale, drawImageInfo.scale); // 중앙점을 기준으로 스케일값 만큼 스케일
+    this.imageMatrix = m3.scale(
+      this.imageMatrix,
+      drawImageInfo.scale,
+      drawImageInfo.scale
+    ); // 중앙점을 기준으로 스케일값 만큼 스케일
 
-    imageMat = m3.translate(
-      imageMat,
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
       -drawImageInfo.width / 2,
       -drawImageInfo.height / 2
     );
-    imageMat = m3.scale(imageMat, drawImageInfo.width, drawImageInfo.height); // 원래 크기로 스케일
+    this.imageMatrix = m3.scale(
+      this.imageMatrix,
+      drawImageInfo.width,
+      drawImageInfo.height
+    ); // 원래 크기로 스케일
+  }
 
+  drawArray() {
     this.gl.uniformMatrix3fv(
       this.applyMatrixLocation,
       false,
-      m3.multiply(m3.multiply(projectionMat, cameraMat), imageMat)
+      m3.multiply(
+        m3.multiply(this.projectionMatrix, this.cameraMatrix),
+        this.imageMatrix
+      )
     );
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+  }
+
+  drawImage(drawImageInfo: DrawInfo) {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, drawImageInfo.tex);
+    this.updateProjectionMatrix();
+    this.updateCameraMatrix();
+    this.updateImageMatrixFromDrawInfo(drawImageInfo);
+    this.drawArray();
+  }
+
+  makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+    imageInfoProvider: ImageInfoProvider,
+    animalPartIndex: number,
+    player: IPlayer,
+    isFace: boolean = true
+  ): DrawInfo {
+    return {
+      tex:
+        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex].tex,
+      width:
+        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex].width,
+      height:
+        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex]
+          .height,
+      centerPosX: player.centerPos.x,
+      centerPosY: player.centerPos.y,
+      scale: isFace ? 1 + player.volume / this.volumeDivideValue : 1,
+      rotateRadian: player.rotateRadian,
+      centerPositionPixelOffsetX:
+        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex]
+          .centerPositionPixelOffsetX,
+      centerPositionPixelOffsetY:
+        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex]
+          .centerPositionPixelOffsetY,
+    };
   }
 
   drawAnimal(
@@ -341,81 +458,30 @@ class GLHelper {
         imageInfoProvider.animals[player.idx].imageInfos[i].tex
       );
 
-      let projectionMat = m3.projection(
-        this.projectionWidth,
-        this.projectionHeight
+      this.updateProjectionMatrix();
+      this.updateCameraMatrix();
+      this.updateImageMatrixFromDrawInfo(
+        this.makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+          imageInfoProvider,
+          i,
+          player,
+          i === faceIdx
+        )
       );
 
-      let cameraMat = m3.identity();
-      cameraMat = m3.identity();
-      cameraMat = m3.translate(
-        cameraMat,
-        this.camera.centerPosX - this.camera.width / 2,
-        this.camera.centerPosY - this.camera.height / 2
-      ); // 2d 이동
-      cameraMat = m3.scale(
-        cameraMat,
-        1 / this.camera.scale,
-        1 / this.camera.scale
-      );
-      cameraMat = m3.inverse(cameraMat);
-
-      let imageMat = m3.identity();
-      imageMat = m3.translate(
-        imageMat,
-        player.centerPos.x -
-          imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
-        player.centerPos.y -
-          imageInfoProvider.animals[player.idx].imageInfos[i].height / 2
-      ); // 2d 이동
-      imageMat = m3.translate(
-        imageMat,
-        imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
-        imageInfoProvider.animals[player.idx].imageInfos[i].height / 2
-      );
-
-      imageMat = m3.rotate(imageMat, player.rotateRadian); // rotate
-      imageMat = m3.translate(
-        imageMat,
-        imageInfoProvider.animals[player.idx].imageInfos[i]
-          .centerPositionPixelOffsetX,
-        imageInfoProvider.animals[player.idx].imageInfos[i]
-          .centerPositionPixelOffsetY
-      );
-
-      if (i === faceIdx) {
-        imageMat = m3.scale(
-          imageMat,
-          1 + player.volume / 200,
-          1 + player.volume / 200
-        ); // 중앙점을 기준으로 스케일값 만큼 스케일
-      }
-
-      imageMat = m3.translate(
-        imageMat,
-        -imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
-        -imageInfoProvider.animals[player.idx].imageInfos[i].height / 2
-      );
-      imageMat = m3.scale(
-        imageMat,
-        imageInfoProvider.animals[player.idx].imageInfos[i].width,
-        imageInfoProvider.animals[player.idx].imageInfos[i].height
-      ); // 원래 크기로 스케일
-
-      const multipiedMat = m3.multiply(
-        m3.multiply(projectionMat, cameraMat),
-        imageMat
-      );
-
-      this.gl.uniformMatrix3fv(this.applyMatrixLocation, false, multipiedMat);
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-
+      this.drawArray();
       const temp = [
         [0, 0],
         [0, 1],
         [1, 0],
         [1, 1],
       ];
+
+      const multipiedMat = m3.multiply(
+        this.projectionMatrix,
+        m3.multiply(this.cameraMatrix, this.imageMatrix)
+      );
+
       for (let j = 0; j < temp.length; j++) {
         const clipspace = m3.transformPoint(multipiedMat, temp[j]);
         const pixelY = (clipspace[1] * -0.5 + 0.5) * this.projectionHeight;

@@ -1,4 +1,6 @@
 import { Socket } from "socket.io-client";
+import ImageInfoProvider from "./ImageInfos";
+import GLHelper from "./webGLUtils";
 
 export interface Vec2 {
   x: number;
@@ -61,8 +63,18 @@ class Me implements IPlayer {
     source.connect(this.analyser);
   }
 
-  update(millis: number) {
+  update(
+    millis: number,
+    imageInfoProvider: ImageInfoProvider,
+    glHelper: GLHelper
+  ) {
     if (this.isMoving) {
+      const oldCenterPosX = this.centerPos.x;
+      const oldCenterPosY = this.centerPos.y;
+      const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
+      const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
+      const oldRotateRadian = this.rotateRadian;
+
       const newDir: Vec2 = {
         x: this.touchingPos.x - this.touchStartPos.x,
         y: this.touchingPos.y - this.touchStartPos.y,
@@ -72,14 +84,59 @@ class Me implements IPlayer {
       const len = Math.sqrt(Math.pow(newDir.x, 2) + Math.pow(newDir.y, 2));
       newDir.x = newDir.x / len;
       newDir.y = newDir.y / len;
-      this.normalizedDirectionVector = newDir;
 
+      // position value update
+      this.normalizedDirectionVector = newDir;
       this.centerPos.x +=
         this.velocity * this.normalizedDirectionVector.x * millis;
       this.centerPos.y +=
         this.velocity * this.normalizedDirectionVector.y * millis;
-      this.div.style.left = Math.floor(this.centerPos.x) + "px";
-      this.div.style.top = Math.floor(this.centerPos.y + 100) + "px";
+      this.rotateRadian = Math.atan2(
+        this.normalizedDirectionVector.x,
+        this.normalizedDirectionVector.y
+      );
+      //collision detection part
+
+      const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(
+        imageInfoProvider,
+        this,
+        0.9
+      );
+
+      const isCollision = (vertex4: Vec2[]): boolean => {
+        for (let i = 0; i < 4; i++) {
+          let left = vertex4[i];
+          let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
+          if (left.x > right.x) {
+            const temp = left;
+            left = right;
+            right = temp;
+          }
+          const a = (right.y - left.y) / (right.x - left.x);
+          for (let i = 0; i < right.x - left.x; i++) {
+            const posX = Math.round(left.x + i);
+            const posY = Math.round(left.y + a * i);
+            if (
+              posX < 0 ||
+              posX >= imageInfoProvider.background.backgroundImageInfo.width ||
+              posY < 0 ||
+              posY >= imageInfoProvider.background.backgroundImageInfo.height ||
+              imageInfoProvider.background.objectArray[posX][posY] !== 0
+            ) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      if (isCollision(vertex4)) {
+        this.centerPos.x = oldCenterPosX;
+        this.centerPos.y = oldCenterPosY;
+        this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
+        this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
+        this.rotateRadian = oldRotateRadian;
+      }
     }
 
     const array = new Uint8Array(this.analyser.frequencyBinCount);
@@ -88,11 +145,6 @@ class Me implements IPlayer {
       array.reduce((acc, cur) => {
         return acc + cur;
       }, 0) / array.length;
-
-    this.rotateRadian = Math.atan2(
-      this.normalizedDirectionVector.x,
-      this.normalizedDirectionVector.y
-    );
   }
 }
 

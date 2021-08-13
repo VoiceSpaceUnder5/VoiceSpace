@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router-dom";
 import ImageInfoProvider from "./ImageInfos";
 import GLHelper, { DrawInfo, Camera } from "./webGLUtils";
 import io from "socket.io-client";
-import PeerManager, { IPlayer } from "./RTCGameUtils";
+import PeerManager from "./RTCGameUtils";
 import Navigation from "./Navigation";
 
 const qs = require("query-string");
@@ -151,16 +151,6 @@ const SpaceMain = (props: RouteComponentProps) => {
           e.preventDefault();
           peerManger.me.isMoving = true;
           peerManger.me.touchStartPos = { x: e.clientX, y: e.clientY };
-
-          let x =
-            camera.centerPosX +
-            (e.clientX - camera.originWidth / 2) / camera.scale;
-          let y =
-            camera.centerPosY +
-            (e.clientY - camera.originHeight / 2) / camera.scale;
-          x = Math.round(x);
-          y = Math.round(y);
-          console.log(x, y, imageInfoProvider.background.objectArray[x][y]);
         });
 
         divContainer.addEventListener("mousemove", (e) => {
@@ -199,7 +189,11 @@ const SpaceMain = (props: RouteComponentProps) => {
         const requestAnimation = () => {
           drawBackround();
           drawObject();
-          peerManger.me.update(Date.now() - peerManger.lastUpdateTimeStamp);
+          peerManger.me.update(
+            Date.now() - peerManger.lastUpdateTimeStamp,
+            imageInfoProvider,
+            glHelper
+          );
           peerManger.peers.forEach((peer) => {
             if (peer.dc.readyState === "open")
               peer.dc.send(JSON.stringify(peerManger.me));
@@ -232,7 +226,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       ></canvas>
       <div id="divContainer"></div>
       <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
-      <Navigation {...props}/>
+      <Navigation {...props} />
     </>
   );
 };
