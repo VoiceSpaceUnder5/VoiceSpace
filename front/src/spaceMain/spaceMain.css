@@ -56,4 +56,9 @@ button {
   padding-left: 6px;
   padding-right: 6px;
 }
+
+.profileDisplay {
+  font-size: 15px;
+  font-weight: bold;
+}
 /* style={{color: '#00a0ff', paddingLeft: '10px'}} */

@@ -21,6 +21,16 @@ const SpaceMain = (props: RouteComponentProps) => {
   const peerManagerRef = useRef<PeerManager>();
 
   // 랜더링할 때 처음 한번만 실행.
+  const onProfileChangeButtonClick = (
+    newAvatarIdx: number,
+    newNickname: string,
+  ) => {
+    if (peerManagerRef.current !== undefined) {
+      peerManagerRef.current.me.idx = newAvatarIdx;
+      peerManagerRef.current.me.div.innerText = newNickname;
+      peerManagerRef.current.me.nickname = newNickname;
+    }
+  };
   useEffect(() => {
     if (!canvasRef.current) {
       console.error('set canvas HTML Error');
@@ -233,8 +243,10 @@ const SpaceMain = (props: RouteComponentProps) => {
       <div id="divContainer"></div>
       <div id="audioContainer" style={{width: '0', height: '0'}}></div>
       <Navigation
+        initialInfo={[query.avatarIdx, query.nickname]}
         peerManager={peerManagerRef.current}
         myMicToggle={onClickMicOnOff}
+        onProfileChange={onProfileChangeButtonClick}
       />
     </>
   );
