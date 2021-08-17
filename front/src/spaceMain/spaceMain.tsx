@@ -217,9 +217,9 @@ const SpaceMain = (props: RouteComponentProps) => {
       });
   }, []);
 
-  const onClickMicOnOff = (on: boolean) => {
+  const onClickMicOnOff = (isOn: boolean) => {
     if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.localStream.getAudioTracks()[0].enabled = on;
+      peerManagerRef.current.localStream.getAudioTracks()[0].enabled = isOn;
     }
   };
 
