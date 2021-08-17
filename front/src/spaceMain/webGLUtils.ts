@@ -265,7 +265,7 @@ class GLHelper {
   drawImage(drawImageInfo: DrawInfo) {
     this.gl.bindTexture(this.gl.TEXTURE_2D, drawImageInfo.tex);
 
-    let projectionMat = m3.projection(
+    const projectionMat = m3.projection(
       this.projectionWidth,
       this.projectionHeight,
     );
@@ -341,7 +341,7 @@ class GLHelper {
         imageInfoProvider.animals[player.idx].imageInfos[i].tex,
       );
 
-      let projectionMat = m3.projection(
+      const projectionMat = m3.projection(
         this.projectionWidth,
         this.projectionHeight,
       );
