@@ -1,12 +1,13 @@
-import { useEffect, useRef } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import ImageInfoProvider from "./ImageInfos";
-import GLHelper, { DrawInfo, Camera } from "./webGLUtils";
-import io from "socket.io-client";
-import PeerManager from "./RTCGameUtils";
-import Navigation from "./Navigation";
+import React, {useEffect, useRef} from 'react';
+import {RouteComponentProps} from 'react-router-dom';
+import ImageInfoProvider from './ImageInfoProvider';
+import GLHelper, {DrawInfo, Camera} from './webGLUtils';
+import io from 'socket.io-client';
+import PeerManager from './RTCGameUtils';
+import Navigation from './Navigation';
+import {AnimalImageEnum} from './ImageMetaData';
 
-const qs = require("query-string");
+const qs = require('query-string');
 
 interface SpaceMainQuery {
   roomId: string;
@@ -15,156 +16,119 @@ interface SpaceMainQuery {
 }
 
 const SpaceMain = (props: RouteComponentProps) => {
-  const query = qs.parse(props.location.search) as SpaceMainQuery;
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
+  const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
 
+  // 랜더링할 때 처음 한번만 실행.
   useEffect(() => {
     if (!canvasRef.current) {
-      console.error("set canvas HTML Error");
+      console.error('set canvas HTML Error');
       return;
     }
     const canvas = canvasRef.current;
-    const gl = canvas.getContext("webgl");
+    // webgl을 사용하기 위해 Context를 가져옴 아몰랑
+    const gl = canvas.getContext('webgl');
     if (!gl) {
-      console.error("getContext Error");
+      console.error('getContext Error');
       return;
     }
-    const imageInfoProvider = new ImageInfoProvider(gl, 0);
+    const imageInfoProvider = new ImageInfoProvider(gl, 0); // image와 관련된 정보들을 모두 저장
     if (!imageInfoProvider) {
-      console.error("makeImageInfoProvider fail");
+      console.error('makeImageInfoProvider fail');
       return;
     }
 
+    const backgroundImageInfo = imageInfoProvider.objectsArray[0][0];
+
+    //카메라 객체 초기화
     const camera = new Camera(
-      canvas.clientWidth,
-      canvas.clientHeight,
-      canvas.clientWidth / 2,
-      canvas.clientHeight / 2,
-      1, // scale
-      0, // rotate
-      imageInfoProvider.background.backgroundImageInfo
+      {width: canvas.clientWidth, height: canvas.clientHeight},
+      backgroundImageInfo.centerPos,
+      backgroundImageInfo.size,
     );
 
-    const glHelper = new GLHelper(
-      gl,
-      window.innerWidth,
-      window.innerHeight,
-      camera
-    );
+    //webGL관련 작업 처리(그리기 전 준비 끝리
+    const glHelper = new GLHelper(gl, camera);
     if (!glHelper) {
-      console.error("make GLHelper fail");
+      console.error('make GLHelper fail');
       return;
     }
 
+    //내 오디오 연결 가져오고,
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
+      .getUserMedia({video: false, audio: true}) // 오디오 연결
       .then((stream: MediaStream) => {
-        const audioContainer = document.querySelector("#audioContainer");
+        const audioContainer = document.querySelector('#audioContainer');
         if (!audioContainer) {
-          console.error("audioContainer can not found");
+          console.error('audioContainer can not found');
           return;
         }
 
+        // 이름표
         const divContainer = document.querySelector(
-          "#divContainer"
+          '#divContainer',
         ) as HTMLDivElement;
         if (!divContainer) {
-          console.error("divContainer can not found");
+          console.error('divContainer can not found');
           return;
         }
 
-        const socket = io("http://localhost:8080");
+        // 백엔드와 연결, socket을 통해 백엔드와 소통
+        // const socket = io("http://localhost:8080");
+        const socket = io('https://under5.site:8080');
         if (!socket) {
-          console.error("socket connection fail");
+          console.error('socket connection fail');
           return;
         }
 
+        // 나, 너 그리고 우리를 관리하는 객체
         const peerManger = new PeerManager(
           socket,
           stream,
           query.nickname,
-          query.avatarIdx,
+          AnimalImageEnum.BROWN_BEAR,
           audioContainer,
           divContainer,
           {
-            x: imageInfoProvider.background.backgroundImageInfo.width / 2,
-            y: imageInfoProvider.background.backgroundImageInfo.height / 2,
+            x: backgroundImageInfo.size.width / 2,
+            y: backgroundImageInfo.size.height / 2,
           },
-          query.roomId
+          query.roomId,
         );
-
-        const backgroundDrawInfo: DrawInfo = {
-          tex: imageInfoProvider.background.backgroundImageInfo.tex,
-          width: imageInfoProvider.background.backgroundImageInfo.width,
-          height: imageInfoProvider.background.backgroundImageInfo.height,
-          centerPosX:
-            imageInfoProvider.background.backgroundImageInfo.width / 2,
-          centerPosY:
-            imageInfoProvider.background.backgroundImageInfo.height / 2,
-          centerPositionPixelOffsetX: 0,
-          centerPositionPixelOffsetY: 0,
-          scale: 1,
-          rotateRadian: 0,
-        };
-
-        const drawBackround = () => glHelper.drawImage(backgroundDrawInfo);
-        const drawObject = () => {
-          imageInfoProvider.background.objectInfos.forEach((objectInfo) => {
-            glHelper.drawImage({
-              tex: objectInfo.tex,
-              width: objectInfo.width,
-              height: objectInfo.height,
-              centerPosX: objectInfo.originCenterPositionX,
-              centerPosY: objectInfo.originCenterPositionY,
-              centerPositionPixelOffsetX: objectInfo.centerPositionPixelOffsetX,
-              centerPositionPixelOffsetY: objectInfo.centerPositionPixelOffsetY,
-              scale: 1,
-              rotateRadian: 0,
-            });
-          });
-        };
 
         /////////////////////////////////////////////////
         // event setting start //////////////////////////
-        window.addEventListener("resize", (e) => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-          glHelper.projectionWidth = window.innerWidth;
-          glHelper.projectionHeight = window.innerHeight;
-          glHelper.gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-          camera.width = window.innerWidth;
-          camera.height = window.innerHeight;
-          camera.centerPosX = window.innerWidth / 2;
-          camera.centerPosY = window.innerHeight / 2;
+        window.addEventListener('resize', e => {
+          //to - do
         });
 
-        window.addEventListener("keydown", (e) => {
-          if (e.key === "+") {
+        window.addEventListener('keydown', e => {
+          if (e.key === '+') {
             camera.upScale(0.1);
-          } else if (e.key === "-") {
+          } else if (e.key === '-') {
             camera.upScale(-0.1);
           }
         });
 
         //for Desktop
-        divContainer.addEventListener("mousedown", (e) => {
+        divContainer.addEventListener('mousedown', e => {
           e.preventDefault();
           peerManger.me.isMoving = true;
-          peerManger.me.touchStartPos = { x: e.clientX, y: e.clientY };
+          peerManger.me.touchStartPos = {x: e.clientX, y: e.clientY};
         });
 
-        divContainer.addEventListener("mousemove", (e) => {
+        divContainer.addEventListener('mousemove', e => {
           e.preventDefault();
-          peerManger.me.touchingPos = { x: e.clientX, y: e.clientY };
+          peerManger.me.touchingPos = {x: e.clientX, y: e.clientY};
         });
 
-        divContainer.addEventListener("mouseup", (e) => {
+        divContainer.addEventListener('mouseup', e => {
           e.preventDefault();
           peerManger.me.isMoving = false;
         });
 
         //for Phone
-        divContainer.addEventListener("touchstart", (e) => {
+        divContainer.addEventListener('touchstart', e => {
           e.preventDefault();
           peerManger.me.isMoving = true;
           peerManger.me.touchStartPos = {
@@ -173,7 +137,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           };
         });
 
-        divContainer.addEventListener("touchmove", (e) => {
+        divContainer.addEventListener('touchmove', e => {
           e.preventDefault();
           peerManger.me.touchingPos = {
             x: e.touches[0].clientX,
@@ -181,21 +145,29 @@ const SpaceMain = (props: RouteComponentProps) => {
           };
         });
 
-        divContainer.addEventListener("touchend", (e) => {
+        divContainer.addEventListener('touchend', e => {
           e.preventDefault();
           peerManger.me.isMoving = false;
         });
 
+        const drawBackground = () => {
+          glHelper.drawImage({
+            ...backgroundImageInfo,
+            scale: 1,
+            rotateRadian: 0,
+          });
+        };
+
+        //계속해서 화면에 장면을 그려줌
         const requestAnimation = () => {
-          drawBackround();
-          drawObject();
+          drawBackground();
           peerManger.me.update(
             Date.now() - peerManger.lastUpdateTimeStamp,
             imageInfoProvider,
-            glHelper
+            glHelper,
           );
-          peerManger.peers.forEach((peer) => {
-            if (peer.dc.readyState === "open")
+          peerManger.peers.forEach(peer => {
+            if (peer.dc.readyState === 'open')
               peer.dc.send(JSON.stringify(peerManger.me));
             glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
             peer.updateSoundFromVec2(peerManger.me.centerPos);
@@ -205,27 +177,27 @@ const SpaceMain = (props: RouteComponentProps) => {
           glHelper.drawAnimal(
             imageInfoProvider,
             peerManger.me,
-            peerManger.me.div
+            peerManger.me.div,
           );
-
+          console.log(peerManger.me.centerPos);
           requestAnimationFrame(requestAnimation);
         };
         peerManger.lastUpdateTimeStamp = Date.now();
         requestAnimationFrame(requestAnimation);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
   }, []);
   return (
     <>
       <canvas
-        width={window.innerWidth.toString() + "px"}
-        height={window.innerHeight.toString() + "px"}
+        width={window.innerWidth.toString() + 'px'}
+        height={window.innerHeight.toString() + 'px'}
         ref={canvasRef}
       ></canvas>
       <div id="divContainer"></div>
-      <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
+      <div id="audioContainer" style={{width: '0', height: '0'}}></div>
       <Navigation {...props} />
     </>
   );

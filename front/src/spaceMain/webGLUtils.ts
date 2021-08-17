@@ -1,25 +1,25 @@
-import ImageInfoProvider, { ImageInfo } from "./ImageInfos";
-import { IPlayer } from "./RTCGameUtils";
-import { Vec2 } from "./RTCGameUtils";
-
-const m3 = require("m3.js");
+import ImageInfoProvider from './ImageInfoProvider';
+import {Size, ImageInfo, AnimalPartImageEnum} from './ImageMetaData';
+import {IPlayer} from './RTCGameUtils';
+import {Vec2} from './RTCGameUtils';
+const m3 = require('m3.js');
 
 const vs = `
 	attribute vec2 a_texcoord;
 	varying vec2 v_texcoord;
-	
+
 	attribute vec2 a_position;
 	uniform mat3 u_matrix;
 	void main() {
 	  gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
-	  //gl_Position = vec4( (vec3(a_position, 1).xy * u_matrix), 0, 1); 
+	  //gl_Position = vec4( (vec3(a_position, 1).xy * u_matrix), 0, 1);
 	  v_texcoord = a_texcoord;
 	}
 `;
 
 const fs = `
-	precision mediump float; 
-	varying vec2 v_texcoord; 
+	precision mediump float;
+	varying vec2 v_texcoord;
 	uniform sampler2D u_texture;
 	uniform float u_transparency;
 
@@ -57,7 +57,7 @@ export const resizeCanvasToDisplaySize = (canvas: HTMLCanvasElement) => {
 const createShader = (
   gl: WebGLRenderingContext,
   type: number,
-  source: string
+  source: string,
 ) => {
   const shader = gl.createShader(type);
   if (!shader) {
@@ -78,13 +78,13 @@ const createShader = (
 export const createProgramFromSource = (
   gl: WebGLRenderingContext,
   vertexShaderSource: string,
-  fragmentShaderSource: string
+  fragmentShaderSource: string,
 ) => {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   const fragmentShader = createShader(
     gl,
     gl.FRAGMENT_SHADER,
-    fragmentShaderSource
+    fragmentShaderSource,
   );
   if (!vertexShader || !fragmentShader) return;
   return createProgram(gl, vertexShader, fragmentShader);
@@ -93,11 +93,11 @@ export const createProgramFromSource = (
 const createProgram = (
   gl: WebGLRenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ) => {
   const program = gl.createProgram();
   if (!program) {
-    console.error("createProgram error");
+    console.error('createProgram error');
     return;
   }
   gl.attachShader(program, vertexShader);
@@ -114,7 +114,7 @@ const setAttributeData = (
   gl: WebGLRenderingContext,
   program: WebGLProgram,
   attributeName: string,
-  data: Float32Array
+  data: Float32Array,
 ) => {
   const loc = gl.getAttribLocation(program, attributeName);
   if (loc < 0) {
@@ -129,90 +129,65 @@ const setAttributeData = (
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 };
 
-export interface DrawInfo {
-  tex: WebGLTexture | null;
-  width: number;
-  height: number;
-  centerPosX: number;
-  centerPosY: number;
+// export interface ImageInfo {
+// 	centerPosPixelOffset: Vec2;
+// 	tex: WebGLTexture;
+// 	size: Size;
+// 	centerPos: Vec2;
+//   }
+export interface DrawInfo extends ImageInfo {
   scale: number;
   rotateRadian: number;
-  centerPositionPixelOffsetX: number;
-  centerPositionPixelOffsetY: number;
 }
 
-export class Camera implements DrawInfo {
-  tex: WebGLTexture | null;
-  width: number;
-  height: number;
-  centerPosX: number;
-  centerPosY: number;
+export class Camera {
+  size: Size;
+  readonly originSize: Size;
+  centerPos: Vec2;
   scale: number;
-  rotateRadian: number;
-  centerPositionPixelOffsetX: number;
-  centerPositionPixelOffsetY: number;
-  background: ImageInfo;
-  originWidth: number;
-  originHeight: number;
-  constructor(
-    width: number,
-    height: number,
-    centerPosX: number,
-    centerPosY: number,
-    scale: number,
-    rotateRadian: number,
-    background: ImageInfo
-  ) {
-    this.tex = null;
-    this.width = width;
-    this.height = height;
-    this.centerPosX = centerPosX;
-    this.centerPosY = centerPosY;
-    this.centerPositionPixelOffsetX = 0;
-    this.centerPositionPixelOffsetY = 0;
-    this.scale = scale;
-    this.rotateRadian = rotateRadian;
-    this.background = background;
-    this.originWidth = width;
-    this.originHeight = height;
+  readonly limitSize: Size;
+  constructor(size: Size, centerPos: Vec2, limitSize: Size) {
+    this.size = size;
+    this.originSize = {...size};
+    this.centerPos = centerPos;
+    this.scale = 1;
+    this.limitSize = limitSize;
   }
 
   upScale(value: number) {
     const oldScale = this.scale;
-    const oldWidth = this.width;
-    const oldHeight = this.height;
+    const oldSize = {...this.size};
 
     this.scale += value;
-    this.width = this.originWidth / this.scale;
-    this.height = this.originHeight / this.scale;
+    this.size.width = this.originSize.width / this.scale;
+    this.size.height = this.originSize.height / this.scale;
+    console.log(this.centerPos, this.size, this.limitSize);
     if (
-      this.centerPosX + this.width / 2 > this.background.width ||
-      this.centerPosX < this.width / 2 ||
-      this.centerPosY + this.height / 2 > this.background.height ||
-      this.centerPosY < this.height / 2
+      this.centerPos.x + this.size.width / 2 > this.limitSize.width ||
+      this.centerPos.x < this.size.width / 2 ||
+      this.centerPos.y + this.size.height / 2 > this.limitSize.height ||
+      this.centerPos.y < this.size.height / 2
     ) {
+      console.log('fired!');
       this.scale = oldScale;
-      this.width = oldWidth;
-      this.height = oldHeight;
+      this.size = {...oldSize};
     }
   }
 
   updateCenterPosFromPlayer(player: IPlayer) {
-    const oldCenterPosX = this.centerPosX;
-    const oldCenterPosY = this.centerPosY;
-    this.centerPosX = player.centerPos.x;
-    this.centerPosY = player.centerPos.y;
+    const oldCenterPos = {...this.centerPos};
+    this.centerPos = {...player.centerPos};
     if (
-      this.centerPosX < this.width / 2 ||
-      this.centerPosX + this.width / 2 > this.background.width
+      this.centerPos.x < this.size.width / 2 ||
+      this.centerPos.x + this.size.width / 2 > this.limitSize.width
     ) {
-      this.centerPosX = oldCenterPosX;
+      this.centerPos.x = oldCenterPos.x;
     }
     if (
-      this.centerPosY < this.height / 2 ||
-      this.centerPosY + this.height / 2 > this.background.height
+      this.centerPos.y < this.size.height / 2 ||
+      this.centerPos.y + this.size.height / 2 > this.limitSize.height
     ) {
-      this.centerPosY = oldCenterPosY;
+      this.centerPos.y = oldCenterPos.y;
     }
   }
 }
@@ -221,8 +196,6 @@ class GLHelper {
   gl: WebGLRenderingContext;
   applyShapeMatrixLocation: WebGLUniformLocation | null;
   applyTransparencyLocation: WebGLUniformLocation | null;
-  projectionWidth: number;
-  projectionHeight: number;
   camera: Camera;
 
   //value
@@ -237,17 +210,10 @@ class GLHelper {
   imageMatrix: number[];
   transparency: number;
 
-  constructor(
-    gl: WebGLRenderingContext,
-    projectionWidth: number,
-    projectionHeight: number,
-    camera: Camera
-  ) {
+  constructor(gl: WebGLRenderingContext, camera: Camera) {
     this.gl = gl;
     this.applyShapeMatrixLocation = null;
     this.applyTransparencyLocation = null;
-    this.projectionWidth = projectionWidth;
-    this.projectionHeight = projectionHeight;
     this.camera = camera;
     //value
     this.divHeightOffsetY = -20;
@@ -270,45 +236,42 @@ class GLHelper {
     gl.enable(gl.BLEND);
 
     const dataArray = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
-    setAttributeData(gl, program, "a_position", new Float32Array(dataArray));
-    setAttributeData(gl, program, "a_texcoord", new Float32Array(dataArray));
+    setAttributeData(gl, program, 'a_position', new Float32Array(dataArray));
+    setAttributeData(gl, program, 'a_texcoord', new Float32Array(dataArray));
 
-    const shapeMatrixLocation = gl.getUniformLocation(program, "u_matrix");
+    const shapeMatrixLocation = gl.getUniformLocation(program, 'u_matrix');
     if (!shapeMatrixLocation) {
-      console.error("getUniformLocation u_matrix Error");
+      console.error('getUniformLocation u_matrix Error');
       return;
     }
     this.applyShapeMatrixLocation = shapeMatrixLocation;
 
     const transparencyLocation = gl.getUniformLocation(
       program,
-      "u_transparency"
+      'u_transparency',
     );
     if (!transparencyLocation) {
-      console.error("getUniformLocation u_transparencyLocation Error");
+      console.error('getUniformLocation u_transparencyLocation Error');
       return;
     }
     this.applyTransparencyLocation = transparencyLocation;
   }
 
-  getWorldPositionFromScreenPosition(screenX: number, screenY: number): Vec2 {
-    let x =
-      this.camera.centerPosX +
-      (screenX - this.camera.originWidth / 2) / this.camera.scale;
-    let y =
-      this.camera.centerPosY +
-      (screenY - this.camera.originHeight / 2) / this.camera.scale;
-
+  getWorldPositionFromScreenPosition(screenPos: Vec2): Vec2 {
     return {
-      x: x,
-      y: y,
+      x:
+        this.camera.centerPos.x +
+        (screenPos.x - this.camera.originSize.width / 2) / this.camera.scale,
+      y:
+        this.camera.centerPos.y +
+        (screenPos.y - this.camera.originSize.height / 2) / this.camera.scale,
     };
   }
 
   getMy4VertexWorldPosition(
     imageInfoProvider: ImageInfoProvider,
     me: IPlayer,
-    scale: number = 1
+    scale = 1,
   ): Vec2[] {
     const result: Vec2[] = [];
 
@@ -318,20 +281,21 @@ class GLHelper {
       [1, 1],
       [0, 1],
     ];
-    const targetImageInfo = imageInfoProvider.animals[me.idx].imageInfos[1];
-
+    const imageinfo = imageInfoProvider.getAnimalImageInfo(
+      me.animal,
+      AnimalPartImageEnum.FACE_MUTE,
+    );
+    if (!imageinfo) {
+      return [];
+    }
     this.updateImageMatrixFromDrawInfo({
-      tex: null,
-      width: targetImageInfo.width,
-      height: targetImageInfo.height,
-      centerPosX: me.centerPos.x,
-      centerPosY: me.centerPos.y,
+      ...imageinfo,
       scale: scale,
       rotateRadian: me.rotateRadian,
-      centerPositionPixelOffsetX: targetImageInfo.centerPositionPixelOffsetX,
-      centerPositionPixelOffsetY: targetImageInfo.centerPositionPixelOffsetY,
+      centerPos: me.centerPos,
     });
-    originVertex.forEach((arr) => {
+
+    originVertex.forEach(arr => {
       const posX =
         this.imageMatrix[0] * arr[0] +
         this.imageMatrix[3] * arr[1] +
@@ -350,23 +314,22 @@ class GLHelper {
 
   updateProjectionMatrix() {
     this.projectionMatrix = m3.projection(
-      this.projectionWidth,
-      this.projectionHeight
+      this.camera.originSize.width,
+      this.camera.originSize.height,
     );
   }
 
   updateCameraMatrix() {
     this.cameraMatrix = m3.identity();
-    this.cameraMatrix = m3.identity();
     this.cameraMatrix = m3.translate(
       this.cameraMatrix,
-      this.camera.centerPosX - this.camera.width / 2,
-      this.camera.centerPosY - this.camera.height / 2
+      this.camera.centerPos.x - this.camera.size.width / 2,
+      this.camera.centerPos.y - this.camera.size.height / 2,
     ); // 2d 이동
     this.cameraMatrix = m3.scale(
       this.cameraMatrix,
       1 / this.camera.scale,
-      1 / this.camera.scale
+      1 / this.camera.scale,
     );
     this.cameraMatrix = m3.inverse(this.cameraMatrix);
   }
@@ -375,48 +338,49 @@ class GLHelper {
     this.imageMatrix = m3.identity();
     this.imageMatrix = m3.translate(
       this.imageMatrix,
-      drawImageInfo.centerPosX - drawImageInfo.width / 2,
-      drawImageInfo.centerPosY - drawImageInfo.height / 2
+      drawImageInfo.centerPos.x - drawImageInfo.size.width / 2,
+      drawImageInfo.centerPos.y - drawImageInfo.size.height / 2,
     ); // 2d 이동
     this.imageMatrix = m3.translate(
       this.imageMatrix,
-      drawImageInfo.width / 2,
-      drawImageInfo.height / 2
+      drawImageInfo.size.width / 2,
+      drawImageInfo.size.height / 2,
     );
 
     this.imageMatrix = m3.rotate(this.imageMatrix, drawImageInfo.rotateRadian); // rotate
     this.imageMatrix = m3.translate(
       this.imageMatrix,
-      drawImageInfo.centerPositionPixelOffsetX,
-      drawImageInfo.centerPositionPixelOffsetY
+      drawImageInfo.centerPosPixelOffset.x,
+      drawImageInfo.centerPosPixelOffset.y,
     );
 
     this.imageMatrix = m3.scale(
       this.imageMatrix,
       drawImageInfo.scale,
-      drawImageInfo.scale
+      drawImageInfo.scale,
     ); // 중앙점을 기준으로 스케일값 만큼 스케일
 
     this.imageMatrix = m3.translate(
       this.imageMatrix,
-      -drawImageInfo.width / 2,
-      -drawImageInfo.height / 2
+      -drawImageInfo.size.width / 2,
+      -drawImageInfo.size.height / 2,
     );
     this.imageMatrix = m3.scale(
       this.imageMatrix,
-      drawImageInfo.width,
-      drawImageInfo.height
+      drawImageInfo.size.width,
+      drawImageInfo.size.height,
     ); // 원래 크기로 스케일
   }
 
-  drawArray() {
+  drawArray(tex: WebGLTexture) {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
     this.gl.uniformMatrix3fv(
       this.applyShapeMatrixLocation,
       false,
       m3.multiply(
         m3.multiply(this.projectionMatrix, this.cameraMatrix),
-        this.imageMatrix
-      )
+        this.imageMatrix,
+      ),
     );
     this.gl.uniform1f(this.applyTransparencyLocation, this.transparency);
 
@@ -424,73 +388,60 @@ class GLHelper {
   }
 
   drawImage(drawImageInfo: DrawInfo) {
-    this.gl.bindTexture(this.gl.TEXTURE_2D, drawImageInfo.tex);
     this.updateProjectionMatrix();
     this.updateCameraMatrix();
     this.updateImageMatrixFromDrawInfo(drawImageInfo);
-    this.drawArray();
+    this.drawArray(drawImageInfo.tex);
   }
 
   makeAnimalImageInfoFromImageInfoProviderAndPlayer(
     imageInfoProvider: ImageInfoProvider,
-    animalPartIndex: number,
+    animalPart: AnimalPartImageEnum,
     player: IPlayer,
-    isFace: boolean = true
-  ): DrawInfo {
+    isFace = true,
+  ): DrawInfo | undefined {
+    const imageInfo = imageInfoProvider.getAnimalImageInfo(
+      player.animal,
+      animalPart,
+    );
+    if (!imageInfo) {
+      console.error(
+        'cannot find imageInfo in makeAnimalImageInfoFromImageInfoProviderAndPlayer',
+        player,
+      );
+      return;
+    }
     return {
-      tex:
-        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex].tex,
-      width:
-        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex].width,
-      height:
-        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex]
-          .height,
-      centerPosX: player.centerPos.x,
-      centerPosY: player.centerPos.y,
+      ...imageInfo,
       scale: isFace ? 1 + player.volume / this.volumeDivideValue : 1,
       rotateRadian: player.rotateRadian,
-      centerPositionPixelOffsetX:
-        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex]
-          .centerPositionPixelOffsetX,
-      centerPositionPixelOffsetY:
-        imageInfoProvider.animals[player.idx].imageInfos[animalPartIndex]
-          .centerPositionPixelOffsetY,
+      centerPos: player.centerPos,
     };
   }
 
   drawAnimal(
     imageInfoProvider: ImageInfoProvider,
     player: IPlayer,
-    div: HTMLDivElement
+    div: HTMLDivElement,
   ) {
-    let divWidth = this.projectionWidth;
-    let divHeight = this.projectionHeight;
-    let faceIdx = 1;
+    const divSize = {...this.camera.size};
+    let faceIdx = AnimalPartImageEnum.FACE_MUTE; // Mute 얼굴
 
     if (this.SpeakThrashHold < player.volume) {
-      faceIdx = 2;
-      if (this.SpeakMouseThrashHold < player.volume) faceIdx = 3;
+      faceIdx = AnimalPartImageEnum.FACE_SPEAK; // 말하는 얼굴
+      if (this.SpeakMouseThrashHold < player.volume)
+        faceIdx = AnimalPartImageEnum.FACE_SPEAK_MOUSE;
     }
-    const drawIdxs = [0, faceIdx];
-    drawIdxs.forEach((i) => {
-      // tail part start
-      this.gl.bindTexture(
-        this.gl.TEXTURE_2D,
-        imageInfoProvider.animals[player.idx].imageInfos[i].tex
+    const drawIdxs = [AnimalPartImageEnum.BODY, faceIdx]; // 0은 몸통
+    drawIdxs.forEach(partEnum => {
+      const drawInfo = this.makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+        imageInfoProvider,
+        partEnum,
+        player,
+        partEnum === faceIdx,
       );
-
-      this.updateProjectionMatrix();
-      this.updateCameraMatrix();
-      this.updateImageMatrixFromDrawInfo(
-        this.makeAnimalImageInfoFromImageInfoProviderAndPlayer(
-          imageInfoProvider,
-          i,
-          player,
-          i === faceIdx
-        )
-      );
-
-      this.drawArray();
+      if (!drawInfo) return;
+      this.drawImage(drawInfo);
       const temp = [
         [0, 0],
         [0, 1],
@@ -500,29 +451,31 @@ class GLHelper {
 
       const multipiedMat = m3.multiply(
         this.projectionMatrix,
-        m3.multiply(this.cameraMatrix, this.imageMatrix)
+        m3.multiply(this.cameraMatrix, this.imageMatrix),
       );
 
       for (let j = 0; j < temp.length; j++) {
         const clipspace = m3.transformPoint(multipiedMat, temp[j]);
-        const pixelY = (clipspace[1] * -0.5 + 0.5) * this.projectionHeight;
-        divHeight = Math.min(divHeight, pixelY);
+        const pixelY =
+          (clipspace[1] * -0.5 + 0.5) * this.camera.originSize.height;
+        divSize.height = Math.min(divSize.height, pixelY);
       }
 
       const clipspace = m3.transformPoint(multipiedMat, [0.5, 0.5]);
-      const pixelX = (clipspace[0] * 0.5 + 0.5) * this.projectionWidth;
-      divWidth = pixelX;
+      const pixelX = (clipspace[0] * 0.5 + 0.5) * this.camera.originSize.width;
+      divSize.width = pixelX;
     });
-    if (divHeight + this.divHeightOffsetY < 0)
-      divHeight = -this.divHeightOffsetY;
-    if (divHeight > this.projectionHeight)
-      divHeight = this.projectionHeight - div.clientHeight;
-    if (divWidth - div.clientWidth / 2 < 0) divWidth = div.clientWidth / 2;
-    if (divWidth + div.clientWidth / 2 > this.projectionWidth)
-      divWidth = this.projectionWidth - div.clientWidth / 2;
+    if (divSize.height + this.divHeightOffsetY < 0)
+      divSize.height = -this.divHeightOffsetY;
+    if (divSize.height > this.camera.originSize.height)
+      divSize.height = this.camera.originSize.height - div.clientHeight;
+    if (divSize.width - div.clientWidth / 2 < 0)
+      divSize.width = div.clientWidth / 2;
+    if (divSize.width + div.clientWidth / 2 > this.camera.originSize.width)
+      divSize.width = this.camera.originSize.width - div.clientWidth / 2;
 
-    div.style.left = Math.floor(divWidth) - div.clientWidth / 2 + "px";
-    div.style.top = Math.floor(divHeight) + this.divHeightOffsetY + "px";
+    div.style.left = Math.floor(divSize.width) - div.clientWidth / 2 + 'px';
+    div.style.top = Math.floor(divSize.height) + this.divHeightOffsetY + 'px';
   }
 }
 

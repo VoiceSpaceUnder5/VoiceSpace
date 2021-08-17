@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { message, Button } from "antd";
+import React, {useState} from 'react';
+import {RouteComponentProps} from 'react-router-dom';
+import {message, Button} from 'antd';
 import './home.css';
 
 const Logo = () => {
@@ -30,7 +30,7 @@ const Descript = () => {
 
 const CreateRoom = () => {
   const onClick = () => {
-    console.log("craete Room button clicked!");
+    console.log('craete Room button clicked!');
   };
   return (
     <>
@@ -48,7 +48,7 @@ interface EnterRoomProps {
 
 const EnterRoom = (props: EnterRoomProps) => {
   const info = () => {
-    message.info("유효하지 않은 코드입니다");
+    message.info('유효하지 않은 코드입니다');
   };
   const element = (
     <>
@@ -66,7 +66,7 @@ const EnterRoom = (props: EnterRoomProps) => {
   };
 
   const onBlur = (e: any) => {
-    if (e.target.value === "") setFocus(0);
+    if (e.target.value === '') setFocus(0);
   };
 
   return (
@@ -94,7 +94,7 @@ const MoreInfo = () => {
 const Home = (props: RouteComponentProps) => {
   const enterRoomClick = () => {
     props.history.push(
-      "/space?roomId=honleeExample&nickname=honlee&avatarIdx=0"
+      '/space?roomId=honleeExample&nickname=honlee&avatarIdx=0',
     );
   };
   return (
