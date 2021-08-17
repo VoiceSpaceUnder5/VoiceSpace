@@ -50,6 +50,7 @@ button {
   display: flex;
   justify-content: space-between;
 }
+/* style={{color: '#00a0ff', paddingLeft: '10px'}} */
 
 .avatar button {
   color: #00a0ff;
@@ -62,3 +63,18 @@ button {
   font-weight: bold;
 }
 /* style={{color: '#00a0ff', paddingLeft: '10px'}} */
+
+.joystickBase {
+  position: absolute;
+  visibility: hidden;
+  width: 30vw;
+  height: 30vw;
+  background: rgba(196, 196, 196, 0);
+}
+.joystick {
+  position: absolute;
+  visibility: hidden;
+  width: 10vw;
+  height: 10vw;
+  background: rgba(196, 196, 196, 0);
+}

@@ -364,7 +364,7 @@ class GLHelper {
       imageMat = m3.translate(
         imageMat,
         player.centerPos.x -
-          imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
+        imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
         player.centerPos.y -
           imageInfoProvider.animals[player.idx].imageInfos[i].height / 2,
       ); // 2d 이동
