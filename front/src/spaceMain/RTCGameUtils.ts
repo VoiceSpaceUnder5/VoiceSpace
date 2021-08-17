@@ -27,7 +27,6 @@ class Me implements IPlayer {
   touchStartPos: Vec2;
   touchingPos: Vec2;
   isMoving: boolean;
-
   analyser: AnalyserNode;
   constructor(
     nickname: string,

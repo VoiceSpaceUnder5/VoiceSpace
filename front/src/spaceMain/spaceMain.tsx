@@ -17,6 +17,7 @@ interface SpaceMainQuery {
 const SpaceMain = (props: RouteComponentProps) => {
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
+  const peerManagerRef = useRef<PeerManager>();
 
   // 랜더링할 때 처음 한번만 실행.
   useEffect(() => {
@@ -69,7 +70,6 @@ const SpaceMain = (props: RouteComponentProps) => {
           console.error('audioContainer can not found');
           return;
         }
-
         // 이름표
         const divContainer = document.querySelector(
           '#divContainer',
@@ -78,7 +78,6 @@ const SpaceMain = (props: RouteComponentProps) => {
           console.error('divContainer can not found');
           return;
         }
-
         // 백엔드와 연결, socket을 통해 백엔드와 소통
         // const socket = io("http://localhost:8080");
         const socket = io('https://under5.site:8080');
@@ -88,7 +87,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         }
 
         // 나, 너 그리고 우리를 관리하는 객체
-        const peerManger = new PeerManager(
+        peerManagerRef.current = new PeerManager(
           socket,
           stream,
           query.nickname,
@@ -101,6 +100,12 @@ const SpaceMain = (props: RouteComponentProps) => {
           },
           query.roomId,
         );
+        const peerManager = peerManagerRef.current;
+
+        if (peerManager === undefined) {
+          console.error("PeerManager undefined");
+          return;
+        }
 
         // 배경을 그리기 위해 필요한 정보
         const backgroundDrawInfo: DrawInfo = {
@@ -114,7 +119,6 @@ const SpaceMain = (props: RouteComponentProps) => {
           scale: 1,
           rotateRadian: 0,
         };
-
         // webGL에서 이미지 처리하는 거 여깄음ㅋ
         const drawBackround = () => glHelper.drawImage(backgroundDrawInfo);
 
@@ -139,29 +143,34 @@ const SpaceMain = (props: RouteComponentProps) => {
             camera.upScale(-0.1);
           }
         });
-
         //for Desktop
         divContainer.addEventListener('mousedown', e => {
           e.preventDefault();
-          peerManger.me.isMoving = true;
-          peerManger.me.touchStartPos = {x: e.clientX, y: e.clientY};
+          peerManager.me.isMoving = true;
+          peerManager.me.touchStartPos = {
+            x: e.clientX,
+            y: e.clientY,
+          };
         });
 
         divContainer.addEventListener('mousemove', e => {
           e.preventDefault();
-          peerManger.me.touchingPos = {x: e.clientX, y: e.clientY};
+          peerManager.me.touchingPos = {
+            x: e.clientX,
+            y: e.clientY,
+          };
         });
 
         divContainer.addEventListener('mouseup', e => {
           e.preventDefault();
-          peerManger.me.isMoving = false;
+          peerManager.me.isMoving = false;
         });
 
         //for Phone
         divContainer.addEventListener('touchstart', e => {
           e.preventDefault();
-          peerManger.me.isMoving = true;
-          peerManger.me.touchStartPos = {
+          peerManager.me.isMoving = true;
+          peerManager.me.touchStartPos = {
             x: e.touches[0].clientX,
             y: e.touches[0].clientY,
           };
@@ -169,7 +178,7 @@ const SpaceMain = (props: RouteComponentProps) => {
 
         divContainer.addEventListener('touchmove', e => {
           e.preventDefault();
-          peerManger.me.touchingPos = {
+          peerManager.me.touchingPos = {
             x: e.touches[0].clientX,
             y: e.touches[0].clientY,
           };
@@ -177,35 +186,42 @@ const SpaceMain = (props: RouteComponentProps) => {
 
         divContainer.addEventListener('touchend', e => {
           e.preventDefault();
-          peerManger.me.isMoving = false;
+          peerManager.me.isMoving = false;
         });
 
         //계속해서 화면에 장면을 그려줌
         const requestAnimation = () => {
           drawBackround();
-          peerManger.me.update(Date.now() - peerManger.lastUpdateTimeStamp);
-          peerManger.peers.forEach(peer => {
-            if (peer.dc.readyState === 'open')
-              peer.dc.send(JSON.stringify(peerManger.me));
+          peerManager.me.update(Date.now() - peerManager.lastUpdateTimeStamp);
+          peerManager.peers.forEach((peer) => {
+            if (peer.dc.readyState === "open")
+              peer.dc.send(JSON.stringify(peerManager.me));
             glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
-            peer.updateSoundFromVec2(peerManger.me.centerPos);
+            peer.updateSoundFromVec2(peerManager.me.centerPos);
           });
-          peerManger.lastUpdateTimeStamp = Date.now();
-          camera.updateCenterPosFromPlayer(peerManger.me);
+          peerManager.lastUpdateTimeStamp = Date.now();
+          camera.updateCenterPosFromPlayer(peerManager.me);
           glHelper.drawAnimal(
             imageInfoProvider,
-            peerManger.me,
-            peerManger.me.div,
+            peerManager.me,
+            peerManager.me.div
           );
           requestAnimationFrame(requestAnimation);
         };
-        peerManger.lastUpdateTimeStamp = Date.now();
+        peerManager.lastUpdateTimeStamp = Date.now();
         requestAnimationFrame(requestAnimation);
       })
       .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
   }, []);
+
+  const onClickMicOnOff = (on: boolean) => {
+    if (peerManagerRef.current !== undefined) {
+      peerManagerRef.current.localStream.getAudioTracks()[0].enabled = on;
+    }
+  };
+
   return (
     <>
       <canvas
@@ -214,8 +230,11 @@ const SpaceMain = (props: RouteComponentProps) => {
         ref={canvasRef}
       ></canvas>
       <div id="divContainer"></div>
-      <div id="audioContainer" style={{width: '0', height: '0'}}></div>
-      <Navigation {...props} />
+      <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
+      <Navigation
+        peerManager={peerManagerRef.current}
+        myMicToggle={onClickMicOnOff}
+      />
     </>
   );
 };

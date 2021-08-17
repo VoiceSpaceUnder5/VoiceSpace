@@ -17,8 +17,14 @@ import {
   LeftCircleFilled,
   RightCircleFilled,
 } from '@ant-design/icons';
+import PeerManager from './RTCGameUtils';
 
-const Navigation = (props: RouteComponentProps) => {
+interface NavigationProps {
+  peerManager: PeerManager | undefined;
+  myMicToggle: (on: boolean) => void;
+}
+
+const Navigation = (props: NavigationProps) => {
   const [onUsers, setOnUsers] = useState(true);
   const [onMessage, setOnMessage] = useState(false);
 
@@ -66,8 +72,8 @@ const Navigation = (props: RouteComponentProps) => {
 
   const MicOnOff = () => {
     const [mic, setMic] = useState(true);
-
     const onClick = () => {
+      props.myMicToggle(!mic);
       setMic(!mic);
     };
     return mic ? (
@@ -115,7 +121,7 @@ const Navigation = (props: RouteComponentProps) => {
   );
 
   const exit = () => {
-    props.history.push('/');
+    // props.history.push("/");
   };
 
   const options = (
