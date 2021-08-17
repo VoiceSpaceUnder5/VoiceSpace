@@ -40,8 +40,8 @@ const SpaceMain = (props: RouteComponentProps) => {
       canvas.clientHeight,
       canvas.clientWidth / 2,
       canvas.clientHeight / 2,
-      1,
-      0,
+      1, // scale
+      0, // rotate
       imageInfoProvider.background.backgroundImageInfo
     );
 
@@ -116,8 +116,8 @@ const SpaceMain = (props: RouteComponentProps) => {
               height: objectInfo.height,
               centerPosX: objectInfo.originCenterPositionX,
               centerPosY: objectInfo.originCenterPositionY,
-              centerPositionPixelOffsetX: 0,
-              centerPositionPixelOffsetY: 0,
+              centerPositionPixelOffsetX: objectInfo.centerPositionPixelOffsetX,
+              centerPositionPixelOffsetY: objectInfo.centerPositionPixelOffsetY,
               scale: 1,
               rotateRadian: 0,
             });

@@ -100,7 +100,7 @@ class Me implements IPlayer {
       const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(
         imageInfoProvider,
         this,
-        0.9
+        0.8
       );
 
       const isCollision = (vertex4: Vec2[]): boolean => {
@@ -226,7 +226,6 @@ export class Peer extends RTCPeerConnection implements IPlayer {
       "audio"
     ) as HTMLAudioElement;
     this.connectedAudioElement.autoplay = true;
-
     audioContainer.appendChild(this.connectedAudioElement);
     //
   }

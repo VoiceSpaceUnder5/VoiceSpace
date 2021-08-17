@@ -1,16 +1,10 @@
-export enum ImageInfoEnum {
-  FACE_MUTE,
-  FACE_SPEAK,
-  FACE_SPEAK_MOUSE,
-  BODY,
-  OBJECT,
-  BACKGROUND,
-}
-
-export enum ObjectCollisionFigureEnum {
-  SQUARE,
-  CIRCLE,
-}
+import {
+  animalMetaData,
+  backgroundMetaData,
+  ImageInfoEnum,
+  ObjectCollisionFigureEnum,
+  CollisionInfo,
+} from "./ImageMetaData";
 
 export interface ImageInfo {
   src: string;
@@ -37,178 +31,8 @@ interface BackgroundInfo {
   idx: number;
   backgroundImageInfo: ImageInfo;
   objectInfos: ImageInfo[];
-  objectArray: number[][];
+  objectArray: number[][]; // 2400 * 2400
 }
-
-const backgroundMetaData = [
-  {
-    name: "SeeAndMountainVer1",
-    idx: 0,
-    src: "./assets/spaceMain/background/SeeAndMountainVer1.png",
-    width: 2400,
-    height: 2400,
-    objectInfos: [
-      {
-        src: "./assets/spaceMain/object/green_grass.png",
-        type: ImageInfoEnum.OBJECT,
-        unionPixelWidth: 64,
-        unionPixelHeight: 64,
-        centerPositionX: 1000,
-        centerPositionY: 1000,
-        figureType: ObjectCollisionFigureEnum.SQUARE,
-        arrayFillValue: 1,
-        width: 64,
-        height: 64,
-        radius: 0,
-      },
-
-      {
-        src: "./assets/spaceMain/object/green_grass.png",
-        type: ImageInfoEnum.OBJECT,
-        unionPixelWidth: 64,
-        unionPixelHeight: 64,
-        centerPositionX: 1050,
-        centerPositionY: 1000,
-        figureType: ObjectCollisionFigureEnum.SQUARE,
-        arrayFillValue: 1,
-        width: 64,
-        height: 64,
-        radius: 0,
-      },
-    ],
-  },
-  {
-    name: "SeeAndMountainVer2",
-    idx: 1,
-    src: "./assets/spaceMain/background/SeeAndMountainVer2.png",
-    width: 2400,
-    height: 2400,
-    objectInfos: [],
-  },
-];
-
-const animalMetaData = [
-  {
-    name: "brownHorse",
-    idx: 0,
-    imageInfos: [
-      {
-        src: "./assets/spaceMain/animal/brownHorseBody.png",
-        type: ImageInfoEnum.BODY,
-        unionPixelWidth: 136,
-        unionPixelHeight: 208,
-      },
-      {
-        src: "./assets/spaceMain/animal/brownHorseFaceMute.png",
-        type: ImageInfoEnum.FACE_MUTE,
-        unionPixelWidth: 136,
-        unionPixelHeight: 208,
-      },
-      {
-        src: "./assets/spaceMain/animal/brownHorseFaceSpeak.png",
-        type: ImageInfoEnum.FACE_SPEAK,
-        unionPixelWidth: 136,
-        unionPixelHeight: 208,
-      },
-      {
-        src: "./assets/spaceMain/animal/brownHorseFaceSpeakMouse.png",
-        type: ImageInfoEnum.FACE_SPEAK_MOUSE,
-        unionPixelWidth: 136,
-        unionPixelHeight: 208,
-      },
-    ],
-  },
-  {
-    name: "whiteRabbit",
-    idx: 1,
-    imageInfos: [
-      {
-        src: "./assets/spaceMain/animal/whiteRabbitBody.png",
-        type: ImageInfoEnum.BODY,
-        unionPixelWidth: 144,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/whiteRabbitFaceMute.png",
-        type: ImageInfoEnum.FACE_MUTE,
-        unionPixelWidth: 144,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/whiteRabbitFaceSpeak.png",
-        type: ImageInfoEnum.FACE_SPEAK,
-        unionPixelWidth: 144,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/whiteRabbitFaceSpeakMouse.png",
-        type: ImageInfoEnum.FACE_SPEAK_MOUSE,
-        unionPixelWidth: 144,
-        unionPixelHeight: 200,
-      },
-    ],
-  },
-  {
-    name: "brownBear",
-    idx: 2,
-    imageInfos: [
-      {
-        src: "./assets/spaceMain/animal/brownBearBody.png",
-        type: ImageInfoEnum.BODY,
-        unionPixelWidth: 192,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/brownBearFaceMute.png",
-        type: ImageInfoEnum.FACE_MUTE,
-        unionPixelWidth: 192,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/brownBearFaceSpeak.png",
-        type: ImageInfoEnum.FACE_SPEAK,
-        unionPixelWidth: 192,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/brownBearFaceSpeakMouse.png",
-        type: ImageInfoEnum.FACE_SPEAK_MOUSE,
-        unionPixelWidth: 192,
-        unionPixelHeight: 200,
-      },
-    ],
-  },
-  {
-    name: "pinkPig",
-    idx: 3,
-    imageInfos: [
-      {
-        src: "./assets/spaceMain/animal/pinkPigBody.png",
-        type: ImageInfoEnum.BODY,
-        unionPixelWidth: 176,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/pinkPigFaceMute.png",
-        type: ImageInfoEnum.FACE_MUTE,
-        unionPixelWidth: 176,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/pinkPigFaceSpeak.png",
-        type: ImageInfoEnum.FACE_SPEAK,
-        unionPixelWidth: 176,
-        unionPixelHeight: 200,
-      },
-      {
-        src: "./assets/spaceMain/animal/pinkPigFaceSpeakMouse.png",
-        type: ImageInfoEnum.FACE_SPEAK_MOUSE,
-        unionPixelWidth: 176,
-        unionPixelHeight: 200,
-      },
-    ],
-  },
-];
 
 class ImageInfoProvider {
   background: BackgroundInfo;
@@ -236,26 +60,43 @@ class ImageInfoProvider {
 
     backgroundMetaData[backgroundIdx].objectInfos.forEach((objectInfo) => {
       const newObjectInfo = this.makeImageInfoFromUrl(
-        objectInfo.src,
-        objectInfo.type,
-        objectInfo.unionPixelWidth,
-        objectInfo.width
+        objectInfo.imageInfo.src,
+        objectInfo.imageInfo.type,
+        objectInfo.imageInfo.unionPixelWidth,
+        objectInfo.imageInfo.unionPixelHeight
       )!;
-      newObjectInfo.originCenterPositionX = objectInfo.centerPositionX;
-      newObjectInfo.originCenterPositionY = objectInfo.centerPositionY;
+      newObjectInfo.originCenterPositionX =
+        objectInfo.imageInfo.centerPositionX;
+      newObjectInfo.originCenterPositionY =
+        objectInfo.imageInfo.centerPositionY;
       this.background.objectInfos.push(newObjectInfo);
-      if (objectInfo.figureType === ObjectCollisionFigureEnum.SQUARE) {
-        for (
-          let i = objectInfo.centerPositionX - objectInfo.width / 2;
-          i < objectInfo.centerPositionX + objectInfo.width / 2;
-          i++
-        ) {
-          for (
-            let j = objectInfo.centerPositionY - objectInfo.height / 2;
-            j < objectInfo.centerPositionY + objectInfo.height / 2;
-            j++
-          ) {
-            this.background.objectArray[i][j] = objectInfo.arrayFillValue;
+
+      if (objectInfo.collisionInfo) {
+        //collision detection map array setting
+        const init_x =
+          objectInfo.collisionInfo.centerPositionX -
+          objectInfo.collisionInfo.width / 2; // initialize
+
+        const condition_x =
+          objectInfo.collisionInfo.centerPositionX +
+          objectInfo.collisionInfo.width / 2; // condition
+
+        const init_y =
+          objectInfo.collisionInfo.centerPositionY -
+          objectInfo.collisionInfo.height / 2; // initialize
+
+        const condition_y =
+          objectInfo.collisionInfo.centerPositionY +
+          objectInfo.collisionInfo.height / 2; // condition
+
+        for (let x = init_x; x < condition_x; x++) {
+          for (let y = init_y; y < condition_y; y++) {
+            this.collisionArraySetting(
+              x,
+              y,
+              objectInfo.collisionInfo,
+              this.background.objectArray
+            );
           }
         }
       }
@@ -281,6 +122,41 @@ class ImageInfoProvider {
     });
   }
 
+  collisionArraySetting = (
+    x: number,
+    y: number,
+    collisionInfo: CollisionInfo,
+    objectArray: number[][]
+  ) => {
+    switch (collisionInfo.collisionType) {
+      case ObjectCollisionFigureEnum.SQUARE: {
+        objectArray[x][y] = collisionInfo.arrayFillValue;
+        break;
+      }
+      case ObjectCollisionFigureEnum.ELLIPSE: {
+        const a = collisionInfo.width / 2;
+        const b = collisionInfo.height / 2;
+        const result =
+          Math.pow((x - collisionInfo.centerPositionX) / a, 2) +
+          Math.pow((y - collisionInfo.centerPositionY) / b, 2);
+
+        if (result <= 1) {
+          objectArray[x][y] = collisionInfo.arrayFillValue;
+        }
+        break;
+      }
+      default: {
+        // 잘못 들어온 부분
+        console.error("meta data setting error.");
+        // assert 를 넣으면 현 코드라인에서 멈춰진다. (하나의 디버깅 기법)
+        // unitTest 이전의 기본적인 코드검증 방법이 assert 를 얼마나 잘 넣느냐 이다.
+        // null 이나 undefined defense 에서 많이 사용한다.
+        // error 구문 이후 return 보다는 assert 로 디버깅을 할것.
+        break;
+      }
+    }
+  };
+
   makeImageInfoFromUrl = (
     url: string,
     type: ImageInfoEnum,
@@ -293,6 +169,12 @@ class ImageInfoProvider {
       return;
     }
     this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+    // 인자값이 상수로 들어 가 있는 부분에 대해서는
+    // 1.이런 인자값을 더이상 신경 쓸 필요가 없는지, 2. 다같이 알아야 할 필요가 있는지에 따라 다르게..
+    // 1. -> 이대로
+    // 2. -> 변경될 가능성이 있다면 0과 1같은 값들이 어떤 의미를 가지는지 enum 으로 표현. (or 주석)
+    // 인자값이 어떤것을 변화시키는 것인지 유추하기 힘들기 때문에 이것을 풀어서 많이 설명해둔다.
+    // 매직넘버 ? -> 우리가 코드상에서 어떤 특정 숫자를 넣어두는 것(웬만하면 넣지말자 - 이 넘버가 무엇을 뜻하는지 문자로 설명하자 (enum or define))
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
       0,
@@ -302,7 +184,7 @@ class ImageInfoProvider {
       0,
       this.gl.RGBA,
       this.gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255, 255])
+      new Uint8Array([0, 0, 255, 255]) // 여기안에 있는 숫자도 무엇을 뜻하는지 정확하게 알 수 없음.
     );
 
     this.gl.texParameteri(
@@ -354,13 +236,19 @@ class ImageInfoProvider {
     image.addEventListener("load", () => {
       imageInfo.width = image.width;
       imageInfo.height = image.height;
-      if (imageInfo.type === ImageInfoEnum.BODY) {
+      if (
+        imageInfo.type === ImageInfoEnum.BODY ||
+        imageInfo.type === ImageInfoEnum.TOP
+      ) {
         imageInfo.centerPositionPixelOffsetX = 0;
-        imageInfo.centerPositionPixelOffsetY = 0;
+        imageInfo.centerPositionPixelOffsetY = -(
+          imageInfo.unionPixelHeight / 2 -
+          imageInfo.height / 2
+        );
       } else {
         imageInfo.centerPositionPixelOffsetX = 0;
         imageInfo.centerPositionPixelOffsetY =
-          imageInfo.unionPixelHeight - imageInfo.height;
+          imageInfo.unionPixelHeight / 2 - imageInfo.height / 2;
       }
 
       this.gl.bindTexture(this.gl.TEXTURE_2D, tex); // texture 의 데이터 변경

@@ -21,7 +21,8 @@ const fs = `
 	precision mediump float; 
 	varying vec2 v_texcoord; 
 	uniform sampler2D u_texture;
-	
+	uniform float u_transparency;
+
 	void main() {
 	// 	if (v_texcoord.x < 0.0 ||
 	// 		v_texcoord.y < 0.0 ||
@@ -29,7 +30,11 @@ const fs = `
 	// 		v_texcoord.y > 1.0) {
 	// 	  discard;
 	// 	}
-	    gl_FragColor = texture2D(u_texture, v_texcoord);
+		if (texture2D(u_texture, v_texcoord).a > 0.0) {
+			gl_FragColor = vec4(texture2D(u_texture, v_texcoord).rgb, u_transparency);
+		} else {
+			gl_FragColor = texture2D(u_texture, v_texcoord);
+		}
 	}
 `;
 
@@ -214,7 +219,8 @@ export class Camera implements DrawInfo {
 
 class GLHelper {
   gl: WebGLRenderingContext;
-  applyMatrixLocation: WebGLUniformLocation | null;
+  applyShapeMatrixLocation: WebGLUniformLocation | null;
+  applyTransparencyLocation: WebGLUniformLocation | null;
   projectionWidth: number;
   projectionHeight: number;
   camera: Camera;
@@ -225,10 +231,11 @@ class GLHelper {
   SpeakThrashHold: number;
   SpeakMouseThrashHold: number;
 
-  //Matrix
+  //Matrix, value for draw
   projectionMatrix: number[];
   cameraMatrix: number[];
   imageMatrix: number[];
+  transparency: number;
 
   constructor(
     gl: WebGLRenderingContext,
@@ -237,7 +244,8 @@ class GLHelper {
     camera: Camera
   ) {
     this.gl = gl;
-    this.applyMatrixLocation = null;
+    this.applyShapeMatrixLocation = null;
+    this.applyTransparencyLocation = null;
     this.projectionWidth = projectionWidth;
     this.projectionHeight = projectionHeight;
     this.camera = camera;
@@ -246,10 +254,11 @@ class GLHelper {
     this.volumeDivideValue = 250;
     this.SpeakThrashHold = 30;
     this.SpeakMouseThrashHold = 50;
-    //Matrix
+    //Matrix, value for draw
     this.projectionMatrix = [];
     this.cameraMatrix = [];
     this.imageMatrix = [];
+    this.transparency = 1.0;
 
     const program = createProgramFromSource(this.gl, vs, fs);
     if (!program) {
@@ -264,12 +273,22 @@ class GLHelper {
     setAttributeData(gl, program, "a_position", new Float32Array(dataArray));
     setAttributeData(gl, program, "a_texcoord", new Float32Array(dataArray));
 
-    const matrixLocation = gl.getUniformLocation(program, "u_matrix");
-    if (!matrixLocation) {
+    const shapeMatrixLocation = gl.getUniformLocation(program, "u_matrix");
+    if (!shapeMatrixLocation) {
       console.error("getUniformLocation u_matrix Error");
       return;
     }
-    this.applyMatrixLocation = matrixLocation;
+    this.applyShapeMatrixLocation = shapeMatrixLocation;
+
+    const transparencyLocation = gl.getUniformLocation(
+      program,
+      "u_transparency"
+    );
+    if (!transparencyLocation) {
+      console.error("getUniformLocation u_transparencyLocation Error");
+      return;
+    }
+    this.applyTransparencyLocation = transparencyLocation;
   }
 
   getWorldPositionFromScreenPosition(screenX: number, screenY: number): Vec2 {
@@ -392,13 +411,15 @@ class GLHelper {
 
   drawArray() {
     this.gl.uniformMatrix3fv(
-      this.applyMatrixLocation,
+      this.applyShapeMatrixLocation,
       false,
       m3.multiply(
         m3.multiply(this.projectionMatrix, this.cameraMatrix),
         this.imageMatrix
       )
     );
+    this.gl.uniform1f(this.applyTransparencyLocation, this.transparency);
+
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
