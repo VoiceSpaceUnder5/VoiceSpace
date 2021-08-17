@@ -1,3 +1,4 @@
+import React from 'react';
 import {useEffect, useRef} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import ImageInfoProvider from './ImageInfos';
@@ -103,7 +104,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         const peerManager = peerManagerRef.current;
 
         if (peerManager === undefined) {
-          console.error("PeerManager undefined");
+          console.error('PeerManager undefined');
           return;
         }
 
@@ -193,8 +194,8 @@ const SpaceMain = (props: RouteComponentProps) => {
         const requestAnimation = () => {
           drawBackround();
           peerManager.me.update(Date.now() - peerManager.lastUpdateTimeStamp);
-          peerManager.peers.forEach((peer) => {
-            if (peer.dc.readyState === "open")
+          peerManager.peers.forEach(peer => {
+            if (peer.dc.readyState === 'open')
               peer.dc.send(JSON.stringify(peerManager.me));
             glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
             peer.updateSoundFromVec2(peerManager.me.centerPos);
@@ -204,7 +205,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           glHelper.drawAnimal(
             imageInfoProvider,
             peerManager.me,
-            peerManager.me.div
+            peerManager.me.div,
           );
           requestAnimationFrame(requestAnimation);
         };
@@ -230,7 +231,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         ref={canvasRef}
       ></canvas>
       <div id="divContainer"></div>
-      <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
+      <div id="audioContainer" style={{width: '0', height: '0'}}></div>
       <Navigation
         peerManager={peerManagerRef.current}
         myMicToggle={onClickMicOnOff}
