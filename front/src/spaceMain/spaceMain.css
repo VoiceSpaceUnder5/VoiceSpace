@@ -1,59 +1,59 @@
-#footer{
-	position: absolute;
-    left: 0;
-    bottom: 0;
-	height: 10vh;
-    width: 100%;
-	padding: 0px;
-	text-align: center;
-	color: white;
-	background: #bae7ff;
-	display: flex;
-	justify-content: space-between;
-    font-size: 6vh;
-	z-index: 11;
+#footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 10vh;
+  width: 100%;
+  padding: 0px;
+  text-align: center;
+  color: white;
+  background: #bae7ff;
+  display: flex;
+  justify-content: space-between;
+  font-size: 6vh;
+  z-index: 11;
 }
 
 .navigationObject {
-    padding: 0px 10px 0px 10px;
-    color: #00a0ff;
-    text-align: center;
+  padding: 0px 10px 0px 10px;
+  color: #00a0ff;
+  text-align: center;
 }
 
 #spaceMain {
-	margin: 0%, 0%, 0%, 0%;
-	padding-left: 0%;
-	padding-top: 0%;
-	padding-right: 0%;
-	height: 90vh;
+  margin: 0%, 0%, 0%, 0%;
+  padding-left: 0%;
+  padding-top: 0%;
+  padding-right: 0%;
+  height: 90vh;
 }
 
 button {
-	background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
 }
 
 .profile {
-    padding: 10px 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
 }
 
-.profile>div{
-    padding: 5px 0px 5px 0px;
+.profile > div {
+  padding: 5px 0px 5px 0px;
 }
 
 .avatar:not(div) {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
-.avatar button{
-    color: #00a0ff;
-    padding-left: 6px;
-    padding-right: 6px;
+.avatar button {
+  color: #00a0ff;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 /* style={{color: '#00a0ff', paddingLeft: '10px'}} */

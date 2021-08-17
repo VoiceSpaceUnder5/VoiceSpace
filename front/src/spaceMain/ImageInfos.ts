@@ -26,38 +26,38 @@ interface ObjectInfo {
 
 const backgroundMetaData = [
   {
-    src: "./assets/spaceMain/background/SeeAndMountainVer1.png",
+    src: './assets/spaceMain/background/SeeAndMountainVer1.png',
   },
   {
-    src: "./assets/spaceMain/background/SeeAndMountainVer2.png",
+    src: './assets/spaceMain/background/SeeAndMountainVer2.png',
   },
 ];
 
 const animalMetaData = [
   {
-    name: "brownHorse",
+    name: 'brownHorse',
     idx: 0,
     imageInfos: [
       {
-        src: "./assets/spaceMain/animal/brownHorseBody.png",
+        src: './assets/spaceMain/animal/brownHorseBody.png',
         type: ImageInfoEnum.BODY,
         unionPixelWidth: 136,
         unionPixelHeight: 208,
       },
       {
-        src: "./assets/spaceMain/animal/brownHorseFaceMute.png",
+        src: './assets/spaceMain/animal/brownHorseFaceMute.png',
         type: ImageInfoEnum.FACE_MUTE,
         unionPixelWidth: 136,
         unionPixelHeight: 208,
       },
       {
-        src: "./assets/spaceMain/animal/brownHorseFaceSpeak.png",
+        src: './assets/spaceMain/animal/brownHorseFaceSpeak.png',
         type: ImageInfoEnum.FACE_SPEAK,
         unionPixelWidth: 136,
         unionPixelHeight: 208,
       },
       {
-        src: "./assets/spaceMain/animal/brownHorseFaceSpeakMouse.png",
+        src: './assets/spaceMain/animal/brownHorseFaceSpeakMouse.png',
         type: ImageInfoEnum.FACE_SPEAK_MOUSE,
         unionPixelWidth: 136,
         unionPixelHeight: 208,
@@ -65,29 +65,29 @@ const animalMetaData = [
     ],
   },
   {
-    name: "whiteRabbit",
+    name: 'whiteRabbit',
     idx: 1,
     imageInfos: [
       {
-        src: "./assets/spaceMain/animal/whiteRabbitBody.png",
+        src: './assets/spaceMain/animal/whiteRabbitBody.png',
         type: ImageInfoEnum.BODY,
         unionPixelWidth: 144,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/whiteRabbitFaceMute.png",
+        src: './assets/spaceMain/animal/whiteRabbitFaceMute.png',
         type: ImageInfoEnum.FACE_MUTE,
         unionPixelWidth: 144,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/whiteRabbitFaceSpeak.png",
+        src: './assets/spaceMain/animal/whiteRabbitFaceSpeak.png',
         type: ImageInfoEnum.FACE_SPEAK,
         unionPixelWidth: 144,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/whiteRabbitFaceSpeakMouse.png",
+        src: './assets/spaceMain/animal/whiteRabbitFaceSpeakMouse.png',
         type: ImageInfoEnum.FACE_SPEAK_MOUSE,
         unionPixelWidth: 144,
         unionPixelHeight: 200,
@@ -95,29 +95,29 @@ const animalMetaData = [
     ],
   },
   {
-    name: "brownBear",
+    name: 'brownBear',
     idx: 2,
     imageInfos: [
       {
-        src: "./assets/spaceMain/animal/brownBearBody.png",
+        src: './assets/spaceMain/animal/brownBearBody.png',
         type: ImageInfoEnum.BODY,
         unionPixelWidth: 192,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/brownBearFaceMute.png",
+        src: './assets/spaceMain/animal/brownBearFaceMute.png',
         type: ImageInfoEnum.FACE_MUTE,
         unionPixelWidth: 192,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/brownBearFaceSpeak.png",
+        src: './assets/spaceMain/animal/brownBearFaceSpeak.png',
         type: ImageInfoEnum.FACE_SPEAK,
         unionPixelWidth: 192,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/brownBearFaceSpeakMouse.png",
+        src: './assets/spaceMain/animal/brownBearFaceSpeakMouse.png',
         type: ImageInfoEnum.FACE_SPEAK_MOUSE,
         unionPixelWidth: 192,
         unionPixelHeight: 200,
@@ -125,29 +125,29 @@ const animalMetaData = [
     ],
   },
   {
-    name: "pinkPig",
+    name: 'pinkPig',
     idx: 3,
     imageInfos: [
       {
-        src: "./assets/spaceMain/animal/pinkPigBody.png",
+        src: './assets/spaceMain/animal/pinkPigBody.png',
         type: ImageInfoEnum.BODY,
         unionPixelWidth: 176,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/pinkPigFaceMute.png",
+        src: './assets/spaceMain/animal/pinkPigFaceMute.png',
         type: ImageInfoEnum.FACE_MUTE,
         unionPixelWidth: 176,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/pinkPigFaceSpeak.png",
+        src: './assets/spaceMain/animal/pinkPigFaceSpeak.png',
         type: ImageInfoEnum.FACE_SPEAK,
         unionPixelWidth: 176,
         unionPixelHeight: 200,
       },
       {
-        src: "./assets/spaceMain/animal/pinkPigFaceSpeakMouse.png",
+        src: './assets/spaceMain/animal/pinkPigFaceSpeakMouse.png',
         type: ImageInfoEnum.FACE_SPEAK_MOUSE,
         unionPixelWidth: 176,
         unionPixelHeight: 200,
@@ -167,21 +167,21 @@ class ImageInfoProvider {
       backgroundMetaData[backgroundIdx].src,
       ImageInfoEnum.OBSTACLE,
       1,
-      1
+      1,
     )!;
     this.animals = [];
-    animalMetaData.forEach((objInfo) => {
+    animalMetaData.forEach(objInfo => {
       const newAnimal: ObjectInfo = {
         name: objInfo.name,
         idx: objInfo.idx,
         imageInfos: [],
       };
-      objInfo.imageInfos.forEach((imageInfo) => {
+      objInfo.imageInfos.forEach(imageInfo => {
         const newImageinfo = this.makeImageInfoFromUrl(
           imageInfo.src,
           imageInfo.type,
           imageInfo.unionPixelWidth,
-          imageInfo.unionPixelHeight
+          imageInfo.unionPixelHeight,
         )!;
         newAnimal.imageInfos.push(newImageinfo);
       });
@@ -193,7 +193,7 @@ class ImageInfoProvider {
     url: string,
     type: ImageInfoEnum,
     unionPixelWidth: number,
-    unionPixelHeight: number
+    unionPixelHeight: number,
   ) => {
     const tex = this.gl.createTexture();
     if (!tex) {
@@ -210,28 +210,28 @@ class ImageInfoProvider {
       0,
       this.gl.RGBA,
       this.gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255, 255])
+      new Uint8Array([0, 0, 255, 255]),
     );
 
     this.gl.texParameteri(
       this.gl.TEXTURE_2D,
       this.gl.TEXTURE_WRAP_S,
-      this.gl.CLAMP_TO_EDGE
+      this.gl.CLAMP_TO_EDGE,
     );
     this.gl.texParameteri(
       this.gl.TEXTURE_2D,
       this.gl.TEXTURE_WRAP_T,
-      this.gl.CLAMP_TO_EDGE
+      this.gl.CLAMP_TO_EDGE,
     );
     this.gl.texParameteri(
       this.gl.TEXTURE_2D,
       this.gl.TEXTURE_MIN_FILTER,
-      this.gl.NEAREST
+      this.gl.NEAREST,
     );
     this.gl.texParameteri(
       this.gl.TEXTURE_2D,
       this.gl.TEXTURE_MAG_FILTER,
-      this.gl.NEAREST
+      this.gl.NEAREST,
     );
 
     const result: ImageInfo = {
@@ -257,7 +257,7 @@ class ImageInfoProvider {
     }
 
     const image = new Image();
-    image.addEventListener("load", () => {
+    image.addEventListener('load', () => {
       imageInfo.width = image.width;
       imageInfo.height = image.height;
       if (imageInfo.type === ImageInfoEnum.BODY) {
@@ -274,22 +274,22 @@ class ImageInfoProvider {
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_WRAP_S,
-        this.gl.CLAMP_TO_EDGE
+        this.gl.CLAMP_TO_EDGE,
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_WRAP_T,
-        this.gl.CLAMP_TO_EDGE
+        this.gl.CLAMP_TO_EDGE,
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_MIN_FILTER,
-        this.gl.NEAREST
+        this.gl.NEAREST,
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_MAG_FILTER,
-        this.gl.NEAREST
+        this.gl.NEAREST,
       );
 
       this.gl.texImage2D(
@@ -298,7 +298,7 @@ class ImageInfoProvider {
         this.gl.RGBA,
         this.gl.RGBA,
         this.gl.UNSIGNED_BYTE,
-        image
+        image,
       );
       imageInfo.tex = tex;
     });
