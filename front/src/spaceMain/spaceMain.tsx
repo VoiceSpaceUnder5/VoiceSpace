@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import ImageInfoProvider from "./ImageInfos";
-import GLHelper, { DrawInfo, Camera } from "./webGLUtils";
-import io from "socket.io-client";
-import PeerManager, { IPlayer } from "./RTCGameUtils";
-import Navigation from "./Navigation";
+import {useEffect, useRef} from 'react';
+import {RouteComponentProps} from 'react-router-dom';
+import ImageInfoProvider from './ImageInfos';
+import GLHelper, {DrawInfo, Camera} from './webGLUtils';
+import io from 'socket.io-client';
+import PeerManager, {IPlayer} from './RTCGameUtils';
+import Navigation from './Navigation';
 
-const qs = require("query-string");
+const qs = require('query-string');
 
 interface SpaceMainQuery {
   roomId: string;
@@ -21,19 +21,19 @@ const SpaceMain = (props: RouteComponentProps) => {
   // 랜더링할 때 처음 한번만 실행.
   useEffect(() => {
     if (!canvasRef.current) {
-      console.error("set canvas HTML Error");
+      console.error('set canvas HTML Error');
       return;
     }
     const canvas = canvasRef.current;
     // webgl을 사용하기 위해 Context를 가져옴 아몰랑
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext('webgl');
     if (!gl) {
-      console.error("getContext Error");
+      console.error('getContext Error');
       return;
     }
     const imageInfoProvider = new ImageInfoProvider(gl, 0); // image와 관련된 정보들을 모두 저장
     if (!imageInfoProvider) {
-      console.error("makeImageInfoProvider fail");
+      console.error('makeImageInfoProvider fail');
       return;
     }
 
@@ -45,7 +45,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       canvas.clientHeight / 2,
       1,
       0,
-      imageInfoProvider.background
+      imageInfoProvider.background,
     );
 
     //webGL관련 작업 처리(그리기 전 준비 끝리
@@ -53,37 +53,37 @@ const SpaceMain = (props: RouteComponentProps) => {
       gl,
       window.innerWidth,
       window.innerHeight,
-      camera
+      camera,
     );
     if (!glHelper) {
-      console.error("make GLHelper fail");
+      console.error('make GLHelper fail');
       return;
     }
 
     //내 오디오 연결 가져오고,
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true }) // 오디오 연결
+      .getUserMedia({video: false, audio: true}) // 오디오 연결
       .then((stream: MediaStream) => {
-        const audioContainer = document.querySelector("#audioContainer");
+        const audioContainer = document.querySelector('#audioContainer');
         if (!audioContainer) {
-          console.error("audioContainer can not found");
+          console.error('audioContainer can not found');
           return;
         }
 
         // 이름표
         const divContainer = document.querySelector(
-          "#divContainer"
+          '#divContainer',
         ) as HTMLDivElement;
         if (!divContainer) {
-          console.error("divContainer can not found");
+          console.error('divContainer can not found');
           return;
         }
 
         // 백엔드와 연결, socket을 통해 백엔드와 소통
         // const socket = io("http://localhost:8080");
-        const socket = io("https://under5.site:8080");
+        const socket = io('https://under5.site:8080');
         if (!socket) {
-          console.error("socket connection fail");
+          console.error('socket connection fail');
           return;
         }
 
@@ -99,7 +99,7 @@ const SpaceMain = (props: RouteComponentProps) => {
             x: imageInfoProvider.background.width / 2,
             y: imageInfoProvider.background.height / 2,
           },
-          query.roomId
+          query.roomId,
         );
 
         // 배경을 그리기 위해 필요한 정보
@@ -120,7 +120,7 @@ const SpaceMain = (props: RouteComponentProps) => {
 
         /////////////////////////////////////////////////
         // event setting start //////////////////////////
-        window.addEventListener("resize", (e) => {
+        window.addEventListener('resize', e => {
           canvas.width = window.innerWidth;
           canvas.height = window.innerHeight;
           glHelper.projectionWidth = window.innerWidth;
@@ -132,33 +132,33 @@ const SpaceMain = (props: RouteComponentProps) => {
           camera.centerPosY = window.innerHeight / 2;
         });
 
-        window.addEventListener("keydown", (e) => {
-          if (e.key === "+") {
+        window.addEventListener('keydown', e => {
+          if (e.key === '+') {
             camera.upScale(0.1);
-          } else if (e.key === "-") {
+          } else if (e.key === '-') {
             camera.upScale(-0.1);
           }
         });
 
         //for Desktop
-        divContainer.addEventListener("mousedown", (e) => {
+        divContainer.addEventListener('mousedown', e => {
           e.preventDefault();
           peerManger.me.isMoving = true;
-          peerManger.me.touchStartPos = { x: e.clientX, y: e.clientY };
+          peerManger.me.touchStartPos = {x: e.clientX, y: e.clientY};
         });
 
-        divContainer.addEventListener("mousemove", (e) => {
+        divContainer.addEventListener('mousemove', e => {
           e.preventDefault();
-          peerManger.me.touchingPos = { x: e.clientX, y: e.clientY };
+          peerManger.me.touchingPos = {x: e.clientX, y: e.clientY};
         });
 
-        divContainer.addEventListener("mouseup", (e) => {
+        divContainer.addEventListener('mouseup', e => {
           e.preventDefault();
           peerManger.me.isMoving = false;
         });
 
         //for Phone
-        divContainer.addEventListener("touchstart", (e) => {
+        divContainer.addEventListener('touchstart', e => {
           e.preventDefault();
           peerManger.me.isMoving = true;
           peerManger.me.touchStartPos = {
@@ -167,7 +167,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           };
         });
 
-        divContainer.addEventListener("touchmove", (e) => {
+        divContainer.addEventListener('touchmove', e => {
           e.preventDefault();
           peerManger.me.touchingPos = {
             x: e.touches[0].clientX,
@@ -175,7 +175,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           };
         });
 
-        divContainer.addEventListener("touchend", (e) => {
+        divContainer.addEventListener('touchend', e => {
           e.preventDefault();
           peerManger.me.isMoving = false;
         });
@@ -184,8 +184,8 @@ const SpaceMain = (props: RouteComponentProps) => {
         const requestAnimation = () => {
           drawBackround();
           peerManger.me.update(Date.now() - peerManger.lastUpdateTimeStamp);
-          peerManger.peers.forEach((peer) => {
-            if (peer.dc.readyState === "open")
+          peerManger.peers.forEach(peer => {
+            if (peer.dc.readyState === 'open')
               peer.dc.send(JSON.stringify(peerManger.me));
             glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
             peer.updateSoundFromVec2(peerManger.me.centerPos);
@@ -195,26 +195,26 @@ const SpaceMain = (props: RouteComponentProps) => {
           glHelper.drawAnimal(
             imageInfoProvider,
             peerManger.me,
-            peerManger.me.div
+            peerManger.me.div,
           );
           requestAnimationFrame(requestAnimation);
         };
         peerManger.lastUpdateTimeStamp = Date.now();
         requestAnimationFrame(requestAnimation);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
   }, []);
   return (
     <>
       <canvas
-        width={window.innerWidth.toString() + "px"}
-        height={window.innerHeight.toString() + "px"}
+        width={window.innerWidth.toString() + 'px'}
+        height={window.innerHeight.toString() + 'px'}
         ref={canvasRef}
       ></canvas>
       <div id="divContainer"></div>
-      <div id="audioContainer" style={{ width: "0", height: "0" }}></div>
+      <div id="audioContainer" style={{width: '0', height: '0'}}></div>
       <Navigation {...props} />
     </>
   );
