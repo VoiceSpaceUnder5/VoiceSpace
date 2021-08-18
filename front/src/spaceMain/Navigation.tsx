@@ -20,6 +20,7 @@ import {
 import PeerManager from './RTCGameUtils';
 import {useContext} from 'react';
 import GlobalContext from './GlobalContext';
+import MicOnOff from './MicOnOff';
 
 interface NavigationProps {
   initialInfo: [avatarIdx: number, nickname: string];
@@ -104,19 +105,6 @@ const Navigation = (props: NavigationProps) => {
           변경
         </Button>
       </Menu>
-    );
-  };
-
-  const MicOnOff = () => {
-    const [mic, setMic] = useState(true);
-    const onClick = () => {
-      props.myMicToggle(!mic);
-      setMic(!mic);
-    };
-    return mic ? (
-      <AudioOutlined className="navigationObject" onClick={onClick} />
-    ) : (
-      <AudioMutedOutlined className="navigationObject" onClick={onClick} />
     );
   };
 
