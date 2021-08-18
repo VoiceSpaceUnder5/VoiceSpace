@@ -28,12 +28,12 @@ interface NavigationProps {
 
 const imgSrcs = [
   './assets/spaceMain/animal/brownHorseFaceMute.png',
-  './assets/spaceMain/animal/whiteRabbitFaceMute.png',
   './assets/spaceMain/animal/brownBearFaceMute.png',
   './assets/spaceMain/animal/pinkPigFaceMute.png',
+  './assets/spaceMain/animal/whiteRabbitFaceMute.png',
 ];
 
-const animalName: string[] = ['말', '토끼', '곰', '돼지'];
+const animalName: string[] = ['말', '곰', '돼지', '토끼'];
 
 const Navigation = (props: NavigationProps) => {
   const [changedName, setChangedName] = useState(props.initialInfo[1]);
