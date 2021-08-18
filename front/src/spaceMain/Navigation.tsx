@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {ChangeEvent, ReactElement, ReactHTML, useState} from 'react';
 import {
   RouteComponentProps,
   StaticRouterProps,
@@ -17,46 +17,85 @@ import {
   LeftCircleFilled,
   RightCircleFilled,
 } from '@ant-design/icons';
+import PeerManager from './RTCGameUtils';
 
-const Navigation = (props: RouteComponentProps) => {
-  const [onUsers, setOnUsers] = useState(true);
-  const [onMessage, setOnMessage] = useState(false);
+interface NavigationProps {
+  initialInfo: [avatarIdx: number, nickname: string];
+  peerManager: PeerManager | undefined;
+  onProfileChange: (avatarIdx: number, nickname: string) => void;
+  myMicToggle: (on: boolean) => void;
+}
 
+const imgSrcs = [
+  './assets/spaceMain/animal/brownHorseFaceMute.png',
+  './assets/spaceMain/animal/whiteRabbitFaceMute.png',
+  './assets/spaceMain/animal/brownBearFaceMute.png',
+  './assets/spaceMain/animal/pinkPigFaceMute.png',
+];
+
+const animalName: string[] = ['말', '토끼', '곰', '돼지'];
+
+const Navigation = (props: NavigationProps) => {
+  const [changedName, setChangedName] = useState(props.initialInfo[1]);
+  const [avatarIdx, setAvatarIdx] = useState(props.initialInfo[0]);
+  const [nickname, setNickname] = useState(props.initialInfo[1]);
+
+  const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(e.target.value);
+  };
+  const onLeftClick = () => {
+    setAvatarIdx((avatarIdx + 3) % 4);
+  };
+  const onRightClick = () => {
+    setAvatarIdx((avatarIdx + 1) % 4);
+  };
+  const onProfileChangeClick = () => {
+    const anonymous = '익명의 ';
+    if (nickname !== '') {
+      props.onProfileChange(avatarIdx, nickname);
+      setNickname(nickname);
+      setChangedName(nickname);
+    } else {
+      props.onProfileChange(avatarIdx, anonymous + animalName[avatarIdx]);
+      setNickname(anonymous + animalName[avatarIdx]);
+      setChangedName(anonymous + animalName[avatarIdx]);
+    }
+  };
   const profile = () => {
-    const changeImage = () => {
-      return './assets/spaceMain/animal/brownHorseFaceMute.png';
-    };
-
     const changeProfile = () => {
       console.log('프로필이 변경되었습니다.');
     };
     return (
       <Menu className="profile">
         <span style={{fontSize: '20px', fontWeight: 'bold'}}>프로필 설정</span>
-        <div style={{fontSize: '15px', fontWeight: 'bold'}}>
+        <div className="profileDisplay">
           이름
           <div>
-            <input style={{width: '100%'}} />
+            <input
+              value={nickname}
+              onChange={onNicknameInput}
+              style={{width: '100%'}}
+            />
           </div>
         </div>
         <div className="avatar">
-          <div style={{fontSize: '15px', fontWeight: 'bold'}}>아바타</div>
+          <div className="profileDisplay">아바타</div>
           <button>
-            <LeftCircleFilled />
+            <LeftCircleFilled onClick={onLeftClick} />
           </button>
           <img
-            src="./assets/spaceMain/animal/brownHorseFaceMute.png"
-            style={{borderRadius: '70%', width: '70%', height: '70%'}}
+            src={imgSrcs[avatarIdx]}
+            style={{width: '10vw', height: '20vh'}}
           ></img>
           <button>
-            <RightCircleFilled />
+            <RightCircleFilled onClick={onRightClick} />
           </button>
         </div>
         <Button
           type="primary"
           shape="round"
           style={{width: '100%'}}
-          onClick={changeProfile}
+          onClick={onProfileChangeClick}
         >
           변경
         </Button>
@@ -66,8 +105,8 @@ const Navigation = (props: RouteComponentProps) => {
 
   const MicOnOff = () => {
     const [mic, setMic] = useState(true);
-
     const onClick = () => {
+      props.myMicToggle(!mic);
       setMic(!mic);
     };
     return mic ? (
@@ -115,7 +154,7 @@ const Navigation = (props: RouteComponentProps) => {
   );
 
   const exit = () => {
-    props.history.push('/');
+    // props.history.push("/");
   };
 
   const options = (
@@ -133,7 +172,7 @@ const Navigation = (props: RouteComponentProps) => {
     <div id="footer">
       <Dropdown overlay={profile} trigger={['click']}>
         <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-          <span className="navigationObject">Kilee</span>
+          <span className="navigationObject">{changedName}</span>
         </a>
       </Dropdown>
       <span className="footerCenter">
