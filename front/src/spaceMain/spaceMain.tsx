@@ -1,13 +1,13 @@
-import React from 'react';
-import {useEffect, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
-import ImageInfoProvider from './ImageInfos';
+import ImageInfoProvider from './ImageInfoProvider';
 import GLHelper, {DrawInfo, Camera} from './webGLUtils';
 import io from 'socket.io-client';
-import PeerManager, {IPlayer} from './RTCGameUtils';
+import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
 import Joystick from './Joystick';
 import './spaceMain.css';
+import {AnimalImageEnum} from './ImageMetaData';
 
 const qs = require('query-string');
 
@@ -28,7 +28,7 @@ const SpaceMain = (props: RouteComponentProps) => {
     newNickname: string,
   ) => {
     if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.me.idx = newAvatarIdx;
+      peerManagerRef.current.me.animal = newAvatarIdx;
       peerManagerRef.current.me.div.innerText = newNickname;
       peerManagerRef.current.me.nickname = newNickname;
     }
@@ -51,24 +51,17 @@ const SpaceMain = (props: RouteComponentProps) => {
       return;
     }
 
+    const backgroundImageInfo = imageInfoProvider.objectsArray[0][0];
+
     //카메라 객체 초기화
     const camera = new Camera(
-      canvas.clientWidth,
-      canvas.clientHeight,
-      canvas.clientWidth / 2,
-      canvas.clientHeight / 2,
-      1,
-      0,
-      imageInfoProvider.background,
+      {width: canvas.clientWidth, height: canvas.clientHeight},
+      backgroundImageInfo.centerPos,
+      backgroundImageInfo.size,
     );
 
     //webGL관련 작업 처리(그리기 전 준비 끝리
-    const glHelper = new GLHelper(
-      gl,
-      window.innerWidth,
-      window.innerHeight,
-      camera,
-    );
+    const glHelper = new GLHelper(gl, camera);
     if (!glHelper) {
       console.error('make GLHelper fail');
       return;
@@ -104,12 +97,12 @@ const SpaceMain = (props: RouteComponentProps) => {
           socket,
           stream,
           query.nickname,
-          query.avatarIdx,
+          AnimalImageEnum.BROWN_BEAR,
           audioContainer,
           divContainer,
           {
-            x: imageInfoProvider.background.width / 2,
-            y: imageInfoProvider.background.height / 2,
+            x: backgroundImageInfo.size.width / 2,
+            y: backgroundImageInfo.size.height / 2,
           },
           query.roomId,
         );
@@ -120,33 +113,10 @@ const SpaceMain = (props: RouteComponentProps) => {
           return;
         }
 
-        // 배경을 그리기 위해 필요한 정보
-        const backgroundDrawInfo: DrawInfo = {
-          tex: imageInfoProvider.background.tex,
-          width: imageInfoProvider.background.width,
-          height: imageInfoProvider.background.height,
-          centerPosX: imageInfoProvider.background.width / 2,
-          centerPosY: imageInfoProvider.background.height / 2,
-          centerPositionPixelOffsetX: 0,
-          centerPositionPixelOffsetY: 0,
-          scale: 1,
-          rotateRadian: 0,
-        };
-        // webGL에서 이미지 처리하는 거 여깄음ㅋ
-        const drawBackround = () => glHelper.drawImage(backgroundDrawInfo);
-
         /////////////////////////////////////////////////
         // event setting start //////////////////////////
         window.addEventListener('resize', e => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-          glHelper.projectionWidth = window.innerWidth;
-          glHelper.projectionHeight = window.innerHeight;
-          glHelper.gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-          camera.width = window.innerWidth;
-          camera.height = window.innerHeight;
-          camera.centerPosX = window.innerWidth / 2;
-          camera.centerPosY = window.innerHeight / 2;
+          //to - do
         });
 
         window.addEventListener('keydown', e => {
@@ -208,10 +178,22 @@ const SpaceMain = (props: RouteComponentProps) => {
           hideJoystickBase();
         });
 
+        const drawBackground = () => {
+          glHelper.drawImage({
+            ...backgroundImageInfo,
+            scale: 1,
+            rotateRadian: 0,
+          });
+        };
+
         //계속해서 화면에 장면을 그려줌
         const requestAnimation = () => {
-          drawBackround();
-          peerManager.me.update(Date.now() - peerManager.lastUpdateTimeStamp);
+          drawBackground();
+          peerManager.me.update(
+            Date.now() - peerManager.lastUpdateTimeStamp,
+            imageInfoProvider,
+            glHelper,
+          );
           peerManager.peers.forEach(peer => {
             if (peer.dc.readyState === 'open')
               peer.dc.send(JSON.stringify(peerManager.me));
@@ -225,6 +207,7 @@ const SpaceMain = (props: RouteComponentProps) => {
             peerManager.me,
             peerManager.me.div,
           );
+          console.log(peerManager.me.centerPos);
           requestAnimationFrame(requestAnimation);
         };
         peerManager.lastUpdateTimeStamp = Date.now();

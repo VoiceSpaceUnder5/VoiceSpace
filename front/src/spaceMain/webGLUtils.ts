@@ -1,6 +1,7 @@
-import ImageInfoProvider, {ImageInfo, ImageInfoEnum} from './ImageInfos';
+import ImageInfoProvider from './ImageInfoProvider';
+import {Size, ImageInfo, AnimalPartImageEnum} from './ImageMetaData';
 import {IPlayer} from './RTCGameUtils';
-
+import {Vec2} from './RTCGameUtils';
 const m3 = require('m3.js');
 
 const vs = `
@@ -20,6 +21,7 @@ const fs = `
 	precision mediump float;
 	varying vec2 v_texcoord;
 	uniform sampler2D u_texture;
+	uniform float u_transparency;
 
 	void main() {
 	// 	if (v_texcoord.x < 0.0 ||
@@ -28,7 +30,11 @@ const fs = `
 	// 		v_texcoord.y > 1.0) {
 	// 	  discard;
 	// 	}
-	    gl_FragColor = texture2D(u_texture, v_texcoord);
+		if (texture2D(u_texture, v_texcoord).a > 0.0) {
+			gl_FragColor = vec4(texture2D(u_texture, v_texcoord).rgb, u_transparency);
+		} else {
+			gl_FragColor = texture2D(u_texture, v_texcoord);
+		}
 	}
 `;
 
@@ -123,100 +129,74 @@ const setAttributeData = (
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 };
 
-export interface DrawInfo {
-  tex: WebGLTexture | null;
-  width: number;
-  height: number;
-  centerPosX: number;
-  centerPosY: number;
+// export interface ImageInfo {
+// 	centerPosPixelOffset: Vec2;
+// 	tex: WebGLTexture;
+// 	size: Size;
+// 	centerPos: Vec2;
+//   }
+export interface DrawInfo extends ImageInfo {
   scale: number;
   rotateRadian: number;
-  centerPositionPixelOffsetX: number;
-  centerPositionPixelOffsetY: number;
 }
 
-export class Camera implements DrawInfo {
-  tex: WebGLTexture | null;
-  width: number;
-  height: number;
-  centerPosX: number;
-  centerPosY: number;
+export class Camera {
+  size: Size;
+  originSize: Size;
+  centerPos: Vec2;
   scale: number;
-  rotateRadian: number;
-  centerPositionPixelOffsetX: number;
-  centerPositionPixelOffsetY: number;
-  background: ImageInfo;
-  originWidth: number;
-  originHeight: number;
-  constructor(
-    width: number,
-    height: number,
-    centerPosX: number,
-    centerPosY: number,
-    scale: number,
-    rotateRadian: number,
-    background: ImageInfo,
-  ) {
-    this.tex = null;
-    this.width = width;
-    this.height = height;
-    this.centerPosX = centerPosX;
-    this.centerPosY = centerPosY;
-    this.centerPositionPixelOffsetX = 0;
-    this.centerPositionPixelOffsetY = 0;
-    this.scale = scale;
-    this.rotateRadian = rotateRadian;
-    this.background = background;
-    this.originWidth = width;
-    this.originHeight = height;
+  readonly limitSize: Size;
+  constructor(size: Size, centerPos: Vec2, limitSize: Size) {
+    this.size = size;
+    this.originSize = {...size};
+    this.centerPos = centerPos;
+    this.scale = 1;
+    this.limitSize = limitSize;
   }
 
   upScale(value: number) {
     const oldScale = this.scale;
-    const oldWidth = this.width;
-    const oldHeight = this.height;
+    const oldSize = {...this.size};
 
     this.scale += value;
-    this.width = this.originWidth / this.scale;
-    this.height = this.originHeight / this.scale;
+    this.size.width = this.originSize.width / this.scale;
+    this.size.height = this.originSize.height / this.scale;
+    console.log(this.centerPos, this.size, this.limitSize);
     if (
-      this.centerPosX + this.width / 2 > this.background.width ||
-      this.centerPosX < this.width / 2 ||
-      this.centerPosY + this.height / 2 > this.background.height ||
-      this.centerPosY < this.height / 2
+      this.centerPos.x + this.size.width / 2 > this.limitSize.width ||
+      this.centerPos.x < this.size.width / 2 ||
+      this.centerPos.y + this.size.height / 2 > this.limitSize.height ||
+      this.centerPos.y < this.size.height / 2
     ) {
+      console.log('fired!');
       this.scale = oldScale;
-      this.width = oldWidth;
-      this.height = oldHeight;
+      this.size = {...oldSize};
     }
   }
 
   updateCenterPosFromPlayer(player: IPlayer) {
-    const oldCenterPosX = this.centerPosX;
-    const oldCenterPosY = this.centerPosY;
-    this.centerPosX = player.centerPos.x;
-    this.centerPosY = player.centerPos.y;
+    const oldCenterPos = {...this.centerPos};
+    this.centerPos = {...player.centerPos};
     if (
-      this.centerPosX < this.width / 2 ||
-      this.centerPosX + this.width / 2 > this.background.width
+      this.centerPos.x < this.size.width / 2 ||
+      this.centerPos.x + this.size.width / 2 > this.limitSize.width
     ) {
-      this.centerPosX = oldCenterPosX;
+      this.centerPos.x = oldCenterPos.x;
     }
     if (
-      this.centerPosY < this.height / 2 ||
-      this.centerPosY + this.height / 2 > this.background.height
+      this.centerPos.y < this.size.height / 2 ||
+      this.centerPos.y + this.size.height / 2 > this.limitSize.height
     ) {
-      this.centerPosY = oldCenterPosY;
+      this.centerPos.y = oldCenterPos.y;
     }
   }
 }
 
 class GLHelper {
   gl: WebGLRenderingContext;
-  applyMatrixLocation: WebGLUniformLocation | null;
-  projectionWidth: number;
-  projectionHeight: number;
-  camera: DrawInfo;
+  applyShapeMatrixLocation: WebGLUniformLocation | null;
+  applyTransparencyLocation: WebGLUniformLocation | null;
+  camera: Camera;
 
   //value
   divHeightOffsetY: number;
@@ -224,23 +204,28 @@ class GLHelper {
   SpeakThrashHold: number;
   SpeakMouseThrashHold: number;
 
-  constructor(
-    gl: WebGLRenderingContext,
-    projectionWidth: number,
-    projectionHeight: number,
-    camera: DrawInfo,
-  ) {
+  //Matrix, value for draw
+  projectionMatrix: number[];
+  cameraMatrix: number[];
+  imageMatrix: number[];
+  transparency: number;
+
+  constructor(gl: WebGLRenderingContext, camera: Camera) {
     this.gl = gl;
-    this.applyMatrixLocation = null;
-    this.projectionWidth = projectionWidth;
-    this.projectionHeight = projectionHeight;
+    this.applyShapeMatrixLocation = null;
+    this.applyTransparencyLocation = null;
     this.camera = camera;
     //value
     this.divHeightOffsetY = -20;
     this.volumeDivideValue = 250;
     this.SpeakThrashHold = 30;
     this.SpeakMouseThrashHold = 50;
-    //
+    //Matrix, value for draw
+    this.projectionMatrix = [];
+    this.cameraMatrix = [];
+    this.imageMatrix = [];
+    this.transparency = 1.0;
+
     const program = createProgramFromSource(this.gl, vs, fs);
     if (!program) {
       return;
@@ -254,70 +239,184 @@ class GLHelper {
     setAttributeData(gl, program, 'a_position', new Float32Array(dataArray));
     setAttributeData(gl, program, 'a_texcoord', new Float32Array(dataArray));
 
-    const matrixLocation = gl.getUniformLocation(program, 'u_matrix');
-    if (!matrixLocation) {
+    const shapeMatrixLocation = gl.getUniformLocation(program, 'u_matrix');
+    if (!shapeMatrixLocation) {
       console.error('getUniformLocation u_matrix Error');
       return;
     }
-    this.applyMatrixLocation = matrixLocation;
+    this.applyShapeMatrixLocation = shapeMatrixLocation;
+
+    const transparencyLocation = gl.getUniformLocation(
+      program,
+      'u_transparency',
+    );
+    if (!transparencyLocation) {
+      console.error('getUniformLocation u_transparencyLocation Error');
+      return;
+    }
+    this.applyTransparencyLocation = transparencyLocation;
+  }
+
+  getWorldPositionFromScreenPosition(screenPos: Vec2): Vec2 {
+    return {
+      x:
+        this.camera.centerPos.x +
+        (screenPos.x - this.camera.originSize.width / 2) / this.camera.scale,
+      y:
+        this.camera.centerPos.y +
+        (screenPos.y - this.camera.originSize.height / 2) / this.camera.scale,
+    };
+  }
+
+  getMy4VertexWorldPosition(
+    imageInfoProvider: ImageInfoProvider,
+    me: IPlayer,
+    scale = 1,
+  ): Vec2[] {
+    const result: Vec2[] = [];
+
+    const originVertex = [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ];
+    const imageinfo = imageInfoProvider.getAnimalImageInfo(
+      me.animal,
+      AnimalPartImageEnum.FACE_MUTE,
+    );
+    if (!imageinfo) {
+      return [];
+    }
+    this.updateImageMatrixFromDrawInfo({
+      ...imageinfo,
+      scale: scale,
+      rotateRadian: me.rotateRadian,
+      centerPos: me.centerPos,
+    });
+
+    originVertex.forEach(arr => {
+      const posX =
+        this.imageMatrix[0] * arr[0] +
+        this.imageMatrix[3] * arr[1] +
+        this.imageMatrix[6];
+      const posY =
+        this.imageMatrix[1] * arr[0] +
+        this.imageMatrix[4] * arr[1] +
+        this.imageMatrix[7];
+      result.push({
+        x: posX,
+        y: posY,
+      });
+    });
+    return result;
+  }
+
+  updateProjectionMatrix() {
+    this.projectionMatrix = m3.projection(
+      this.camera.originSize.width,
+      this.camera.originSize.height,
+    );
+  }
+
+  updateCameraMatrix() {
+    this.cameraMatrix = m3.identity();
+    this.cameraMatrix = m3.translate(
+      this.cameraMatrix,
+      this.camera.centerPos.x - this.camera.size.width / 2,
+      this.camera.centerPos.y - this.camera.size.height / 2,
+    ); // 2d 이동
+    this.cameraMatrix = m3.scale(
+      this.cameraMatrix,
+      1 / this.camera.scale,
+      1 / this.camera.scale,
+    );
+    this.cameraMatrix = m3.inverse(this.cameraMatrix);
+  }
+
+  updateImageMatrixFromDrawInfo(drawImageInfo: DrawInfo) {
+    this.imageMatrix = m3.identity();
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      drawImageInfo.centerPos.x - drawImageInfo.size.width / 2,
+      drawImageInfo.centerPos.y - drawImageInfo.size.height / 2,
+    ); // 2d 이동
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      drawImageInfo.size.width / 2,
+      drawImageInfo.size.height / 2,
+    );
+
+    this.imageMatrix = m3.rotate(this.imageMatrix, drawImageInfo.rotateRadian); // rotate
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      drawImageInfo.centerPosPixelOffset.x,
+      drawImageInfo.centerPosPixelOffset.y,
+    );
+
+    this.imageMatrix = m3.scale(
+      this.imageMatrix,
+      drawImageInfo.scale,
+      drawImageInfo.scale,
+    ); // 중앙점을 기준으로 스케일값 만큼 스케일
+
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      -drawImageInfo.size.width / 2,
+      -drawImageInfo.size.height / 2,
+    );
+    this.imageMatrix = m3.scale(
+      this.imageMatrix,
+      drawImageInfo.size.width,
+      drawImageInfo.size.height,
+    ); // 원래 크기로 스케일
+  }
+
+  drawArray(tex: WebGLTexture) {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+    this.gl.uniformMatrix3fv(
+      this.applyShapeMatrixLocation,
+      false,
+      m3.multiply(
+        m3.multiply(this.projectionMatrix, this.cameraMatrix),
+        this.imageMatrix,
+      ),
+    );
+    this.gl.uniform1f(this.applyTransparencyLocation, this.transparency);
+
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
   drawImage(drawImageInfo: DrawInfo) {
-    this.gl.bindTexture(this.gl.TEXTURE_2D, drawImageInfo.tex);
+    this.updateProjectionMatrix();
+    this.updateCameraMatrix();
+    this.updateImageMatrixFromDrawInfo(drawImageInfo);
+    this.drawArray(drawImageInfo.tex);
+  }
 
-    const projectionMat = m3.projection(
-      this.projectionWidth,
-      this.projectionHeight,
+  makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+    imageInfoProvider: ImageInfoProvider,
+    animalPart: AnimalPartImageEnum,
+    player: IPlayer,
+    isFace = true,
+  ): DrawInfo | undefined {
+    const imageInfo = imageInfoProvider.getAnimalImageInfo(
+      player.animal,
+      animalPart,
     );
-
-    let cameraMat = m3.identity();
-    cameraMat = m3.identity();
-    cameraMat = m3.translate(
-      cameraMat,
-      this.camera.centerPosX - this.camera.width / 2,
-      this.camera.centerPosY - this.camera.height / 2,
-    ); // 2d 이동
-    cameraMat = m3.scale(
-      cameraMat,
-      1 / this.camera.scale,
-      1 / this.camera.scale,
-    );
-    cameraMat = m3.inverse(cameraMat);
-
-    let imageMat = m3.identity();
-    imageMat = m3.translate(
-      imageMat,
-      drawImageInfo.centerPosX - drawImageInfo.width / 2,
-      drawImageInfo.centerPosY - drawImageInfo.height / 2,
-    ); // 2d 이동
-    imageMat = m3.translate(
-      imageMat,
-      drawImageInfo.width / 2,
-      drawImageInfo.height / 2,
-    );
-
-    imageMat = m3.rotate(imageMat, drawImageInfo.rotateRadian); // rotate
-    imageMat = m3.translate(
-      imageMat,
-      drawImageInfo.centerPositionPixelOffsetX,
-      drawImageInfo.centerPositionPixelOffsetY,
-    );
-
-    imageMat = m3.scale(imageMat, drawImageInfo.scale, drawImageInfo.scale); // 중앙점을 기준으로 스케일값 만큼 스케일
-
-    imageMat = m3.translate(
-      imageMat,
-      -drawImageInfo.width / 2,
-      -drawImageInfo.height / 2,
-    );
-    imageMat = m3.scale(imageMat, drawImageInfo.width, drawImageInfo.height); // 원래 크기로 스케일
-
-    this.gl.uniformMatrix3fv(
-      this.applyMatrixLocation,
-      false,
-      m3.multiply(m3.multiply(projectionMat, cameraMat), imageMat),
-    );
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    if (!imageInfo) {
+      console.error(
+        'cannot find imageInfo in makeAnimalImageInfoFromImageInfoProviderAndPlayer',
+        player,
+      );
+      return;
+    }
+    return {
+      ...imageInfo,
+      scale: isFace ? 1 + player.volume / this.volumeDivideValue : 1,
+      rotateRadian: player.rotateRadian,
+      centerPos: player.centerPos,
+    };
   }
 
   drawAnimal(
@@ -325,118 +424,58 @@ class GLHelper {
     player: IPlayer,
     div: HTMLDivElement,
   ) {
-    let divWidth = this.projectionWidth;
-    let divHeight = this.projectionHeight;
-    let faceIdx = 1; // Mute 얼굴
+    const divSize = {...this.camera.size};
+    let faceIdx = AnimalPartImageEnum.FACE_MUTE; // Mute 얼굴
 
     if (this.SpeakThrashHold < player.volume) {
-      faceIdx = 2; // 말하는 얼굴
-      if (this.SpeakMouseThrashHold < player.volume) faceIdx = 3;
+      faceIdx = AnimalPartImageEnum.FACE_SPEAK; // 말하는 얼굴
+      if (this.SpeakMouseThrashHold < player.volume)
+        faceIdx = AnimalPartImageEnum.FACE_SPEAK_MOUSE;
     }
-    const drawIdxs = [0, faceIdx]; // 0은 몸통
-    drawIdxs.forEach(i => {
-      // tail part start
-      this.gl.bindTexture(
-        this.gl.TEXTURE_2D,
-        imageInfoProvider.animals[player.idx].imageInfos[i].tex,
+    const drawIdxs = [AnimalPartImageEnum.BODY, faceIdx]; // 0은 몸통
+    drawIdxs.forEach(partEnum => {
+      const drawInfo = this.makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+        imageInfoProvider,
+        partEnum,
+        player,
+        partEnum === faceIdx,
       );
-
-      const projectionMat = m3.projection(
-        this.projectionWidth,
-        this.projectionHeight,
-      );
-
-      let cameraMat = m3.identity();
-      cameraMat = m3.translate(
-        cameraMat,
-        this.camera.centerPosX - this.camera.width / 2,
-        this.camera.centerPosY - this.camera.height / 2,
-      ); // 2d 이동
-      cameraMat = m3.scale(
-        cameraMat,
-        1 / this.camera.scale,
-        1 / this.camera.scale,
-      );
-      cameraMat = m3.inverse(cameraMat);
-
-      // 위치에 맞게 동물 이동 및 회전
-      let imageMat = m3.identity();
-      imageMat = m3.translate(
-        imageMat,
-        player.centerPos.x -
-        imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
-        player.centerPos.y -
-          imageInfoProvider.animals[player.idx].imageInfos[i].height / 2,
-      ); // 2d 이동
-      imageMat = m3.translate(
-        imageMat,
-        imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
-        imageInfoProvider.animals[player.idx].imageInfos[i].height / 2,
-      );
-
-      imageMat = m3.rotate(imageMat, player.rotateRadian); // rotate
-      imageMat = m3.translate(
-        imageMat,
-        imageInfoProvider.animals[player.idx].imageInfos[i]
-          .centerPositionPixelOffsetX,
-        imageInfoProvider.animals[player.idx].imageInfos[i]
-          .centerPositionPixelOffsetY,
-      );
-
-      // 얼굴이면 볼륨 반영
-      if (i === faceIdx) {
-        imageMat = m3.scale(
-          imageMat,
-          1 + player.volume / 200,
-          1 + player.volume / 200,
-        ); // 중앙점을 기준으로 스케일값 만큼 스케일
-      }
-
-      imageMat = m3.translate(
-        imageMat,
-        -imageInfoProvider.animals[player.idx].imageInfos[i].width / 2,
-        -imageInfoProvider.animals[player.idx].imageInfos[i].height / 2,
-      );
-      imageMat = m3.scale(
-        imageMat,
-        imageInfoProvider.animals[player.idx].imageInfos[i].width,
-        imageInfoProvider.animals[player.idx].imageInfos[i].height,
-      ); // 원래 크기로 스케일
-
-      const multipiedMat = m3.multiply(
-        m3.multiply(projectionMat, cameraMat),
-        imageMat,
-      );
-
-      this.gl.uniformMatrix3fv(this.applyMatrixLocation, false, multipiedMat);
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-
+      if (!drawInfo) return;
+      this.drawImage(drawInfo);
       const temp = [
         [0, 0],
         [0, 1],
         [1, 0],
         [1, 1],
       ];
+
+      const multipiedMat = m3.multiply(
+        this.projectionMatrix,
+        m3.multiply(this.cameraMatrix, this.imageMatrix),
+      );
+
       for (let j = 0; j < temp.length; j++) {
         const clipspace = m3.transformPoint(multipiedMat, temp[j]);
-        const pixelY = (clipspace[1] * -0.5 + 0.5) * this.projectionHeight;
-        divHeight = Math.min(divHeight, pixelY);
+        const pixelY =
+          (clipspace[1] * -0.5 + 0.5) * this.camera.originSize.height;
+        divSize.height = Math.min(divSize.height, pixelY);
       }
 
       const clipspace = m3.transformPoint(multipiedMat, [0.5, 0.5]);
-      const pixelX = (clipspace[0] * 0.5 + 0.5) * this.projectionWidth;
-      divWidth = pixelX;
+      const pixelX = (clipspace[0] * 0.5 + 0.5) * this.camera.originSize.width;
+      divSize.width = pixelX;
     });
-    if (divHeight + this.divHeightOffsetY < 0)
-      divHeight = -this.divHeightOffsetY;
-    if (divHeight > this.projectionHeight)
-      divHeight = this.projectionHeight - div.clientHeight;
-    if (divWidth - div.clientWidth / 2 < 0) divWidth = div.clientWidth / 2;
-    if (divWidth + div.clientWidth / 2 > this.projectionWidth)
-      divWidth = this.projectionWidth - div.clientWidth / 2;
+    if (divSize.height + this.divHeightOffsetY < 0)
+      divSize.height = -this.divHeightOffsetY;
+    if (divSize.height > this.camera.originSize.height)
+      divSize.height = this.camera.originSize.height - div.clientHeight;
+    if (divSize.width - div.clientWidth / 2 < 0)
+      divSize.width = div.clientWidth / 2;
+    if (divSize.width + div.clientWidth / 2 > this.camera.originSize.width)
+      divSize.width = this.camera.originSize.width - div.clientWidth / 2;
 
-    div.style.left = Math.floor(divWidth) - div.clientWidth / 2 + 'px';
-    div.style.top = Math.floor(divHeight) + this.divHeightOffsetY + 'px';
+    div.style.left = Math.floor(divSize.width) - div.clientWidth / 2 + 'px';
+    div.style.top = Math.floor(divSize.height) + this.divHeightOffsetY + 'px';
   }
 }
 
