@@ -18,6 +18,10 @@ import {
   RightCircleFilled,
 } from '@ant-design/icons';
 import PeerManager from './RTCGameUtils';
+import {useContext} from 'react';
+import GlobalContext from './GlobalContext';
+import MicOnOff from './MicOnOff';
+import Profile from './Profile';
 
 interface NavigationProps {
   initialInfo: [avatarIdx: number, nickname: string];
@@ -26,95 +30,8 @@ interface NavigationProps {
   myMicToggle: (on: boolean) => void;
 }
 
-const imgSrcs = [
-  './assets/spaceMain/animal/brownHorseFaceMute.png',
-  './assets/spaceMain/animal/brownBearFaceMute.png',
-  './assets/spaceMain/animal/pinkPigFaceMute.png',
-  './assets/spaceMain/animal/whiteRabbitFaceMute.png',
-];
-
-const animalName: string[] = ['말', '곰', '돼지', '토끼'];
-
 const Navigation = (props: NavigationProps) => {
-  const [changedName, setChangedName] = useState(props.initialInfo[1]);
-  const [avatarIdx, setAvatarIdx] = useState(props.initialInfo[0]);
-  const [nickname, setNickname] = useState(props.initialInfo[1]);
-
-  const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value);
-  };
-  const onLeftClick = () => {
-    setAvatarIdx((avatarIdx + 3) % 4);
-  };
-  const onRightClick = () => {
-    setAvatarIdx((avatarIdx + 1) % 4);
-  };
-  const onProfileChangeClick = () => {
-    const anonymous = '익명의 ';
-    if (nickname !== '') {
-      props.onProfileChange(avatarIdx, nickname);
-      setNickname(nickname);
-      setChangedName(nickname);
-    } else {
-      props.onProfileChange(avatarIdx, anonymous + animalName[avatarIdx]);
-      setNickname(anonymous + animalName[avatarIdx]);
-      setChangedName(anonymous + animalName[avatarIdx]);
-    }
-  };
-  const profile = () => {
-    const changeProfile = () => {
-      console.log('프로필이 변경되었습니다.');
-    };
-    return (
-      <Menu className="profile">
-        <span style={{fontSize: '20px', fontWeight: 'bold'}}>프로필 설정</span>
-        <div className="profileDisplay">
-          이름
-          <div>
-            <input
-              value={nickname}
-              onChange={onNicknameInput}
-              style={{width: '100%'}}
-            />
-          </div>
-        </div>
-        <div className="avatar">
-          <div className="profileDisplay">아바타</div>
-          <button>
-            <LeftCircleFilled onClick={onLeftClick} />
-          </button>
-          <img
-            src={imgSrcs[avatarIdx]}
-            style={{width: '10vw', height: '20vh'}}
-          ></img>
-          <button>
-            <RightCircleFilled onClick={onRightClick} />
-          </button>
-        </div>
-        <Button
-          type="primary"
-          shape="round"
-          style={{width: '100%'}}
-          onClick={onProfileChangeClick}
-        >
-          변경
-        </Button>
-      </Menu>
-    );
-  };
-
-  const MicOnOff = () => {
-    const [mic, setMic] = useState(true);
-    const onClick = () => {
-      props.myMicToggle(!mic);
-      setMic(!mic);
-    };
-    return mic ? (
-      <AudioOutlined className="navigationObject" onClick={onClick} />
-    ) : (
-      <AudioMutedOutlined className="navigationObject" onClick={onClick} />
-    );
-  };
+  const globalContext = useContext(GlobalContext);
 
   const panel = () => {
     const onClickLink = () => {
@@ -170,11 +87,7 @@ const Navigation = (props: NavigationProps) => {
 
   return (
     <div id="footer">
-      <Dropdown overlay={profile} trigger={['click']}>
-        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-          <span className="navigationObject">{changedName}</span>
-        </a>
-      </Dropdown>
+      <Profile />
       <span className="footerCenter">
         <div style={{display: 'inline'}}></div>
         <MicOnOff />

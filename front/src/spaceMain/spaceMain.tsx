@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useContext} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import ImageInfoProvider from './ImageInfoProvider';
 import GLHelper, {DrawInfo, Camera} from './webGLUtils';
@@ -8,6 +8,7 @@ import Navigation from './Navigation';
 import Joystick from './Joystick';
 import './spaceMain.css';
 import {AnimalImageEnum} from './ImageMetaData';
+import GlobalContext from './GlobalContext';
 
 const qs = require('query-string');
 
@@ -21,6 +22,8 @@ const SpaceMain = (props: RouteComponentProps) => {
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
   const peerManagerRef = useRef<PeerManager>();
+  const globalContext = useContext(GlobalContext);
+  globalContext.initialInfo = [query.avatarIdx, query.nickname];
 
   // 랜더링할 때 처음 한번만 실행.
   const onProfileChangeButtonClick = (
@@ -33,6 +36,7 @@ const SpaceMain = (props: RouteComponentProps) => {
       peerManagerRef.current.me.nickname = newNickname;
     }
   };
+
   useEffect(() => {
     if (!canvasRef.current) {
       console.error('set canvas HTML Error');
@@ -93,7 +97,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         }
 
         // 나, 너 그리고 우리를 관리하는 객체
-        peerManagerRef.current = new PeerManager(
+        globalContext.peerManager = new PeerManager(
           socket,
           stream,
           query.nickname,
@@ -106,7 +110,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           },
           query.roomId,
         );
-        const peerManager = peerManagerRef.current;
+        const peerManager = globalContext.peerManager;
 
         if (peerManager === undefined) {
           console.error('PeerManager undefined');
@@ -207,7 +211,7 @@ const SpaceMain = (props: RouteComponentProps) => {
             peerManager.me,
             peerManager.me.div,
           );
-          console.log(peerManager.me.centerPos);
+          // console.log(peerManager.me.centerPos);
           requestAnimationFrame(requestAnimation);
         };
         peerManager.lastUpdateTimeStamp = Date.now();
@@ -219,11 +223,12 @@ const SpaceMain = (props: RouteComponentProps) => {
   }, []);
 
   const revealJoystickBase = () => {
-    if (peerManagerRef.current === undefined) {
+    const peerManager = globalContext.peerManager;
+    if (peerManager === undefined) {
       return;
     }
-    const posX = peerManagerRef.current.me.touchStartPos.x;
-    const posY = peerManagerRef.current.me.touchStartPos.y;
+    const posX = peerManager.me.touchStartPos.x;
+    const posY = peerManager.me.touchStartPos.y;
     const joystickBase = document.querySelector(
       '.joystickBase',
     ) as HTMLImageElement;
@@ -256,18 +261,20 @@ const SpaceMain = (props: RouteComponentProps) => {
     joystick.style.visibility = 'hidden';
   };
   const moveJoystick = () => {
+    const peerManager = globalContext.peerManager;
+
     const joystick = document.querySelector('.joystick') as HTMLImageElement;
     const joystickBase = document.querySelector(
       '.joystickBase',
     ) as HTMLImageElement;
 
-    if (peerManagerRef.current === undefined) {
+    if (peerManager === undefined) {
       return;
     }
-    const startPosX = peerManagerRef.current.me.touchStartPos.x;
-    const startPosY = peerManagerRef.current.me.touchStartPos.y;
-    const endPosX = peerManagerRef.current.me.touchingPos.x;
-    const endPosY = peerManagerRef.current.me.touchingPos.y;
+    const startPosX = peerManager.me.touchStartPos.x;
+    const startPosY = peerManager.me.touchStartPos.y;
+    const endPosX = peerManager.me.touchingPos.x;
+    const endPosY = peerManager.me.touchingPos.y;
     if (joystick === null) {
       return;
     }
