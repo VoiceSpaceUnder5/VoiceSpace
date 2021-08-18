@@ -142,7 +142,7 @@ export interface DrawInfo extends ImageInfo {
 
 export class Camera {
   size: Size;
-  readonly originSize: Size;
+  originSize: Size;
   centerPos: Vec2;
   scale: number;
   readonly limitSize: Size;
