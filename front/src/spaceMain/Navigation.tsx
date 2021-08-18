@@ -18,6 +18,8 @@ import {
   RightCircleFilled,
 } from '@ant-design/icons';
 import PeerManager from './RTCGameUtils';
+import {useContext} from 'react';
+import GlobalContext from './GlobalContext';
 
 interface NavigationProps {
   initialInfo: [avatarIdx: number, nickname: string];
@@ -39,6 +41,8 @@ const Navigation = (props: NavigationProps) => {
   const [changedName, setChangedName] = useState(props.initialInfo[1]);
   const [avatarIdx, setAvatarIdx] = useState(props.initialInfo[0]);
   const [nickname, setNickname] = useState(props.initialInfo[1]);
+
+  const globalContext = useContext(GlobalContext);
 
   const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);

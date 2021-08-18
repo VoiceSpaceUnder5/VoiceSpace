@@ -6,12 +6,15 @@ import Home from './home/home';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, Route} from 'react-router-dom';
 import SpaceMain from './spaceMain/spaceMain';
+import GlobalContext from './spaceMain/GlobalContext';
 
 const Router = () => {
   return (
     <div>
       <Route path="/" exact component={Home} />
-      <Route path="/space" component={SpaceMain} />
+      <GlobalContext.Provider value={{peerManager: undefined}}>
+        <Route path="/space" component={SpaceMain} />
+      </GlobalContext.Provider>
     </div>
   );
 };
