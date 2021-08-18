@@ -1,7 +1,7 @@
 import {Socket} from 'socket.io-client';
 import ImageInfoProvider from './ImageInfoProvider';
 import GLHelper from './webGLUtils';
-import {AnimalImageEnum} from './ImageMetaData';
+import {AvatarImageEnum} from './ImageMetaData';
 
 export interface Vec2 {
   x: number;
@@ -10,7 +10,7 @@ export interface Vec2 {
 
 export interface IPlayer {
   nickname: string;
-  animal: AnimalImageEnum;
+  avatar: AvatarImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
   volume: number;
@@ -19,7 +19,7 @@ export interface IPlayer {
 class Me implements IPlayer {
   // IPlayer
   nickname: string;
-  animal: AnimalImageEnum;
+  avatar: AvatarImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
   volume: number;
@@ -33,14 +33,14 @@ class Me implements IPlayer {
   analyser: AnalyserNode;
   constructor(
     nickname: string,
-    animal: AnimalImageEnum,
+    avatar: AvatarImageEnum,
     centerPos: Vec2,
     velocity: number,
     stream: MediaStream,
     divContainer: HTMLDivElement,
   ) {
     this.nickname = nickname;
-    this.animal = animal;
+    this.avatar = avatar;
     this.centerPos = centerPos;
     this.velocity = velocity;
     this.normalizedDirectionVector = {x: 0, y: 1};
@@ -170,7 +170,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
   maxSoundDistance: number;
   //IPlayer
   nickname: string;
-  animal: AnimalImageEnum;
+  avatar: AvatarImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
   volume: number;
@@ -198,7 +198,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     //IPlayer
     this.centerPos = {x: 0, y: 0};
     this.nickname = 'Anonymous';
-    this.animal = AnimalImageEnum.BROWN_BEAR;
+    this.avatar = AvatarImageEnum.BROWN_BEAR;
     this.rotateRadian = 0;
     this.volume = 0;
     //
@@ -209,7 +209,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
         const data = JSON.parse(event.data) as IPlayer;
         this.centerPos = data.centerPos;
         this.nickname = data.nickname;
-        this.animal = data.animal;
+        this.avatar = data.avatar;
         this.rotateRadian = data.rotateRadian;
         this.volume = data.volume;
         this.div.innerText = data.nickname;
@@ -263,7 +263,7 @@ export default class PeerManager {
     socket: Socket,
     localStream: MediaStream,
     nickname: string,
-    animal: AnimalImageEnum,
+    avatar: AvatarImageEnum,
     audioContainer: Element,
     divContainer: HTMLDivElement,
     meCenterPos: Vec2,
@@ -273,7 +273,7 @@ export default class PeerManager {
     this.divContainer = divContainer;
     this.me = new Me(
       nickname,
-      animal,
+      avatar,
       meCenterPos,
       0.2,
       localStream,

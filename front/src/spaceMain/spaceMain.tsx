@@ -5,7 +5,7 @@ import GLHelper, {DrawInfo, Camera} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
-import {AnimalImageEnum} from './ImageMetaData';
+import {AvatarImageEnum} from './ImageMetaData';
 
 const qs = require('query-string');
 
@@ -26,7 +26,7 @@ const SpaceMain = (props: RouteComponentProps) => {
     newNickname: string,
   ) => {
     if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.me.animal = newAvatarIdx;
+      peerManagerRef.current.me.avatar = newAvatarIdx;
       peerManagerRef.current.me.div.innerText = newNickname;
       peerManagerRef.current.me.nickname = newNickname;
     }
@@ -95,7 +95,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           socket,
           stream,
           query.nickname,
-          AnimalImageEnum.BROWN_BEAR,
+          AvatarImageEnum.BROWN_BEAR,
           audioContainer,
           divContainer,
           {
@@ -189,17 +189,16 @@ const SpaceMain = (props: RouteComponentProps) => {
           peerManager.peers.forEach(peer => {
             if (peer.dc.readyState === 'open')
               peer.dc.send(JSON.stringify(peerManager.me));
-            glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
+            glHelper.drawAvatar(imageInfoProvider, peer, peer.div);
             peer.updateSoundFromVec2(peerManager.me.centerPos);
           });
           peerManager.lastUpdateTimeStamp = Date.now();
           camera.updateCenterPosFromPlayer(peerManager.me);
-          glHelper.drawAnimal(
+          glHelper.drawAvatar(
             imageInfoProvider,
             peerManager.me,
             peerManager.me.div,
           );
-          console.log(peerManager.me.centerPos);
           requestAnimationFrame(requestAnimation);
         };
         peerManager.lastUpdateTimeStamp = Date.now();

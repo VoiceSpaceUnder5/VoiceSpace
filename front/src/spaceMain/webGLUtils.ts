@@ -1,5 +1,5 @@
 import ImageInfoProvider from './ImageInfoProvider';
-import {Size, ImageInfo, AnimalPartImageEnum} from './ImageMetaData';
+import {Size, ImageInfo, AvatarPartImageEnum} from './ImageMetaData';
 import {IPlayer} from './RTCGameUtils';
 import {Vec2} from './RTCGameUtils';
 const m3 = require('m3.js');
@@ -281,9 +281,9 @@ class GLHelper {
       [1, 1],
       [0, 1],
     ];
-    const imageinfo = imageInfoProvider.getAnimalImageInfo(
-      me.animal,
-      AnimalPartImageEnum.FACE_MUTE,
+    const imageinfo = imageInfoProvider.getAvatarImageInfo(
+      me.avatar,
+      AvatarPartImageEnum.FACE_MUTE,
     );
     if (!imageinfo) {
       return [];
@@ -394,19 +394,19 @@ class GLHelper {
     this.drawArray(drawImageInfo.tex);
   }
 
-  makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+  makeAvatarImageInfoFromImageInfoProviderAndPlayer(
     imageInfoProvider: ImageInfoProvider,
-    animalPart: AnimalPartImageEnum,
+    avatarPart: AvatarPartImageEnum,
     player: IPlayer,
     isFace = true,
   ): DrawInfo | undefined {
-    const imageInfo = imageInfoProvider.getAnimalImageInfo(
-      player.animal,
-      animalPart,
+    const imageInfo = imageInfoProvider.getAvatarImageInfo(
+      player.avatar,
+      avatarPart,
     );
     if (!imageInfo) {
       console.error(
-        'cannot find imageInfo in makeAnimalImageInfoFromImageInfoProviderAndPlayer',
+        'cannot find imageInfo in makeAvatarImageInfoFromImageInfoProviderAndPlayer',
         player,
       );
       return;
@@ -419,22 +419,22 @@ class GLHelper {
     };
   }
 
-  drawAnimal(
+  drawAvatar(
     imageInfoProvider: ImageInfoProvider,
     player: IPlayer,
     div: HTMLDivElement,
   ) {
     const divSize = {...this.camera.size};
-    let faceIdx = AnimalPartImageEnum.FACE_MUTE; // Mute 얼굴
+    let faceIdx = AvatarPartImageEnum.FACE_MUTE; // Mute 얼굴
 
     if (this.SpeakThrashHold < player.volume) {
-      faceIdx = AnimalPartImageEnum.FACE_SPEAK; // 말하는 얼굴
+      faceIdx = AvatarPartImageEnum.FACE_SPEAK; // 말하는 얼굴
       if (this.SpeakMouseThrashHold < player.volume)
-        faceIdx = AnimalPartImageEnum.FACE_SPEAK_MOUSE;
+        faceIdx = AvatarPartImageEnum.FACE_SPEAK_MOUSE;
     }
-    const drawIdxs = [AnimalPartImageEnum.BODY, faceIdx]; // 0은 몸통
+    const drawIdxs = [AvatarPartImageEnum.BODY, faceIdx]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
-      const drawInfo = this.makeAnimalImageInfoFromImageInfoProviderAndPlayer(
+      const drawInfo = this.makeAvatarImageInfoFromImageInfoProviderAndPlayer(
         imageInfoProvider,
         partEnum,
         player,

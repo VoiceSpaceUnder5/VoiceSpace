@@ -5,7 +5,6 @@ import {Vec2} from './RTCGameUtils';
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Enum And Interface Part Start ///////////////////////////
-const replaceWorld = '{replaceSpace}';
 
 export enum ObjectCollisionFigureEnum {
   NOT_FILLED_SQUARE,
@@ -14,19 +13,14 @@ export enum ObjectCollisionFigureEnum {
   FILLED_ELLIPSE,
 }
 
-export enum CollisionArrayFillValueEnum {
-  NONE = 0,
-  OBSTACLE = 1,
-}
-
-export enum AnimalImageEnum {
+export enum AvatarImageEnum {
   BROWN_HORSE = 0,
   BROWN_BEAR = 1,
   PINK_PIG = 2,
   WHITE_RABBIT = 3,
 }
 
-export enum AnimalPartImageEnum {
+export enum AvatarPartImageEnum {
   BODY = 0,
   FACE_MUTE = 1,
   FACE_SPEAK = 2,
@@ -62,8 +56,8 @@ export interface ImageMDInfo {
   backgroundSize?: Size;
 }
 
-export interface AnimalMDInfo extends ImageMDInfo {
-  partType: AnimalPartImageEnum;
+export interface AvatarMDInfo extends ImageMDInfo {
+  partType: AvatarPartImageEnum;
 }
 
 // ImageMDInfo 를 기반으로 만들어진 tex 와 image의 size 등 직접 glHelper 에서 draw 할때 사용할 수 있는
@@ -78,7 +72,6 @@ export interface ImageInfo {
 export interface CollisionMDInfo {
   collisionType: ObjectCollisionFigureEnum;
   centerPosPixelOffset: Vec2;
-  arrayFillValue: CollisionArrayFillValueEnum;
   size: Size;
 }
 
@@ -87,9 +80,9 @@ export interface ObjectImageMD {
   collisionMDInfos: CollisionMDInfo[];
 }
 
-export interface AnimalImageMD {
-  animalMDInfos: AnimalMDInfo[];
-  animalType: AnimalImageEnum;
+export interface AvatarImageMD {
+  avatarMDInfos: AvatarMDInfo[];
+  avatarType: AvatarImageEnum;
 }
 
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
@@ -213,212 +206,212 @@ const grayBlockMD: ObjectImageMD = {
   ],
 };
 
-//////////////////////////////// AnimalSizeInfo /////////////////////////////////
-const brownBearMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.BROWN_BEAR,
-  animalMDInfos: [
+//////////////////////////////// AvatarSizeInfo /////////////////////////////////
+const brownBearMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.BROWN_BEAR,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/brownBearBody.png',
+      src: './assets/spaceMain/avatar/brownBearBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -33,
       },
       layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceMute.png',
+      src: './assets/spaceMain/avatar/brownBearFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceSpeak.png',
+      src: './assets/spaceMain/avatar/brownBearFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/brownBearFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/brownBearFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-const brownHorseMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.BROWN_HORSE,
-  animalMDInfos: [
+const brownHorseMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.BROWN_HORSE,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/brownHorseBody.png',
+      src: './assets/spaceMain/avatar/brownHorseBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -40,
       },
       layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceMute.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceSpeak.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-const whiteRabbitMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.WHITE_RABBIT,
-  animalMDInfos: [
+const whiteRabbitMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.WHITE_RABBIT,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/whiteRabbitBody.png',
+      src: './assets/spaceMain/avatar/whiteRabbitBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -36,
       },
       layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceMute.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceSpeak.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-const pinkPigMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.PINK_PIG,
-  animalMDInfos: [
+const pinkPigMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.PINK_PIG,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/pinkPigBody.png',
+      src: './assets/spaceMain/avatar/pinkPigBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -44,
       },
       layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceMute.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceSpeak.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
       layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-//////////////////////////////// AnimalSizeInfo /////////////////////////////////
+//////////////////////////////// AvatarSizeInfo /////////////////////////////////
 
 const setTexParam = (gl: WebGLRenderingContext, tex: WebGLTexture): void => {
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -566,28 +559,28 @@ export const makeWorldMap1 = (
   return result;
 };
 
-export const makeAnimalMap = (
-  animalsMap: Map<AnimalImageEnum, Map<AnimalPartImageEnum, ImageInfo>>,
+export const makeAvatarMap = (
+  avatarsMap: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>,
   gl: WebGLRenderingContext,
 ): void => {
-  const loadAnimalArray: AnimalImageMD[] = [
+  const loadAvatarArray: AvatarImageMD[] = [
     brownBearMD,
     brownHorseMD,
     whiteRabbitMD,
     pinkPigMD,
   ];
 
-  loadAnimalArray.forEach(target => {
-    const map = new Map<AnimalPartImageEnum, ImageInfo>();
-    target.animalMDInfos.forEach(info => {
+  loadAvatarArray.forEach(target => {
+    const map = new Map<AvatarPartImageEnum, ImageInfo>();
+    target.avatarMDInfos.forEach(info => {
       const imageInfo = makeImageInfoFromImageMD(info, {x: 0, y: 0}, gl);
       if (!imageInfo) {
-        console.error('makeAnimalMap loop error imageInfo is not valid');
+        console.error('makeAvatarMap loop error imageInfo is not valid');
         return;
       }
       map.set(info.partType, imageInfo);
     });
-    animalsMap.set(target.animalType, map);
+    avatarsMap.set(target.avatarType, map);
   });
 
   return;

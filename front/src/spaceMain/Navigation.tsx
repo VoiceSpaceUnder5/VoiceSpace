@@ -27,13 +27,13 @@ interface NavigationProps {
 }
 
 const imgSrcs = [
-  './assets/spaceMain/animal/brownHorseFaceMute.png',
-  './assets/spaceMain/animal/brownBearFaceMute.png',
-  './assets/spaceMain/animal/pinkPigFaceMute.png',
-  './assets/spaceMain/animal/whiteRabbitFaceMute.png',
+  './assets/spaceMain/avatar/brownHorseFaceMute.png',
+  './assets/spaceMain/avatar/brownBearFaceMute.png',
+  './assets/spaceMain/avatar/pinkPigFaceMute.png',
+  './assets/spaceMain/avatar/whiteRabbitFaceMute.png',
 ];
 
-const animalName: string[] = ['말', '곰', '돼지', '토끼'];
+const avatarName: string[] = ['말', '곰', '돼지', '토끼'];
 
 const Navigation = (props: NavigationProps) => {
   const [changedName, setChangedName] = useState(props.initialInfo[1]);
@@ -56,9 +56,9 @@ const Navigation = (props: NavigationProps) => {
       setNickname(nickname);
       setChangedName(nickname);
     } else {
-      props.onProfileChange(avatarIdx, anonymous + animalName[avatarIdx]);
-      setNickname(anonymous + animalName[avatarIdx]);
-      setChangedName(anonymous + animalName[avatarIdx]);
+      props.onProfileChange(avatarIdx, anonymous + avatarName[avatarIdx]);
+      setNickname(anonymous + avatarName[avatarIdx]);
+      setChangedName(anonymous + avatarName[avatarIdx]);
     }
   };
   const profile = () => {

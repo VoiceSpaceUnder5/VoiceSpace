@@ -1,34 +1,34 @@
 import {Vec2} from './RTCGameUtils';
 import {
   ImageInfo,
-  AnimalImageEnum,
+  AvatarImageEnum,
   LayerLevelEnum,
-  CollisionArrayFillValueEnum,
-  AnimalPartImageEnum,
+  AvatarPartImageEnum,
   makeWorldMap1,
-  makeAnimalMap,
+  makeAvatarMap,
 } from './ImageMetaData';
 
 class ImageInfoProvider {
-  objectsArray: ImageInfo[][];
-  collisionArray: CollisionArrayFillValueEnum[][] | undefined;
-  animalsMap: Map<AnimalImageEnum, Map<AnimalPartImageEnum, ImageInfo>>;
+  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>;
+  pixelInfos: CollisionArrayFillValueEnum[][] | undefined;
+  avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
 
   constructor(gl: WebGLRenderingContext, backgroundIdx: number) {
     const layerLevelEnumLength = Object.keys(LayerLevelEnum).length; // 왜 2배로 나오는지 모르겠다.
+
     this.objectsArray = Array.from(Array(layerLevelEnumLength), () => Array(0));
     this.collisionArray = makeWorldMap1(this.objectsArray, gl);
-    this.animalsMap = new Map();
-    makeAnimalMap(this.animalsMap, gl);
+    this.avatarsMap = new Map();
+    makeAvatarMap(this.avatarsMap, gl);
     if (!this.collisionArray) return;
   }
-  getAnimalImageInfo(
-    animalEnum: AnimalImageEnum,
-    animalPartEnum: AnimalPartImageEnum,
+  getAvatarImageInfo(
+    avatarEnum: AvatarImageEnum,
+    avatarPartEnum: AvatarPartImageEnum,
   ) {
-    const result = this.animalsMap.get(animalEnum)?.get(animalPartEnum);
+    const result = this.avatarsMap.get(avatarEnum)?.get(avatarPartEnum);
     if (!result) {
-      //console.error('cannot find imageInfo from animalMap error');
+      //console.error('cannot find imageInfo from avatarMap error');
     }
     return result;
   }
