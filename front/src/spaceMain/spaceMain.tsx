@@ -5,7 +5,7 @@ import GLHelper, {DrawInfo, Camera} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
-import {AvatarImageEnum} from './ImageMetaData';
+import {AvatarImageEnum, LayerLevelEnum} from './ImageMetaData';
 
 const qs = require('query-string');
 
@@ -49,7 +49,9 @@ const SpaceMain = (props: RouteComponentProps) => {
       return;
     }
 
-    const backgroundImageInfo = imageInfoProvider.objectsArray[0][0];
+    const backgroundImageInfo = imageInfoProvider.objects
+      .get(LayerLevelEnum.BACKGROUND_ZERO)!
+      .get(1)!;
 
     //카메라 객체 초기화
     const camera = new Camera(
@@ -170,17 +172,35 @@ const SpaceMain = (props: RouteComponentProps) => {
           peerManager.me.isMoving = false;
         });
 
-        const drawBackground = () => {
-          glHelper.drawImage({
-            ...backgroundImageInfo,
-            scale: 1,
-            rotateRadian: 0,
+        const drawObjectsAfterAvatar = () => {
+          const temp = [8, 9];
+          temp.forEach(key => {
+            imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+              glHelper.drawImage({
+                ...imageInfo,
+                scale: 1,
+                rotateRadian: 0,
+              });
+            });
+          });
+        };
+
+        const drawObjectsBeforeAvatar = () => {
+          const temp = [0, 1, 2, 3];
+          temp.forEach(key => {
+            imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+              glHelper.drawImage({
+                ...imageInfo,
+                scale: 1,
+                rotateRadian: 0,
+              });
+            });
           });
         };
 
         //계속해서 화면에 장면을 그려줌
         const requestAnimation = () => {
-          drawBackground();
+          drawObjectsBeforeAvatar();
           peerManager.me.update(
             Date.now() - peerManager.lastUpdateTimeStamp,
             imageInfoProvider,
@@ -199,6 +219,7 @@ const SpaceMain = (props: RouteComponentProps) => {
             peerManager.me,
             peerManager.me.div,
           );
+          drawObjectsAfterAvatar();
           requestAnimationFrame(requestAnimation);
         };
         peerManager.lastUpdateTimeStamp = Date.now();

@@ -1,11 +1,11 @@
 import {Vec2} from './RTCGameUtils';
+import IdProvider from './IdProvider';
 // 파일이름은 imageInfo 지만 이 안에서 backgroundMetaData
 // image src 의 주소를 따로 관리 하는 방법도 생각해 볼것.
 // 여러 부분에서 참조 할 경우 위와 같이 한곳에서 관리 해야한다.
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Enum And Interface Part Start ///////////////////////////
-
 export enum ObjectCollisionFigureEnum {
   NOT_FILLED_SQUARE,
   NOT_FILLED_ELLIPSE,
@@ -29,18 +29,23 @@ export enum AvatarPartImageEnum {
 }
 
 // 낮은 layer 부터 먼저 그려진다.
-// BACKGROUND_XX -> OBSTACLE_BEFORE_ANIMAL_XX -> ANIMAL_XX -> OBSTACLE_AFTER_ANIMAL_XX 순으로 진행.
+// BACKGROUND_XX -> OBSTACLE_BEFORE_AVATAR_XX -> AVATAR_XX -> OBSTACLE_AFTER_AVATAR_XX 순으로 진행.
 export enum LayerLevelEnum {
   BACKGROUND_ZERO = 0,
   BACKGROUND_ONE = 1,
-  OBSTACLE_BEFORE_ANIMAL_ZERO = 2,
-  OBSTACLE_BEFORE_ANIMAL_ONE = 3,
-  ANIMAL_ZERO = 4,
-  ANIMAL_ONE = 5,
-  ANIMAL_TWO = 6,
-  ANIMAL_THREE = 7,
-  OBSTACLE_AFTER_ANIMAL_ZERO = 8,
-  OBSTACLE_AFTER_ANIMAL_ONE = 9,
+  OBSTACLE_BEFORE_AVATAR_ZERO = 2,
+  OBSTACLE_BEFORE_AVATAR_ONE = 3,
+  AVATAR_ZERO = 4,
+  AVATAR_ONE = 5,
+  AVATAR_TWO = 6,
+  AVATAR_THREE = 7,
+  OBSTACLE_AFTER_AVATAR_ZERO = 8,
+  OBSTACLE_AFTER_AVATAR_ONE = 9,
+}
+
+export interface PixelData {
+  imageInfoKey: number;
+  collisionInfoKey: number;
 }
 
 export interface Size {
@@ -90,10 +95,10 @@ export interface AvatarImageMD {
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// ImageMetaData Part Start ////////////////////////////
-const seeAndMountainVer1MD: ObjectImageMD = {
+const seaAndMountainVer1MD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/background/SeeAndMountainVer1.png',
+      src: './assets/spaceMain/background/seaAndMountainVer1.png',
       centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.BACKGROUND_ZERO,
       backgroundSize: {width: 2400, height: 2400},
@@ -102,17 +107,16 @@ const seeAndMountainVer1MD: ObjectImageMD = {
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       size: {width: 2400, height: 2400},
       centerPosPixelOffset: {x: 0, y: 0},
     },
   ],
 };
 
-const seeAndMountainVer2MD: ObjectImageMD = {
+const seaAndMountainVer2MD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/background/SeeAndMountainVer2.png',
+      src: './assets/spaceMain/background/seaAndMountainVer2.png',
       centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.BACKGROUND_ZERO,
     },
@@ -120,7 +124,6 @@ const seeAndMountainVer2MD: ObjectImageMD = {
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       size: {width: 2400, height: 2400},
       centerPosPixelOffset: {x: 0, y: 0},
     },
@@ -133,18 +136,17 @@ const bigTreeMD: ObjectImageMD = {
     {
       src: './assets/spaceMain/object/bigTreeTop.png',
       centerPosPixelOffset: {x: 0, y: -(440 / 2 - 324 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_ANIMAL_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
+      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
     {
       src: './assets/spaceMain/object/bigTreeBottom.png',
       centerPosPixelOffset: {x: 0, y: +(440 / 2 - 240 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_ANIMAL_ONE,
+      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       centerPosPixelOffset: {x: 0, y: 100},
       size: {width: 160, height: 128},
     },
@@ -159,18 +161,17 @@ const smallTreeMD: ObjectImageMD = {
     {
       src: './assets/spaceMain/object/smallTreeTop.png',
       centerPosPixelOffset: {x: 0, y: -(300 / 2 - 210 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_ANIMAL_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
+      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
     {
       src: './assets/spaceMain/object/smallTreeBottom.png',
       centerPosPixelOffset: {x: 0, y: +(300 / 2 - 180 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_ANIMAL_ONE,
+      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       centerPosPixelOffset: {x: 0, y: 60},
       size: {width: 120, height: 84},
     },
@@ -182,7 +183,7 @@ const greenGrassMD: ObjectImageMD = {
     {
       src: './assets/spaceMain/object/greenGrass.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ZERO,
     },
   ],
   collisionMDInfos: [],
@@ -193,13 +194,12 @@ const grayBlockMD: ObjectImageMD = {
     {
       src: './assets/spaceMain/object/grayBlock.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       centerPosPixelOffset: {x: 0, y: 0},
       size: {width: 72, height: 72},
     },
@@ -216,7 +216,7 @@ const brownBearMD: AvatarImageMD = {
         x: 0,
         y: -33,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
     },
     {
@@ -225,7 +225,7 @@ const brownBearMD: AvatarImageMD = {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
@@ -234,7 +234,7 @@ const brownBearMD: AvatarImageMD = {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
@@ -243,7 +243,7 @@ const brownBearMD: AvatarImageMD = {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
@@ -252,7 +252,7 @@ const brownBearMD: AvatarImageMD = {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
@@ -267,7 +267,7 @@ const brownHorseMD: AvatarImageMD = {
         x: 0,
         y: -40,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
     },
     {
@@ -276,7 +276,7 @@ const brownHorseMD: AvatarImageMD = {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
@@ -285,7 +285,7 @@ const brownHorseMD: AvatarImageMD = {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
@@ -294,7 +294,7 @@ const brownHorseMD: AvatarImageMD = {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
@@ -303,7 +303,7 @@ const brownHorseMD: AvatarImageMD = {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
@@ -318,7 +318,7 @@ const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -36,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
     },
     {
@@ -327,7 +327,7 @@ const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
@@ -336,7 +336,7 @@ const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
@@ -345,7 +345,7 @@ const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
@@ -354,7 +354,7 @@ const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
@@ -369,7 +369,7 @@ const pinkPigMD: AvatarImageMD = {
         x: 0,
         y: -44,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
     },
     {
@@ -378,7 +378,7 @@ const pinkPigMD: AvatarImageMD = {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
@@ -387,7 +387,7 @@ const pinkPigMD: AvatarImageMD = {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
@@ -396,7 +396,7 @@ const pinkPigMD: AvatarImageMD = {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
@@ -405,7 +405,7 @@ const pinkPigMD: AvatarImageMD = {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
@@ -447,6 +447,8 @@ const updateImageInfoWithSrc = (
   src: string,
   imageInfo: ImageInfo,
   gl: WebGLRenderingContext,
+  id?: number,
+  pixelInfos?: PixelData[][],
 ): void => {
   const tex = gl.createTexture();
   if (!tex) {
@@ -462,17 +464,47 @@ const updateImageInfoWithSrc = (
     imageInfo.tex = tex;
     imageInfo.size.width = image.width;
     imageInfo.size.height = image.height;
+    if (id) {
+      const x_init = imageInfo.centerPos.x - image.width / 2;
+      const x_limit = imageInfo.centerPos.x + image.width / 2;
+      const y_init = imageInfo.centerPos.y - image.height / 2;
+      const y_limit = imageInfo.centerPos.y + image.height / 2;
+      for (let x = x_init; x < x_limit; x++) {
+        for (let y = y_init; y < y_limit; y++) {
+          if (pixelInfos)
+            pixelInfos[x][y] = {...pixelInfos[x][y], imageInfoKey: id};
+        }
+      }
+    }
   });
   image.src = src;
-
   return;
+};
+
+const makeAvatarInfoFromImageMD = (
+  target: ImageMDInfo,
+  gl: WebGLRenderingContext,
+) => {
+  const tex = makeDummyTex(gl);
+  if (!tex) {
+    return;
+  }
+  const imageInfo: ImageInfo = {
+    tex: tex,
+    centerPos: {x: 0, y: 0},
+    size: {width: 1, height: 1},
+    centerPosPixelOffset: target.centerPosPixelOffset,
+  };
+  updateImageInfoWithSrc(target.src, imageInfo, gl);
+  return imageInfo;
 };
 
 const makeImageInfoFromImageMD = (
   target: ImageMDInfo,
   centerPos: Vec2,
   gl: WebGLRenderingContext,
-  objectsArray?: ImageInfo[][],
+  pixelInfos: PixelData[][],
+  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>,
 ): ImageInfo | undefined => {
   const tex = makeDummyTex(gl);
   if (!tex) {
@@ -484,16 +516,20 @@ const makeImageInfoFromImageMD = (
     size: {width: 1, height: 1},
     centerPosPixelOffset: target.centerPosPixelOffset,
   };
-  if (objectsArray) objectsArray[target.layerLev].push(imageInfo);
-  updateImageInfoWithSrc(target.src, imageInfo, gl);
+  const id = IdProvider.getId();
+  if (!objects.has(target.layerLev))
+    objects.set(target.layerLev, new Map<number, ImageInfo>());
+  objects.get(target.layerLev)!.set(id, imageInfo);
+  updateImageInfoWithSrc(target.src, imageInfo, gl, id, pixelInfos);
   return imageInfo;
 };
 
 const makeCollisionArrayFromCollisionMD = (
   target: CollisionMDInfo,
   centerPos: Vec2,
-  collisionArray: CollisionArrayFillValueEnum[][],
+  pixelInfos: PixelData[][],
 ): void => {
+  const id = IdProvider.getId();
   switch (target.collisionType) {
     case ObjectCollisionFigureEnum.FILLED_SQUARE: {
       const x_init =
@@ -506,7 +542,7 @@ const makeCollisionArrayFromCollisionMD = (
         centerPos.y + target.size.height / 2 + target.centerPosPixelOffset.y;
       for (let x = x_init; x < x_limit; x++) {
         for (let y = y_init; y < y_limit; y++) {
-          collisionArray[x][y] = target.arrayFillValue;
+          pixelInfos[x][y] = {...pixelInfos[x][y], collisionInfoKey: id};
         }
       }
       break;
@@ -520,39 +556,88 @@ const makeCollisionArrayFromCollisionMD = (
   }
 };
 
-export const makeWorldMap1 = (
-  objectsArray: ImageInfo[][],
+const insertObjectFromObjectImageMD = (
+  target: ObjectImageMD,
   gl: WebGLRenderingContext,
-): CollisionArrayFillValueEnum[][] | undefined => {
+  centerPos: Vec2,
+  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>,
+  pixelInfos: PixelData[][],
+) => {
+  target.imageMDInfos.forEach(imageInfo => {
+    makeImageInfoFromImageMD(imageInfo, centerPos, gl, pixelInfos, objects);
+  });
+  target.collisionMDInfos.forEach(collisionInfo => {
+    makeCollisionArrayFromCollisionMD(collisionInfo, centerPos, pixelInfos);
+  });
+};
+
+export const makeWorldMap1 = (
+  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>,
+  gl: WebGLRenderingContext,
+): PixelData[][] | undefined => {
   if (
-    !seeAndMountainVer1MD.collisionMDInfos[0] ||
-    !seeAndMountainVer1MD.imageMDInfos[0] ||
-    !seeAndMountainVer1MD.imageMDInfos[0].backgroundSize
+    !seaAndMountainVer1MD.collisionMDInfos[0] ||
+    !seaAndMountainVer1MD.imageMDInfos[0] ||
+    !seaAndMountainVer1MD.imageMDInfos[0].backgroundSize
   ) {
-    console.error('seeAndMountainVer1MD is invalid');
+    console.error('seaAndMountainVer1MD is invalid');
     return;
   }
   const result = Array.from(
-    Array(seeAndMountainVer1MD.imageMDInfos[0].backgroundSize.width),
+    Array(seaAndMountainVer1MD.imageMDInfos[0].backgroundSize.width),
     () =>
-      Array(seeAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height).fill(
-        CollisionArrayFillValueEnum.NONE,
-      ),
+      Array(seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height).fill({
+        imageInfoKey: 0,
+        collisionInfoKey: 0,
+      }),
   );
 
   const backgroundCenterPos: Vec2 = {
-    x: seeAndMountainVer1MD.imageMDInfos[0].backgroundSize!.width / 2,
-    y: seeAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height / 2,
+    x: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.width / 2,
+    y: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height / 2,
   };
   makeImageInfoFromImageMD(
-    seeAndMountainVer1MD.imageMDInfos[0],
+    seaAndMountainVer1MD.imageMDInfos[0],
     backgroundCenterPos,
     gl,
-    objectsArray,
+    result,
+    objects,
   );
   makeCollisionArrayFromCollisionMD(
-    seeAndMountainVer1MD.collisionMDInfos[0],
+    seaAndMountainVer1MD.collisionMDInfos[0],
     backgroundCenterPos,
+    result,
+  );
+
+  insertObjectFromObjectImageMD(
+    bigTreeMD,
+    gl,
+    {x: 900, y: 900},
+    objects,
+    result,
+  );
+
+  insertObjectFromObjectImageMD(
+    smallTreeMD,
+    gl,
+    {x: 1300, y: 900},
+    objects,
+    result,
+  );
+
+  insertObjectFromObjectImageMD(
+    greenGrassMD,
+    gl,
+    {x: 1400, y: 1400},
+    objects,
+    result,
+  );
+
+  insertObjectFromObjectImageMD(
+    grayBlockMD,
+    gl,
+    {x: 1000, y: 1000},
+    objects,
     result,
   );
 
@@ -573,7 +658,7 @@ export const makeAvatarMap = (
   loadAvatarArray.forEach(target => {
     const map = new Map<AvatarPartImageEnum, ImageInfo>();
     target.avatarMDInfos.forEach(info => {
-      const imageInfo = makeImageInfoFromImageMD(info, {x: 0, y: 0}, gl);
+      const imageInfo = makeAvatarInfoFromImageMD(info, gl);
       if (!imageInfo) {
         console.error('makeAvatarMap loop error imageInfo is not valid');
         return;

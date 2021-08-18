@@ -6,27 +6,26 @@ import {
   AvatarPartImageEnum,
   makeWorldMap1,
   makeAvatarMap,
+  PixelData,
 } from './ImageMetaData';
 
 class ImageInfoProvider {
-  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>;
-  pixelInfos: CollisionArrayFillValueEnum[][] | undefined;
+  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
+  pixelInfos: PixelData[][] | undefined; //
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
 
   constructor(gl: WebGLRenderingContext, backgroundIdx: number) {
-    const layerLevelEnumLength = Object.keys(LayerLevelEnum).length; // 왜 2배로 나오는지 모르겠다.
-
-    this.objectsArray = Array.from(Array(layerLevelEnumLength), () => Array(0));
-    this.collisionArray = makeWorldMap1(this.objectsArray, gl);
-    this.avatarsMap = new Map();
-    makeAvatarMap(this.avatarsMap, gl);
-    if (!this.collisionArray) return;
+    this.objects = new Map();
+    this.avatars = new Map();
+    this.pixelInfos = makeWorldMap1(this.objects, gl);
+    makeAvatarMap(this.avatars, gl);
+    if (!this.pixelInfos) return;
   }
   getAvatarImageInfo(
     avatarEnum: AvatarImageEnum,
     avatarPartEnum: AvatarPartImageEnum,
   ) {
-    const result = this.avatarsMap.get(avatarEnum)?.get(avatarPartEnum);
+    const result = this.avatars.get(avatarEnum)?.get(avatarPartEnum);
     if (!result) {
       //console.error('cannot find imageInfo from avatarMap error');
     }

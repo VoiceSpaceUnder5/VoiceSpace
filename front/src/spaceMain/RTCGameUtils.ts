@@ -104,7 +104,7 @@ class Me implements IPlayer {
       );
 
       const isCollision = (vertex4: Vec2[]): boolean => {
-        if (!imageInfoProvider.collisionArray) return false;
+        if (!imageInfoProvider.pixelInfos) return false;
         for (let i = 0; i < vertex4.length; i++) {
           let left = vertex4[i];
           let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
@@ -118,12 +118,9 @@ class Me implements IPlayer {
             const posX = Math.round(left.x + i);
             const posY = Math.round(left.y + a * i);
             if (
-              posX < 0 ||
-              posX >= imageInfoProvider.objectsArray[0][0].size.width ||
-              posY < 0 ||
-              posY >= imageInfoProvider.objectsArray[0][0].size.height ||
-              imageInfoProvider.collisionArray[posX][posY] !== 0
+              imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !== 0
             ) {
+              //console.log(posX, posY, imageInfoProvider.pixelInfos[posX][posY]);
               return true;
             }
           }
