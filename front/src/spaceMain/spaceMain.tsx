@@ -21,6 +21,7 @@ const SpaceMain = (props: RouteComponentProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
   const peerManagerRef = useRef<PeerManager>();
   const globalContext = useContext(GlobalContext);
+  globalContext.initialInfo = [query.avatarIdx, query.nickname];
 
   // 랜더링할 때 처음 한번만 실행.
   const onProfileChangeButtonClick = (

@@ -12,7 +12,12 @@ const Router = () => {
   return (
     <div>
       <Route path="/" exact component={Home} />
-      <GlobalContext.Provider value={{peerManager: undefined}}>
+      <GlobalContext.Provider
+        value={{
+          peerManager: undefined,
+          initialInfo: [0, ''],
+        }}
+      >
         <Route path="/space" component={SpaceMain} />
       </GlobalContext.Provider>
     </div>
