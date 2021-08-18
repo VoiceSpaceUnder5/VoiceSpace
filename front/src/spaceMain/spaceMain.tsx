@@ -223,11 +223,12 @@ const SpaceMain = (props: RouteComponentProps) => {
   }, []);
 
   const revealJoystickBase = () => {
-    if (peerManagerRef.current === undefined) {
+    const peerManager = globalContext.peerManager;
+    if (peerManager === undefined) {
       return;
     }
-    const posX = peerManagerRef.current.me.touchStartPos.x;
-    const posY = peerManagerRef.current.me.touchStartPos.y;
+    const posX = peerManager.me.touchStartPos.x;
+    const posY = peerManager.me.touchStartPos.y;
     const joystickBase = document.querySelector(
       '.joystickBase',
     ) as HTMLImageElement;
@@ -260,18 +261,20 @@ const SpaceMain = (props: RouteComponentProps) => {
     joystick.style.visibility = 'hidden';
   };
   const moveJoystick = () => {
+    const peerManager = globalContext.peerManager;
+
     const joystick = document.querySelector('.joystick') as HTMLImageElement;
     const joystickBase = document.querySelector(
       '.joystickBase',
     ) as HTMLImageElement;
 
-    if (peerManagerRef.current === undefined) {
+    if (peerManager === undefined) {
       return;
     }
-    const startPosX = peerManagerRef.current.me.touchStartPos.x;
-    const startPosY = peerManagerRef.current.me.touchStartPos.y;
-    const endPosX = peerManagerRef.current.me.touchingPos.x;
-    const endPosY = peerManagerRef.current.me.touchingPos.y;
+    const startPosX = peerManager.me.touchStartPos.x;
+    const startPosY = peerManager.me.touchStartPos.y;
+    const endPosX = peerManager.me.touchingPos.x;
+    const endPosY = peerManager.me.touchingPos.y;
     if (joystick === null) {
       return;
     }
