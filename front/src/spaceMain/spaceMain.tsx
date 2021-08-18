@@ -5,6 +5,8 @@ import GLHelper, {DrawInfo, Camera} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
+import Joystick from './Joystick';
+import './spaceMain.css';
 import {AnimalImageEnum} from './ImageMetaData';
 
 const qs = require('query-string');
@@ -132,6 +134,7 @@ const SpaceMain = (props: RouteComponentProps) => {
             x: e.clientX,
             y: e.clientY,
           };
+          revealJoystickBase();
         });
 
         divContainer.addEventListener('mousemove', e => {
@@ -140,11 +143,13 @@ const SpaceMain = (props: RouteComponentProps) => {
             x: e.clientX,
             y: e.clientY,
           };
+          moveJoystick();
         });
 
         divContainer.addEventListener('mouseup', e => {
           e.preventDefault();
           peerManager.me.isMoving = false;
+          hideJoystickBase();
         });
 
         //for Phone
@@ -155,6 +160,7 @@ const SpaceMain = (props: RouteComponentProps) => {
             x: e.touches[0].clientX,
             y: e.touches[0].clientY,
           };
+          revealJoystickBase();
         });
 
         divContainer.addEventListener('touchmove', e => {
@@ -163,11 +169,13 @@ const SpaceMain = (props: RouteComponentProps) => {
             x: e.touches[0].clientX,
             y: e.touches[0].clientY,
           };
+          moveJoystick();
         });
 
         divContainer.addEventListener('touchend', e => {
           e.preventDefault();
           peerManager.me.isMoving = false;
+          hideJoystickBase();
         });
 
         const drawBackground = () => {
@@ -210,6 +218,87 @@ const SpaceMain = (props: RouteComponentProps) => {
       });
   }, []);
 
+  const revealJoystickBase = () => {
+    if (peerManagerRef.current === undefined) {
+      return;
+    }
+    const posX = peerManagerRef.current.me.touchStartPos.x;
+    const posY = peerManagerRef.current.me.touchStartPos.y;
+    const joystickBase = document.querySelector(
+      '.joystickBase',
+    ) as HTMLImageElement;
+    const joystick = document.querySelector('.joystick') as HTMLImageElement;
+    if (joystickBase === null) {
+      return;
+    }
+    if (joystick === null) {
+      return;
+    }
+    joystickBase.style.left = String(posX - joystickBase.width / 2) + 'px';
+    joystickBase.style.top = String(posY - joystickBase.height / 2) + 'px';
+    joystickBase.style.visibility = 'visible';
+    joystick.style.left = String(posX - joystick.width / 2) + 'px';
+    joystick.style.top = String(posY - joystick.height / 2) + 'px';
+    joystick.style.visibility = 'visible';
+  };
+  const hideJoystickBase = () => {
+    const joystickBase = document.querySelector(
+      '.joystickBase',
+    ) as HTMLImageElement;
+    const joystick = document.querySelector('.joystick') as HTMLImageElement;
+    if (joystickBase === null) {
+      return;
+    }
+    if (joystick === null) {
+      return;
+    }
+    joystickBase.style.visibility = 'hidden';
+    joystick.style.visibility = 'hidden';
+  };
+  const moveJoystick = () => {
+    const joystick = document.querySelector('.joystick') as HTMLImageElement;
+    const joystickBase = document.querySelector(
+      '.joystickBase',
+    ) as HTMLImageElement;
+
+    if (peerManagerRef.current === undefined) {
+      return;
+    }
+    const startPosX = peerManagerRef.current.me.touchStartPos.x;
+    const startPosY = peerManagerRef.current.me.touchStartPos.y;
+    const endPosX = peerManagerRef.current.me.touchingPos.x;
+    const endPosY = peerManagerRef.current.me.touchingPos.y;
+    if (joystick === null) {
+      return;
+    }
+    if (joystickBase === null) {
+      return;
+    }
+    const dist2 = Math.sqrt(
+      Math.pow(endPosX - startPosX, 2) + Math.pow(endPosY - startPosY, 2),
+    );
+    const dist1 = joystickBase.width / 2 - joystick.width / 2;
+
+    if (dist2 <= dist1) {
+      const x = endPosX - joystick.width / 2;
+      const y = endPosY - joystick.height / 2;
+      joystick.style.left = String(x) + 'px';
+      joystick.style.top = String(y) + 'px';
+    } else {
+      joystick.style.left =
+        String(
+          (dist1 * (endPosX - startPosX)) / dist2 +
+            startPosX -
+            joystick.width / 2,
+        ) + 'px';
+      joystick.style.top =
+        String(
+          (dist1 * (endPosY - startPosY)) / dist2 +
+            startPosY -
+            joystick.height / 2,
+        ) + 'px';
+    }
+  };
   const onClickMicOnOff = (isOn: boolean) => {
     if (peerManagerRef.current !== undefined) {
       peerManagerRef.current.localStream.getAudioTracks()[0].enabled = isOn;
@@ -231,6 +320,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         myMicToggle={onClickMicOnOff}
         onProfileChange={onProfileChangeButtonClick}
       />
+      <Joystick />
     </>
   );
 };
