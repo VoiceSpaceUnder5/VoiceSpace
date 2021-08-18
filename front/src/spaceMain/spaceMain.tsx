@@ -320,7 +320,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         myMicToggle={onClickMicOnOff}
         onProfileChange={onProfileChangeButtonClick}
       />
-      <Joystick peerManager={peerManagerRef.current} />
+      <Joystick />
     </>
   );
 };

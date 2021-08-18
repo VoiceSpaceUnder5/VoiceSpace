@@ -67,14 +67,14 @@ button {
 .joystickBase {
   position: absolute;
   visibility: hidden;
-  width: 30vw;
-  height: 30vw;
+  width: 170px;
+  height: 170px;
   background: rgba(196, 196, 196, 0);
 }
 .joystick {
   position: absolute;
   visibility: hidden;
-  width: 10vw;
-  height: 10vw;
+  width: 70px;
+  height: 70px;
   background: rgba(196, 196, 196, 0);
 }

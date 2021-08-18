@@ -1,11 +1,6 @@
 import React from 'react';
-import PeerManager from './RTCGameUtils';
 
-interface JoystickProps {
-  peerManager: PeerManager | undefined;
-}
-
-export default function Joystick(props: JoystickProps): JSX.Element {
+export default function Joystick(): JSX.Element {
   return (
     <>
       <img
