@@ -27,12 +27,14 @@ class ImageInfoProvider {
   pixelInfos: PixelData[][]; //
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
   gl: WebGLRenderingContext;
+  backGroundMapId: number;
 
   constructor(gl: WebGLRenderingContext, backgroundIdx: number) {
     this.gl = gl;
     this.objects = new Map();
     this.avatars = new Map();
     this.pixelInfos = [];
+    this.backGroundMapId = 1;
     this.makeAvatarMap();
     // 위 코드까지는 반드시 필요합니다. //
     // 아래 코드는 코드적으로 맵을 생성해내는 것입니다. //
@@ -297,6 +299,8 @@ class ImageInfoProvider {
       seaAndMountainVer1MD,
       backgroundCenterPos,
     );
+    this.backGroundMapId = IdProvider.cnt;
+
     this.insertObjectFromObjectImageMD(bigTreeMD, {x: 900, y: 900});
     this.insertObjectFromObjectImageMD(smallTreeMD, {x: 1600, y: 800});
     for (let i = 0; i < 15; i++) {

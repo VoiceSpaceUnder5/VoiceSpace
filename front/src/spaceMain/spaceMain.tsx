@@ -62,7 +62,7 @@ const SpaceMain = (props: RouteComponentProps) => {
 
     const backgroundImageInfo = imageInfoProvider.objects
       .get(LayerLevelEnum.BACKGROUND_ZERO)!
-      .get(1)!;
+      .get(imageInfoProvider.backGroundMapId)!;
 
     //카메라 객체 초기화
     const camera = new Camera(
