@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import {message, Button} from 'antd';
+import {v4 as uuidV4} from 'uuid';
 import './home.css';
+const qs = require('query-string');
 
 const Logo = () => {
   return <img id="logoImage" src="./assets/home/homeLogo.png" />;
@@ -28,14 +30,20 @@ const Descript = () => {
   );
 };
 
-const CreateRoom = () => {
-  const onClick = () => {
-    console.log('craete Room button clicked!');
-  };
+interface CreateRoomProps {
+  createRoomButtonClick: () => void;
+}
+
+const CreateRoom = (props: CreateRoomProps) => {
   return (
     <>
       <br />
-      <Button id="button" shape="round" type="primary" onClick={onClick}>
+      <Button
+        id="button"
+        shape="round"
+        type="primary"
+        onClick={props.createRoomButtonClick}
+      >
         새로운 보이스 채팅
       </Button>
     </>
@@ -43,17 +51,19 @@ const CreateRoom = () => {
 };
 
 interface EnterRoomProps {
-  enterRoomButtonClick: () => void;
+  enterRoomButtonClick: (arg0: string) => void;
 }
 
 const EnterRoom = (props: EnterRoomProps) => {
+  const [roomId, setRoomId] = useState('');
+
   const info = () => {
     message.info('유효하지 않은 코드입니다');
   };
   const element = (
     <>
       <br />
-      <Button id="button" onClick={props.enterRoomButtonClick}>
+      <Button id="button" onClick={() => props.enterRoomButtonClick(roomId)}>
         참가하기
       </Button>
     </>
@@ -69,12 +79,18 @@ const EnterRoom = (props: EnterRoomProps) => {
     if (e.target.value === '') setFocus(0);
   };
 
+  const inputOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomId(e.target.value);
+  };
+
   return (
     <div>
       <input
         onFocus={onFocus}
         onBlur={onBlur}
-        placeholder="코드 또는 링크 입력"
+        placeholder="코드(RoomId)를 입력해주세요."
+        value={roomId}
+        onChange={inputOnchange}
       />
       {focus ? element : null}
     </div>
@@ -92,17 +108,21 @@ const MoreInfo = () => {
 };
 
 const Home = (props: RouteComponentProps) => {
-  const enterRoomClick = () => {
-    props.history.push(
-      '/space?roomId=honleeExample&nickname=honlee&avatarIdx=0',
+  const enterRoomClick = (roomId: string) => {
+    props.history.push(`/space?roomId=${roomId}`);
+  };
+  const createRoomClick = () => {
+    message.info(
+      '새로운 음성채팅방에 입장하셨습니다. 주소를 복사하여 친구들을 초대해 보세요!',
     );
+    props.history.push(`/space?roomId=${uuidV4()}`);
   };
   return (
     <div id="home">
       <Logo />
       <Hello />
       <Descript />
-      <CreateRoom />
+      <CreateRoom createRoomButtonClick={createRoomClick} />
       <EnterRoom enterRoomButtonClick={enterRoomClick} />
       <MoreInfo />
     </div>
