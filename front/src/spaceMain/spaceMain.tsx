@@ -14,6 +14,7 @@ import {AvatarImageEnum, LayerLevelEnum} from './ImageMetaData';
 import Joystick from './Joystick';
 import './spaceMain.css';
 import GlobalContext from './GlobalContext';
+import {message} from 'antd';
 
 const qs = require('query-string');
 
@@ -25,6 +26,12 @@ interface SpaceMainQuery {
 
 const SpaceMain = (props: RouteComponentProps) => {
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
+  if (!query.roomId || query.roomId === '') {
+    message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
+    props.history.push('/');
+  }
+  if (!query.nickname || query.nickname === '') query.nickname = '익명의 곰';
+  if (!query.avatarIdx) query.avatarIdx = 0;
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
   const peerManagerRef = useRef<PeerManager>();
   const globalContext = useContext(GlobalContext);
@@ -104,6 +111,11 @@ const SpaceMain = (props: RouteComponentProps) => {
         }
 
         // 나, 너 그리고 우리를 관리하는 객체
+        // PeerManager 생성자의 meCenterPos 값이 아래와 같이 작성되어있었으나,
+        // {
+        //     x: backgroundImageInfo.size.width / 2,
+        //     y: backgroundImageInfo.size.height / 2,
+        // },
         globalContext.peerManager = new PeerManager(
           socket,
           stream,
