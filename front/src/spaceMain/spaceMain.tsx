@@ -1,7 +1,11 @@
 import React, {useEffect, useRef} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import ImageInfoProvider from './ImageInfoProvider';
-import GLHelper, {DrawInfo, Camera} from './webGLUtils';
+import GLHelper, {
+  DrawInfo,
+  Camera,
+  resizeCanvasToDisplaySize,
+} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
@@ -117,6 +121,15 @@ const SpaceMain = (props: RouteComponentProps) => {
         // event setting start //////////////////////////
         window.addEventListener('resize', e => {
           //to - do
+          canvas.width = canvas.clientWidth;
+          canvas.height = canvas.clientHeight;
+          camera.originSize = {
+            width: canvas.clientWidth,
+            height: canvas.clientHeight,
+          };
+          camera.size = {...camera.originSize};
+          camera.scale = 1;
+          gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
         });
 
         window.addEventListener('keydown', e => {
