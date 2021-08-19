@@ -265,6 +265,12 @@ const SpaceMain = (props: RouteComponentProps) => {
       .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
+
+    return () => {
+      if (globalContext.peerManager) {
+        globalContext.peerManager.close();
+      }
+    };
   }, []);
 
   const revealJoystickBase = () => {

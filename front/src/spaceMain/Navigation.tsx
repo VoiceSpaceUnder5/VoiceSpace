@@ -73,10 +73,7 @@ const Navigation = (props: NavigationProps) => {
 
   const exit = () => {
     if (globalContext.peerManager) {
-      globalContext.peerManager.peers.forEach(peer => {
-        peer.close();
-      });
-      globalContext.peerManager.socket.close();
+      globalContext.peerManager.close();
     }
     props.goToHome();
   };
