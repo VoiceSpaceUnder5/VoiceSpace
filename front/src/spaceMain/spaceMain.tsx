@@ -5,13 +5,14 @@ import GLHelper, {
   DrawInfo,
   Camera,
   resizeCanvasToDisplaySize,
+  isInRect,
 } from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
+import {AvatarImageEnum, LayerLevelEnum} from './ImageMetaData';
 import Joystick from './Joystick';
 import './spaceMain.css';
-import {AnimalImageEnum} from './ImageMetaData';
 import GlobalContext from './GlobalContext';
 
 const qs = require('query-string');
@@ -35,7 +36,7 @@ const SpaceMain = (props: RouteComponentProps) => {
     newNickname: string,
   ) => {
     if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.me.animal = newAvatarIdx;
+      peerManagerRef.current.me.avatar = newAvatarIdx;
       peerManagerRef.current.me.div.innerText = newNickname;
       peerManagerRef.current.me.nickname = newNickname;
     }
@@ -59,7 +60,9 @@ const SpaceMain = (props: RouteComponentProps) => {
       return;
     }
 
-    const backgroundImageInfo = imageInfoProvider.objectsArray[0][0];
+    const backgroundImageInfo = imageInfoProvider.objects
+      .get(LayerLevelEnum.BACKGROUND_ZERO)!
+      .get(1)!;
 
     //카메라 객체 초기화
     const camera = new Camera(
@@ -105,7 +108,7 @@ const SpaceMain = (props: RouteComponentProps) => {
           socket,
           stream,
           query.nickname,
-          AnimalImageEnum.BROWN_BEAR,
+          AvatarImageEnum.BROWN_BEAR,
           audioContainer,
           divContainer,
           {
@@ -195,17 +198,47 @@ const SpaceMain = (props: RouteComponentProps) => {
           hideJoystickBase();
         });
 
-        const drawBackground = () => {
-          glHelper.drawImage({
-            ...backgroundImageInfo,
-            scale: 1,
-            rotateRadian: 0,
+        const drawObjectsBeforeAvatar = () => {
+          const temp = [0, 1, 2, 3];
+          temp.forEach(key => {
+            imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+              glHelper.drawImage({
+                ...imageInfo,
+                scale: 1,
+                rotateRadian: 0,
+              });
+            });
+          });
+        };
+
+        const drawObjectsAfterAvatar = () => {
+          const temp = [8, 9];
+          temp.forEach(key => {
+            imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+              if (
+                isInRect(
+                  imageInfo.centerPos,
+                  imageInfo.size,
+                  peerManager.me.centerPos,
+                )
+              ) {
+                glHelper.transparency = 0.3;
+              }
+
+              glHelper.drawImage({
+                ...imageInfo,
+                scale: 1,
+                rotateRadian: 0,
+              });
+              glHelper.transparency = 1.0;
+            });
           });
         };
 
         //계속해서 화면에 장면을 그려줌
         const requestAnimation = () => {
-          drawBackground();
+          camera.updateCenterPosFromPlayer(peerManager.me);
+          drawObjectsBeforeAvatar();
           peerManager.me.update(
             Date.now() - peerManager.lastUpdateTimeStamp,
             imageInfoProvider,
@@ -214,17 +247,16 @@ const SpaceMain = (props: RouteComponentProps) => {
           peerManager.peers.forEach(peer => {
             if (peer.dc.readyState === 'open')
               peer.dc.send(JSON.stringify(peerManager.me));
-            glHelper.drawAnimal(imageInfoProvider, peer, peer.div);
+            glHelper.drawAvatar(imageInfoProvider, peer, peer.div);
             peer.updateSoundFromVec2(peerManager.me.centerPos);
           });
           peerManager.lastUpdateTimeStamp = Date.now();
-          camera.updateCenterPosFromPlayer(peerManager.me);
-          glHelper.drawAnimal(
+          glHelper.drawAvatar(
             imageInfoProvider,
             peerManager.me,
             peerManager.me.div,
           );
-          // console.log(peerManager.me.centerPos);
+          drawObjectsAfterAvatar();
           requestAnimationFrame(requestAnimation);
         };
         peerManager.lastUpdateTimeStamp = Date.now();

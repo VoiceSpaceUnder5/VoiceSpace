@@ -5,8 +5,6 @@ import {Vec2} from './RTCGameUtils';
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Enum And Interface Part Start ///////////////////////////
-const replaceWorld = '{replaceSpace}';
-
 export enum ObjectCollisionFigureEnum {
   NOT_FILLED_SQUARE,
   NOT_FILLED_ELLIPSE,
@@ -14,19 +12,14 @@ export enum ObjectCollisionFigureEnum {
   FILLED_ELLIPSE,
 }
 
-export enum CollisionArrayFillValueEnum {
-  NONE = 0,
-  OBSTACLE = 1,
-}
-
-export enum AnimalImageEnum {
+export enum AvatarImageEnum {
   BROWN_HORSE = 0,
   BROWN_BEAR = 1,
   PINK_PIG = 2,
   WHITE_RABBIT = 3,
 }
 
-export enum AnimalPartImageEnum {
+export enum AvatarPartImageEnum {
   BODY = 0,
   FACE_MUTE = 1,
   FACE_SPEAK = 2,
@@ -35,18 +28,23 @@ export enum AnimalPartImageEnum {
 }
 
 // 낮은 layer 부터 먼저 그려진다.
-// BACKGROUND_XX -> OBSTACLE_BEFORE_ANIMAL_XX -> ANIMAL_XX -> OBSTACLE_AFTER_ANIMAL_XX 순으로 진행.
+// BACKGROUND_XX -> OBSTACLE_BEFORE_AVATAR_XX -> AVATAR_XX -> OBSTACLE_AFTER_AVATAR_XX 순으로 진행.
 export enum LayerLevelEnum {
   BACKGROUND_ZERO = 0,
   BACKGROUND_ONE = 1,
-  OBSTACLE_BEFORE_ANIMAL_ZERO = 2,
-  OBSTACLE_BEFORE_ANIMAL_ONE = 3,
-  ANIMAL_ZERO = 4,
-  ANIMAL_ONE = 5,
-  ANIMAL_TWO = 6,
-  ANIMAL_THREE = 7,
-  OBSTACLE_AFTER_ANIMAL_ZERO = 8,
-  OBSTACLE_AFTER_ANIMAL_ONE = 9,
+  OBSTACLE_BEFORE_AVATAR_ZERO = 2,
+  OBSTACLE_BEFORE_AVATAR_ONE = 3,
+  AVATAR_ZERO = 4,
+  AVATAR_ONE = 5,
+  AVATAR_TWO = 6,
+  AVATAR_THREE = 7,
+  OBSTACLE_AFTER_AVATAR_ZERO = 8,
+  OBSTACLE_AFTER_AVATAR_ONE = 9,
+}
+
+export interface PixelData {
+  imageInfoKey: number;
+  collisionInfoKey: number;
 }
 
 export interface Size {
@@ -62,8 +60,8 @@ export interface ImageMDInfo {
   backgroundSize?: Size;
 }
 
-export interface AnimalMDInfo extends ImageMDInfo {
-  partType: AnimalPartImageEnum;
+export interface AvatarMDInfo extends ImageMDInfo {
+  partType: AvatarPartImageEnum;
 }
 
 // ImageMDInfo 를 기반으로 만들어진 tex 와 image의 size 등 직접 glHelper 에서 draw 할때 사용할 수 있는
@@ -78,7 +76,6 @@ export interface ImageInfo {
 export interface CollisionMDInfo {
   collisionType: ObjectCollisionFigureEnum;
   centerPosPixelOffset: Vec2;
-  arrayFillValue: CollisionArrayFillValueEnum;
   size: Size;
 }
 
@@ -87,9 +84,9 @@ export interface ObjectImageMD {
   collisionMDInfos: CollisionMDInfo[];
 }
 
-export interface AnimalImageMD {
-  animalMDInfos: AnimalMDInfo[];
-  animalType: AnimalImageEnum;
+export interface AvatarImageMD {
+  avatarMDInfos: AvatarMDInfo[];
+  avatarType: AvatarImageEnum;
 }
 
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
@@ -97,10 +94,10 @@ export interface AnimalImageMD {
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// ImageMetaData Part Start ////////////////////////////
-const seeAndMountainVer1MD: ObjectImageMD = {
+export const seaAndMountainVer1MD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/background/SeeAndMountainVer1.png',
+      src: './assets/spaceMain/background/seaAndMountainVer1.png',
       centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.BACKGROUND_ZERO,
       backgroundSize: {width: 2400, height: 2400},
@@ -109,17 +106,16 @@ const seeAndMountainVer1MD: ObjectImageMD = {
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       size: {width: 2400, height: 2400},
       centerPosPixelOffset: {x: 0, y: 0},
     },
   ],
 };
 
-const seeAndMountainVer2MD: ObjectImageMD = {
+export const seaAndMountainVer2MD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/background/SeeAndMountainVer2.png',
+      src: './assets/spaceMain/background/seaAndMountainVer2.png',
       centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.BACKGROUND_ZERO,
     },
@@ -127,7 +123,6 @@ const seeAndMountainVer2MD: ObjectImageMD = {
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       size: {width: 2400, height: 2400},
       centerPosPixelOffset: {x: 0, y: 0},
     },
@@ -135,23 +130,22 @@ const seeAndMountainVer2MD: ObjectImageMD = {
 };
 
 // bigTree unionSize = 352 x 440 (x4 ratio)
-const bigTreeMD: ObjectImageMD = {
+export const bigTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/bigTreeTop.png',
       centerPosPixelOffset: {x: 0, y: -(440 / 2 - 324 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_ANIMAL_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
+      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
     {
       src: './assets/spaceMain/object/bigTreeBottom.png',
       centerPosPixelOffset: {x: 0, y: +(440 / 2 - 240 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_ANIMAL_ONE,
+      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
     },
   ],
   collisionMDInfos: [
     {
-      collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
+      collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
       centerPosPixelOffset: {x: 0, y: 100},
       size: {width: 160, height: 128},
     },
@@ -161,437 +155,257 @@ const bigTreeMD: ObjectImageMD = {
 // smallTree unionSize = 264 * 300 (x3 ratio)
 // top :146 * 210
 // bottom:264 * 180
-const smallTreeMD: ObjectImageMD = {
+export const smallTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/smallTreeTop.png',
       centerPosPixelOffset: {x: 0, y: -(300 / 2 - 210 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_ANIMAL_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
+      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
     {
       src: './assets/spaceMain/object/smallTreeBottom.png',
       centerPosPixelOffset: {x: 0, y: +(300 / 2 - 180 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_ANIMAL_ONE,
+      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
     },
   ],
   collisionMDInfos: [
     {
-      collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
+      collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
       centerPosPixelOffset: {x: 0, y: 60},
       size: {width: 120, height: 84},
     },
   ],
 };
 
-const greenGrassMD: ObjectImageMD = {
+export const greenGrassMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/greenGrass.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ZERO,
     },
   ],
   collisionMDInfos: [],
 };
 
-const grayBlockMD: ObjectImageMD = {
+export const grayBlockMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/grayBlock.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_ANIMAL_ZERO,
+      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      arrayFillValue: CollisionArrayFillValueEnum.OBSTACLE,
       centerPosPixelOffset: {x: 0, y: 0},
       size: {width: 72, height: 72},
     },
   ],
 };
 
-//////////////////////////////// AnimalSizeInfo /////////////////////////////////
-const brownBearMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.BROWN_BEAR,
-  animalMDInfos: [
+//////////////////////////////// AvatarSizeInfo /////////////////////////////////
+export const brownBearMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.BROWN_BEAR,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/brownBearBody.png',
+      src: './assets/spaceMain/avatar/brownBearBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -33,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceMute.png',
+      src: './assets/spaceMain/avatar/brownBearFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceSpeak.png',
+      src: './assets/spaceMain/avatar/brownBearFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/brownBearFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/brownBearFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/brownBearFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 25,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-const brownHorseMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.BROWN_HORSE,
-  animalMDInfos: [
+export const brownHorseMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.BROWN_HORSE,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/brownHorseBody.png',
+      src: './assets/spaceMain/avatar/brownHorseBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -40,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceMute.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceSpeak.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/brownHorseFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/brownHorseFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 12,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-const whiteRabbitMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.WHITE_RABBIT,
-  animalMDInfos: [
+export const whiteRabbitMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.WHITE_RABBIT,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/whiteRabbitBody.png',
+      src: './assets/spaceMain/avatar/whiteRabbitBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -36,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceMute.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceSpeak.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/whiteRabbitFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 8,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
 
-const pinkPigMD: AnimalImageMD = {
-  animalType: AnimalImageEnum.PINK_PIG,
-  animalMDInfos: [
+export const pinkPigMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.PINK_PIG,
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/animal/pinkPigBody.png',
+      src: './assets/spaceMain/avatar/pinkPigBody.png',
       centerPosPixelOffset: {
         x: 0,
         y: -44,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ZERO,
-      partType: AnimalPartImageEnum.BODY,
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceMute.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceMute.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_MUTE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceSpeak.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeak.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeakMouse.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_MOUSE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
-      src: './assets/spaceMain/animal/pinkPigFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
-      layerLev: LayerLevelEnum.ANIMAL_ONE,
-      partType: AnimalPartImageEnum.FACE_SPEAK_SMILE,
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
   ],
 };
-
-//////////////////////////////// AnimalSizeInfo /////////////////////////////////
-
-const setTexParam = (gl: WebGLRenderingContext, tex: WebGLTexture): void => {
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-};
-
-const makeDummyTex = (gl: WebGLRenderingContext): WebGLTexture | null => {
-  const tex = gl.createTexture();
-  if (!tex) {
-    console.error('makeDummyTex createTexture Error');
-    return null;
-  }
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    0,
-    gl.RGBA,
-    1, // width
-    1, // height
-    0, // border
-    gl.RGBA,
-    gl.UNSIGNED_BYTE,
-    new Uint8Array([0, 0, 255, 255]), // 파란색
-  );
-  setTexParam(gl, tex);
-  return tex;
-};
-
-const updateImageInfoWithSrc = (
-  src: string,
-  imageInfo: ImageInfo,
-  gl: WebGLRenderingContext,
-): void => {
-  const tex = gl.createTexture();
-  if (!tex) {
-    console.error('updateImageInfoWithSrc createTexture Error');
-    return;
-  }
-  setTexParam(gl, tex);
-
-  const image = new Image();
-  image.addEventListener('load', () => {
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    imageInfo.tex = tex;
-    imageInfo.size.width = image.width;
-    imageInfo.size.height = image.height;
-  });
-  image.src = src;
-
-  return;
-};
-
-const makeImageInfoFromImageMD = (
-  target: ImageMDInfo,
-  centerPos: Vec2,
-  gl: WebGLRenderingContext,
-  objectsArray?: ImageInfo[][],
-): ImageInfo | undefined => {
-  const tex = makeDummyTex(gl);
-  if (!tex) {
-    return;
-  }
-  const imageInfo: ImageInfo = {
-    tex: tex,
-    centerPos: centerPos,
-    size: {width: 1, height: 1},
-    centerPosPixelOffset: target.centerPosPixelOffset,
-  };
-  if (objectsArray) objectsArray[target.layerLev].push(imageInfo);
-  updateImageInfoWithSrc(target.src, imageInfo, gl);
-  return imageInfo;
-};
-
-const makeCollisionArrayFromCollisionMD = (
-  target: CollisionMDInfo,
-  centerPos: Vec2,
-  collisionArray: CollisionArrayFillValueEnum[][],
-): void => {
-  switch (target.collisionType) {
-    case ObjectCollisionFigureEnum.FILLED_SQUARE: {
-      const x_init =
-        centerPos.x - target.size.width / 2 + target.centerPosPixelOffset.x;
-      const x_limit =
-        centerPos.x + target.size.width / 2 + target.centerPosPixelOffset.x;
-      const y_init =
-        centerPos.y - target.size.height / 2 + target.centerPosPixelOffset.y;
-      const y_limit =
-        centerPos.y + target.size.height / 2 + target.centerPosPixelOffset.y;
-      for (let x = x_init; x < x_limit; x++) {
-        for (let y = y_init; y < y_limit; y++) {
-          collisionArray[x][y] = target.arrayFillValue;
-        }
-      }
-      break;
-    }
-    default: {
-      console.error(
-        'makeCollisionArrayFromCollisionMD takes wrong param error',
-      );
-      break;
-    }
-  }
-};
-
-export const makeWorldMap1 = (
-  objectsArray: ImageInfo[][],
-  gl: WebGLRenderingContext,
-): CollisionArrayFillValueEnum[][] | undefined => {
-  if (
-    !seeAndMountainVer1MD.collisionMDInfos[0] ||
-    !seeAndMountainVer1MD.imageMDInfos[0] ||
-    !seeAndMountainVer1MD.imageMDInfos[0].backgroundSize
-  ) {
-    console.error('seeAndMountainVer1MD is invalid');
-    return;
-  }
-  const result = Array.from(
-    Array(seeAndMountainVer1MD.imageMDInfos[0].backgroundSize.width),
-    () =>
-      Array(seeAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height).fill(
-        CollisionArrayFillValueEnum.NONE,
-      ),
-  );
-
-  const backgroundCenterPos: Vec2 = {
-    x: seeAndMountainVer1MD.imageMDInfos[0].backgroundSize!.width / 2,
-    y: seeAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height / 2,
-  };
-  makeImageInfoFromImageMD(
-    seeAndMountainVer1MD.imageMDInfos[0],
-    backgroundCenterPos,
-    gl,
-    objectsArray,
-  );
-  makeCollisionArrayFromCollisionMD(
-    seeAndMountainVer1MD.collisionMDInfos[0],
-    backgroundCenterPos,
-    result,
-  );
-
-  return result;
-};
-
-export const makeAnimalMap = (
-  animalsMap: Map<AnimalImageEnum, Map<AnimalPartImageEnum, ImageInfo>>,
-  gl: WebGLRenderingContext,
-): void => {
-  const loadAnimalArray: AnimalImageMD[] = [
-    brownBearMD,
-    brownHorseMD,
-    whiteRabbitMD,
-    pinkPigMD,
-  ];
-
-  loadAnimalArray.forEach(target => {
-    const map = new Map<AnimalPartImageEnum, ImageInfo>();
-    target.animalMDInfos.forEach(info => {
-      const imageInfo = makeImageInfoFromImageMD(info, {x: 0, y: 0}, gl);
-      if (!imageInfo) {
-        console.error('makeAnimalMap loop error imageInfo is not valid');
-        return;
-      }
-      map.set(info.partType, imageInfo);
-    });
-    animalsMap.set(target.animalType, map);
-  });
-
-  return;
-};
-
-/////////////////////////// ImageMetaData Part End ./////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////

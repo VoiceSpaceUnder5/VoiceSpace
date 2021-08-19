@@ -22,7 +22,7 @@ const Profile = () => {
     newNickname: string,
   ) => {
     if (globalContext.peerManager !== undefined) {
-      globalContext.peerManager.me.animal = newAvatarIdx;
+      globalContext.peerManager.me.avatar = newAvatarIdx;
       globalContext.peerManager.me.div.innerText = newNickname;
       globalContext.peerManager.me.nickname = newNickname;
     }
