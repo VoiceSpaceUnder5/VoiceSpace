@@ -1,5 +1,4 @@
 import {Vec2} from './RTCGameUtils';
-import IdProvider from './IdProvider';
 // 파일이름은 imageInfo 지만 이 안에서 backgroundMetaData
 // image src 의 주소를 따로 관리 하는 방법도 생각해 볼것.
 // 여러 부분에서 참조 할 경우 위와 같이 한곳에서 관리 해야한다.
@@ -95,7 +94,7 @@ export interface AvatarImageMD {
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// ImageMetaData Part Start ////////////////////////////
-const seaAndMountainVer1MD: ObjectImageMD = {
+export const seaAndMountainVer1MD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/background/seaAndMountainVer1.png',
@@ -113,7 +112,7 @@ const seaAndMountainVer1MD: ObjectImageMD = {
   ],
 };
 
-const seaAndMountainVer2MD: ObjectImageMD = {
+export const seaAndMountainVer2MD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/background/seaAndMountainVer2.png',
@@ -131,7 +130,7 @@ const seaAndMountainVer2MD: ObjectImageMD = {
 };
 
 // bigTree unionSize = 352 x 440 (x4 ratio)
-const bigTreeMD: ObjectImageMD = {
+export const bigTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/bigTreeTop.png',
@@ -146,7 +145,7 @@ const bigTreeMD: ObjectImageMD = {
   ],
   collisionMDInfos: [
     {
-      collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
+      collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
       centerPosPixelOffset: {x: 0, y: 100},
       size: {width: 160, height: 128},
     },
@@ -156,7 +155,7 @@ const bigTreeMD: ObjectImageMD = {
 // smallTree unionSize = 264 * 300 (x3 ratio)
 // top :146 * 210
 // bottom:264 * 180
-const smallTreeMD: ObjectImageMD = {
+export const smallTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/smallTreeTop.png',
@@ -171,14 +170,14 @@ const smallTreeMD: ObjectImageMD = {
   ],
   collisionMDInfos: [
     {
-      collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
+      collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
       centerPosPixelOffset: {x: 0, y: 60},
       size: {width: 120, height: 84},
     },
   ],
 };
 
-const greenGrassMD: ObjectImageMD = {
+export const greenGrassMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/greenGrass.png',
@@ -189,7 +188,7 @@ const greenGrassMD: ObjectImageMD = {
   collisionMDInfos: [],
 };
 
-const grayBlockMD: ObjectImageMD = {
+export const grayBlockMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/grayBlock.png',
@@ -207,7 +206,7 @@ const grayBlockMD: ObjectImageMD = {
 };
 
 //////////////////////////////// AvatarSizeInfo /////////////////////////////////
-const brownBearMD: AvatarImageMD = {
+export const brownBearMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.BROWN_BEAR,
   avatarMDInfos: [
     {
@@ -258,7 +257,7 @@ const brownBearMD: AvatarImageMD = {
   ],
 };
 
-const brownHorseMD: AvatarImageMD = {
+export const brownHorseMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.BROWN_HORSE,
   avatarMDInfos: [
     {
@@ -309,7 +308,7 @@ const brownHorseMD: AvatarImageMD = {
   ],
 };
 
-const whiteRabbitMD: AvatarImageMD = {
+export const whiteRabbitMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.WHITE_RABBIT,
   avatarMDInfos: [
     {
@@ -360,7 +359,7 @@ const whiteRabbitMD: AvatarImageMD = {
   ],
 };
 
-const pinkPigMD: AvatarImageMD = {
+export const pinkPigMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.PINK_PIG,
   avatarMDInfos: [
     {
@@ -410,266 +409,3 @@ const pinkPigMD: AvatarImageMD = {
     },
   ],
 };
-
-//////////////////////////////// AvatarSizeInfo /////////////////////////////////
-
-const setTexParam = (gl: WebGLRenderingContext, tex: WebGLTexture): void => {
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-};
-
-const makeDummyTex = (gl: WebGLRenderingContext): WebGLTexture | null => {
-  const tex = gl.createTexture();
-  if (!tex) {
-    console.error('makeDummyTex createTexture Error');
-    return null;
-  }
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    0,
-    gl.RGBA,
-    1, // width
-    1, // height
-    0, // border
-    gl.RGBA,
-    gl.UNSIGNED_BYTE,
-    new Uint8Array([0, 0, 255, 255]), // 파란색
-  );
-  setTexParam(gl, tex);
-  return tex;
-};
-
-const updateImageInfoWithSrc = (
-  src: string,
-  imageInfo: ImageInfo,
-  gl: WebGLRenderingContext,
-  id?: number,
-  pixelInfos?: PixelData[][],
-): void => {
-  const tex = gl.createTexture();
-  if (!tex) {
-    console.error('updateImageInfoWithSrc createTexture Error');
-    return;
-  }
-  setTexParam(gl, tex);
-
-  const image = new Image();
-  image.addEventListener('load', () => {
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    imageInfo.tex = tex;
-    imageInfo.size.width = image.width;
-    imageInfo.size.height = image.height;
-    if (id) {
-      const x_init = imageInfo.centerPos.x - image.width / 2;
-      const x_limit = imageInfo.centerPos.x + image.width / 2;
-      const y_init = imageInfo.centerPos.y - image.height / 2;
-      const y_limit = imageInfo.centerPos.y + image.height / 2;
-      for (let x = x_init; x < x_limit; x++) {
-        for (let y = y_init; y < y_limit; y++) {
-          if (pixelInfos)
-            pixelInfos[x][y] = {...pixelInfos[x][y], imageInfoKey: id};
-        }
-      }
-    }
-  });
-  image.src = src;
-  return;
-};
-
-const makeAvatarInfoFromImageMD = (
-  target: ImageMDInfo,
-  gl: WebGLRenderingContext,
-) => {
-  const tex = makeDummyTex(gl);
-  if (!tex) {
-    return;
-  }
-  const imageInfo: ImageInfo = {
-    tex: tex,
-    centerPos: {x: 0, y: 0},
-    size: {width: 1, height: 1},
-    centerPosPixelOffset: target.centerPosPixelOffset,
-  };
-  updateImageInfoWithSrc(target.src, imageInfo, gl);
-  return imageInfo;
-};
-
-const makeImageInfoFromImageMD = (
-  target: ImageMDInfo,
-  centerPos: Vec2,
-  gl: WebGLRenderingContext,
-  pixelInfos: PixelData[][],
-  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>,
-): ImageInfo | undefined => {
-  const tex = makeDummyTex(gl);
-  if (!tex) {
-    return;
-  }
-  const imageInfo: ImageInfo = {
-    tex: tex,
-    centerPos: centerPos,
-    size: {width: 1, height: 1},
-    centerPosPixelOffset: target.centerPosPixelOffset,
-  };
-  const id = IdProvider.getId();
-  if (!objects.has(target.layerLev))
-    objects.set(target.layerLev, new Map<number, ImageInfo>());
-  objects.get(target.layerLev)!.set(id, imageInfo);
-  updateImageInfoWithSrc(target.src, imageInfo, gl, id, pixelInfos);
-  return imageInfo;
-};
-
-const makeCollisionArrayFromCollisionMD = (
-  target: CollisionMDInfo,
-  centerPos: Vec2,
-  pixelInfos: PixelData[][],
-): void => {
-  const id = IdProvider.getId();
-  switch (target.collisionType) {
-    case ObjectCollisionFigureEnum.FILLED_SQUARE: {
-      const x_init =
-        centerPos.x - target.size.width / 2 + target.centerPosPixelOffset.x;
-      const x_limit =
-        centerPos.x + target.size.width / 2 + target.centerPosPixelOffset.x;
-      const y_init =
-        centerPos.y - target.size.height / 2 + target.centerPosPixelOffset.y;
-      const y_limit =
-        centerPos.y + target.size.height / 2 + target.centerPosPixelOffset.y;
-      for (let x = x_init; x < x_limit; x++) {
-        for (let y = y_init; y < y_limit; y++) {
-          pixelInfos[x][y] = {...pixelInfos[x][y], collisionInfoKey: id};
-        }
-      }
-      break;
-    }
-    default: {
-      console.error(
-        'makeCollisionArrayFromCollisionMD takes wrong param error',
-      );
-      break;
-    }
-  }
-};
-
-const insertObjectFromObjectImageMD = (
-  target: ObjectImageMD,
-  gl: WebGLRenderingContext,
-  centerPos: Vec2,
-  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>,
-  pixelInfos: PixelData[][],
-) => {
-  target.imageMDInfos.forEach(imageInfo => {
-    makeImageInfoFromImageMD(imageInfo, centerPos, gl, pixelInfos, objects);
-  });
-  target.collisionMDInfos.forEach(collisionInfo => {
-    makeCollisionArrayFromCollisionMD(collisionInfo, centerPos, pixelInfos);
-  });
-};
-
-export const makeWorldMap1 = (
-  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>,
-  gl: WebGLRenderingContext,
-): PixelData[][] | undefined => {
-  if (
-    !seaAndMountainVer1MD.collisionMDInfos[0] ||
-    !seaAndMountainVer1MD.imageMDInfos[0] ||
-    !seaAndMountainVer1MD.imageMDInfos[0].backgroundSize
-  ) {
-    console.error('seaAndMountainVer1MD is invalid');
-    return;
-  }
-  const result = Array.from(
-    Array(seaAndMountainVer1MD.imageMDInfos[0].backgroundSize.width),
-    () =>
-      Array(seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height).fill({
-        imageInfoKey: 0,
-        collisionInfoKey: 0,
-      }),
-  );
-
-  const backgroundCenterPos: Vec2 = {
-    x: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.width / 2,
-    y: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height / 2,
-  };
-  makeImageInfoFromImageMD(
-    seaAndMountainVer1MD.imageMDInfos[0],
-    backgroundCenterPos,
-    gl,
-    result,
-    objects,
-  );
-  makeCollisionArrayFromCollisionMD(
-    seaAndMountainVer1MD.collisionMDInfos[0],
-    backgroundCenterPos,
-    result,
-  );
-
-  insertObjectFromObjectImageMD(
-    bigTreeMD,
-    gl,
-    {x: 900, y: 900},
-    objects,
-    result,
-  );
-
-  insertObjectFromObjectImageMD(
-    smallTreeMD,
-    gl,
-    {x: 1300, y: 900},
-    objects,
-    result,
-  );
-
-  insertObjectFromObjectImageMD(
-    greenGrassMD,
-    gl,
-    {x: 1400, y: 1400},
-    objects,
-    result,
-  );
-
-  insertObjectFromObjectImageMD(
-    grayBlockMD,
-    gl,
-    {x: 1000, y: 1000},
-    objects,
-    result,
-  );
-
-  return result;
-};
-
-export const makeAvatarMap = (
-  avatarsMap: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>,
-  gl: WebGLRenderingContext,
-): void => {
-  const loadAvatarArray: AvatarImageMD[] = [
-    brownBearMD,
-    brownHorseMD,
-    whiteRabbitMD,
-    pinkPigMD,
-  ];
-
-  loadAvatarArray.forEach(target => {
-    const map = new Map<AvatarPartImageEnum, ImageInfo>();
-    target.avatarMDInfos.forEach(info => {
-      const imageInfo = makeAvatarInfoFromImageMD(info, gl);
-      if (!imageInfo) {
-        console.error('makeAvatarMap loop error imageInfo is not valid');
-        return;
-      }
-      map.set(info.partType, imageInfo);
-    });
-    avatarsMap.set(target.avatarType, map);
-  });
-
-  return;
-};
-
-/////////////////////////// ImageMetaData Part End ./////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////

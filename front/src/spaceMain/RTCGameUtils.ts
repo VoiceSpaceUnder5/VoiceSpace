@@ -118,9 +118,12 @@ class Me implements IPlayer {
             const posX = Math.round(left.x + i);
             const posY = Math.round(left.y + a * i);
             if (
+              posX < 0 ||
+              posX >= imageInfoProvider.pixelInfos.length ||
+              posY < 0 ||
+              posY >= imageInfoProvider.pixelInfos[0].length ||
               imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !== 0
             ) {
-              //console.log(posX, posY, imageInfoProvider.pixelInfos[posX][posY]);
               return true;
             }
           }
