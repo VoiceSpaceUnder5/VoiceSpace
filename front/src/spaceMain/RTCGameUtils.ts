@@ -414,4 +414,10 @@ export default class PeerManager {
     });
     return newPeer;
   }
+  close(): void {
+    this.peers.forEach(peer => {
+      peer.close();
+    });
+    this.socket.close();
+  }
 }

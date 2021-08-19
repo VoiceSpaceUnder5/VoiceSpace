@@ -62,7 +62,7 @@ const SpaceMain = (props: RouteComponentProps) => {
 
     const backgroundImageInfo = imageInfoProvider.objects
       .get(LayerLevelEnum.BACKGROUND_ZERO)!
-      .get(1)!;
+      .get(imageInfoProvider.backGroundMapId)!;
 
     //카메라 객체 초기화
     const camera = new Camera(
@@ -265,6 +265,12 @@ const SpaceMain = (props: RouteComponentProps) => {
       .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
+
+    return () => {
+      if (globalContext.peerManager) {
+        globalContext.peerManager.close();
+      }
+    };
   }, []);
 
   const revealJoystickBase = () => {
@@ -357,6 +363,10 @@ const SpaceMain = (props: RouteComponentProps) => {
     }
   };
 
+  const goToHome = () => {
+    props.history.push('/');
+  };
+
   return (
     <>
       <canvas
@@ -371,6 +381,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         peerManager={peerManagerRef.current}
         myMicToggle={onClickMicOnOff}
         onProfileChange={onProfileChangeButtonClick}
+        goToHome={goToHome}
       />
       <Joystick />
     </>
