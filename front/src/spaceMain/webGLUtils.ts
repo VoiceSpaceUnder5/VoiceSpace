@@ -129,6 +129,21 @@ const setAttributeData = (
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 };
 
+export const isInRect = (
+  rectCenterPos: Vec2,
+  rectSize: Size,
+  pointPos: Vec2,
+): boolean => {
+  if (
+    pointPos.x >= rectCenterPos.x - rectSize.width / 2 &&
+    pointPos.x <= rectCenterPos.x + rectSize.width / 2 &&
+    pointPos.y >= rectCenterPos.y - rectSize.height / 2 &&
+    pointPos.y <= rectCenterPos.y + rectSize.height / 2
+  )
+    return true;
+  return false;
+};
+
 // export interface ImageInfo {
 // 	centerPosPixelOffset: Vec2;
 // 	tex: WebGLTexture;

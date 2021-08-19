@@ -1,7 +1,12 @@
 import React, {useEffect, useRef, useContext} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import ImageInfoProvider from './ImageInfoProvider';
-import GLHelper, {DrawInfo, Camera} from './webGLUtils';
+import GLHelper, {
+  DrawInfo,
+  Camera,
+  resizeCanvasToDisplaySize,
+  isInRect,
+} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
@@ -122,14 +127,15 @@ const SpaceMain = (props: RouteComponentProps) => {
         /////////////////////////////////////////////////
         // event setting start //////////////////////////
         window.addEventListener('resize', e => {
+          //to - do
           canvas.width = canvas.clientWidth;
           canvas.height = canvas.clientHeight;
           camera.originSize = {
             width: canvas.clientWidth,
             height: canvas.clientHeight,
           };
-          camera.scale = 1;
           camera.size = {...camera.originSize};
+          camera.scale = 1;
           gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
         });
 
@@ -192,8 +198,8 @@ const SpaceMain = (props: RouteComponentProps) => {
           hideJoystickBase();
         });
 
-        const drawObjectsAfterAvatar = () => {
-          const temp = [8, 9];
+        const drawObjectsBeforeAvatar = () => {
+          const temp = [0, 1, 2, 3];
           temp.forEach(key => {
             imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
               glHelper.drawImage({
@@ -205,15 +211,26 @@ const SpaceMain = (props: RouteComponentProps) => {
           });
         };
 
-        const drawObjectsBeforeAvatar = () => {
-          const temp = [0, 1, 2, 3];
+        const drawObjectsAfterAvatar = () => {
+          const temp = [8, 9];
           temp.forEach(key => {
             imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+              if (
+                isInRect(
+                  imageInfo.centerPos,
+                  imageInfo.size,
+                  peerManager.me.centerPos,
+                )
+              ) {
+                glHelper.transparency = 0.3;
+              }
+
               glHelper.drawImage({
                 ...imageInfo,
                 scale: 1,
                 rotateRadian: 0,
               });
+              glHelper.transparency = 1.0;
             });
           });
         };
