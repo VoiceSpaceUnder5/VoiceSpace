@@ -28,6 +28,7 @@ interface NavigationProps {
   peerManager: PeerManager | undefined;
   onProfileChange: (avatarIdx: number, nickname: string) => void;
   myMicToggle: (on: boolean) => void;
+  goToHome: () => void;
 }
 
 const Navigation = (props: NavigationProps) => {
@@ -71,7 +72,13 @@ const Navigation = (props: NavigationProps) => {
   );
 
   const exit = () => {
-    // props.history.push("/");
+    if (globalContext.peerManager) {
+      globalContext.peerManager.peers.forEach(peer => {
+        peer.close();
+      });
+      globalContext.peerManager.socket.close();
+    }
+    props.goToHome();
   };
 
   const options = (

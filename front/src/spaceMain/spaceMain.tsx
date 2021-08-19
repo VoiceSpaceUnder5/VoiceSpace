@@ -357,6 +357,10 @@ const SpaceMain = (props: RouteComponentProps) => {
     }
   };
 
+  const goToHome = () => {
+    props.history.push('/');
+  };
+
   return (
     <>
       <canvas
@@ -371,6 +375,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         peerManager={peerManagerRef.current}
         myMicToggle={onClickMicOnOff}
         onProfileChange={onProfileChangeButtonClick}
+        goToHome={goToHome}
       />
       <Joystick />
     </>
