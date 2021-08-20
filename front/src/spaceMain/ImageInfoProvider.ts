@@ -21,18 +21,29 @@ import {
   greenGrassMD,
   smallTreeMD,
 } from './ImageMetaData';
+import {LoadingInfo} from './spaceMain';
 
 class ImageInfoProvider {
   objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
   pixelInfos: PixelData[][]; //
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
+  // for loading
+  readyToLoad: Map<ObjectImageMD, Vec2[]>;
+  setloadStatus: React.Dispatch<React.SetStateAction<LoadingInfo>>;
+
   gl: WebGLRenderingContext;
   backGroundMapId: number;
 
-  constructor(gl: WebGLRenderingContext, backgroundIdx: number) {
+  constructor(
+    gl: WebGLRenderingContext,
+    setloadStatus: React.Dispatch<React.SetStateAction<LoadingInfo>>,
+  ) {
     this.gl = gl;
     this.objects = new Map();
     this.avatars = new Map();
+    this.readyToLoad = new Map();
+    this.setloadStatus = setloadStatus;
+
     this.pixelInfos = [];
     this.backGroundMapId = 1;
     this.makeAvatarMap();
@@ -50,6 +61,20 @@ class ImageInfoProvider {
     }
     return result;
   }
+
+  increaseNeedToLoad = (value = 1): void => {
+    this.setloadStatus(before => {
+      //console.log('increaseNeedToLoad', before);
+      return {...before, needToLoad: before.needToLoad + value};
+    });
+  };
+
+  increasefinishLoad = (): void => {
+    this.setloadStatus(before => {
+      //console.log('increasefinishLoad', before);
+      return {...before, finishLoad: before.finishLoad + 1};
+    });
+  };
 
   setTexParam = (tex: WebGLTexture): void => {
     this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
@@ -138,24 +163,47 @@ class ImageInfoProvider {
           }
         }
       }
+      this.increasefinishLoad();
     });
     image.src = src;
     return;
   };
 
   makeAvatarInfoFromImageMD = (target: ImageMDInfo): ImageInfo | undefined => {
-    const tex = this.makeDummyTex();
+    this.increaseNeedToLoad();
+
+    const tex = this.gl.createTexture();
     if (!tex) {
+      console.error('updateImageInfoWithSrc createTexture Error');
       return;
     }
-    const imageInfo: ImageInfo = {
+    this.setTexParam(tex);
+
+    const result: ImageInfo = {
       tex: tex,
-      centerPos: {x: 0, y: 0},
       size: {width: 1, height: 1},
+      centerPos: {x: 0, y: 0},
       centerPosPixelOffset: target.centerPosPixelOffset,
     };
-    this.updateImageInfoWithSrc(target.src, imageInfo);
-    return imageInfo;
+
+    const image = new Image();
+    image.addEventListener('load', () => {
+      this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        this.gl.RGBA,
+        this.gl.RGBA,
+        this.gl.UNSIGNED_BYTE,
+        image,
+      );
+      result.tex = tex;
+      result.size.width = image.width;
+      result.size.height = image.height;
+      this.increasefinishLoad();
+    });
+    image.src = target.src;
+    return result;
   };
 
   makeImageInfoFromImageMD = (
@@ -251,18 +299,77 @@ class ImageInfoProvider {
     }
   };
 
-  insertObjectFromObjectImageMD = (
-    target: ObjectImageMD,
-    centerPos: Vec2,
-  ): void => {
-    const id = IdProvider.getId();
+  startLoading = (): void => {
+    this.readyToLoad.forEach((centerPositions, target) => {
+      target.imageMDInfos.forEach(imageMdInfo => {
+        const tex = this.gl.createTexture();
+        if (!tex) {
+          console.error('cannot make tex in StartLoading...');
+          return;
+        }
+        this.setTexParam(tex);
+        const image = new Image();
+        image.addEventListener('load', () => {
+          this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+          this.gl.texImage2D(
+            this.gl.TEXTURE_2D,
+            0,
+            this.gl.RGBA,
+            this.gl.RGBA,
+            this.gl.UNSIGNED_BYTE,
+            image,
+          );
+          const baseImageInfo: ImageInfo = {
+            tex: tex,
+            size: {width: image.width, height: image.height},
+            centerPos: {x: 0, y: 0},
+            centerPosPixelOffset: imageMdInfo.centerPosPixelOffset,
+          };
 
-    target.imageMDInfos.forEach(imageInfo => {
-      this.makeImageInfoFromImageMD(imageInfo, centerPos, id);
+          centerPositions.forEach(centerPos => {
+            const imageInfo = {
+              tex: baseImageInfo.tex,
+              size: baseImageInfo.size,
+              centerPos: {...centerPos},
+              centerPosPixelOffset: baseImageInfo.centerPosPixelOffset,
+            };
+            if (!this.objects.has(imageMdInfo.layerLev))
+              this.objects.set(
+                imageMdInfo.layerLev,
+                new Map<number, ImageInfo>(),
+              );
+            const id = IdProvider.getId();
+            if (imageMdInfo.backgroundSize) this.backGroundMapId = id;
+            this.objects.get(imageMdInfo.layerLev)!.set(id, imageInfo);
+
+            const x_init = imageInfo.centerPos.x - image.width / 2;
+            const x_limit = imageInfo.centerPos.x + image.width / 2;
+            const y_init = imageInfo.centerPos.y - image.height / 2;
+            const y_limit = imageInfo.centerPos.y + image.height / 2;
+            for (let x = x_init; x < x_limit; x++) {
+              for (let y = y_init; y < y_limit; y++) {
+                if (id)
+                  this.pixelInfos[x][y] = {
+                    ...this.pixelInfos[x][y],
+                    imageInfoKey: id,
+                  };
+              }
+            }
+            this.increasefinishLoad();
+          });
+        });
+        image.src = imageMdInfo.src;
+      });
     });
-    target.collisionMDInfos.forEach(collisionInfo => {
-      this.makeCollisionArrayFromCollisionMD(collisionInfo, centerPos, id);
-    });
+  };
+
+  insertLoadingQueue = (target: ObjectImageMD, centerPos: Vec2): void => {
+    if (!this.readyToLoad.has(target)) {
+      this.readyToLoad.set(target, [centerPos]);
+    } else {
+      this.readyToLoad.get(target)?.push(centerPos);
+    }
+    this.increaseNeedToLoad(target.imageMDInfos.length);
   };
 
   // 첫번째 월드맵을 만드는 함수입니다.
@@ -294,39 +401,35 @@ class ImageInfoProvider {
       y: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height / 2,
     };
 
-    // insertObjectFromObjectImageMD 함수 이용하여 object 를 배치합니다.
-    this.insertObjectFromObjectImageMD(
-      seaAndMountainVer1MD,
-      backgroundCenterPos,
-    );
-    this.backGroundMapId = IdProvider.cnt;
-
-    this.insertObjectFromObjectImageMD(bigTreeMD, {x: 900, y: 900});
-    this.insertObjectFromObjectImageMD(smallTreeMD, {x: 1600, y: 800});
+    // insertloadQueue 를 통해서 로드되어야 할 것들을 로드큐에 넣어줍니다.
+    this.insertLoadingQueue(seaAndMountainVer1MD, backgroundCenterPos);
+    this.insertLoadingQueue(bigTreeMD, {x: 900, y: 900});
+    this.insertLoadingQueue(smallTreeMD, {x: 1600, y: 800});
     for (let i = 0; i < 15; i++) {
-      this.insertObjectFromObjectImageMD(grayBlockMD, {
+      this.insertLoadingQueue(grayBlockMD, {
         x: 800 + i * grayBlockMD.collisionMDInfos[0].size.width,
         y: 500,
       });
     }
     for (let i = 0; i < 15; i++) {
-      this.insertObjectFromObjectImageMD(grayBlockMD, {
+      this.insertLoadingQueue(grayBlockMD, {
         x: 800 + i * grayBlockMD.collisionMDInfos[0].size.width,
         y: 1450,
       });
     }
     for (let i = 0; i < 11; i++) {
-      this.insertObjectFromObjectImageMD(grayBlockMD, {
+      this.insertLoadingQueue(grayBlockMD, {
         x: 800 + 14 * grayBlockMD.collisionMDInfos[0].size.width,
         y: 500 + i * grayBlockMD.collisionMDInfos[0].size.height,
       });
     }
-    this.insertObjectFromObjectImageMD(greenGrassMD, {x: 900, y: 900});
-    this.insertObjectFromObjectImageMD(greenGrassMD, {x: 1100, y: 1100});
-    this.insertObjectFromObjectImageMD(greenGrassMD, {x: 1200, y: 1200});
-    this.insertObjectFromObjectImageMD(greenGrassMD, {x: 1300, y: 1100});
-    this.insertObjectFromObjectImageMD(greenGrassMD, {x: 1300, y: 1000});
-    this.insertObjectFromObjectImageMD(greenGrassMD, {x: 1500, y: 1000});
+    this.insertLoadingQueue(greenGrassMD, {x: 900, y: 900});
+    this.insertLoadingQueue(greenGrassMD, {x: 1100, y: 1100});
+    this.insertLoadingQueue(greenGrassMD, {x: 1200, y: 1200});
+    this.insertLoadingQueue(greenGrassMD, {x: 1300, y: 1100});
+    this.insertLoadingQueue(greenGrassMD, {x: 1300, y: 1000});
+    this.insertLoadingQueue(greenGrassMD, {x: 1500, y: 1000});
+    this.startLoading();
   };
 
   makeAvatarMap = (): void => {
