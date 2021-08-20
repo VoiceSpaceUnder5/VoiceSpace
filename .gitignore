@@ -9,3 +9,7 @@
 
 # vscode
 */.vscode
+
+*/sslKeys
+*.crt
+*.key

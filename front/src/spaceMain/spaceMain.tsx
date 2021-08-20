@@ -15,6 +15,7 @@ import Joystick from './Joystick';
 import './spaceMain.css';
 import GlobalContext from './GlobalContext';
 import {message} from 'antd';
+import {Certificate} from 'crypto';
 
 const qs = require('query-string');
 
@@ -66,7 +67,6 @@ const SpaceMain = (props: RouteComponentProps) => {
       console.error('makeImageInfoProvider fail');
       return;
     }
-
     const backgroundImageInfo = imageInfoProvider.objects
       .get(LayerLevelEnum.BACKGROUND_ZERO)!
       .get(imageInfoProvider.backGroundMapId)!;
