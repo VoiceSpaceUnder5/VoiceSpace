@@ -18,7 +18,7 @@ const Panel = () => {
   return (
     <Dropdown overlay={panel} trigger={['click']}>
       <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-        <UpOutlined className="navigationObject" />
+        <UpOutlined className="navbar_button" />
       </a>
     </Dropdown>
   );

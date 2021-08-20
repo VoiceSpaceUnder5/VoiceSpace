@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {Menu, Dropdown, Button} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import GlobalContext from './GlobalContext';
-
+import './spaceMain';
 const imgSrcs = [
   './assets/spaceMain/avatar/brownHorseFaceMute.png',
   './assets/spaceMain/avatar/brownBearFaceMute.png',
@@ -97,7 +97,7 @@ const Profile = () => {
   return (
     <Dropdown overlay={profile} trigger={['click']}>
       <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-        <span className="navigationObject">{changedName}</span>
+        <span className="navbar_button">{changedName}</span>
       </a>
     </Dropdown>
   );

@@ -1,31 +1,93 @@
+/* canvas */
+canvas {
+  width: 100vw;
+  height: 92vh;
+  /* flex: 1; */
+  display: block;
+}
+
+/* 이름표, 마우스 클릭좌표 받아오기 등 기능 */
+#divContainer {
+  /* flex: 1; */
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 92vh;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.canvasOverlay {
+  position: absolute;
+}
+
 /* navbar 전체 */
 .navbar {
+  height: 8vh;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: white;
+  justify-content: space-between;
+  background-color: gainsboro;
   padding: 8px 12px;
+  font-size: 3vh;
+  flex-wrap: nowrap;
+  flex-direction: row;
 }
 
 /* navbar 왼쪽 부분 */
+.navbar_left {
+  flex: 1 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
+.icon {
+  height: 100%;
+}
 /* navbar 중간부분 */
-.navbar_menu {
+.navbar_center {
+  flex: 2 1 0;
+  justify-content: center;
   display: flex;
+  align-items: center;
+  height: 100%;
   list-style: none;
+  font-size: 3vh;
   padding-left: 0;
 }
-.navbar_menu li {
-  padding: 8px 12px;
+.navbar_center li {
+  padding: 0px 12px;
+  height: 100%;
 }
 
 /* navbar 오른쪽 부분 */
-.navbar_panel {
+.navbar_right {
+  flex: 1 1 0;
   list-style: none;
+  text-align: right;
+}
+
+.navbar_button {
+  color: black;
+}
+/* 네비게이션 모바일 */
+@media screen and (max-width: 767px) {
+  .navbar_left {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .navbar_center li {
+    padding: 0px 6px;
+    height: 100%;
+  }
 }
 
 /* joystick */
 .joystickBase {
+  top: 0px;
   position: absolute;
   visibility: hidden;
   width: 170px;
@@ -33,6 +95,7 @@
   background: rgba(196, 196, 196, 0);
 }
 .joystick {
+  top: 0px;
   position: absolute;
   visibility: hidden;
   width: 70px;

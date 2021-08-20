@@ -1,6 +1,7 @@
 import React from 'react';
 import {Menu, Dropdown} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
+import './spaceMain';
 
 const ScreenShare = () => {
   const screenshare = () => {
@@ -18,7 +19,7 @@ const ScreenShare = () => {
   return (
     <Dropdown overlay={screenshare} trigger={['click']}>
       <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-        <DesktopOutlined className="navigationObject" />
+        <DesktopOutlined className="navbar_button" />
       </a>
     </Dropdown>
   );

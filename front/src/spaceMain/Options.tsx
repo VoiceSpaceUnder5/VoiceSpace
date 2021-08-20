@@ -19,7 +19,7 @@ const Options = () => {
     <Dropdown overlay={options} trigger={['click']}>
       <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
         <EllipsisOutlined
-          className="navigationObject"
+          className="navbar_button"
           style={{transform: 'rotate(90deg)'}}
         />
       </a>

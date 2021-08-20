@@ -46,33 +46,33 @@ const Navigation = (props: NavigationProps) => {
 
   return (
     <nav className="navbar">
-      <div className="navbar_profile">
+      <div className="navbar_left">
         <Profile />
       </div>
 
-      <ul className="navbar_menu">
-        <li>
+      <div className="navbar_center">
+        <li className="icon">
           <MicOnOff />
         </li>
 
-        <li>
+        <li className="icon">
           <ScreenShare />
         </li>
 
-        <li>
+        <li className="icon">
           <Options />
         </li>
 
-        <li>
+        <li className="icon">
           <LogoutOutlined className="navigationObject" onClick={exit} />
         </li>
-      </ul>
+      </div>
 
-      <ul className="navbar_panel">
+      <div className="navbar_right">
         <li>
           <Panel />
         </li>
-      </ul>
+      </div>
     </nav>
   );
 };

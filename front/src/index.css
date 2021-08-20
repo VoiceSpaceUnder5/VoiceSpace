@@ -1,26 +1,22 @@
+html {
+  min-height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
 body,
 #root {
   margin: 0;
+  padding: 0;
   width: 100vw;
   height: 100vh;
 }
 
-canvas {
-  width: 100vw;
-  height: 90vh;
-  display: block;
-}
-
-#divContainer {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100vw;
-  height: 90vh;
-  z-index: 10;
-  overflow: hidden;
-}
-
-.canvasOverlay {
-  position: absolute;
+div {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
