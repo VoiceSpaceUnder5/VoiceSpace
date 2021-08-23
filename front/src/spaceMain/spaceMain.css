@@ -66,9 +66,8 @@ canvas {
   font-size: calc(var(--vh) * 3);
   padding-left: 0;
 }
-.navbar_center li {
-  padding: 0px 12px;
-  height: 100%;
+.navbar_center > * {
+  padding: 0 1vw;
 }
 /* navbar 오른쪽 부분 */
 .navbar_right {

@@ -51,21 +51,10 @@ const Navigation = (props: NavigationProps) => {
       </div>
 
       <div className="navbar_center">
-        <li className="icon">
-          <MicOnOff />
-        </li>
-
-        <li className="icon">
-          <ScreenShare />
-        </li>
-
-        <li className="icon">
-          <Options />
-        </li>
-
-        <li className="icon">
-          <LogoutOutlined className="navigationObject" onClick={exit} />
-        </li>
+        <MicOnOff />
+        <ScreenShare />
+        <Options />
+        <LogoutOutlined onClick={exit} />
       </div>
 
       <div className="navbar_right">
