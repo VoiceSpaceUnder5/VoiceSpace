@@ -31,7 +31,7 @@ interface ReadyToLoadValue {
 class ImageInfoProvider {
   background: ImageInfo | null;
   objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
-  pixelInfos: PixelData[][]; //
+  pixelInfos: PixelData[][];
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
   // for loading
   readyToLoad: Map<ObjectImageMD, ReadyToLoadValue[]>;
@@ -51,15 +51,15 @@ class ImageInfoProvider {
 
     this.pixelInfos = [];
     this.makeAvatarMap();
-    this.makeWorldMap1();
-    console.log(this);
     // 위 코드까지는 반드시 필요합니다. //
+    this.makeWorldMap1();
     // 아래 코드는 코드적으로 맵을 생성해내는 것입니다. //
   }
+
   getAvatarImageInfo(
     avatarEnum: AvatarImageEnum,
     avatarPartEnum: AvatarPartImageEnum,
-  ) {
+  ): ImageInfo | undefined {
     const result = this.avatars.get(avatarEnum)?.get(avatarPartEnum);
     if (!result) {
       //console.error('cannot find imageInfo from avatarMap error');
@@ -103,134 +103,6 @@ class ImageInfoProvider {
       this.gl.TEXTURE_MAG_FILTER,
       this.gl.NEAREST,
     );
-  };
-
-  makeDummyTex = (): WebGLTexture | null => {
-    const tex = this.gl.createTexture();
-    if (!tex) {
-      console.error('makeDummyTex createTexture Error');
-      return null;
-    }
-    this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.RGBA,
-      1, // width
-      1, // height
-      0, // border
-      this.gl.RGBA,
-      this.gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255, 255]), // 파란색
-    );
-    this.setTexParam(tex);
-    return tex;
-  };
-
-  updateImageInfoWithSrc = (
-    src: string,
-    imageInfo: ImageInfo,
-    id?: number,
-  ): void => {
-    const tex = this.gl.createTexture();
-    if (!tex) {
-      console.error('updateImageInfoWithSrc createTexture Error');
-      return;
-    }
-    this.setTexParam(tex);
-
-    const image = new Image();
-    image.addEventListener('load', () => {
-      this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
-      this.gl.texImage2D(
-        this.gl.TEXTURE_2D,
-        0,
-        this.gl.RGBA,
-        this.gl.RGBA,
-        this.gl.UNSIGNED_BYTE,
-        image,
-      );
-      imageInfo.tex = tex;
-      imageInfo.size.width = image.width;
-      imageInfo.size.height = image.height;
-      if (id) {
-        const x_init = imageInfo.centerPos.x - image.width / 2;
-        const x_limit = imageInfo.centerPos.x + image.width / 2;
-        const y_init = imageInfo.centerPos.y - image.height / 2;
-        const y_limit = imageInfo.centerPos.y + image.height / 2;
-        for (let x = x_init; x < x_limit; x++) {
-          for (let y = y_init; y < y_limit; y++) {
-            if (id)
-              this.pixelInfos[x][y] = {
-                ...this.pixelInfos[x][y],
-                imageInfoKey: id,
-              };
-          }
-        }
-      }
-      this.increasefinishLoad();
-    });
-    image.src = src;
-    return;
-  };
-
-  makeAvatarInfoFromImageMD = (target: ImageMDInfo): ImageInfo | undefined => {
-    this.increaseNeedToLoad();
-
-    const tex = this.gl.createTexture();
-    if (!tex) {
-      console.error('updateImageInfoWithSrc createTexture Error');
-      return;
-    }
-    this.setTexParam(tex);
-
-    const result: ImageInfo = {
-      tex: tex,
-      size: {width: 1, height: 1},
-      centerPos: {x: 0, y: 0},
-      centerPosPixelOffset: target.centerPosPixelOffset,
-    };
-
-    const image = new Image();
-    image.addEventListener('load', () => {
-      this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
-      this.gl.texImage2D(
-        this.gl.TEXTURE_2D,
-        0,
-        this.gl.RGBA,
-        this.gl.RGBA,
-        this.gl.UNSIGNED_BYTE,
-        image,
-      );
-      result.tex = tex;
-      result.size.width = image.width;
-      result.size.height = image.height;
-      this.increasefinishLoad();
-    });
-    image.src = target.src;
-    return result;
-  };
-
-  makeImageInfoFromImageMD = (
-    target: ImageMDInfo,
-    centerPos: Vec2,
-    id: number,
-  ): ImageInfo | undefined => {
-    const tex = this.makeDummyTex();
-    if (!tex) {
-      return;
-    }
-    const imageInfo: ImageInfo = {
-      tex: tex,
-      centerPos: centerPos,
-      size: {width: 1, height: 1},
-      centerPosPixelOffset: target.centerPosPixelOffset,
-    };
-    if (!this.objects.has(target.layerLev))
-      this.objects.set(target.layerLev, new Map<number, ImageInfo>());
-    this.objects.get(target.layerLev)!.set(id, imageInfo);
-    this.updateImageInfoWithSrc(target.src, imageInfo, id);
-    return imageInfo;
   };
 
   makeCollisionArrayFromCollisionMD = (
@@ -308,7 +180,7 @@ class ImageInfoProvider {
     imageMDInfo: ImageMDInfo,
     centerPos: Vec2,
     cb: (imageInfo: ImageInfo) => void,
-  ) => {
+  ): void => {
     const tex = this.gl.createTexture();
     if (!tex) {
       console.error('cannot make tex in StartLoading...');
@@ -480,16 +352,15 @@ class ImageInfoProvider {
     loadAvatarArray.forEach(target => {
       const map = new Map<AvatarPartImageEnum, ImageInfo>();
       target.avatarMDInfos.forEach(info => {
-        const imageInfo = this.makeAvatarInfoFromImageMD(info);
-        if (!imageInfo) {
-          console.error('makeAvatarMap loop error imageInfo is not valid');
-          return;
-        }
-        map.set(info.partType, imageInfo);
+        this.increaseNeedToLoad();
+        const cb = (imageinfo: ImageInfo) => {
+          map.set(info.partType, imageinfo);
+          this.increasefinishLoad();
+        };
+        this.loadingImageInfoFromImageMDInfo(info, {x: 0, y: 0}, cb);
       });
       this.avatars.set(target.avatarType, map);
     });
-
     return;
   };
 }
