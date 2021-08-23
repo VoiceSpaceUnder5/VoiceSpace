@@ -49,10 +49,51 @@ canvas {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.icon {
-  height: 100%;
+.navbar_profile {
+  padding: 0 0.5vw 0 0.5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: min-content;
 }
+.profile_title {
+  font-size: 3vh;
+  font-weight: bold;
+}
+.name_title,
+.avatar_title {
+  font-size: 2vh;
+  font-weight: bold;
+}
+.profile_avatar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.profile_avatar > img {
+  width: 100px;
+  height: 80px;
+}
+.profile_avatar > button {
+  align-items: center;
+  height: 20%;
+}
+.profile_input > input {
+  width: 95%;
+  max-width: 150px;
+}
+.profile_button,
+.profile_input {
+  padding-top: 1%;
+  text-align: center;
+  margin-top: 0.6vh;
+  margin-bottom: 0.6vh;
+}
+.profile_button > Button {
+  width: 80%;
+}
+
 /* navbar 중간부분 */
 .navbar_center {
   flex: 2 1 0;

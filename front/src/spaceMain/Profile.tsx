@@ -58,39 +58,30 @@ const Profile = () => {
       }
     };
     return (
-      <Menu className="profile">
-        <span style={{fontSize: '20px', fontWeight: 'bold'}}>프로필 설정</span>
-        <div className="profileDisplay">
-          이름
-          <div>
-            <input
-              value={nickname}
-              onChange={onNicknameInput}
-              style={{width: '100%'}}
-            />
+      <Menu className="navbar_profile">
+        <div className="profile_title">프로필 설정</div>
+        <Menu.Divider></Menu.Divider>
+        <div>
+          <div className="name_title">이름</div>
+          <div className="profile_input">
+            <input value={nickname} onChange={onNicknameInput} />
+          </div>
+          <div className="avatar_title">아바타</div>
+          <div className="profile_avatar">
+            <button>
+              <LeftCircleFilled onClick={onLeftClick} />
+            </button>
+            <img className="avatar_preview" src={imgSrcs[avatarIdx]}></img>
+            <button>
+              <RightCircleFilled onClick={onRightClick} />
+            </button>
           </div>
         </div>
-        <div className="avatar">
-          <div className="profileDisplay">아바타</div>
-          <button>
-            <LeftCircleFilled onClick={onLeftClick} />
-          </button>
-          <img
-            src={imgSrcs[avatarIdx]}
-            style={{width: '10vw', height: '20vh'}}
-          ></img>
-          <button>
-            <RightCircleFilled onClick={onRightClick} />
-          </button>
+        <div className="profile_button">
+          <Button type="primary" shape="round" onClick={onProfileChangeClick}>
+            변경
+          </Button>
         </div>
-        <Button
-          type="primary"
-          shape="round"
-          style={{width: '100%'}}
-          onClick={onProfileChangeClick}
-        >
-          변경
-        </Button>
       </Menu>
     );
   };
