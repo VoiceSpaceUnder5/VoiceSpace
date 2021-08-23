@@ -219,7 +219,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         );
         setCanStart(true);
 
-        window.addEventListener('resize', e => {
+        const resizeEventHandler = () => {
           canvas.width = canvas.clientWidth;
           canvas.height = canvas.clientHeight;
           camera.originSize = {
@@ -229,7 +229,8 @@ const SpaceMain = (props: RouteComponentProps) => {
           camera.size = {...camera.originSize};
           camera.scale = 1;
           gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
-        });
+        };
+        window.addEventListener('resize', resizeEventHandler);
       })
       .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
