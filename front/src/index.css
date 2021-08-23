@@ -1,24 +1,21 @@
+html {
+  padding: env(safe-area-inset);
+}
+
 body,
 #root {
   margin: 0;
+  padding: 0;
   width: 100vw;
   height: 100vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 100);
 }
 
-canvas {
-  width: 100vw;
-  height: 90vh;
-  display: block;
-}
-
-#divContainer {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100vw;
-  height: 90vh;
-  z-index: 10;
-  overflow: hidden;
+div {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #divLoad {

@@ -1,70 +1,101 @@
-#footer {
+/* canvas */
+canvas {
+  width: 100vw;
+  height: 92vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 92);
+  display: block;
+}
+
+/* 이름표, 마우스 클릭좌표 받아오기 등 기능 */
+#divContainer {
+  /* flex: 1; */
   position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 10vh;
-  width: 100%;
-  padding: 0px;
-  text-align: center;
-  color: white;
-  background: #bae7ff;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 92vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 92);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.canvasOverlay {
+  position: absolute;
+}
+
+/* navbar 전체 */
+.navbar {
+  height: 8vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 8);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 6vh;
-  z-index: 11;
+  background-color: gainsboro;
+  padding: 8px 12px;
+  font-size: 3vh;
+  /* for Iphone */
+  font-size: calc(var(--vh) * 3);
+  flex-wrap: nowrap;
+  flex-direction: row;
 }
 
-.navigationObject {
-  padding: 0px 10px 0px 10px;
-  color: #00a0ff;
-  text-align: center;
+/* navbar 왼쪽 부분 */
+.navbar_left {
+  flex: 1 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-#spaceMain {
-  margin: 0%, 0%, 0%, 0%;
-  padding-left: 0%;
-  padding-top: 0%;
-  padding-right: 0%;
-  height: 90vh;
+.icon {
+  height: 100%;
 }
-
-button {
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit;
-}
-
-.profile {
-  padding: 10px 10px 10px 10px;
-}
-
-.profile > div {
-  padding: 5px 0px 5px 0px;
-}
-
-.avatar:not(div) {
+/* navbar 중간부분 */
+.navbar_center {
+  flex: 2 1 0;
+  justify-content: center;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  list-style: none;
+  font-size: 3vh;
+  /* for Iphone */
+  font-size: calc(var(--vh) * 3);
+  padding-left: 0;
 }
-/* style={{color: '#00a0ff', paddingLeft: '10px'}} */
-
-.avatar button {
-  color: #00a0ff;
-  padding-left: 6px;
-  padding-right: 6px;
+.navbar_center > * {
+  padding: 0 1vw;
+}
+/* navbar 오른쪽 부분 */
+.navbar_right {
+  flex: 1 1 0;
+  list-style: none;
+  text-align: right;
 }
 
-.profileDisplay {
-  font-size: 15px;
-  font-weight: bold;
+.navbar_button {
+  color: black;
 }
-/* style={{color: '#00a0ff', paddingLeft: '10px'}} */
 
+/* 네비게이션 모바일 */
+@media screen and (max-width: 767px) {
+  .navbar_left {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .navbar_center li {
+    padding: 0px 6px;
+    height: 100%;
+  }
+}
+
+/* joystick */
 .joystickBase {
+  top: 0px;
   position: absolute;
   visibility: hidden;
   width: 170px;
@@ -72,6 +103,7 @@ button {
   background: rgba(196, 196, 196, 0);
 }
 .joystick {
+  top: 0px;
   position: absolute;
   visibility: hidden;
   width: 70px;

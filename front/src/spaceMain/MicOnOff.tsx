@@ -14,9 +14,9 @@ const MicOnOff = () => {
     setMic(!mic);
   };
   return mic ? (
-    <AudioOutlined className="navigationObject" onClick={onClick} />
+    <AudioOutlined className="navbar_button" onClick={onClick} />
   ) : (
-    <AudioMutedOutlined className="navigationObject" onClick={onClick} />
+    <AudioMutedOutlined className="navbar_button" onClick={onClick} />
   );
 };
 
