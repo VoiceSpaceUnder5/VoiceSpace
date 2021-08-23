@@ -198,7 +198,6 @@ const SpaceMain = (props: RouteComponentProps) => {
           return;
         }
         // 백엔드와 연결, socket을 통해 백엔드와 소통
-        // const socket = io("http://localhost:8080");
         const socket = io('https://under5.site:8080');
         if (!socket) {
           console.error('socket connection fail');

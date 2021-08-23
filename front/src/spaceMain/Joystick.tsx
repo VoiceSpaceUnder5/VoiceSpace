@@ -183,6 +183,13 @@ export default function Joystick(): JSX.Element {
       e.preventDefault();
       peerManager.me.isMoving = false;
       hideJoystickBase();
+
+      if (joystickRef.current && joystickBaseRef.current) {
+        joystickRef.current.style.left = '0px';
+        joystickRef.current.style.top = '0px';
+        joystickBaseRef.current.style.left = '0px';
+        joystickBaseRef.current.style.top = '0px';
+      }
     });
   }, [globalContext.peerManager]);
   return (
