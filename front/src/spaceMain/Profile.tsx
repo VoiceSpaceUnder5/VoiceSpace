@@ -15,10 +15,13 @@ const animalName: string[] = ['말', '곰', '돼지', '토끼'];
 const Profile = () => {
   const globalContext = useContext(GlobalContext);
   const [changedName, setChangedName] = useState(globalContext.initialInfo[1]);
+  const [nickname, setNickname] = useState(globalContext.initialInfo[1]);
   const [avatarIdx, setAvatarIdx] = useState(
     Number(globalContext.initialInfo[0]),
   );
-  const [nickname, setNickname] = useState(globalContext.initialInfo[1]);
+  const [changedIdx, setChangedIdx] = useState(
+    Number(globalContext.initialInfo[0]),
+  );
   const onProfileChangeButtonClick = (
     newAvatarIdx: number,
     newNickname: string,
@@ -28,6 +31,12 @@ const Profile = () => {
       globalContext.peerManager.me.div.innerText = newNickname;
       globalContext.peerManager.me.nickname = newNickname;
     }
+  };
+  const notChanged = () => {
+    setTimeout(() => {
+      setNickname(changedName);
+      setAvatarIdx(changedIdx);
+    }, 500);
   };
   const profile = () => {
     if (globalContext.peerManager === undefined) {
@@ -48,6 +57,7 @@ const Profile = () => {
         onProfileChangeButtonClick(avatarIdx, nickname);
         setNickname(nickname);
         setChangedName(nickname);
+        setChangedIdx(avatarIdx);
       } else {
         onProfileChangeButtonClick(
           avatarIdx,
@@ -55,6 +65,7 @@ const Profile = () => {
         );
         setNickname(anonymous + animalName[avatarIdx]);
         setChangedName(anonymous + animalName[avatarIdx]);
+        setChangedIdx(avatarIdx);
       }
     };
     return (
@@ -86,7 +97,11 @@ const Profile = () => {
     );
   };
   return (
-    <Dropdown overlay={profile} trigger={['click']}>
+    <Dropdown
+      onVisibleChange={notChanged}
+      overlay={profile}
+      trigger={['click']}
+    >
       <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
         <span className="navbar_button">{changedName}</span>
       </a>
