@@ -5,17 +5,16 @@ import {v4 as uuidV4} from 'uuid';
 import './home.css';
 const qs = require('query-string');
 
-const Logo = () => {
-  return <img id="logoImage" src="./assets/home/homeLogo.png" />;
-};
-
-const Hello = () => {
+const Welcome = () => {
   return (
-    <p id="hello">
-      WELCOME
-      <br />
-      VOICE SPACE
-    </p>
+    <>
+      <img className="logoImage" src="./assets/home/homeLogo.png" />
+      <div className="welcome">
+        WELCOME
+        <br />
+        VOICE SPACE
+      </div>
+    </>
   );
 };
 
@@ -36,7 +35,7 @@ interface CreateRoomProps {
 
 const CreateRoom = (props: CreateRoomProps) => {
   return (
-    <>
+    <div>
       <br />
       <Button
         id="button"
@@ -46,7 +45,7 @@ const CreateRoom = (props: CreateRoomProps) => {
       >
         새로운 보이스 채팅
       </Button>
-    </>
+    </div>
   );
 };
 
@@ -85,7 +84,10 @@ const EnterRoom = (props: EnterRoomProps) => {
 
   return (
     <div>
+      또는
+      <br />
       <input
+        className="input"
         onFocus={onFocus}
         onBlur={onBlur}
         placeholder="코드(RoomId)를 입력해주세요."
@@ -102,7 +104,7 @@ const MoreInfo = () => {
     <>
       <br />
       VOICE SPACE에 대해
-      <a href="www.naver.com">자세히 알아보세요</a>
+      <a href="www.naver.com"> 자세히 알아보세요</a>
     </>
   );
 };
@@ -118,13 +120,16 @@ const Home = (props: RouteComponentProps) => {
     props.history.push(`/space?roomId=${uuidV4()}`);
   };
   return (
-    <div id="home">
-      <Logo />
-      <Hello />
-      <Descript />
-      <CreateRoom createRoomButtonClick={createRoomClick} />
-      <EnterRoom enterRoomButtonClick={enterRoomClick} />
-      <MoreInfo />
+    <div className="home">
+      <div className="top">
+        <Welcome />
+      </div>
+      <div className="bottom">
+        <Descript />
+        <CreateRoom createRoomButtonClick={createRoomClick} />
+        <EnterRoom enterRoomButtonClick={enterRoomClick} />
+        <MoreInfo />
+      </div>
     </div>
   );
 };
