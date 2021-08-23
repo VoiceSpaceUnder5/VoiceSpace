@@ -54,7 +54,7 @@ const Navigation = (props: NavigationProps) => {
         <MicOnOff />
         <ScreenShare />
         <Options />
-        <LogoutOutlined onClick={exit} />
+        <LogoutOutlined className="navbar_button" onClick={exit} />
       </div>
 
       <div className="navbar_right">
