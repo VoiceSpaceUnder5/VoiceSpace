@@ -1,12 +1,7 @@
-import React, {useEffect, useRef, useContext} from 'react';
+import React, {useEffect, useRef, useContext, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import ImageInfoProvider from './ImageInfoProvider';
-import GLHelper, {
-  DrawInfo,
-  Camera,
-  resizeCanvasToDisplaySize,
-  isInRect,
-} from './webGLUtils';
+import GLHelper, {Camera, isInRect} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
@@ -15,7 +10,6 @@ import Joystick from './Joystick';
 import './spaceMain.css';
 import GlobalContext from './GlobalContext';
 import {message} from 'antd';
-import {Certificate} from 'crypto';
 
 const qs = require('query-string');
 
@@ -25,6 +19,11 @@ interface SpaceMainQuery {
   avatarIdx: number;
 }
 
+export interface LoadingInfo {
+  needToLoad: number;
+  finishLoad: number;
+}
+
 const SpaceMain = (props: RouteComponentProps) => {
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   if (!query.roomId || query.roomId === '') {
@@ -32,10 +31,15 @@ const SpaceMain = (props: RouteComponentProps) => {
     props.history.push('/');
   }
   if (!query.nickname || query.nickname === '') query.nickname = '익명의 곰';
-  if (!query.avatarIdx) query.avatarIdx = 0;
+  if (!query.avatarIdx) query.avatarIdx = AvatarImageEnum.BROWN_BEAR;
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
+  const imageInfoProviderRef = useRef<ImageInfoProvider | null>(null);
   const peerManagerRef = useRef<PeerManager>();
   const globalContext = useContext(GlobalContext);
+  const [loadStatus, setLoadStatus] = useState<LoadingInfo>({
+    needToLoad: 0,
+    finishLoad: 0,
+  });
   globalContext.initialInfo = [query.avatarIdx, query.nickname];
 
   // 랜더링할 때 처음 한번만 실행.
@@ -50,32 +54,34 @@ const SpaceMain = (props: RouteComponentProps) => {
     }
   };
 
+  const isLoading = (): boolean => {
+    if (
+      loadStatus.finishLoad > 0 &&
+      loadStatus.needToLoad === loadStatus.finishLoad
+    )
+      return false;
+    return true;
+  };
+
   useEffect(() => {
-    if (!canvasRef.current) {
-      console.error('set canvas HTML Error');
+    if (isLoading() || !imageInfoProviderRef.current || !canvasRef.current)
       return;
-    }
+    console.log('useEffect, after imageInfoProvider called');
     const canvas = canvasRef.current;
-    // webgl을 사용하기 위해 Context를 가져옴 아몰랑
-    const gl = canvas.getContext('webgl');
-    if (!gl) {
-      console.error('getContext Error');
+    const imageInfoProvider = imageInfoProviderRef.current;
+    const gl = imageInfoProvider.gl;
+
+    const background = imageInfoProvider.background!;
+    if (!background) {
+      console.error('background not loaded error');
       return;
     }
-    const imageInfoProvider = new ImageInfoProvider(gl, 0); // image와 관련된 정보들을 모두 저장
-    if (!imageInfoProvider) {
-      console.error('makeImageInfoProvider fail');
-      return;
-    }
-    const backgroundImageInfo = imageInfoProvider.objects
-      .get(LayerLevelEnum.BACKGROUND_ZERO)!
-      .get(imageInfoProvider.backGroundMapId)!;
 
     //카메라 객체 초기화
     const camera = new Camera(
       {width: canvas.clientWidth, height: canvas.clientHeight},
-      backgroundImageInfo.centerPos,
-      backgroundImageInfo.size,
+      background.centerPos,
+      background.size,
     );
 
     //webGL관련 작업 처리(그리기 전 준비 끝리
@@ -110,22 +116,16 @@ const SpaceMain = (props: RouteComponentProps) => {
           return;
         }
 
-        // 나, 너 그리고 우리를 관리하는 객체
-        // PeerManager 생성자의 meCenterPos 값이 아래와 같이 작성되어있었으나,
-        // {
-        //     x: backgroundImageInfo.size.width / 2,
-        //     y: backgroundImageInfo.size.height / 2,
-        // },
         globalContext.peerManager = new PeerManager(
           socket,
           stream,
           query.nickname,
-          AvatarImageEnum.BROWN_BEAR,
+          query.avatarIdx,
           audioContainer,
           divContainer,
           {
-            x: backgroundImageInfo.size.width / 2,
-            y: backgroundImageInfo.size.height / 2,
+            x: background.size.width / 2,
+            y: background.size.height / 2,
           },
           query.roomId,
         );
@@ -139,7 +139,6 @@ const SpaceMain = (props: RouteComponentProps) => {
         /////////////////////////////////////////////////
         // event setting start //////////////////////////
         window.addEventListener('resize', e => {
-          //to - do
           canvas.width = canvas.clientWidth;
           canvas.height = canvas.clientHeight;
           camera.originSize = {
@@ -211,6 +210,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         });
 
         const drawObjectsBeforeAvatar = () => {
+          glHelper.drawImage({...background, scale: 1, rotateRadian: 0});
           const temp = [0, 1, 2, 3];
           temp.forEach(key => {
             imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
@@ -277,6 +277,27 @@ const SpaceMain = (props: RouteComponentProps) => {
       .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
+  }, [loadStatus]);
+
+  useEffect(() => {
+    console.log('useEffect, loading called');
+    if (!canvasRef.current) {
+      console.error('set canvas HTML Error');
+      return;
+    }
+    const canvas = canvasRef.current;
+    // webgl을 사용하기 위해 Context를 가져옴 아몰랑
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+      console.error('getContext Error');
+      return;
+    }
+    const imageInfoProvider = new ImageInfoProvider(gl, setLoadStatus); // image와 관련된 정보들을 모두 저장
+    if (!imageInfoProvider) {
+      console.error('makeImageInfoProvider fail');
+      return;
+    }
+    imageInfoProviderRef.current = imageInfoProvider;
 
     return () => {
       if (globalContext.peerManager) {
@@ -396,6 +417,13 @@ const SpaceMain = (props: RouteComponentProps) => {
         goToHome={goToHome}
       />
       <Joystick />
+      {isLoading() ? (
+        <div id="divLoad">{`Loading... : ${Math.round(
+          (loadStatus.finishLoad / loadStatus.needToLoad) * 100,
+        )}`}</div>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

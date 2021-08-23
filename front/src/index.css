@@ -21,6 +21,17 @@ canvas {
   overflow: hidden;
 }
 
+#divLoad {
+  background-color: aqua;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 100vh;
+  z-index: 11;
+  overflow: hidden;
+}
+
 .canvasOverlay {
   position: absolute;
 }
