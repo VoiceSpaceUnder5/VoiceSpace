@@ -25,6 +25,7 @@ export interface LoadingInfo {
 }
 
 const SpaceMain = (props: RouteComponentProps) => {
+  //query validate part
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   if (!query.roomId || query.roomId === '') {
     message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
@@ -32,14 +33,22 @@ const SpaceMain = (props: RouteComponentProps) => {
   }
   if (!query.nickname || query.nickname === '') query.nickname = '익명의 곰';
   if (!query.avatarIdx) query.avatarIdx = AvatarImageEnum.BROWN_BEAR;
+  // useRef
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
   const imageInfoProviderRef = useRef<ImageInfoProvider | null>(null);
   const peerManagerRef = useRef<PeerManager>();
+  const divContainerRef = useRef<HTMLDivElement>(null);
+  const audioContainerRef = useRef<HTMLDivElement>(null);
+  // useContext
   const globalContext = useContext(GlobalContext);
+
+  // useState
   const [loadStatus, setLoadStatus] = useState<LoadingInfo>({
     needToLoad: 0,
     finishLoad: 0,
   });
+  const [canStart, setCanStart] = useState(false);
+
   globalContext.initialInfo = [query.avatarIdx, query.nickname];
 
   // 랜더링할 때 처음 한번만 실행.
@@ -63,6 +72,96 @@ const SpaceMain = (props: RouteComponentProps) => {
     return true;
   };
 
+  // joystick 까지 모든 하위 컴포넌트들이 랜더링 된 후 동작
+  useEffect(() => {
+    if (
+      !canStart ||
+      !globalContext.camera ||
+      !globalContext.peerManager ||
+      !imageInfoProviderRef.current
+    )
+      return;
+    console.log('useEffect, canStart called. canvas rendering started!');
+
+    const camera = globalContext.camera;
+    const imageInfoProvider = imageInfoProviderRef.current;
+    const peerManager = globalContext.peerManager;
+    const gl = imageInfoProvider.gl;
+    //webGL관련 작업 처리(그리기 전 준비 끝리
+    const glHelper = new GLHelper(gl, camera);
+    const background = imageInfoProvider.background!;
+    if (!glHelper) {
+      console.error('make GLHelper fail');
+      return;
+    }
+
+    const drawObjectsBeforeAvatar = () => {
+      glHelper.drawImage({...background, scale: 1, rotateRadian: 0});
+      const temp = [0, 1, 2, 3];
+      temp.forEach(key => {
+        imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+          glHelper.drawImage({
+            ...imageInfo,
+            scale: 1,
+            rotateRadian: 0,
+          });
+        });
+      });
+    };
+
+    const drawObjectsAfterAvatar = () => {
+      const temp = [8, 9];
+      temp.forEach(key => {
+        imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+          if (
+            isInRect(
+              imageInfo.centerPos,
+              imageInfo.size,
+              peerManager.me.centerPos,
+            )
+          ) {
+            glHelper.transparency = 0.3;
+          }
+
+          glHelper.drawImage({
+            ...imageInfo,
+            scale: 1,
+            rotateRadian: 0,
+          });
+          glHelper.transparency = 1.0;
+        });
+      });
+    };
+
+    //계속해서 화면에 장면을 그려줌
+    const requestAnimation = () => {
+      camera.updateCenterPosFromPlayer(peerManager.me);
+      drawObjectsBeforeAvatar();
+      peerManager.me.update(
+        Date.now() - peerManager.lastUpdateTimeStamp,
+        imageInfoProvider,
+        glHelper,
+      );
+      peerManager.peers.forEach(peer => {
+        if (peer.dc.readyState === 'open')
+          peer.dc.send(JSON.stringify(peerManager.me));
+        glHelper.drawAvatar(imageInfoProvider, peer, peer.div);
+        peer.updateSoundFromVec2(peerManager.me.centerPos);
+      });
+      peerManager.lastUpdateTimeStamp = Date.now();
+      glHelper.drawAvatar(
+        imageInfoProvider,
+        peerManager.me,
+        peerManager.me.div,
+      );
+      drawObjectsAfterAvatar();
+      requestAnimationFrame(requestAnimation);
+    };
+    peerManager.lastUpdateTimeStamp = Date.now();
+    requestAnimationFrame(requestAnimation);
+  }, [canStart]);
+
+  // Image 들이 모두 로딩 된 후 동작
   useEffect(() => {
     if (isLoading() || !imageInfoProviderRef.current || !canvasRef.current)
       return;
@@ -83,28 +182,18 @@ const SpaceMain = (props: RouteComponentProps) => {
       background.centerPos,
       background.size,
     );
-
-    //webGL관련 작업 처리(그리기 전 준비 끝리
-    const glHelper = new GLHelper(gl, camera);
-    if (!glHelper) {
-      console.error('make GLHelper fail');
-      return;
-    }
+    globalContext.camera = camera;
 
     //내 오디오 연결 가져오고,
     navigator.mediaDevices
       .getUserMedia({video: false, audio: true}) // 오디오 연결
       .then((stream: MediaStream) => {
-        const audioContainer = document.querySelector('#audioContainer');
-        if (!audioContainer) {
+        if (!audioContainerRef.current) {
           console.error('audioContainer can not found');
           return;
         }
         // 이름표
-        const divContainer = document.querySelector(
-          '#divContainer',
-        ) as HTMLDivElement;
-        if (!divContainer) {
+        if (!divContainerRef.current) {
           console.error('divContainer can not found');
           return;
         }
@@ -121,23 +210,16 @@ const SpaceMain = (props: RouteComponentProps) => {
           stream,
           query.nickname,
           query.avatarIdx,
-          audioContainer,
-          divContainer,
+          audioContainerRef.current,
+          divContainerRef.current,
           {
             x: background.size.width / 2,
             y: background.size.height / 2,
           },
           query.roomId,
         );
-        const peerManager = globalContext.peerManager;
+        setCanStart(true);
 
-        if (peerManager === undefined) {
-          console.error('PeerManager undefined');
-          return;
-        }
-
-        /////////////////////////////////////////////////
-        // event setting start //////////////////////////
         window.addEventListener('resize', e => {
           canvas.width = canvas.clientWidth;
           canvas.height = canvas.clientHeight;
@@ -149,136 +231,13 @@ const SpaceMain = (props: RouteComponentProps) => {
           camera.scale = 1;
           gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
         });
-
-        window.addEventListener('keydown', e => {
-          if (e.key === '+') {
-            camera.upScale(0.1);
-          } else if (e.key === '-') {
-            camera.upScale(-0.1);
-          }
-        });
-        //for Desktop
-        divContainer.addEventListener('mousedown', e => {
-          e.preventDefault();
-          peerManager.me.isMoving = true;
-          peerManager.me.touchStartPos = {
-            x: e.clientX,
-            y: e.clientY,
-          };
-          revealJoystickBase();
-        });
-
-        divContainer.addEventListener('mousemove', e => {
-          e.preventDefault();
-          peerManager.me.touchingPos = {
-            x: e.clientX,
-            y: e.clientY,
-          };
-          moveJoystick();
-        });
-
-        divContainer.addEventListener('mouseup', e => {
-          e.preventDefault();
-          peerManager.me.isMoving = false;
-          hideJoystickBase();
-        });
-
-        //for Phone
-        divContainer.addEventListener('touchstart', e => {
-          e.preventDefault();
-          peerManager.me.isMoving = true;
-          peerManager.me.touchStartPos = {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY,
-          };
-          revealJoystickBase();
-        });
-
-        divContainer.addEventListener('touchmove', e => {
-          e.preventDefault();
-          peerManager.me.touchingPos = {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY,
-          };
-          moveJoystick();
-        });
-
-        divContainer.addEventListener('touchend', e => {
-          e.preventDefault();
-          peerManager.me.isMoving = false;
-          hideJoystickBase();
-        });
-
-        const drawObjectsBeforeAvatar = () => {
-          glHelper.drawImage({...background, scale: 1, rotateRadian: 0});
-          const temp = [0, 1, 2, 3];
-          temp.forEach(key => {
-            imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
-              glHelper.drawImage({
-                ...imageInfo,
-                scale: 1,
-                rotateRadian: 0,
-              });
-            });
-          });
-        };
-
-        const drawObjectsAfterAvatar = () => {
-          const temp = [8, 9];
-          temp.forEach(key => {
-            imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
-              if (
-                isInRect(
-                  imageInfo.centerPos,
-                  imageInfo.size,
-                  peerManager.me.centerPos,
-                )
-              ) {
-                glHelper.transparency = 0.3;
-              }
-
-              glHelper.drawImage({
-                ...imageInfo,
-                scale: 1,
-                rotateRadian: 0,
-              });
-              glHelper.transparency = 1.0;
-            });
-          });
-        };
-
-        //계속해서 화면에 장면을 그려줌
-        const requestAnimation = () => {
-          camera.updateCenterPosFromPlayer(peerManager.me);
-          drawObjectsBeforeAvatar();
-          peerManager.me.update(
-            Date.now() - peerManager.lastUpdateTimeStamp,
-            imageInfoProvider,
-            glHelper,
-          );
-          peerManager.peers.forEach(peer => {
-            if (peer.dc.readyState === 'open')
-              peer.dc.send(JSON.stringify(peerManager.me));
-            glHelper.drawAvatar(imageInfoProvider, peer, peer.div);
-            peer.updateSoundFromVec2(peerManager.me.centerPos);
-          });
-          peerManager.lastUpdateTimeStamp = Date.now();
-          glHelper.drawAvatar(
-            imageInfoProvider,
-            peerManager.me,
-            peerManager.me.div,
-          );
-          drawObjectsAfterAvatar();
-          requestAnimationFrame(requestAnimation);
-        };
-        peerManager.lastUpdateTimeStamp = Date.now();
-        requestAnimationFrame(requestAnimation);
       })
       .catch(error => {
         console.error(`mediaStream error :${error.toString()}`);
       });
   }, [loadStatus]);
 
+  // 최초 spaceMain 랜더링 이후 동작
   useEffect(() => {
     console.log('useEffect, loading called');
     if (!canvasRef.current) {
@@ -306,90 +265,6 @@ const SpaceMain = (props: RouteComponentProps) => {
     };
   }, []);
 
-  const revealJoystickBase = () => {
-    const peerManager = globalContext.peerManager;
-    if (peerManager === undefined) {
-      return;
-    }
-    const posX = peerManager.me.touchStartPos.x;
-    const posY = peerManager.me.touchStartPos.y;
-    const joystickBase = document.querySelector(
-      '.joystickBase',
-    ) as HTMLImageElement;
-    const joystick = document.querySelector('.joystick') as HTMLImageElement;
-    if (joystickBase === null) {
-      return;
-    }
-    if (joystick === null) {
-      return;
-    }
-    joystickBase.style.left = String(posX - joystickBase.width / 2) + 'px';
-    joystickBase.style.top = String(posY - joystickBase.height / 2) + 'px';
-    joystickBase.style.visibility = 'visible';
-    joystick.style.left = String(posX - joystick.width / 2) + 'px';
-    joystick.style.top = String(posY - joystick.height / 2) + 'px';
-    joystick.style.visibility = 'visible';
-  };
-  const hideJoystickBase = () => {
-    const joystickBase = document.querySelector(
-      '.joystickBase',
-    ) as HTMLImageElement;
-    const joystick = document.querySelector('.joystick') as HTMLImageElement;
-    if (joystickBase === null) {
-      return;
-    }
-    if (joystick === null) {
-      return;
-    }
-    joystickBase.style.visibility = 'hidden';
-    joystick.style.visibility = 'hidden';
-  };
-  const moveJoystick = () => {
-    const peerManager = globalContext.peerManager;
-
-    const joystick = document.querySelector('.joystick') as HTMLImageElement;
-    const joystickBase = document.querySelector(
-      '.joystickBase',
-    ) as HTMLImageElement;
-
-    if (peerManager === undefined) {
-      return;
-    }
-    const startPosX = peerManager.me.touchStartPos.x;
-    const startPosY = peerManager.me.touchStartPos.y;
-    const endPosX = peerManager.me.touchingPos.x;
-    const endPosY = peerManager.me.touchingPos.y;
-    if (joystick === null) {
-      return;
-    }
-    if (joystickBase === null) {
-      return;
-    }
-    const dist2 = Math.sqrt(
-      Math.pow(endPosX - startPosX, 2) + Math.pow(endPosY - startPosY, 2),
-    );
-    const dist1 = joystickBase.width / 2 - joystick.width / 2;
-
-    if (dist2 <= dist1) {
-      const x = endPosX - joystick.width / 2;
-      const y = endPosY - joystick.height / 2;
-      joystick.style.left = String(x) + 'px';
-      joystick.style.top = String(y) + 'px';
-    } else {
-      joystick.style.left =
-        String(
-          (dist1 * (endPosX - startPosX)) / dist2 +
-            startPosX -
-            joystick.width / 2,
-        ) + 'px';
-      joystick.style.top =
-        String(
-          (dist1 * (endPosY - startPosY)) / dist2 +
-            startPosY -
-            joystick.height / 2,
-        ) + 'px';
-    }
-  };
   const onClickMicOnOff = (isOn: boolean) => {
     if (peerManagerRef.current !== undefined) {
       peerManagerRef.current.localStream.getAudioTracks()[0].enabled = isOn;
@@ -407,8 +282,12 @@ const SpaceMain = (props: RouteComponentProps) => {
         height={window.innerHeight.toString() + 'px'}
         ref={canvasRef}
       ></canvas>
-      <div id="divContainer"></div>
-      <div id="audioContainer" style={{width: '0', height: '0'}}></div>
+      <div id="divContainer" ref={divContainerRef}></div>
+      <div
+        id="audioContainer"
+        ref={audioContainerRef}
+        style={{width: '0', height: '0'}}
+      ></div>
       <Navigation
         initialInfo={[query.avatarIdx, query.nickname]}
         peerManager={peerManagerRef.current}
@@ -416,13 +295,12 @@ const SpaceMain = (props: RouteComponentProps) => {
         onProfileChange={onProfileChangeButtonClick}
         goToHome={goToHome}
       />
-      <Joystick />
       {isLoading() ? (
         <div id="divLoad">{`Loading... : ${Math.round(
           (loadStatus.finishLoad / loadStatus.needToLoad) * 100,
         )}`}</div>
       ) : (
-        <></>
+        <Joystick />
       )}
     </>
   );
