@@ -1,18 +1,11 @@
-html {
-  min-height: -webkit-fill-available;
-}
-
-body {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-}
-
 body,
 #root {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 100);
 }
 
 div {

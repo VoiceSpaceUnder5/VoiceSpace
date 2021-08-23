@@ -2,7 +2,8 @@
 canvas {
   width: 100vw;
   height: 92vh;
-  /* flex: 1; */
+  /* for Iphone */
+  height: calc(var(--vh) * 92);
   display: block;
 }
 
@@ -14,6 +15,8 @@ canvas {
   top: 0px;
   width: 100vw;
   height: 92vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 92);
   z-index: 10;
   overflow: hidden;
 }
@@ -25,12 +28,16 @@ canvas {
 /* navbar 전체 */
 .navbar {
   height: 8vh;
+  /* for Iphone */
+  height: calc(var(--vh) * 8);
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: gainsboro;
   padding: 8px 12px;
   font-size: 3vh;
+  /* for Iphone */
+  font-size: calc(var(--vh) * 3);
   flex-wrap: nowrap;
   flex-direction: row;
 }
@@ -55,13 +62,14 @@ canvas {
   height: 100%;
   list-style: none;
   font-size: 3vh;
+  /* for Iphone */
+  font-size: calc(var(--vh) * 3);
   padding-left: 0;
 }
 .navbar_center li {
   padding: 0px 12px;
   height: 100%;
 }
-
 /* navbar 오른쪽 부분 */
 .navbar_right {
   flex: 1 1 0;
@@ -72,6 +80,7 @@ canvas {
 .navbar_button {
   color: black;
 }
+
 /* 네비게이션 모바일 */
 @media screen and (max-width: 767px) {
   .navbar_left {
