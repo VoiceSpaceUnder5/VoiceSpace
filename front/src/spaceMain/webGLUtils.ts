@@ -169,24 +169,28 @@ export class Camera {
     this.limitSize = limitSize;
   }
 
-  upScale(value: number) {
-    const oldScale = this.scale;
-    const oldSize = {...this.size};
+  upScaleByPinch(value: number) {
+    this.scale = value;
+    this.size.width = this.originSize.width / this.scale;
+    this.size.height = this.originSize.height / this.scale;
+  }
+
+  upScaleByKeyBoard(value: number) {
+    // const oldScale = this.scale;
+    // const oldSize = {...this.size};
 
     this.scale += value;
     this.size.width = this.originSize.width / this.scale;
     this.size.height = this.originSize.height / this.scale;
-    console.log(this.centerPos, this.size, this.limitSize);
-    if (
-      this.centerPos.x + this.size.width / 2 > this.limitSize.width ||
-      this.centerPos.x < this.size.width / 2 ||
-      this.centerPos.y + this.size.height / 2 > this.limitSize.height ||
-      this.centerPos.y < this.size.height / 2
-    ) {
-      console.log('fired!');
-      this.scale = oldScale;
-      this.size = {...oldSize};
-    }
+    // if (
+    //   this.centerPos.x + this.size.width / 2 > this.limitSize.width ||
+    //   this.centerPos.x < this.size.width / 2 ||
+    //   this.centerPos.y + this.size.height / 2 > this.limitSize.height ||
+    //   this.centerPos.y < this.size.height / 2
+    // ) {
+    //   this.scale = oldScale;
+    //   this.size = {...oldSize};
+    // }
   }
 
   updateCenterPosFromPlayer(player: IPlayer) {

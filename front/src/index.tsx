@@ -15,6 +15,7 @@ const Router = () => {
       <GlobalContext.Provider
         value={{
           peerManager: undefined,
+          camera: undefined,
           initialInfo: [0, ''],
         }}
       >
