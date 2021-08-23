@@ -71,15 +71,17 @@ const SpaceMain = (props: RouteComponentProps) => {
     const imageInfoProvider = imageInfoProviderRef.current;
     const gl = imageInfoProvider.gl;
 
-    const backgroundImageInfo = imageInfoProvider.objects
-      .get(LayerLevelEnum.BACKGROUND_ZERO)!
-      .get(imageInfoProvider.backGroundMapId)!;
+    const background = imageInfoProvider.background!;
+    if (!background) {
+      console.error('background not loaded error');
+      return;
+    }
 
     //카메라 객체 초기화
     const camera = new Camera(
       {width: canvas.clientWidth, height: canvas.clientHeight},
-      backgroundImageInfo.centerPos,
-      backgroundImageInfo.size,
+      background.centerPos,
+      background.size,
     );
 
     //webGL관련 작업 처리(그리기 전 준비 끝리
@@ -122,8 +124,8 @@ const SpaceMain = (props: RouteComponentProps) => {
           audioContainer,
           divContainer,
           {
-            x: backgroundImageInfo.size.width / 2,
-            y: backgroundImageInfo.size.height / 2,
+            x: background.size.width / 2,
+            y: background.size.height / 2,
           },
           query.roomId,
         );
@@ -208,6 +210,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         });
 
         const drawObjectsBeforeAvatar = () => {
+          glHelper.drawImage({...background, scale: 1, rotateRadian: 0});
           const temp = [0, 1, 2, 3];
           temp.forEach(key => {
             imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
