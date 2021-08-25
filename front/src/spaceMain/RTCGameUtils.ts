@@ -259,6 +259,7 @@ export default class PeerManager {
   lastUpdateTimeStamp: number;
   audioContainer: Element;
   divContainer: HTMLDivElement;
+  roomId: string;
   constructor(
     socket: Socket,
     localStream: MediaStream,
@@ -267,9 +268,10 @@ export default class PeerManager {
     audioContainer: Element,
     divContainer: HTMLDivElement,
     meCenterPos: Vec2,
-    roomId?: string,
+    roomId: string,
     pcConfig?: RTCConfiguration,
   ) {
+    this.roomId = roomId;
     this.divContainer = divContainer;
     this.me = new Me(
       nickname,
