@@ -36,7 +36,6 @@ function SpaceMain(props: RouteComponentProps): JSX.Element {
   // useRef
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
   const imageInfoProviderRef = useRef<ImageInfoProvider | null>(null);
-  const peerManagerRef = useRef<PeerManager>();
   const divContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
   // useContext
@@ -50,18 +49,6 @@ function SpaceMain(props: RouteComponentProps): JSX.Element {
   const [canStart, setCanStart] = useState(false);
 
   globalContext.initialInfo = [query.avatarIdx, query.nickname];
-
-  // 랜더링할 때 처음 한번만 실행.
-  const onProfileChangeButtonClick = (
-    newAvatarIdx: number,
-    newNickname: string,
-  ) => {
-    if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.me.avatar = newAvatarIdx;
-      peerManagerRef.current.me.div.innerText = newNickname;
-      peerManagerRef.current.me.nickname = newNickname;
-    }
-  };
 
   const isLoading = (): boolean => {
     if (
@@ -269,12 +256,6 @@ function SpaceMain(props: RouteComponentProps): JSX.Element {
     };
   }, []);
 
-  const onClickMicOnOff = (isOn: boolean) => {
-    if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.localStream.getAudioTracks()[0].enabled = isOn;
-    }
-  };
-
   const goToHome = () => {
     props.history.push('/');
   };
@@ -292,13 +273,7 @@ function SpaceMain(props: RouteComponentProps): JSX.Element {
         ref={audioContainerRef}
         style={{width: '0', height: '0'}}
       ></div>
-      <Navigation
-        initialInfo={[query.avatarIdx, query.nickname]}
-        peerManager={peerManagerRef.current}
-        myMicToggle={onClickMicOnOff}
-        onProfileChange={onProfileChangeButtonClick}
-        goToHome={goToHome}
-      />
+      <Navigation goToHome={goToHome} />
       {isLoading() ? (
         <div id="divLoad">{`Loading... : ${Math.round(
           (loadStatus.finishLoad / loadStatus.needToLoad) * 100,
