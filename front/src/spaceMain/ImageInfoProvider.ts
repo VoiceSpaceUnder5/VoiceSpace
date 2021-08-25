@@ -235,9 +235,13 @@ class ImageInfoProvider {
                 imageMdInfo.layerLev,
                 new Map<number, ImageInfo>(),
               );
-            this.objects
-              .get(imageMdInfo.layerLev)!
-              .set(readyToLoadValue.id, imageInfo);
+
+            const layerLevel = this.objects.get(imageMdInfo.layerLev);
+
+            if (layerLevel !== undefined) {
+              layerLevel.set(readyToLoadValue.id, imageInfo);
+            }
+
             const x_init = imageInfo.centerPos.x - imageInfo.size.width / 2;
             const x_limit = imageInfo.centerPos.x + imageInfo.size.width / 2;
             const y_init = imageInfo.centerPos.y - imageInfo.size.height / 2;
@@ -271,31 +275,35 @@ class ImageInfoProvider {
       return;
     }
     // pixel 정보를 저장할 2차원배열을 백그라운드 이미지의 사이즈만큼 resize 해줍니다.
-    this.pixelInfos = Array.from(
-      Array(bg.imageMDInfos[0].backgroundSize.width),
-      () =>
-        Array(bg.imageMDInfos[0].backgroundSize!.height).fill({
-          imageInfoKey: 0,
-          collisionInfoKey: 0,
-        }),
+    const backGroundSize = bg.imageMDInfos[0].backgroundSize;
+    this.pixelInfos = Array.from(Array(backGroundSize.width), () =>
+      Array(backGroundSize.height).fill({
+        imageInfoKey: 0,
+        collisionInfoKey: 0,
+      }),
     );
 
     // backgroundImageCenterPosition
-    const backgroundCenterPos: Vec2 = {
-      x: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.width / 2,
-      y: seaAndMountainVer1MD.imageMDInfos[0].backgroundSize!.height / 2,
-    };
+    const seaAndMountainBackGroundSize =
+      seaAndMountainVer1MD.imageMDInfos[0].backgroundSize;
 
-    const cb = (imageInfo: ImageInfo) => {
-      this.background = imageInfo;
-      this.increasefinishLoad();
-    };
+    if (seaAndMountainBackGroundSize !== undefined) {
+      const backgroundCenterPos: Vec2 = {
+        x: seaAndMountainBackGroundSize.width / 2,
+        y: seaAndMountainBackGroundSize.height / 2,
+      };
 
-    this.loadingImageInfoFromImageMDInfo(
-      bg.imageMDInfos[0],
-      backgroundCenterPos,
-      cb,
-    );
+      const cb = (imageInfo: ImageInfo) => {
+        this.background = imageInfo;
+        this.increasefinishLoad();
+      };
+
+      this.loadingImageInfoFromImageMDInfo(
+        bg.imageMDInfos[0],
+        backgroundCenterPos,
+        cb,
+      );
+    }
   };
 
   insertLoadingQueue = (target: ObjectImageMD, centerPos: Vec2): void => {

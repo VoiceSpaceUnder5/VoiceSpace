@@ -2,7 +2,7 @@ import React from 'react';
 import {Menu, Dropdown} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
 
-const Panel = () => {
+function Panel(): JSX.Element {
   const panel = () => {
     return (
       <Menu>
@@ -22,6 +22,6 @@ const Panel = () => {
       </a>
     </Dropdown>
   );
-};
+}
 
 export default Panel;

@@ -5,7 +5,7 @@ import GLHelper, {Camera, isInRect} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
-import {AvatarImageEnum, LayerLevelEnum} from './ImageMetaData';
+import {AvatarImageEnum} from './ImageMetaData';
 import Joystick from './Joystick';
 import './spaceMain.css';
 import GlobalContext from './GlobalContext';
@@ -24,7 +24,7 @@ export interface LoadingInfo {
   finishLoad: number;
 }
 
-const SpaceMain = (props: RouteComponentProps) => {
+function SpaceMain(props: RouteComponentProps): JSX.Element {
   //query validate part
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   if (!query.roomId || query.roomId === '') {
@@ -89,9 +89,13 @@ const SpaceMain = (props: RouteComponentProps) => {
     const gl = imageInfoProvider.gl;
     //webGL관련 작업 처리(그리기 전 준비 끝리
     const glHelper = new GLHelper(gl, camera);
-    const background = imageInfoProvider.background!;
     if (!glHelper) {
       console.error('make GLHelper fail');
+      return;
+    }
+    const background = imageInfoProvider.background;
+    if (!background) {
+      console.error('background not loaded error');
       return;
     }
 
@@ -170,7 +174,7 @@ const SpaceMain = (props: RouteComponentProps) => {
     const imageInfoProvider = imageInfoProviderRef.current;
     const gl = imageInfoProvider.gl;
 
-    const background = imageInfoProvider.background!;
+    const background = imageInfoProvider.background;
     if (!background) {
       console.error('background not loaded error');
       return;
@@ -304,6 +308,6 @@ const SpaceMain = (props: RouteComponentProps) => {
       )}
     </>
   );
-};
+}
 
 export default SpaceMain;

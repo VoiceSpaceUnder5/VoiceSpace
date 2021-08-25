@@ -3,7 +3,7 @@ import {Menu, Dropdown} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
 import './spaceMain';
 
-const ScreenShare = () => {
+function ScreenShare(): JSX.Element {
   const screenshare = () => {
     return (
       <Menu>
@@ -23,6 +23,6 @@ const ScreenShare = () => {
       </a>
     </Dropdown>
   );
-};
+}
 
 export default ScreenShare;

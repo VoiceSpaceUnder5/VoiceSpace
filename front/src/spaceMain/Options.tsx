@@ -2,7 +2,7 @@ import React from 'react';
 import {Menu, Dropdown} from 'antd';
 import {EllipsisOutlined} from '@ant-design/icons';
 
-const Options = () => {
+function Options(): JSX.Element {
   const options = () => {
     return (
       <Menu>
@@ -25,6 +25,6 @@ const Options = () => {
       </a>
     </Dropdown>
   );
-};
+}
 
 export default Options;

@@ -34,7 +34,7 @@ interface NavigationProps {
   goToHome: () => void;
 }
 
-const Navigation = (props: NavigationProps) => {
+function Navigation(props: NavigationProps): JSX.Element {
   const globalContext = useContext(GlobalContext);
 
   const exit = () => {
@@ -64,6 +64,6 @@ const Navigation = (props: NavigationProps) => {
       </div>
     </nav>
   );
-};
+}
 
 export default Navigation;
