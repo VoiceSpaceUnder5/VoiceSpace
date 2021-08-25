@@ -66,3 +66,9 @@
     width: 25vw;
   }
 }
+
+html {
+  /* -webkit-text-size-adjust: none;
+  text-size-adjust: none; */
+  touch-action: none;
+}
