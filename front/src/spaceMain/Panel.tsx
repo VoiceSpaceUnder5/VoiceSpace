@@ -5,7 +5,7 @@ import GlobalContext from './GlobalContext';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import {useContext} from 'react';
 
-const Panel = () => {
+function Panel(): JSX.Element {
   const globalContext = useContext(GlobalContext);
   const panel = () => {
     const messageHandle = () => {
@@ -41,6 +41,6 @@ const Panel = () => {
       </a>
     </Dropdown>
   );
-};
+}
 
 export default Panel;

@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
 import GlobalContext from './GlobalContext';
 
-const MicOnOff = () => {
+function MicOnOff(): JSX.Element {
   const globalContext = useContext(GlobalContext);
   const [mic, setMic] = useState(true);
   const onClick = () => {
@@ -18,6 +18,6 @@ const MicOnOff = () => {
   ) : (
     <AudioMutedOutlined className="navbar_button" onClick={onClick} />
   );
-};
+}
 
 export default MicOnOff;

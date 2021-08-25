@@ -1,23 +1,7 @@
-import React, {ChangeEvent, ReactElement, ReactHTML, useState} from 'react';
-import {
-  RouteComponentProps,
-  StaticRouterProps,
-  withRouter,
-} from 'react-router-dom';
+import React from 'react';
 import 'antd/dist/antd.css';
 import './spaceMain.css';
-import {Menu, Dropdown, message, Button} from 'antd';
-import {
-  AudioOutlined,
-  AudioMutedOutlined,
-  EllipsisOutlined,
-  UpOutlined,
-  DesktopOutlined,
-  LogoutOutlined,
-  LeftCircleFilled,
-  RightCircleFilled,
-} from '@ant-design/icons';
-import PeerManager from './RTCGameUtils';
+import {LogoutOutlined} from '@ant-design/icons';
 import {useContext} from 'react';
 import GlobalContext from './GlobalContext';
 import MicOnOff from './MicOnOff';
@@ -27,14 +11,10 @@ import Options from './Options';
 import Panel from './Panel';
 
 interface NavigationProps {
-  initialInfo: [avatarIdx: number, nickname: string];
-  peerManager: PeerManager | undefined;
-  onProfileChange: (avatarIdx: number, nickname: string) => void;
-  myMicToggle: (on: boolean) => void;
   goToHome: () => void;
 }
 
-const Navigation = (props: NavigationProps) => {
+function Navigation(props: NavigationProps): JSX.Element {
   const globalContext = useContext(GlobalContext);
 
   const exit = () => {
@@ -64,6 +44,6 @@ const Navigation = (props: NavigationProps) => {
       </div>
     </nav>
   );
-};
+}
 
 export default Navigation;

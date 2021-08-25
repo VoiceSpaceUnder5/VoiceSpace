@@ -12,7 +12,7 @@ const imgSrcs = [
 
 const animalName: string[] = ['말', '곰', '돼지', '토끼'];
 
-const Profile = () => {
+function Profile(): JSX.Element {
   const globalContext = useContext(GlobalContext);
   const [changedName, setChangedName] = useState(globalContext.initialInfo[1]);
   const [nickname, setNickname] = useState(globalContext.initialInfo[1]);
@@ -107,6 +107,6 @@ const Profile = () => {
       </a>
     </Dropdown>
   );
-};
+}
 
 export default Profile;

@@ -5,7 +5,7 @@ import GLHelper, {Camera, isInRect} from './webGLUtils';
 import io from 'socket.io-client';
 import PeerManager from './RTCGameUtils';
 import Navigation from './Navigation';
-import {AvatarImageEnum, LayerLevelEnum} from './ImageMetaData';
+import {AvatarImageEnum} from './ImageMetaData';
 import Joystick from './Joystick';
 import './spaceMain.css';
 import GlobalContext from './GlobalContext';
@@ -24,7 +24,7 @@ export interface LoadingInfo {
   finishLoad: number;
 }
 
-const SpaceMain = (props: RouteComponentProps) => {
+function SpaceMain(props: RouteComponentProps): JSX.Element {
   //query validate part
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   if (!query.roomId || query.roomId === '') {
@@ -36,7 +36,6 @@ const SpaceMain = (props: RouteComponentProps) => {
   // useRef
   const canvasRef = useRef<HTMLCanvasElement>(null); //canvas DOM 선택하기
   const imageInfoProviderRef = useRef<ImageInfoProvider | null>(null);
-  const peerManagerRef = useRef<PeerManager>();
   const divContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
   // useContext
@@ -50,18 +49,6 @@ const SpaceMain = (props: RouteComponentProps) => {
   const [canStart, setCanStart] = useState(false);
 
   globalContext.initialInfo = [query.avatarIdx, query.nickname];
-
-  // 랜더링할 때 처음 한번만 실행.
-  const onProfileChangeButtonClick = (
-    newAvatarIdx: number,
-    newNickname: string,
-  ) => {
-    if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.me.avatar = newAvatarIdx;
-      peerManagerRef.current.me.div.innerText = newNickname;
-      peerManagerRef.current.me.nickname = newNickname;
-    }
-  };
 
   const isLoading = (): boolean => {
     if (
@@ -89,9 +76,13 @@ const SpaceMain = (props: RouteComponentProps) => {
     const gl = imageInfoProvider.gl;
     //webGL관련 작업 처리(그리기 전 준비 끝리
     const glHelper = new GLHelper(gl, camera);
-    const background = imageInfoProvider.background!;
     if (!glHelper) {
       console.error('make GLHelper fail');
+      return;
+    }
+    const background = imageInfoProvider.background;
+    if (!background) {
+      console.error('background not loaded error');
       return;
     }
 
@@ -170,7 +161,7 @@ const SpaceMain = (props: RouteComponentProps) => {
     const imageInfoProvider = imageInfoProviderRef.current;
     const gl = imageInfoProvider.gl;
 
-    const background = imageInfoProvider.background!;
+    const background = imageInfoProvider.background;
     if (!background) {
       console.error('background not loaded error');
       return;
@@ -265,12 +256,6 @@ const SpaceMain = (props: RouteComponentProps) => {
     };
   }, []);
 
-  const onClickMicOnOff = (isOn: boolean) => {
-    if (peerManagerRef.current !== undefined) {
-      peerManagerRef.current.localStream.getAudioTracks()[0].enabled = isOn;
-    }
-  };
-
   const goToHome = () => {
     props.history.push('/');
   };
@@ -288,13 +273,7 @@ const SpaceMain = (props: RouteComponentProps) => {
         ref={audioContainerRef}
         style={{width: '0', height: '0'}}
       ></div>
-      <Navigation
-        initialInfo={[query.avatarIdx, query.nickname]}
-        peerManager={peerManagerRef.current}
-        myMicToggle={onClickMicOnOff}
-        onProfileChange={onProfileChangeButtonClick}
-        goToHome={goToHome}
-      />
+      <Navigation goToHome={goToHome} />
       {isLoading() ? (
         <div id="divLoad">{`Loading... : ${Math.round(
           (loadStatus.finishLoad / loadStatus.needToLoad) * 100,
@@ -304,6 +283,6 @@ const SpaceMain = (props: RouteComponentProps) => {
       )}
     </>
   );
-};
+}
 
 export default SpaceMain;

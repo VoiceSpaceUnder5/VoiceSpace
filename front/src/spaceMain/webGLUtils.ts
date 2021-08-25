@@ -38,7 +38,9 @@ const fs = `
 	}
 `;
 
-export const resizeCanvasToDisplaySize = (canvas: HTMLCanvasElement) => {
+export const resizeCanvasToDisplaySize = (
+  canvas: HTMLCanvasElement,
+): boolean => {
   // 브라우저가 캔버스를 표시하고 있는 크기를 CSS 픽셀 단위로 얻어옵니다.
   const displayWidth = canvas.clientWidth;
   const displayHeight = canvas.clientHeight;
@@ -79,7 +81,7 @@ export const createProgramFromSource = (
   gl: WebGLRenderingContext,
   vertexShaderSource: string,
   fragmentShaderSource: string,
-) => {
+): WebGLProgram | undefined => {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   const fragmentShader = createShader(
     gl,
@@ -169,7 +171,7 @@ export class Camera {
     this.limitSize = limitSize;
   }
 
-  upScaleByPinch(value: number) {
+  upScaleByPinch(value: number): void {
     const oldScale = this.scale;
     const oldSize = {...this.size};
 
@@ -187,7 +189,7 @@ export class Camera {
     }
   }
 
-  upScaleByKeyBoard(value: number) {
+  upScaleByKeyBoard(value: number): void {
     const oldScale = this.scale;
     const oldSize = {...this.size};
 
@@ -205,7 +207,7 @@ export class Camera {
     }
   }
 
-  updateCenterPosFromPlayer(player: IPlayer) {
+  updateCenterPosFromPlayer(player: IPlayer): void {
     const oldCenterPos = {...this.centerPos};
     this.centerPos = {...player.centerPos};
     if (
@@ -343,14 +345,14 @@ class GLHelper {
     return result;
   }
 
-  updateProjectionMatrix() {
+  updateProjectionMatrix(): void {
     this.projectionMatrix = m3.projection(
       this.camera.originSize.width,
       this.camera.originSize.height,
     );
   }
 
-  updateCameraMatrix() {
+  updateCameraMatrix(): void {
     this.cameraMatrix = m3.identity();
     this.cameraMatrix = m3.translate(
       this.cameraMatrix,
@@ -365,7 +367,7 @@ class GLHelper {
     this.cameraMatrix = m3.inverse(this.cameraMatrix);
   }
 
-  updateImageMatrixFromDrawInfo(drawImageInfo: DrawInfo) {
+  updateImageMatrixFromDrawInfo(drawImageInfo: DrawInfo): void {
     this.imageMatrix = m3.identity();
     this.imageMatrix = m3.translate(
       this.imageMatrix,
@@ -403,7 +405,7 @@ class GLHelper {
     ); // 원래 크기로 스케일
   }
 
-  drawArray(tex: WebGLTexture) {
+  drawArray(tex: WebGLTexture): void {
     this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
     this.gl.uniformMatrix3fv(
       this.applyShapeMatrixLocation,
@@ -418,7 +420,7 @@ class GLHelper {
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
-  drawImage(drawImageInfo: DrawInfo) {
+  drawImage(drawImageInfo: DrawInfo): void {
     this.updateProjectionMatrix();
     this.updateCameraMatrix();
     this.updateImageMatrixFromDrawInfo(drawImageInfo);
@@ -454,7 +456,7 @@ class GLHelper {
     imageInfoProvider: ImageInfoProvider,
     player: IPlayer,
     div: HTMLDivElement,
-  ) {
+  ): void {
     const divSize = {...this.camera.size};
     let faceIdx = AvatarPartImageEnum.FACE_MUTE; // Mute 얼굴
 

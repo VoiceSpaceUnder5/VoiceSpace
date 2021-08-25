@@ -3,9 +3,8 @@ import {RouteComponentProps} from 'react-router-dom';
 import {message, Button} from 'antd';
 import {v4 as uuidV4} from 'uuid';
 import './home.css';
-const qs = require('query-string');
 
-const Welcome = () => {
+function Welcome() {
   return (
     <>
       <img className="logoImage" src="./assets/home/homeLogo.png" />
@@ -16,9 +15,9 @@ const Welcome = () => {
       </div>
     </>
   );
-};
+}
 
-const Descript = () => {
+function Descript() {
   return (
     <>
       무료로 친구들과 즐거운 대화를 나눠보세요.
@@ -27,13 +26,13 @@ const Descript = () => {
       <br />
     </>
   );
-};
+}
 
 interface CreateRoomProps {
   createRoomButtonClick: () => void;
 }
 
-const CreateRoom = (props: CreateRoomProps) => {
+function CreateRoom(props: CreateRoomProps) {
   return (
     <div>
       <br />
@@ -47,18 +46,18 @@ const CreateRoom = (props: CreateRoomProps) => {
       </Button>
     </div>
   );
-};
+}
 
 interface EnterRoomProps {
   enterRoomButtonClick: (arg0: string) => void;
 }
 
-const EnterRoom = (props: EnterRoomProps) => {
+function EnterRoom(props: EnterRoomProps) {
   const [roomId, setRoomId] = useState('');
 
-  const info = () => {
-    message.info('유효하지 않은 코드입니다');
-  };
+  // const info = () => {
+  //   message.info('유효하지 않은 코드입니다');
+  // };
   const element = (
     <>
       <br />
@@ -70,11 +69,11 @@ const EnterRoom = (props: EnterRoomProps) => {
 
   const [focus, setFocus] = useState(0);
 
-  const onFocus = (e: any) => {
+  const onFocus = () => {
     setFocus(1);
   };
 
-  const onBlur = (e: any) => {
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value === '') setFocus(0);
   };
 
@@ -97,9 +96,9 @@ const EnterRoom = (props: EnterRoomProps) => {
       {focus ? element : null}
     </div>
   );
-};
+}
 
-const MoreInfo = () => {
+function MoreInfo() {
   return (
     <>
       <br />
@@ -107,18 +106,20 @@ const MoreInfo = () => {
       <a href="www.naver.com"> 자세히 알아보세요</a>
     </>
   );
-};
+}
 
-const Home = (props: RouteComponentProps) => {
+function Home(props: RouteComponentProps): JSX.Element {
   const enterRoomClick = (roomId: string) => {
     props.history.push(`/space?roomId=${roomId}`);
   };
+
   const createRoomClick = () => {
     message.info(
       '새로운 음성채팅방에 입장하셨습니다. 주소를 복사하여 친구들을 초대해 보세요!',
     );
     props.history.push(`/space?roomId=${uuidV4()}`);
   };
+
   return (
     <div className="home">
       <div className="top">
@@ -132,6 +133,6 @@ const Home = (props: RouteComponentProps) => {
       </div>
     </div>
   );
-};
+}
 
 export default Home;

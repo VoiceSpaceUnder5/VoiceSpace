@@ -17,7 +17,7 @@ window.addEventListener('resize', () => {
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 });
 
-const Router = () => {
+function Router() {
   return (
     <div>
       <Route path="/" exact component={Home} />
@@ -32,7 +32,7 @@ const Router = () => {
       </GlobalContext.Provider>
     </div>
   );
-};
+}
 
 ReactDOM.render(
   <React.StrictMode>

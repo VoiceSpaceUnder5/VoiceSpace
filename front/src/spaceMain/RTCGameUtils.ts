@@ -214,7 +214,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
         this.volume = data.volume;
         this.div.innerText = data.nickname;
       };
-      receviedDC.onopen = event => {
+      receviedDC.onopen = () => {
         console.log('dataChannel created');
       };
       receviedDC.onclose = () => {
@@ -231,7 +231,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     //
   }
 
-  updateSoundFromVec2(pos: Vec2) {
+  updateSoundFromVec2(pos: Vec2): void {
     const distance = Math.sqrt(
       Math.pow(this.centerPos.x - pos.x, 2) +
         Math.pow(this.centerPos.y - pos.y, 2),
@@ -296,26 +296,28 @@ export default class PeerManager {
           offerDto.toClientId,
         );
       }
-      const offeredPeer = this.peers.get(offerDto.fromClientId)!;
-      offeredPeer.setRemoteDescription(offerDto.sdp);
-      offeredPeer
-        .createAnswer()
-        .then(sdp => {
-          offeredPeer.setLocalDescription(sdp);
-          const answerDto: OfferAnswerDto = {
-            fromClientId: offeredPeer.socketId,
-            toClientId: offeredPeer.connectedClientSocketId,
-            sdp: sdp,
-          };
-          this.socket.emit('answer', answerDto);
-        })
-        .catch(error => {
-          console.error(
-            `Peer SocketId: ${
-              offeredPeer.connectedClientSocketId
-            } createAnswer fail=> ${error.toString()}`,
-          );
-        });
+      const offeredPeer = this.peers.get(offerDto.fromClientId);
+      if (offeredPeer !== undefined) {
+        offeredPeer.setRemoteDescription(offerDto.sdp);
+        offeredPeer
+          .createAnswer()
+          .then(sdp => {
+            offeredPeer.setLocalDescription(sdp);
+            const answerDto: OfferAnswerDto = {
+              fromClientId: offeredPeer.socketId,
+              toClientId: offeredPeer.connectedClientSocketId,
+              sdp: sdp,
+            };
+            this.socket.emit('answer', answerDto);
+          })
+          .catch(error => {
+            console.error(
+              `Peer SocketId: ${
+                offeredPeer.connectedClientSocketId
+              } createAnswer fail=> ${error.toString()}`,
+            );
+          });
+      }
     });
 
     socket.on('needToOffer', (toSocketIds: string[]) => {
