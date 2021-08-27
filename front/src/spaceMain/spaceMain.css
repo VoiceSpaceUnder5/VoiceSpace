@@ -4,6 +4,7 @@ canvas {
   height: 92vh;
   /* for Iphone */
   height: calc(var(--vh) * 92);
+  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px);
   display: block;
 }
 
@@ -17,6 +18,7 @@ canvas {
   height: 92vh;
   /* for Iphone */
   height: calc(var(--vh) * 92);
+  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px);
   z-index: 10;
   overflow: hidden;
 }
@@ -29,12 +31,13 @@ canvas {
 .navbar {
   height: 8vh;
   /* for Iphone */
-  height: calc(var(--vh) * 8);
+  height: calc(var(--vh) * 8 + env(safe-area-inset-bottom) + 12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: gainsboro;
   padding: 8px 12px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
   font-size: 3vh;
   /* for Iphone */
   font-size: calc(var(--vh) * 3);
