@@ -75,7 +75,7 @@ function Profile(): JSX.Element {
         <div>
           <div className="name_title">이름</div>
           <div className="profile_input">
-            <input value={nickname} onChange={onNicknameInput} />
+            <input maxLength={10} value={nickname} onChange={onNicknameInput} />
           </div>
           <div className="avatar_title">아바타</div>
           <div className="profile_avatar">

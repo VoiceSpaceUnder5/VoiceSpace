@@ -18,10 +18,7 @@ function Options(): JSX.Element {
   return (
     <Dropdown overlay={options} trigger={['click']}>
       <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-        <EllipsisOutlined
-          className="navbar_button"
-          style={{transform: 'rotate(90deg)'}}
-        />
+        <EllipsisOutlined className="navbar_button" />
       </a>
     </Dropdown>
   );
