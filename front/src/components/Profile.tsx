@@ -89,9 +89,9 @@ function Profile(): JSX.Element {
           </div>
         </div>
         <div className="profile_button">
-          <Button type="primary" shape="round" onClick={onProfileChangeClick}>
+          <Menu.Item className="change_button" onClick={onProfileChangeClick}>
             변경
-          </Button>
+          </Menu.Item>
         </div>
       </Menu>
     );
