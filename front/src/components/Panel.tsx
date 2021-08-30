@@ -1,12 +1,14 @@
 import React from 'react';
 import {Menu, Dropdown, message} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
-import GlobalContext from '../utils/GlobalContext';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import {useContext} from 'react';
+import PeerManager from '../utils/RTCGameUtils';
 
-function Panel(): JSX.Element {
-  const globalContext = useContext(GlobalContext);
+interface PanelProps {
+  peerManager: PeerManager;
+}
+
+function Panel(props: PanelProps): JSX.Element {
   const panel = () => {
     const messageHandle = () => {
       message.info('Copy Success!');
@@ -17,8 +19,7 @@ function Panel(): JSX.Element {
         <Menu.Item key="0">
           <CopyToClipboard
             text={
-              'https://under5.site/space?roomId=' +
-              globalContext?.peerManager?.roomId
+              'https://under5.site/space?roomId=' + props.peerManager.roomId
             }
             onCopy={messageHandle}
           >

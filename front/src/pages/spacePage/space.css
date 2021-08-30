@@ -112,8 +112,8 @@ canvas {
   background-color: skyblue;
   color: white;
 }
-.profile_avatar>button:hover {
-  color:skyblue;
+.profile_avatar > button:hover {
+  color: skyblue;
   transition: 0.3s;
 }
 

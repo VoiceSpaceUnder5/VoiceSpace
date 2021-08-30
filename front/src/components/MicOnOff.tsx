@@ -1,16 +1,17 @@
 import React, {useState, useContext} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
-import GlobalContext from '../utils/GlobalContext';
+import PeerManager from '../utils/RTCGameUtils';
 
-function MicOnOff(): JSX.Element {
-  const globalContext = useContext(GlobalContext);
+interface MicOnOffProps {
+  peerManager: PeerManager;
+}
+
+function MicOnOff(props: MicOnOffProps): JSX.Element {
   const [mic, setMic] = useState(true);
   const onClick = () => {
     // props.myMicToggle(!mic);
-    if (globalContext.peerManager !== undefined) {
-      globalContext.peerManager.localStream.getAudioTracks()[0].enabled = !mic;
-      console.log(globalContext.peerManager.me.nickname);
-    }
+    props.peerManager.localStream.getAudioTracks()[0].enabled = !mic;
+    console.log(props.peerManager.me.nickname);
     setMic(!mic);
   };
   return (

@@ -35,18 +35,18 @@ class ImageInfoProvider {
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
   // for loading
   readyToLoad: Map<ObjectImageMD, ReadyToLoadValue[]>;
-  setloadStatus: React.Dispatch<React.SetStateAction<LoadingInfo>>;
+  setLoadStatus: React.Dispatch<React.SetStateAction<LoadingInfo>>;
 
   gl: WebGLRenderingContext;
   constructor(
     gl: WebGLRenderingContext,
-    setloadStatus: React.Dispatch<React.SetStateAction<LoadingInfo>>,
+    setLoadStatus: React.Dispatch<React.SetStateAction<LoadingInfo>>,
   ) {
     this.gl = gl;
     this.objects = new Map();
     this.avatars = new Map();
     this.readyToLoad = new Map();
-    this.setloadStatus = setloadStatus;
+    this.setLoadStatus = setLoadStatus;
     this.background = null;
 
     this.pixelInfos = [];
@@ -68,14 +68,14 @@ class ImageInfoProvider {
   }
 
   increaseNeedToLoad = (value = 1): void => {
-    this.setloadStatus(before => {
+    this.setLoadStatus(before => {
       //console.log('increaseNeedToLoad', before);
       return {...before, needToLoad: before.needToLoad + value};
     });
   };
 
   increasefinishLoad = (): void => {
-    this.setloadStatus(before => {
+    this.setLoadStatus(before => {
       //console.log('increasefinishLoad', before);
       return {...before, finishLoad: before.finishLoad + 1};
     });

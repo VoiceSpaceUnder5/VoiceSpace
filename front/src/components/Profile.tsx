@@ -1,8 +1,8 @@
-import React, {useState, useContext} from 'react';
-import {Menu, Dropdown, Button} from 'antd';
+import React, {useState} from 'react';
+import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
-import GlobalContext from '../utils/GlobalContext';
 import '../pages/spacePage/space.css';
+import PeerManager from '../utils/RTCGameUtils';
 const imgSrcs = [
   './assets/spaceMain/avatar/brownHorseFaceMute.png',
   './assets/spaceMain/avatar/brownBearFaceMute.png',
@@ -12,25 +12,22 @@ const imgSrcs = [
 
 const animalName: string[] = ['말', '곰', '돼지', '토끼'];
 
-function Profile(): JSX.Element {
-  const globalContext = useContext(GlobalContext);
-  const [changedName, setChangedName] = useState(globalContext.initialInfo[1]);
-  const [nickname, setNickname] = useState(globalContext.initialInfo[1]);
-  const [avatarIdx, setAvatarIdx] = useState(
-    Number(globalContext.initialInfo[0]),
-  );
-  const [changedIdx, setChangedIdx] = useState(
-    Number(globalContext.initialInfo[0]),
-  );
+interface ProfileProps {
+  peerManager: PeerManager;
+}
+
+function Profile(props: ProfileProps): JSX.Element {
+  const [changedName, setChangedName] = useState(props.peerManager.me.nickname);
+  const [nickname, setNickname] = useState(props.peerManager.me.nickname);
+  const [avatarIdx, setAvatarIdx] = useState(props.peerManager.me.avatar);
+  const [changedIdx, setChangedIdx] = useState(props.peerManager.me.avatar);
   const onProfileChangeButtonClick = (
     newAvatarIdx: number,
     newNickname: string,
   ) => {
-    if (globalContext.peerManager !== undefined) {
-      globalContext.peerManager.me.avatar = newAvatarIdx;
-      globalContext.peerManager.me.div.innerText = newNickname;
-      globalContext.peerManager.me.nickname = newNickname;
-    }
+    props.peerManager.me.avatar = newAvatarIdx;
+    props.peerManager.me.div.innerText = newNickname;
+    props.peerManager.me.nickname = newNickname;
   };
   const notChanged = () => {
     setTimeout(() => {
@@ -39,9 +36,6 @@ function Profile(): JSX.Element {
     }, 500);
   };
   const profile = () => {
-    if (globalContext.peerManager === undefined) {
-      return <></>;
-    }
     const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
       setNickname(e.target.value);
     };

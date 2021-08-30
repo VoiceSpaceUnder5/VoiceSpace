@@ -2,45 +2,39 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import '../pages/spacePage/space.css';
 import {LogoutOutlined} from '@ant-design/icons';
-import {useContext} from 'react';
-import GlobalContext from '../utils/GlobalContext';
 import MicOnOff from './MicOnOff';
 import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
+import PeerManager from '../utils/RTCGameUtils';
 
 interface NavigationProps {
+  peerManager: PeerManager;
   goToHome: () => void;
 }
 
 function Navigation(props: NavigationProps): JSX.Element {
-  const globalContext = useContext(GlobalContext);
-
   const exit = () => {
-    if (globalContext.peerManager) {
-      globalContext.peerManager.close();
-    }
+    props.peerManager.close();
     props.goToHome();
   };
 
   return (
     <nav className="navbar">
       <div className="navbar_left">
-        <Profile />
+        <Profile peerManager={props.peerManager} />
       </div>
-
       <div className="navbar_center">
-        <MicOnOff />
+        <MicOnOff peerManager={props.peerManager} />
         <ScreenShare />
         <Options />
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>
       </div>
-
       <div className="navbar_right">
-        <Panel />
+        <Panel peerManager={props.peerManager} />
       </div>
     </nav>
   );
