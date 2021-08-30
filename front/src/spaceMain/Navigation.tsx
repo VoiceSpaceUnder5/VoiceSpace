@@ -34,13 +34,13 @@ function Navigation(props: NavigationProps): JSX.Element {
         <MicOnOff />
         <ScreenShare />
         <Options />
-        <LogoutOutlined className="navbar_button" onClick={exit} />
+        <div>
+          <LogoutOutlined className="navbar_button" onClick={exit} />
+        </div>
       </div>
 
       <div className="navbar_right">
-        <li>
-          <Panel />
-        </li>
+        <Panel />
       </div>
     </nav>
   );

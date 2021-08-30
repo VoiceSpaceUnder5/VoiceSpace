@@ -81,6 +81,11 @@ canvas {
 .profile_avatar > button {
   align-items: center;
   height: 20%;
+  border: 0;
+  outline: 0;
+  background-color: white;
+  color: #2598f1;
+  text-shadow: gray;
 }
 .profile_input > input {
   width: 95%;
@@ -123,6 +128,24 @@ canvas {
 .navbar_button {
   color: black;
 }
+.navbar_button:hover {
+  color: gainsboro;
+  border: 1px solid #2598f1;
+  background-color: #2598f1;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px 0 gray;
+}
+
+/* 아래는 어떻게 하면 버튼처럼 보일지. */
+/* .navbar_center > *:hover {
+  border: 1px solid #2598f1;
+  border-radius: 5px;
+  background-color: #2598f1;
+  box-shadow: 3px 3px 3px 0 gray;
+} */
+/* .navbar_button:hover {
+  color: white;
+} */
 
 /* 네비게이션 모바일 */
 @media screen and (max-width: 767px) {
@@ -134,6 +157,20 @@ canvas {
   .navbar_center li {
     padding: 0px 6px;
     height: 100%;
+  }
+  .navbar_button {
+    color: black;
+    border: 1px solid gainsboro;
+    background-color: gainsboro;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 0 gray;
+  }
+  .navbar_button:hover {
+    color: gainsboro;
+    border: 1px solid #2598f1;
+    background-color: #2598f1;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 0 gray;
   }
 }
 
