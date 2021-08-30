@@ -2,20 +2,18 @@ import React, {useState} from 'react';
 import {Button} from 'antd';
 
 interface EnterRoomProps {
+  inputPlaceHolder: string;
+  buttonText: string;
   enterRoomButtonClick: (arg0: string) => void;
 }
 
 function EnterRoom(props: EnterRoomProps): JSX.Element {
   const [roomId, setRoomId] = useState('');
-
-  // const info = () => {
-  //   message.info('유효하지 않은 코드입니다');
-  // };
   const element: JSX.Element = (
     <>
       <br />
       <Button id="button" onClick={() => props.enterRoomButtonClick(roomId)}>
-        참가하기
+        {props.buttonText}
       </Button>
     </>
   );
@@ -42,7 +40,7 @@ function EnterRoom(props: EnterRoomProps): JSX.Element {
         className="input"
         onFocus={onFocus}
         onBlur={onBlur}
-        placeholder="코드(RoomId)를 입력해주세요."
+        placeholder={props.inputPlaceHolder} //코드(RoomId)를 입력해주세요.
         value={roomId}
         onChange={inputOnchange}
       />

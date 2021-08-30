@@ -50,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/dom": "^8.2.0",
     "@types/antd": "^1.0.0",
     "@types/react-router-dom": "^5.1.8",
     "@types/socket.io-client": "^3.0.0",

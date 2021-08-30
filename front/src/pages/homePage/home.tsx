@@ -24,12 +24,7 @@ function Home(props: RouteComponentProps): JSX.Element {
   return (
     <div className="home">
       <div className="top">
-        <Welcome
-          logoImageSrc="./assets/home/homeLogo.png"
-          logoImageOnload={() => {
-            console.log('logoImageOnload called');
-          }}
-        />
+        <Welcome logoImageSrc="./assets/home/homeLogo.png" />
       </div>
       <div className="bottom">
         <Descript
@@ -39,7 +34,11 @@ function Home(props: RouteComponentProps): JSX.Element {
           }
         />
         <CreateRoom createRoomButtonClick={createRoomClick} />
-        <EnterRoom enterRoomButtonClick={enterRoomClick} />
+        <EnterRoom
+          buttonText={'참가하기'}
+          inputPlaceHolder={'코드(RoomId)를 입력해주세요.'}
+          enterRoomButtonClick={enterRoomClick}
+        />
         <MoreInfo />
       </div>
     </div>
