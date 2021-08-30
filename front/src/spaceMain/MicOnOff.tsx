@@ -13,10 +13,14 @@ function MicOnOff(): JSX.Element {
     }
     setMic(!mic);
   };
-  return mic ? (
-    <AudioOutlined className="navbar_button" onClick={onClick} />
-  ) : (
-    <AudioMutedOutlined className="navbar_button" onClick={onClick} />
+  return (
+    <div>
+      {mic ? (
+        <AudioOutlined className="navbar_button" onClick={onClick} />
+      ) : (
+        <AudioMutedOutlined className="navbar_button" onClick={onClick} />
+      )}
+    </div>
   );
 }
 
