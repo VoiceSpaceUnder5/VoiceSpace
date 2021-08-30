@@ -22,5 +22,9 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "typedocOptions": {
+    "out": "VoiceSpace 프론트앤드",
+    "entryPoints": ["./src"]
+  }
 }
