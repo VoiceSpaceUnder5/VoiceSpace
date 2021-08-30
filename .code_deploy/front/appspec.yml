@@ -1,0 +1,6 @@
+#code_deploy for voiceSpace-프론트앤드
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/frontEnd
