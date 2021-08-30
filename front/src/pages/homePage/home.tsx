@@ -4,7 +4,7 @@ import {message, Button} from 'antd';
 import {v4 as uuidV4} from 'uuid';
 import './home.css';
 
-function Welcome() {
+function Welcome(): JSX.Element {
   return (
     <>
       <img className="logoImage" src="./assets/home/homeLogo.png" />
@@ -17,7 +17,7 @@ function Welcome() {
   );
 }
 
-function Descript() {
+function Descript(): JSX.Element {
   return (
     <>
       무료로 친구들과 즐거운 대화를 나눠보세요.
@@ -52,13 +52,13 @@ interface EnterRoomProps {
   enterRoomButtonClick: (arg0: string) => void;
 }
 
-function EnterRoom(props: EnterRoomProps) {
+function EnterRoom(props: EnterRoomProps): JSX.Element {
   const [roomId, setRoomId] = useState('');
 
   // const info = () => {
   //   message.info('유효하지 않은 코드입니다');
   // };
-  const element = (
+  const element: JSX.Element = (
     <>
       <br />
       <Button id="button" onClick={() => props.enterRoomButtonClick(roomId)}>
@@ -98,7 +98,7 @@ function EnterRoom(props: EnterRoomProps) {
   );
 }
 
-function MoreInfo() {
+function MoreInfo(): JSX.Element {
   return (
     <>
       <br />

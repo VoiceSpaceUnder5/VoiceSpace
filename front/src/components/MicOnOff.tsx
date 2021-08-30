@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
-import GlobalContext from './GlobalContext';
+import GlobalContext from '../utils/GlobalContext';
 
 function MicOnOff(): JSX.Element {
   const globalContext = useContext(GlobalContext);

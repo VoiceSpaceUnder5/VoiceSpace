@@ -1,9 +1,9 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import './spaceMain.css';
+import '../pages/spacePage/spaceMain.css';
 import {LogoutOutlined} from '@ant-design/icons';
 import {useContext} from 'react';
-import GlobalContext from './GlobalContext';
+import GlobalContext from '../utils/GlobalContext';
 import MicOnOff from './MicOnOff';
 import Profile from './Profile';
 import ScreenShare from './ScreenShare';

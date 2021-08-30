@@ -1,14 +1,14 @@
 import React, {useEffect, useRef, useContext, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
-import ImageInfoProvider from './ImageInfoProvider';
-import GLHelper, {Camera, isInRect} from './webGLUtils';
+import ImageInfoProvider from '../../utils/ImageInfoProvider';
+import GLHelper, {Camera, isInRect} from '../../utils/webGLUtils';
 import io from 'socket.io-client';
-import PeerManager from './RTCGameUtils';
-import Navigation from './Navigation';
-import {AvatarImageEnum} from './ImageMetaData';
-import Joystick from './Joystick';
+import PeerManager from '../../utils/RTCGameUtils';
+import Navigation from '../../components/Navigation';
+import {AvatarImageEnum} from '../../utils/ImageMetaData';
+import Joystick from '../../components/Joystick';
 import './spaceMain.css';
-import GlobalContext from './GlobalContext';
+import GlobalContext from '../../utils/GlobalContext';
 import {message} from 'antd';
 
 const qs = require('query-string');

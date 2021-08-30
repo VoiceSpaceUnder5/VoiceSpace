@@ -1,7 +1,7 @@
 import React from 'react';
 import {Menu, Dropdown, message} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
-import GlobalContext from './GlobalContext';
+import GlobalContext from '../utils/GlobalContext';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import {useContext} from 'react';
 
