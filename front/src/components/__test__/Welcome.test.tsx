@@ -3,7 +3,7 @@ import {render, screen} from '@testing-library/react';
 import Welcome from '../Welcome';
 
 describe('Welcome test', () => {
-  test('should render image correctly', async () => {
+  test('should render image correctly', () => {
     render(<Welcome logoImageSrc="./assets/home/homeLogo.png" />);
     const imageElement = screen.getByRole('img');
     expect(imageElement).toBeInTheDocument();

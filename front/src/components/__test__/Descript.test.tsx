@@ -3,7 +3,7 @@ import {render, screen} from '@testing-library/react';
 import Descript from '../Descript';
 
 describe('Descript test', () => {
-  test('should render component correctly', async () => {
+  test('should render component correctly', () => {
     render(<Descript divInnerText={'divinnerText'} brInnerText={'brtest'} />);
     const divElement = screen.getByText(/divinnerText/i);
     const brElement = screen.getByText(/brtest/i);

@@ -21,6 +21,10 @@ function Home(props: RouteComponentProps): JSX.Element {
     props.history.push(`/space?roomId=${uuidV4()}`);
   };
 
+  const aOnClick = () => {
+    window.open('https://www.naver.com');
+  };
+
   return (
     <div className="home">
       <div className="top">
@@ -39,7 +43,11 @@ function Home(props: RouteComponentProps): JSX.Element {
           inputPlaceHolder={'코드(RoomId)를 입력해주세요.'}
           enterRoomButtonClick={enterRoomClick}
         />
-        <MoreInfo />
+        <MoreInfo
+          aOnClick={aOnClick}
+          brInnerText={'VOICE SPACE에 대해'}
+          aInnerText={' 자세히 알아보세요'}
+        />
       </div>
     </div>
   );
