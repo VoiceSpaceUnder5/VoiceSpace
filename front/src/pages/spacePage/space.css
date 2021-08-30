@@ -153,7 +153,7 @@ canvas {
 }
 
 /* 네비게이션 모바일 */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1024px) {
   .navbar_left {
     overflow: hidden;
     text-overflow: ellipsis;
