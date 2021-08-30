@@ -16,5 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "typedocOptions": {
+    "out": "VoiceSpace 프론트앤드",
+    "entryPoints": ["./src"]
+  }
 }
