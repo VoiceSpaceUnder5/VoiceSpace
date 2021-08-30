@@ -21,7 +21,7 @@ import {
   greenGrassMD,
   smallTreeMD,
 } from './ImageMetaData';
-import {LoadingInfo} from './spaceMain';
+import {LoadingInfo} from '../pages/spacePage/Space';
 
 interface ReadyToLoadValue {
   centerPos: Vec2;

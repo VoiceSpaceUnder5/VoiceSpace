@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import 'antd/dist/antd.css';
-import Home from './home/home';
+import Home from './pages/homePage/Home';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, Route} from 'react-router-dom';
-import SpaceMain from './spaceMain/spaceMain';
-import GlobalContext from './spaceMain/GlobalContext';
+import Space from './pages/spacePage/Space';
+import GlobalContext from './utils/GlobalContext';
 
 //아이폰에서 vh가 하단 툴바영엮까지 포함하는 부분 해결하기 위해, 실제 innerHeight로 vh를 업데이트 해주자.
 const vh = window.innerHeight * 0.01;
@@ -28,7 +28,7 @@ function Router() {
           initialInfo: [0, ''],
         }}
       >
-        <Route path="/space" component={SpaceMain} />
+        <Route path="/space" component={Space} />
       </GlobalContext.Provider>
     </div>
   );
