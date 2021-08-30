@@ -30,7 +30,7 @@
   text-align: center;
 } */
 
-@media screen and (max-width: 768px) and (orientation: landscape) {
+@media screen and (max-width: 1024px) and (orientation: landscape) {
   .home {
     overflow: hidden;
     display: flex;
