@@ -1,14 +1,14 @@
 import React, {useEffect, useRef, useContext, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
-import ImageInfoProvider from './ImageInfoProvider';
-import GLHelper, {Camera, isInRect} from './webGLUtils';
+import ImageInfoProvider from '../../utils/ImageInfoProvider';
+import GLHelper, {Camera, isInRect} from '../../utils/webGLUtils';
 import io from 'socket.io-client';
-import PeerManager from './RTCGameUtils';
-import Navigation from './Navigation';
-import {AvatarImageEnum} from './ImageMetaData';
-import Joystick from './Joystick';
-import './spaceMain.css';
-import GlobalContext from './GlobalContext';
+import PeerManager from '../../utils/RTCGameUtils';
+import Navigation from '../../components/Navigation';
+import {AvatarImageEnum} from '../../utils/ImageMetaData';
+import Joystick from '../../components/Joystick';
+import './space.css';
+import GlobalContext from '../../utils/GlobalContext';
 import {message} from 'antd';
 
 const qs = require('query-string');
@@ -24,7 +24,7 @@ export interface LoadingInfo {
   finishLoad: number;
 }
 
-function SpaceMain(props: RouteComponentProps): JSX.Element {
+function Space(props: RouteComponentProps): JSX.Element {
   //query validate part
   const query = qs.parse(props.location.search) as SpaceMainQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   if (!query.roomId || query.roomId === '') {
@@ -285,4 +285,4 @@ function SpaceMain(props: RouteComponentProps): JSX.Element {
   );
 }
 
-export default SpaceMain;
+export default Space;

@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef} from 'react';
-import GlobalContext from './GlobalContext';
-import {Vec2} from './RTCGameUtils';
+import GlobalContext from '../utils/GlobalContext';
+import {Vec2} from '../utils/RTCGameUtils';
 
 export default function Joystick(): JSX.Element {
   // useRef
