@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import '../pages/spacePage/spaceMain.css';
+import '../pages/spacePage/space.css';
 import {LogoutOutlined} from '@ant-design/icons';
 import {useContext} from 'react';
 import GlobalContext from '../utils/GlobalContext';

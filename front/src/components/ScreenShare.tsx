@@ -1,7 +1,7 @@
 import React from 'react';
 import {Menu, Dropdown} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
-import '../pages/spacePage/spaceMain.css';
+import '../pages/spacePage/space.css';
 
 function ScreenShare(): JSX.Element {
   const screenshare = () => {

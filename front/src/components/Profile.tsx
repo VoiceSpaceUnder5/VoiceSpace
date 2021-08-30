@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {Menu, Dropdown, Button} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import GlobalContext from '../utils/GlobalContext';
-import '../pages/spacePage/spaceMain';
+import '../pages/spacePage/space.css';
 const imgSrcs = [
   './assets/spaceMain/avatar/brownHorseFaceMute.png',
   './assets/spaceMain/avatar/brownBearFaceMute.png',
