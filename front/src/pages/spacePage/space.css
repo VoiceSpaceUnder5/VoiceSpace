@@ -53,20 +53,23 @@ canvas {
   white-space: nowrap;
 }
 .navbar_profile {
-  padding: 0 0.5vw 0 0.5vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
   max-width: min-content;
 }
-.profile_title {
-  font-size: 3vh;
+.profile_title,
+.profile_title:hover {
+  height: 3.5vh;
+  font-size: inherit;
   font-weight: bold;
+  color: black;
 }
 .name_title,
 .avatar_title {
-  font-size: 2vh;
+  font-size: inherit;
   font-weight: bold;
+  color: black;
 }
 .profile_avatar {
   display: flex;
@@ -76,7 +79,7 @@ canvas {
 }
 .profile_avatar > img {
   width: 100px;
-  height: 80px;
+  height: 90px;
 }
 .profile_avatar > button {
   align-items: center;
@@ -90,6 +93,7 @@ canvas {
 .profile_input > input {
   width: 95%;
   max-width: 150px;
+  color: black;
 }
 .profile_button,
 .profile_input {
@@ -111,10 +115,14 @@ canvas {
   border-radius: 5px;
   background-color: skyblue;
   color: white;
+  transition: 0.3s;
 }
 .profile_avatar > button:hover {
   color: skyblue;
   transition: 0.3s;
+}
+.profile_button:hover {
+  background-color: white;
 }
 
 /* navbar 중간부분 */
@@ -154,10 +162,17 @@ canvas {
 
 /* 네비게이션 모바일 */
 @media screen and (max-width: 1024px) {
+  /* ios 사파리의 경우 좌우 safe area 고려가 되어있지 않음 */
+  /* @media screen and (orientation: landscape) {
+    .navbar_left {
+      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);  
+    } 
+  } */
   .navbar_left {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* padding-inline-start: calc(env(safe-area-inset-bottom) + 12px); */
   }
   .navbar_center li {
     padding: 0px 6px;
@@ -191,8 +206,8 @@ canvas {
     background-color: skyblue;
     color: white;
   }
-  .profile_avatar>button:hover {
-    color:skyblue;
+  .profile_avatar > button:hover {
+    color: skyblue;
     transition: 0.3s;
   }
 }
