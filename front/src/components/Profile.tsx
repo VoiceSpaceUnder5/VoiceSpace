@@ -47,9 +47,11 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
   };
   return (
     <Menu className="navbar_profile">
-      <div className="profile_title">프로필 설정</div>
+      <Menu.Item key="1" disabled={true} className="profile_title">
+        프로필 설정
+      </Menu.Item>
       <Menu.Divider></Menu.Divider>
-      <div>
+      <Menu.Item key="2" disabled={true}>
         <div className="name_title">이름</div>
         <div className="profile_input">
           <input
@@ -82,12 +84,14 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
             />
           </button>
         </div>
-      </div>
-      <div className="profile_button">
-        <Menu.Item className="change_button" onClick={onProfileChangeClick}>
-          변경
-        </Menu.Item>
-      </div>
+      </Menu.Item>
+      <Menu.Item
+        key="3"
+        className="profile_button"
+        onClick={onProfileChangeClick}
+      >
+        <div className="change_button">변경</div>
+      </Menu.Item>
     </Menu>
   );
 }
