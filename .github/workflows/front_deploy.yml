@@ -1,4 +1,4 @@
-name: FrontEnd-Build-and-Deploy
+name: Front_Deploy
 on:
   #master Branch에서 push 이벤트가 일어났을 때만 실행
   push:
@@ -7,7 +7,7 @@ on:
     paths:
       - front/src/** #front/src 디렉토리 내의 변화가 생겼을 때만 실행
 jobs:
-  FrontEnd-Build-and-Deploy:
+  Front_Deploy:
     runs-on: ubuntu-18.04
     steps:
       #master 브랜치로 체크아웃
@@ -37,10 +37,8 @@ jobs:
         run: cp -r ./front/build ./deploy/build
 
       - name: AWS code-deploy 작업명세서 복사
-        run: cp ./.code_deploy/front/appspec.yml ./deploy/
-
-      - name: 배포 폴더 전송 전 압축
-        run: zip -r ./$GITHUB_SHA.zip ./deploy
+        run: |
+          cp -r ./.code_deploy/front/* ./deploy
 
       - name: AWS S3로 배포버전 전송
         #AWS IAM 사용자 접속 키/암호 - voiceSpace 레포지토리 secret에 저장해둠
@@ -48,30 +46,22 @@ jobs:
           AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
         run: |
-          aws s3 cp \
-            --region ap-northeast-2 \
-            ./$GITHUB_SHA.zip s3://under5-github-action-deploy/$GITHUB_WORKFLOW/$GITHUB_SHA.zip
+          cd ./deploy && \
+          aws deploy push \
+          --region "${{ secrets.AWS_REGION }}" \
+          --application-name VoiceSpace_Front_App \
+          --s3-location s3://under5-deploy-data/$GITHUB_WORKFLOW/$GITHUB_SHA.zip \
+          --ignore-hidden-files
 
-      - name: AWS S3에서 EC2 인스턴스로 배포용 build 전송
+      - name: AWS S3에서 EC2 인스턴스로 배포용 build 전송 및 설치 / 도커 내리고 다시 올림
         env:
           AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
         run: |
           aws deploy create-deployment \
-          --application-name voicespace-frontend-with-githubaction \
-          --deployment-group-name voicespace-deploy-with-githubaction-group \
+          --region "${{ secrets.AWS_REGION }}" \
+          --application-name VoiceSpace_Front_App \
+          --deployment-config-name CodeDeployDefault.OneAtATime \
+          --deployment-group-name VoiceSpace_deploy_group \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=under5-github-action-deploy,bundleType=zip,key=$GITHUB_WORKFLOW/$GITHUB_SHA.zip \
-          --region ap-northeast-2
-
-      - name: AWS EC2 인스턴스에 쉘명령 전송
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PEM }}
-          port: ${{ secrets.SSH_PORT }}
-          # 현재 작동중인 프로트앤드 컨테이너의 build 소스코드 업데이트(docker cp 사용)
-          # 컨테이너 이름이 vs_frontend가 아니면 실패!! (기존에 있던 리소스는 삭제되지 않음!)
-          script: |
-            sudo docker cp ~/frontEnd/build/. vs_frontend:/var/www/front
+          --s3-location bucket=under5-deploy-data,bundleType=zip,key=$GITHUB_WORKFLOW/$GITHUB_SHA.zip

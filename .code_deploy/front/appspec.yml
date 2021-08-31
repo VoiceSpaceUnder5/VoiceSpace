@@ -4,3 +4,12 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/frontEnd
+hooks:
+  BeforeInstall: # 코드 디플로이가 app 설치 전에 아래 실행
+    - location: scripts/delete_previous_docker.sh
+      timeout: 1000
+      runas: ubuntu
+  AfterInstall: # 코드 디플로이가 app 설치 후에 아래 실행
+    - location: scripts/run_new_docker.sh
+      timeout: 500
+      runas: root
