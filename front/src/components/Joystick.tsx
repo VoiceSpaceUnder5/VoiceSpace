@@ -5,6 +5,7 @@ import {Camera} from '../utils/webGLUtils';
 interface JoystickProps {
   peerManager: PeerManager;
   camera: Camera;
+  divContainer?: HTMLDivElement;
 }
 
 export default function Joystick(props: JoystickProps): JSX.Element {
@@ -81,10 +82,11 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
   useEffect(() => {
     if (!props.peerManager || !props.camera) return;
-    console.log('setting Event started, in JoyStick');
     const peerManager = props.peerManager;
     const camera = props.camera;
-    const divContainer = peerManager.divContainer;
+    const divContainer = props.divContainer
+      ? props.divContainer
+      : peerManager.divContainer;
 
     const getLen = (pos1: Vec2, pos2: Vec2) => {
       return Math.sqrt(
