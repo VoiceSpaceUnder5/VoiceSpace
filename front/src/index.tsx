@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; //test 주석
 import ReactDOM from 'react-dom';
 import './index.css';
 import 'antd/dist/antd.css';
