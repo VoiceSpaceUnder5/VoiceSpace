@@ -87,7 +87,7 @@ class Me implements IPlayer {
     return data;
   }
 
-  update(glHelper: GLHelper) {
+  update(glHelper: GLHelper): void {
     const millisDiff = Date.now() - this.lastUpdateTimeStamp;
     this.lastUpdateTimeStamp = Date.now();
     this.div.innerText = this.nickname; // update nickname div innerText

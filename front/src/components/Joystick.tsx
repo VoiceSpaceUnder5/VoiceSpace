@@ -2,10 +2,9 @@ import React, {useEffect, useRef} from 'react';
 import PeerManager, {Vec2} from '../utils/RTCGameUtils';
 import {Camera} from '../utils/webGLUtils';
 
-interface JoystickProps {
+export interface JoystickProps {
   peerManager: PeerManager;
   camera: Camera;
-  divContainer?: HTMLDivElement;
 }
 
 export default function Joystick(props: JoystickProps): JSX.Element {
@@ -84,9 +83,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     if (!props.peerManager || !props.camera) return;
     const peerManager = props.peerManager;
     const camera = props.camera;
-    const divContainer = props.divContainer
-      ? props.divContainer
-      : peerManager.divContainer;
+    const divContainer = peerManager.divContainer;
 
     const getLen = (pos1: Vec2, pos2: Vec2) => {
       return Math.sqrt(
