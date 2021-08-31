@@ -153,7 +153,7 @@ canvas {
 }
 
 /* 네비게이션 모바일 */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1024px) {
   .navbar_left {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -176,6 +176,24 @@ canvas {
     background-color: #2598f1;
     border-radius: 5px;
     box-shadow: 1px 1px 1px 0 gray;
+  }
+  .change_button {
+    margin: auto;
+    width: 80%;
+    border-radius: 5px;
+    background-color: #2598f1;
+    color: white;
+  }
+  .change_button:hover {
+    margin: auto;
+    width: 80%;
+    border-radius: 5px;
+    background-color: skyblue;
+    color: white;
+  }
+  .profile_avatar>button:hover {
+    color:skyblue;
+    transition: 0.3s;
   }
 }
 
