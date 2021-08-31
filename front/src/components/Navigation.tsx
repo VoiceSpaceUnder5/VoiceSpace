@@ -9,6 +9,7 @@ import Options from './Options';
 import Panel from './Panel';
 import PeerManager from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
+import {message} from 'antd';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -27,6 +28,12 @@ function Navigation(props: NavigationProps): JSX.Element {
   const setAvatar = (avatar: AvatarImageEnum): void => {
     props.peerManager.me.avatar = avatar;
   };
+  const setIsMicOn = (isOn: boolean): void => {
+    props.peerManager.localStream.getAudioTracks()[0].enabled = isOn;
+  };
+  const onCopy = () => {
+    message.info('클립보드에 복사 되었습니다!');
+  };
 
   return (
     <nav className="navbar">
@@ -39,7 +46,7 @@ function Navigation(props: NavigationProps): JSX.Element {
         />
       </div>
       <div className="navbar_center">
-        <MicOnOff peerManager={props.peerManager} />
+        <MicOnOff setIsMicOn={setIsMicOn} />
         <ScreenShare />
         <Options />
         <div>
@@ -47,7 +54,7 @@ function Navigation(props: NavigationProps): JSX.Element {
         </div>
       </div>
       <div className="navbar_right">
-        <Panel peerManager={props.peerManager} />
+        <Panel roomId={props.peerManager.roomId} onCopy={onCopy} />
       </div>
     </nav>
   );

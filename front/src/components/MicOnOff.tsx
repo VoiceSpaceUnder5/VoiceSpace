@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
 
-interface MicOnOffProps {
+export interface MicOnOffProps {
   setIsMicOn: (arg0: boolean) => void;
 }
 
