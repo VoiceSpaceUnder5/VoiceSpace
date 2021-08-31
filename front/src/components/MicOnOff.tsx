@@ -1,18 +1,15 @@
 import React, {useState} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
-import PeerManager from '../utils/RTCGameUtils';
 
 interface MicOnOffProps {
-  peerManager: PeerManager;
+  setIsMicOn: (arg0: boolean) => void;
 }
 
 function MicOnOff(props: MicOnOffProps): JSX.Element {
   const [mic, setMic] = useState(true);
   const onClick = () => {
-    // props.myMicToggle(!mic);
-    props.peerManager.localStream.getAudioTracks()[0].enabled = !mic;
-    console.log(props.peerManager.me.nickname);
     setMic(!mic);
+    props.setIsMicOn(!mic);
   };
   return (
     <div>

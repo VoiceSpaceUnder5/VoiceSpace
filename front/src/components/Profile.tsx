@@ -8,14 +8,14 @@ import {
   AvatarPartImageEnum,
 } from '../utils/ImageMetaData';
 
-interface ProfileProps {
+export interface ProfileProps {
   nickname: string;
   setNickname: (nickname: string) => void;
   avatar: AvatarImageEnum;
   setAvatar: (avatar: AvatarImageEnum) => void;
 }
 
-function ProfileDropDown(props: ProfileProps): JSX.Element {
+export function ProfileDropDown(props: ProfileProps): JSX.Element {
   const [newNickname, setNewNickname] = useState(props.nickname);
   const [newAvatar, setNewAvatar] = useState(props.avatar);
   const numberOfAvatars = avatarImageMDs.length;
@@ -53,6 +53,7 @@ function ProfileDropDown(props: ProfileProps): JSX.Element {
         <div className="name_title">이름</div>
         <div className="profile_input">
           <input
+            data-testid="profileDropdownInputTestId"
             maxLength={10}
             value={newNickname}
             onChange={onNicknameInput}
@@ -61,7 +62,10 @@ function ProfileDropDown(props: ProfileProps): JSX.Element {
         <div className="avatar_title">아바타</div>
         <div className="profile_avatar">
           <button>
-            <LeftCircleFilled onClick={onLeftClick} />
+            <LeftCircleFilled
+              data-testid="profileDropdownLeftButtonTestId"
+              onClick={onLeftClick}
+            />
           </button>
           <img
             className="avatar_preview"
@@ -72,7 +76,10 @@ function ProfileDropDown(props: ProfileProps): JSX.Element {
             }
           ></img>
           <button>
-            <RightCircleFilled onClick={onRightClick} />
+            <RightCircleFilled
+              data-testid="profileDropdownRightButtonTestId"
+              onClick={onRightClick}
+            />
           </button>
         </div>
       </div>
@@ -97,7 +104,6 @@ function Profile(props: ProfileProps): JSX.Element {
     props.setAvatar(avatar);
     setAvatar(avatar);
   };
-
   const profileDropDownProps: ProfileProps = {
     nickname: nickname,
     setNickname: newSetNickname,
@@ -107,11 +113,15 @@ function Profile(props: ProfileProps): JSX.Element {
 
   return (
     <Dropdown
-      //   onVisibleChange={notChanged} // antd 메뉴얼?에 onVisibile
+      data-testid="dropDownTestId"
       overlay={ProfileDropDown(profileDropDownProps)}
       trigger={['click']}
     >
-      <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+      <a
+        role="button"
+        className="ant-dropdown-link"
+        onClick={e => e.preventDefault()}
+      >
         <span className="navbar_button">{nickname}</span>
       </a>
     </Dropdown>

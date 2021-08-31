@@ -68,6 +68,7 @@ class Me implements IPlayer {
     imageInfoProvider: ImageInfoProvider,
     glHelper: GLHelper,
   ) {
+    this.div.innerText = this.nickname;
     if (this.isMoving) {
       const oldCenterPosX = this.centerPos.x;
       const oldCenterPosY = this.centerPos.y;
