@@ -76,19 +76,15 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     //계속해서 화면에 장면을 그려줌
     const requestAnimation = () => {
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
+      peerManager.me.update(gLHelper);
+
       gLHelper.drawObjectsBeforeAvatar();
-      peerManager.me.update(
-        Date.now() - peerManager.lastUpdateTimeStamp,
-        gLHelper.imageInfoProvider,
-        gLHelper,
-      );
+      const data = JSON.stringify(peerManager.me.getIPlayer());
       peerManager.peers.forEach(peer => {
-        if (peer.dc.readyState === 'open')
-          peer.dc.send(JSON.stringify(peerManager.me));
+        if (peer.dc.readyState === 'open') peer.dc.send(data);
         gLHelper.drawAvatar(peer, peer.div);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });
-      peerManager.lastUpdateTimeStamp = Date.now();
       gLHelper.drawAvatar(peerManager.me, peerManager.me.div);
       gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
       requestAnimationFrame(requestAnimation);

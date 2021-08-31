@@ -235,8 +235,6 @@ class GLHelper {
   //value
   divHeightOffsetY: number;
   volumeDivideValue: number;
-  SpeakThrashHold: number;
-  SpeakMouseThrashHold: number;
 
   //Matrix, value for draw
   projectionMatrix: number[];
@@ -257,8 +255,6 @@ class GLHelper {
     //value
     this.divHeightOffsetY = -20;
     this.volumeDivideValue = 250;
-    this.SpeakThrashHold = 30;
-    this.SpeakMouseThrashHold = 50;
     //Matrix, value for draw
     this.projectionMatrix = [];
     this.cameraMatrix = [];
@@ -455,19 +451,12 @@ class GLHelper {
 
   drawAvatar(player: IPlayer, div: HTMLDivElement): void {
     const divSize = {...this.camera.size};
-    let faceIdx = AvatarPartImageEnum.FACE_MUTE; // Mute 얼굴
-
-    if (this.SpeakThrashHold < player.volume) {
-      faceIdx = AvatarPartImageEnum.FACE_SPEAK; // 말하는 얼굴
-      if (this.SpeakMouseThrashHold < player.volume)
-        faceIdx = AvatarPartImageEnum.FACE_SPEAK_MOUSE;
-    }
-    const drawIdxs = [AvatarPartImageEnum.BODY, faceIdx]; // 0은 몸통
+    const drawIdxs = [AvatarPartImageEnum.BODY, player.avatarFace]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
       const drawInfo = this.makeAvatarImageInfoFromImageInfoProviderAndPlayer(
         partEnum,
         player,
-        partEnum === faceIdx,
+        partEnum === player.avatarFace,
       );
       if (!drawInfo) return;
       this.drawImage(drawInfo);
