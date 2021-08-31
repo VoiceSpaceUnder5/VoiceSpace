@@ -33,7 +33,7 @@ describe('EnterRoom test', () => {
     expect(buttonElement).toBeInTheDocument();
   });
 
-  test('input 에 입력하고, 참가하기 버튼 눌렀을 시 onClickFn 호출테스트', async () => {
+  test('input 에 입력하고, 참가하기 버튼 눌렀을 시 onClickFn 호출, onClickFn의 첫번째 매개변수는 inputElement 의 값', async () => {
     const onClickFn = jest.fn();
     render(
       <EnterRoom

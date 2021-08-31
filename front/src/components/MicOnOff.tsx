@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
 import PeerManager from '../utils/RTCGameUtils';
 

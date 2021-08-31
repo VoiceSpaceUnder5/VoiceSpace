@@ -1,6 +1,5 @@
 import React from 'react';
 import {RouteComponentProps} from 'react-router-dom';
-import {message} from 'antd';
 import {v4 as uuidV4} from 'uuid';
 import './home.css';
 import Welcome from '../../components/Welcome';

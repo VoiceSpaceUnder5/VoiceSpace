@@ -87,6 +87,7 @@ export interface ObjectImageMD {
 export interface AvatarImageMD {
   avatarMDInfos: AvatarMDInfo[];
   avatarType: AvatarImageEnum;
+  avatarInitialName: string;
 }
 
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
@@ -208,6 +209,7 @@ export const grayBlockMD: ObjectImageMD = {
 //////////////////////////////// AvatarSizeInfo /////////////////////////////////
 export const brownBearMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.BROWN_BEAR,
+  avatarInitialName: '갈색 곰',
   avatarMDInfos: [
     {
       src: './assets/spaceMain/avatar/brownBearBody.png',
@@ -259,6 +261,7 @@ export const brownBearMD: AvatarImageMD = {
 
 export const brownHorseMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.BROWN_HORSE,
+  avatarInitialName: '갈색 말',
   avatarMDInfos: [
     {
       src: './assets/spaceMain/avatar/brownHorseBody.png',
@@ -310,6 +313,7 @@ export const brownHorseMD: AvatarImageMD = {
 
 export const whiteRabbitMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.WHITE_RABBIT,
+  avatarInitialName: '하얀 토끼',
   avatarMDInfos: [
     {
       src: './assets/spaceMain/avatar/whiteRabbitBody.png',
@@ -361,6 +365,7 @@ export const whiteRabbitMD: AvatarImageMD = {
 
 export const pinkPigMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.PINK_PIG,
+  avatarInitialName: '분홍 돼지',
   avatarMDInfos: [
     {
       src: './assets/spaceMain/avatar/pinkPigBody.png',
@@ -409,3 +414,10 @@ export const pinkPigMD: AvatarImageMD = {
     },
   ],
 };
+
+export const avatarImageMDs = [
+  brownBearMD,
+  brownHorseMD,
+  whiteRabbitMD,
+  pinkPigMD,
+];

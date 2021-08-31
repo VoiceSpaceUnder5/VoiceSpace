@@ -507,7 +507,7 @@ class GLHelper {
     div.style.top = Math.floor(divSize.height) + this.divHeightOffsetY + 'px';
   }
 
-  updateFromCavnas(canvas: HTMLCanvasElement) {
+  updateFromCavnas(canvas: HTMLCanvasElement): void {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     this.camera.originSize = {
