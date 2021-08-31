@@ -12,14 +12,14 @@ export enum ObjectCollisionFigureEnum {
   FILLED_ELLIPSE,
 }
 
-export enum AvatarImageEnum {
-  BROWN_HORSE = 0,
-  BROWN_BEAR = 1,
-  PINK_PIG = 2,
-  WHITE_RABBIT = 3,
+export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세요.
+  BROWN_BEAR = 0,
+  BROWN_HORSE = 1,
+  WHITE_RABBIT = 2,
+  PINK_PIG = 3,
 }
 
-export enum AvatarPartImageEnum {
+export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
   BODY = 0,
   FACE_MUTE = 1,
   FACE_SPEAK = 2,

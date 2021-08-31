@@ -8,6 +8,7 @@ import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
 import PeerManager from '../utils/RTCGameUtils';
+import {AvatarImageEnum} from '../utils/ImageMetaData';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -20,10 +21,22 @@ function Navigation(props: NavigationProps): JSX.Element {
     props.goToHome();
   };
 
+  const setNickName = (nickname: string): void => {
+    props.peerManager.me.nickname = nickname;
+  };
+  const setAvatar = (avatar: AvatarImageEnum): void => {
+    props.peerManager.me.avatar = avatar;
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar_left">
-        <Profile peerManager={props.peerManager} />
+        <Profile
+          nickname={props.peerManager.me.nickname}
+          avatar={props.peerManager.me.avatar}
+          setNickname={setNickName}
+          setAvatar={setAvatar}
+        />
       </div>
       <div className="navbar_center">
         <MicOnOff peerManager={props.peerManager} />
