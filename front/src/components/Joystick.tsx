@@ -1,8 +1,13 @@
-import React, {useContext, useEffect, useRef} from 'react';
-import GlobalContext from '../utils/GlobalContext';
-import {Vec2} from '../utils/RTCGameUtils';
+import React, {useEffect, useRef} from 'react';
+import PeerManager, {Vec2} from '../utils/RTCGameUtils';
+import {Camera} from '../utils/webGLUtils';
 
-export default function Joystick(): JSX.Element {
+interface JoystickProps {
+  peerManager: PeerManager;
+  camera: Camera;
+}
+
+export default function Joystick(props: JoystickProps): JSX.Element {
   // useRef
   const joystickBaseRef = useRef<HTMLImageElement>(null);
   const joystickRef = useRef<HTMLImageElement>(null);
@@ -12,16 +17,10 @@ export default function Joystick(): JSX.Element {
   ]);
   const oldCameraScale = useRef(0);
   // useContext
-  const globalContext = useContext(GlobalContext);
 
   const revealJoystickBase = () => {
-    if (
-      !globalContext.peerManager ||
-      !joystickRef.current ||
-      !joystickBaseRef.current
-    )
-      return;
-    const peerManager = globalContext.peerManager;
+    if (!joystickRef.current || !joystickBaseRef.current) return;
+    const peerManager = props.peerManager;
     const joystickBase = joystickBaseRef.current;
     const joystick = joystickRef.current;
 
@@ -46,13 +45,8 @@ export default function Joystick(): JSX.Element {
     joystick.style.visibility = 'hidden';
   };
   const moveJoystick = () => {
-    if (
-      !globalContext.peerManager ||
-      !joystickRef.current ||
-      !joystickBaseRef.current
-    )
-      return;
-    const peerManager = globalContext.peerManager;
+    if (!joystickRef.current || !joystickBaseRef.current) return;
+    const peerManager = props.peerManager;
     const joystickBase = joystickBaseRef.current;
     const joystick = joystickRef.current;
 
@@ -86,10 +80,10 @@ export default function Joystick(): JSX.Element {
   };
 
   useEffect(() => {
-    if (!globalContext.peerManager || !globalContext.camera) return;
+    if (!props.peerManager || !props.camera) return;
     console.log('setting Event started, in JoyStick');
-    const peerManager = globalContext.peerManager;
-    const camera = globalContext.camera;
+    const peerManager = props.peerManager;
+    const camera = props.camera;
     const divContainer = peerManager.divContainer;
 
     const getLen = (pos1: Vec2, pos2: Vec2) => {
@@ -191,7 +185,7 @@ export default function Joystick(): JSX.Element {
         joystickBaseRef.current.style.top = '0px';
       }
     });
-  }, [globalContext.peerManager]);
+  }, []);
   return (
     <>
       <img

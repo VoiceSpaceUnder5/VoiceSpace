@@ -230,6 +230,7 @@ class GLHelper {
   applyShapeMatrixLocation: WebGLUniformLocation | null;
   applyTransparencyLocation: WebGLUniformLocation | null;
   camera: Camera;
+  imageInfoProvider: ImageInfoProvider;
 
   //value
   divHeightOffsetY: number;
@@ -243,11 +244,16 @@ class GLHelper {
   imageMatrix: number[];
   transparency: number;
 
-  constructor(gl: WebGLRenderingContext, camera: Camera) {
+  constructor(
+    gl: WebGLRenderingContext,
+    camera: Camera,
+    imageinfoProvider: ImageInfoProvider,
+  ) {
     this.gl = gl;
     this.applyShapeMatrixLocation = null;
     this.applyTransparencyLocation = null;
     this.camera = camera;
+    this.imageInfoProvider = imageinfoProvider;
     //value
     this.divHeightOffsetY = -20;
     this.volumeDivideValue = 250;
@@ -301,11 +307,7 @@ class GLHelper {
     };
   }
 
-  getMy4VertexWorldPosition(
-    imageInfoProvider: ImageInfoProvider,
-    me: IPlayer,
-    scale = 1,
-  ): Vec2[] {
+  getMy4VertexWorldPosition(me: IPlayer, scale = 1): Vec2[] {
     const result: Vec2[] = [];
 
     const originVertex = [
@@ -314,7 +316,7 @@ class GLHelper {
       [1, 1],
       [0, 1],
     ];
-    const imageinfo = imageInfoProvider.getAvatarImageInfo(
+    const imageinfo = this.imageInfoProvider.getAvatarImageInfo(
       me.avatar,
       AvatarPartImageEnum.FACE_MUTE,
     );
@@ -428,12 +430,11 @@ class GLHelper {
   }
 
   makeAvatarImageInfoFromImageInfoProviderAndPlayer(
-    imageInfoProvider: ImageInfoProvider,
     avatarPart: AvatarPartImageEnum,
     player: IPlayer,
     isFace = true,
   ): DrawInfo | undefined {
-    const imageInfo = imageInfoProvider.getAvatarImageInfo(
+    const imageInfo = this.imageInfoProvider.getAvatarImageInfo(
       player.avatar,
       avatarPart,
     );
@@ -452,11 +453,7 @@ class GLHelper {
     };
   }
 
-  drawAvatar(
-    imageInfoProvider: ImageInfoProvider,
-    player: IPlayer,
-    div: HTMLDivElement,
-  ): void {
+  drawAvatar(player: IPlayer, div: HTMLDivElement): void {
     const divSize = {...this.camera.size};
     let faceIdx = AvatarPartImageEnum.FACE_MUTE; // Mute 얼굴
 
@@ -468,7 +465,6 @@ class GLHelper {
     const drawIdxs = [AvatarPartImageEnum.BODY, faceIdx]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
       const drawInfo = this.makeAvatarImageInfoFromImageInfoProviderAndPlayer(
-        imageInfoProvider,
         partEnum,
         player,
         partEnum === faceIdx,
@@ -509,6 +505,56 @@ class GLHelper {
 
     div.style.left = Math.floor(divSize.width) - div.clientWidth / 2 + 'px';
     div.style.top = Math.floor(divSize.height) + this.divHeightOffsetY + 'px';
+  }
+
+  updateFromCavnas(canvas: HTMLCanvasElement): void {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    this.camera.originSize = {
+      width: canvas.clientWidth,
+      height: canvas.clientHeight,
+    };
+    this.camera.size = {...this.camera.originSize};
+    this.camera.scale = 1;
+    this.gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+  }
+
+  drawObjectsBeforeAvatar(): void {
+    if (this.imageInfoProvider.background) {
+      this.drawImage({
+        ...this.imageInfoProvider.background,
+        scale: 1,
+        rotateRadian: 0,
+      });
+    }
+
+    const temp = [0, 1, 2, 3];
+    temp.forEach(key => {
+      this.imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+        this.drawImage({
+          ...imageInfo,
+          scale: 1,
+          rotateRadian: 0,
+        });
+      });
+    });
+  }
+
+  drawObjectsAfterAvatar(meCenterPos: Vec2): void {
+    const temp = [8, 9];
+    temp.forEach(key => {
+      this.imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
+        if (isInRect(imageInfo.centerPos, imageInfo.size, meCenterPos)) {
+          this.transparency = 0.3;
+        }
+        this.drawImage({
+          ...imageInfo,
+          scale: 1,
+          rotateRadian: 0,
+        });
+        this.transparency = 1.0;
+      });
+    });
   }
 }
 

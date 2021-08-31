@@ -1,109 +1,128 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
-import GlobalContext from '../utils/GlobalContext';
 import '../pages/spacePage/space.css';
-const imgSrcs = [
-  './assets/spaceMain/avatar/brownHorseFaceMute.png',
-  './assets/spaceMain/avatar/brownBearFaceMute.png',
-  './assets/spaceMain/avatar/pinkPigFaceMute.png',
-  './assets/spaceMain/avatar/whiteRabbitFaceMute.png',
-];
+import {
+  AvatarImageEnum,
+  avatarImageMDs,
+  AvatarPartImageEnum,
+} from '../utils/ImageMetaData';
 
-const animalName: string[] = ['말', '곰', '돼지', '토끼'];
+export interface ProfileProps {
+  nickname: string;
+  setNickname: (nickname: string) => void;
+  avatar: AvatarImageEnum;
+  setAvatar: (avatar: AvatarImageEnum) => void;
+}
 
-function Profile(): JSX.Element {
-  const globalContext = useContext(GlobalContext);
-  const [changedName, setChangedName] = useState(globalContext.initialInfo[1]);
-  const [nickname, setNickname] = useState(globalContext.initialInfo[1]);
-  const [avatarIdx, setAvatarIdx] = useState(
-    Number(globalContext.initialInfo[0]),
-  );
-  const [changedIdx, setChangedIdx] = useState(
-    Number(globalContext.initialInfo[0]),
-  );
-  const onProfileChangeButtonClick = (
-    newAvatarIdx: number,
-    newNickname: string,
-  ) => {
-    if (globalContext.peerManager !== undefined) {
-      globalContext.peerManager.me.avatar = newAvatarIdx;
-      globalContext.peerManager.me.div.innerText = newNickname;
-      globalContext.peerManager.me.nickname = newNickname;
-    }
+export function ProfileDropDown(props: ProfileProps): JSX.Element {
+  const [newNickname, setNewNickname] = useState(props.nickname);
+  const [newAvatar, setNewAvatar] = useState(props.avatar);
+  const numberOfAvatars = avatarImageMDs.length;
+
+  const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewNickname(e.target.value);
   };
-  const notChanged = () => {
-    setTimeout(() => {
-      setNickname(changedName);
-      setAvatarIdx(changedIdx);
-    }, 500);
+  const onLeftClick = () => {
+    setNewAvatar(beforeAvatar => {
+      let newAvatar = beforeAvatar - 1;
+      if (newAvatar < 0) newAvatar = numberOfAvatars - 1;
+      return newAvatar;
+    });
   };
-  const profile = () => {
-    if (globalContext.peerManager === undefined) {
-      return <></>;
+  const onRightClick = () => {
+    setNewAvatar(beforeAvatar => {
+      let newAvatar = beforeAvatar + 1;
+      if (newAvatar >= numberOfAvatars) newAvatar = 0;
+      return newAvatar;
+    });
+  };
+  const onProfileChangeClick = () => {
+    let nextNickname = newNickname;
+    if (newNickname === '') {
+      nextNickname = `익명의 ${avatarImageMDs[newAvatar].avatarInitialName}`;
     }
-    const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setNickname(e.target.value);
-    };
-    const onLeftClick = () => {
-      setAvatarIdx((avatarIdx + 3) % 4);
-    };
-    const onRightClick = () => {
-      setAvatarIdx((avatarIdx + 1) % 4);
-    };
-    const onProfileChangeClick = () => {
-      const anonymous = '익명의 ';
-      if (nickname !== '') {
-        onProfileChangeButtonClick(avatarIdx, nickname);
-        setNickname(nickname);
-        setChangedName(nickname);
-        setChangedIdx(avatarIdx);
-      } else {
-        onProfileChangeButtonClick(
-          avatarIdx,
-          anonymous + animalName[avatarIdx],
-        );
-        setNickname(anonymous + animalName[avatarIdx]);
-        setChangedName(anonymous + animalName[avatarIdx]);
-        setChangedIdx(avatarIdx);
-      }
-    };
-    return (
-      <Menu className="navbar_profile">
-        <div className="profile_title">프로필 설정</div>
-        <Menu.Divider></Menu.Divider>
-        <div>
-          <div className="name_title">이름</div>
-          <div className="profile_input">
-            <input maxLength={10} value={nickname} onChange={onNicknameInput} />
-          </div>
-          <div className="avatar_title">아바타</div>
-          <div className="profile_avatar">
-            <button>
-              <LeftCircleFilled onClick={onLeftClick} />
-            </button>
-            <img className="avatar_preview" src={imgSrcs[avatarIdx]}></img>
-            <button>
-              <RightCircleFilled onClick={onRightClick} />
-            </button>
-          </div>
-        </div>
-        <div className="profile_button">
-          <Menu.Item className="change_button" onClick={onProfileChangeClick}>
-            변경
-          </Menu.Item>
-        </div>
-      </Menu>
-    );
+    props.setAvatar(newAvatar);
+    props.setNickname(nextNickname);
   };
   return (
+    <Menu className="navbar_profile">
+      <div className="profile_title">프로필 설정</div>
+      <Menu.Divider></Menu.Divider>
+      <div>
+        <div className="name_title">이름</div>
+        <div className="profile_input">
+          <input
+            data-testid="profileDropdownInputTestId"
+            maxLength={10}
+            value={newNickname}
+            onChange={onNicknameInput}
+          />
+        </div>
+        <div className="avatar_title">아바타</div>
+        <div className="profile_avatar">
+          <button>
+            <LeftCircleFilled
+              data-testid="profileDropdownLeftButtonTestId"
+              onClick={onLeftClick}
+            />
+          </button>
+          <img
+            className="avatar_preview"
+            src={
+              avatarImageMDs[newAvatar].avatarMDInfos[
+                AvatarPartImageEnum.FACE_MUTE
+              ].src
+            }
+          ></img>
+          <button>
+            <RightCircleFilled
+              data-testid="profileDropdownRightButtonTestId"
+              onClick={onRightClick}
+            />
+          </button>
+        </div>
+      </div>
+      <div className="profile_button">
+        <Menu.Item className="change_button" onClick={onProfileChangeClick}>
+          변경
+        </Menu.Item>
+      </div>
+    </Menu>
+  );
+}
+
+function Profile(props: ProfileProps): JSX.Element {
+  const [nickname, setNickname] = useState(props.nickname);
+  const [avatar, setAvatar] = useState(props.avatar);
+
+  const newSetNickname = (nickname: string): void => {
+    props.setNickname(nickname);
+    setNickname(nickname);
+  };
+  const newSetAvatar = (avatar: AvatarImageEnum): void => {
+    props.setAvatar(avatar);
+    setAvatar(avatar);
+  };
+  const profileDropDownProps: ProfileProps = {
+    nickname: nickname,
+    setNickname: newSetNickname,
+    avatar: avatar,
+    setAvatar: newSetAvatar,
+  };
+
+  return (
     <Dropdown
-      onVisibleChange={notChanged}
-      overlay={profile}
+      data-testid="dropDownTestId"
+      overlay={ProfileDropDown(profileDropDownProps)}
       trigger={['click']}
     >
-      <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-        <span className="navbar_button">{changedName}</span>
+      <a
+        role="button"
+        className="ant-dropdown-link"
+        onClick={e => e.preventDefault()}
+      >
+        <span className="navbar_button">{nickname}</span>
       </a>
     </Dropdown>
   );

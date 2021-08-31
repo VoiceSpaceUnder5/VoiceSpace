@@ -68,6 +68,7 @@ class Me implements IPlayer {
     imageInfoProvider: ImageInfoProvider,
     glHelper: GLHelper,
   ) {
+    this.div.innerText = this.nickname;
     if (this.isMoving) {
       const oldCenterPosX = this.centerPos.x;
       const oldCenterPosY = this.centerPos.y;
@@ -97,11 +98,7 @@ class Me implements IPlayer {
       );
       //collision detection part
 
-      const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(
-        imageInfoProvider,
-        this,
-        0.8,
-      );
+      const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
 
       const isCollision = (vertex4: Vec2[]): boolean => {
         if (!imageInfoProvider.pixelInfos) return false;
@@ -257,7 +254,7 @@ export default class PeerManager {
   pcConfig: RTCConfiguration | undefined;
   me: Me;
   lastUpdateTimeStamp: number;
-  audioContainer: Element;
+  audioContainer: HTMLDivElement;
   divContainer: HTMLDivElement;
   roomId: string;
   constructor(
@@ -265,7 +262,7 @@ export default class PeerManager {
     localStream: MediaStream,
     nickname: string,
     avatar: AvatarImageEnum,
-    audioContainer: Element,
+    audioContainer: HTMLDivElement,
     divContainer: HTMLDivElement,
     meCenterPos: Vec2,
     roomId: string,
@@ -419,6 +416,7 @@ export default class PeerManager {
     return newPeer;
   }
   close(): void {
+    console.log('peerManager close called');
     this.peers.forEach(peer => {
       peer.close();
     });

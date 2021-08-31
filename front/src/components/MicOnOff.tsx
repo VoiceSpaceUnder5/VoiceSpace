@@ -1,17 +1,15 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {AudioOutlined, AudioMutedOutlined} from '@ant-design/icons';
-import GlobalContext from '../utils/GlobalContext';
 
-function MicOnOff(): JSX.Element {
-  const globalContext = useContext(GlobalContext);
+export interface MicOnOffProps {
+  setIsMicOn: (arg0: boolean) => void;
+}
+
+function MicOnOff(props: MicOnOffProps): JSX.Element {
   const [mic, setMic] = useState(true);
   const onClick = () => {
-    // props.myMicToggle(!mic);
-    if (globalContext.peerManager !== undefined) {
-      globalContext.peerManager.localStream.getAudioTracks()[0].enabled = !mic;
-      console.log(globalContext.peerManager.me.nickname);
-    }
     setMic(!mic);
+    props.setIsMicOn(!mic);
   };
   return (
     <div>

@@ -1,6 +1,5 @@
 import React from 'react';
 import {RouteComponentProps} from 'react-router-dom';
-import {message} from 'antd';
 import {v4 as uuidV4} from 'uuid';
 import './home.css';
 import Welcome from '../../components/Welcome';
@@ -15,10 +14,7 @@ function Home(props: RouteComponentProps): JSX.Element {
   };
 
   const createRoomClick = () => {
-    message.info(
-      '새로운 음성채팅방에 입장하셨습니다. 주소를 복사하여 친구들을 초대해 보세요!',
-    );
-    props.history.push(`/space?roomId=${uuidV4()}`);
+    props.history.push(`/space?roomId=${uuidV4()}&isNew=true`);
   };
 
   const aOnClick = () => {
