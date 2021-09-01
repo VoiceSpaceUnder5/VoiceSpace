@@ -1,9 +1,8 @@
 name: PR_test
 on:
-  #master Branch에서 pull request날라왔을 때만 실행
   pull_request:
     branches:
-      - [ SW-115/auto-tdd ] #master 브랜치에 push 이벤트가 일어났을 때만 실행
+      - SW-115/auto-tdd
 jobs:
   Run_Jest:
     runs-on: ubuntu-18.04
