@@ -6,6 +6,9 @@ on:
 jobs:
   PR_test:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node-version: [12.x] # ".x" 로 최신 버전도 사용하고 직접 버전 지정도 가능하다
     steps:
       - name: 풀리퀘 브랜치 헤드로 체크아웃
         uses: actions/checkout@v2
@@ -14,3 +17,8 @@ jobs:
 
       - name: 체크아웃 테스트
         run: cd .github/workflows && cat PR_test.yml
+
+      - name: 테스트 진행
+        run:
+          cd front && npm install
+          cd front && npm run test
