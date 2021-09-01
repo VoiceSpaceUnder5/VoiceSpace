@@ -1,6 +1,6 @@
 name: PR_test
 on:
-  pull_request:
+  push:
     branches:
       - SW-115/auto-tdd
 jobs:
