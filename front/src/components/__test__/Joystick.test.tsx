@@ -56,7 +56,6 @@ describe('Joystick test', () => {
       return;
     }
     fireEvent.mouseDown(divContainer, {clientX: 200, clientY: 200});
-    expect(false).toBe(true)
     expect(joystickElement).toHaveStyle({left: '165px'});
     expect(joystickElement).toHaveStyle({top: '165px'});
     expect(joystickBaseElement).toHaveStyle({left: '115px'});
