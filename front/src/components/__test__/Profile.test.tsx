@@ -49,6 +49,8 @@ afterEach(() => {
 // antd 의 Menu 컴포넌트를 사용하면 하위 컴포넌트들을 2개씩 렌더링 합니다.
 // 실제 앞에 렌더링 되는 놈은 All 로 찾았을떄 1번 인덱스.
 // 이유는 나도모름
+// Menu.Item으로 변경 후 img elements(82, 131, 141번 줄)를 제외하고는 0번 인덱스로 수정
+// 이유는 여전히 모르겠음
 describe('ProfileDropDown test', () => {
   test('초기 nickname 값 정상적으로 들어갔는지 확인', async () => {
     if (!container) {
@@ -98,7 +100,7 @@ describe('ProfileDropDown test', () => {
       );
     });
     const inputElements = screen.queryAllByTestId('profileDropdownInputTestId');
-    const inputElement = inputElements[1] as HTMLInputElement;
+    const inputElement = inputElements[0] as HTMLInputElement;
     const inputValue = '1234';
     userEvent.type(inputElement, inputValue);
     const expectedValue = (
@@ -124,7 +126,7 @@ describe('ProfileDropDown test', () => {
     const rightButtonElement = screen.queryAllByTestId(
       'profileDropdownRightButtonTestId',
     );
-    userEvent.click(rightButtonElement[1]);
+    userEvent.click(rightButtonElement[0]);
     let imageElements = screen.getAllByRole('img');
     let imageElement = imageElements[1];
     let nextEnum = mockedProfileDropDownProps.avatar + 1;
@@ -133,8 +135,8 @@ describe('ProfileDropDown test', () => {
       isImageSrcSame(imageElement as HTMLImageElement, nextEnum),
     ).toBeTruthy();
 
-    userEvent.click(leftButtonElement[1]);
-    userEvent.click(leftButtonElement[1]);
+    userEvent.click(leftButtonElement[0]);
+    userEvent.click(leftButtonElement[0]);
     imageElements = screen.getAllByRole('img');
     imageElement = imageElements[1];
     nextEnum = mockedProfileDropDownProps.avatar - 1;
@@ -156,7 +158,7 @@ describe('ProfileDropDown test', () => {
       );
     });
     const inputElements = screen.queryAllByTestId('profileDropdownInputTestId');
-    const inputElement = inputElements[1] as HTMLInputElement;
+    const inputElement = inputElements[0] as HTMLInputElement;
     const inputValue = '1234';
     userEvent.type(inputElement, inputValue);
     const expectedInputValue = (
@@ -170,7 +172,7 @@ describe('ProfileDropDown test', () => {
     const rightButtonElement = screen.queryAllByTestId(
       'profileDropdownRightButtonTestId',
     );
-    userEvent.click(rightButtonElement[1]);
+    userEvent.click(rightButtonElement[0]);
     let nextEnum = mockedProfileDropDownProps.avatar + 1;
     if (nextEnum >= avatarImageMDs.length) nextEnum = 0;
 
