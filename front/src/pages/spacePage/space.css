@@ -52,6 +52,10 @@ canvas {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.navbar_setting {
+  padding: 0 0.5vw 0 0.5vw;
+}
+
 .navbar_profile {
   display: flex;
   flex-direction: column;
@@ -65,7 +69,9 @@ canvas {
   font-weight: bold;
   color: black;
 }
+
 .name_title,
+.audio_title,
 .avatar_title {
   font-size: inherit;
   font-weight: bold;
@@ -228,4 +234,40 @@ canvas {
   width: 70px;
   height: 70px;
   background: rgba(196, 196, 196, 0);
+}
+.speeker_select,
+.mic_select {
+  display: inline;
+  width: 100%;
+}
+
+.setting_dropdown_menu_item {
+  cursor: default;
+}
+
+.mic_select_img {
+  position: absolute;
+  height: 100%;
+}
+
+.mic_select_div {
+  position: absolute;
+  height: 22px;
+  width: 100%;
+}
+
+button .setting_button {
+  border: 0;
+  outline: 0;
+  background-color: none;
+}
+
+.setting_menu_item_title,
+.setting_menu_item_content {
+  cursor: default;
+}
+
+.setting_menu_item_title:hover,
+.setting_menu_item_content:hover {
+  background-color: none;
 }
