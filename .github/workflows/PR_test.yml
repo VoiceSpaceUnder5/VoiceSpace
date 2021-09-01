@@ -6,31 +6,55 @@ on:
 jobs:
   Run_Jest:
     runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
-      - name: 코드 테스트
-        run: cd front && npm install
-          cd front && npm run test
-
-      - name: if fail
-        uses: actions/github-script@0.2.0  #github-script 액션을 사용한다.
+      - name: 풀리퀘 브랜치 헤드로 체크아웃
+      - uses: actions/checkout@v2
         with:
-          github-token: ${{github.token}}  #github token을 선언해준다
-          script: |
-            const ref = "${{github.ref}}"
-            const pull_number = Number(ref.split("/")[2])
-            await github.pulls.createReview({
-              ...context.repo,
-              pull_number,
-              body:"테스트코드를 다시 확인해주세요. ",
-              event: "REQUEST_CHANGES"
-            })
-            await github.pulls.update({
-              ...context.repo,
-              pull_number,
-              state: "closed"
-            })
-        if: failure()                     #이전 step이 실패했을 경우에만 이 step을 실행한다
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: 체크아웃 테스트
+        run:
+          cd /.github/workflows && cat PR_test.yml
+
+
+
+
+      # #노드 모듈을 캐싱하여 package-lock.json이 업데이트 되지 않으면 다음 스탭에서 재설치 하지 않도록
+      # - name: 노드 모듈 캐싱
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: front/node_modules
+      #     key: ${{ runner.OS }}-build-${{ hashFiles('front/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.OS }}-build-
+      #       ${{ runner.OS }}-
+
+      # - name: 노드 모듈 설치
+      #   run: cd front && npm install
+
+      # - name: 소스코드 빌드
+      #   run: cd front && npm run build
+
+      # - name: 코드 테스트
+      #   run: cd front && npm install
+      #     cd front && npm run test
+
+      # - name: if fail
+      #   uses: actions/github-script@0.2.0  #github-script 액션을 사용한다.
+      #   with:
+      #     github-token: ${{github.token}}  #github token을 선언해준다
+      #     script: |
+      #       const ref = "${{github.ref}}"
+      #       const pull_number = Number(ref.split("/")[2])
+      #       await github.pulls.createReview({
+      #         ...context.repo,
+      #         pull_number,
+      #         body:"테스트코드를 다시 확인해주세요. ",
+      #         event: "REQUEST_CHANGES"
+      #       })
+      #       await github.pulls.update({
+      #         ...context.repo,
+      #         pull_number,
+      #         state: "closed"
+      #       })
+      #   if: failure()                     #이전 step이 실패했을 경우에만 이 step을 실행한다
