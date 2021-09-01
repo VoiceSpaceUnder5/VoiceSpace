@@ -25,6 +25,7 @@ canvas {
 
 .canvasOverlay {
   position: absolute;
+  cursor: default;
 }
 
 /* navbar 전체 */

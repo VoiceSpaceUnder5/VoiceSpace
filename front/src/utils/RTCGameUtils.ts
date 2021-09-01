@@ -1,7 +1,6 @@
 import {Socket} from 'socket.io-client';
-import ImageInfoProvider from './ImageInfoProvider';
 import GLHelper from './webGLUtils';
-import {AvatarImageEnum} from './ImageMetaData';
+import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
 
 export interface Vec2 {
   x: number;
@@ -11,6 +10,7 @@ export interface Vec2 {
 export interface IPlayer {
   nickname: string;
   avatar: AvatarImageEnum;
+  avatarFace: AvatarPartImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
   volume: number;
@@ -20,17 +20,23 @@ class Me implements IPlayer {
   // IPlayer
   nickname: string;
   avatar: AvatarImageEnum;
+  avatarFace: AvatarPartImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
   volume: number;
   //
+  lastUpdateTimeStamp: number;
   div: HTMLDivElement;
   velocity: number;
   normalizedDirectionVector: Vec2;
-  touchStartPos: Vec2;
-  touchingPos: Vec2;
+  nextNormalizedDirectionVector: Vec2;
   isMoving: boolean;
+
   analyser: AnalyserNode;
+  // value
+  SpeakThrashHold: number;
+  SpeakMouseThrashHold: number;
+  //
   constructor(
     nickname: string,
     avatar: AvatarImageEnum,
@@ -41,14 +47,18 @@ class Me implements IPlayer {
   ) {
     this.nickname = nickname;
     this.avatar = avatar;
+    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.centerPos = centerPos;
     this.velocity = velocity;
     this.normalizedDirectionVector = {x: 0, y: 1};
+    this.nextNormalizedDirectionVector = {x: 0, y: 1};
     this.rotateRadian = 0;
     this.volume = 0;
-    this.touchStartPos = {x: 0, y: 0};
-    this.touchingPos = {x: 0, y: 0};
     this.isMoving = false;
+    this.lastUpdateTimeStamp = Date.now();
+
+    this.SpeakThrashHold = 30;
+    this.SpeakMouseThrashHold = 50;
 
     this.div = document.createElement('div') as HTMLDivElement;
     this.div.className = 'canvasOverlay';
@@ -63,72 +73,74 @@ class Me implements IPlayer {
     source.connect(this.analyser);
   }
 
-  update(
-    millis: number,
-    imageInfoProvider: ImageInfoProvider,
-    glHelper: GLHelper,
-  ) {
-    this.div.innerText = this.nickname;
+  getIPlayer(): IPlayer {
+    const data: IPlayer = {
+      nickname: this.nickname,
+      avatar: this.avatar,
+      avatarFace: this.avatarFace,
+      centerPos: this.centerPos,
+      rotateRadian: this.rotateRadian,
+      volume: this.volume,
+    };
+    return data;
+  }
+
+  isCollision(glHelper: GLHelper): boolean {
+    const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
+    if (!glHelper.imageInfoProvider.pixelInfos) return false;
+    for (let i = 0; i < vertex4.length; i++) {
+      let left = vertex4[i];
+      let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
+      if (left.x > right.x) {
+        const temp = left;
+        left = right;
+        right = temp;
+      }
+      const a = (right.y - left.y) / (right.x - left.x);
+      for (let i = 0; i < right.x - left.x; i++) {
+        const posX = Math.round(left.x + i);
+        const posY = Math.round(left.y + a * i);
+        if (
+          posX < 0 ||
+          posX >= glHelper.imageInfoProvider.pixelInfos.length ||
+          posY < 0 ||
+          posY >= glHelper.imageInfoProvider.pixelInfos[0].length ||
+          glHelper.imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !==
+            0
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  update(glHelper: GLHelper): void {
+    const millisDiff = Date.now() - this.lastUpdateTimeStamp;
+    this.lastUpdateTimeStamp = Date.now();
+    this.div.innerText = this.nickname; // update nickname div innerText
+
     if (this.isMoving) {
+      // saveOldValue
       const oldCenterPosX = this.centerPos.x;
       const oldCenterPosY = this.centerPos.y;
       const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
       const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
       const oldRotateRadian = this.rotateRadian;
 
-      const newDir: Vec2 = {
-        x: this.touchingPos.x - this.touchStartPos.x,
-        y: this.touchingPos.y - this.touchStartPos.y,
-      };
-      if (newDir.x === 0 && newDir.y === 0) return;
-
-      const len = Math.sqrt(Math.pow(newDir.x, 2) + Math.pow(newDir.y, 2));
-      newDir.x = newDir.x / len;
-      newDir.y = newDir.y / len;
-
       // position value update
-      this.normalizedDirectionVector = newDir;
+      this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
       this.centerPos.x +=
-        this.velocity * this.normalizedDirectionVector.x * millis;
+        this.velocity * this.normalizedDirectionVector.x * millisDiff;
       this.centerPos.y +=
-        this.velocity * this.normalizedDirectionVector.y * millis;
+        this.velocity * this.normalizedDirectionVector.y * millisDiff;
       this.rotateRadian = Math.atan2(
         this.normalizedDirectionVector.x,
         this.normalizedDirectionVector.y,
       );
       //collision detection part
-
-      const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
-
-      const isCollision = (vertex4: Vec2[]): boolean => {
-        if (!imageInfoProvider.pixelInfos) return false;
-        for (let i = 0; i < vertex4.length; i++) {
-          let left = vertex4[i];
-          let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
-          if (left.x > right.x) {
-            const temp = left;
-            left = right;
-            right = temp;
-          }
-          const a = (right.y - left.y) / (right.x - left.x);
-          for (let i = 0; i < right.x - left.x; i++) {
-            const posX = Math.round(left.x + i);
-            const posY = Math.round(left.y + a * i);
-            if (
-              posX < 0 ||
-              posX >= imageInfoProvider.pixelInfos.length ||
-              posY < 0 ||
-              posY >= imageInfoProvider.pixelInfos[0].length ||
-              imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !== 0
-            ) {
-              return true;
-            }
-          }
-        }
-        return false;
-      };
-
-      if (isCollision(vertex4)) {
+      if (this.isCollision(glHelper)) {
+        // if isCollision -> rollback value
         this.centerPos.x = oldCenterPosX;
         this.centerPos.y = oldCenterPosY;
         this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
@@ -136,13 +148,20 @@ class Me implements IPlayer {
         this.rotateRadian = oldRotateRadian;
       }
     }
-
+    // update mic volume
     const array = new Uint8Array(this.analyser.frequencyBinCount);
     this.analyser.getByteFrequencyData(array);
     this.volume =
       array.reduce((acc, cur) => {
         return acc + cur;
       }, 0) / array.length;
+
+    // update avatarFaceEnum by volume
+    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    if (this.volume > this.SpeakThrashHold)
+      this.avatarFace = AvatarPartImageEnum.FACE_SPEAK;
+    if (this.volume > this.SpeakMouseThrashHold)
+      this.avatarFace = AvatarPartImageEnum.FACE_SPEAK_MOUSE;
   }
 }
 
@@ -168,6 +187,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
   //IPlayer
   nickname: string;
   avatar: AvatarImageEnum;
+  avatarFace: AvatarPartImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
   volume: number;
@@ -196,6 +216,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     this.centerPos = {x: 0, y: 0};
     this.nickname = 'Anonymous';
     this.avatar = AvatarImageEnum.BROWN_BEAR;
+    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.rotateRadian = 0;
     this.volume = 0;
     //
@@ -204,12 +225,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
       const receviedDC = event.channel;
       receviedDC.onmessage = event => {
         const data = JSON.parse(event.data) as IPlayer;
-        this.centerPos = data.centerPos;
-        this.nickname = data.nickname;
-        this.avatar = data.avatar;
-        this.rotateRadian = data.rotateRadian;
-        this.volume = data.volume;
-        this.div.innerText = data.nickname;
+        this.update(data);
       };
       receviedDC.onopen = () => {
         console.log('dataChannel created');
@@ -226,6 +242,15 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     this.connectedAudioElement.autoplay = true;
     audioContainer.appendChild(this.connectedAudioElement);
     //
+  }
+
+  update(data: IPlayer): void {
+    this.centerPos = data.centerPos;
+    this.nickname = data.nickname;
+    this.avatar = data.avatar;
+    this.rotateRadian = data.rotateRadian;
+    this.volume = data.volume;
+    this.div.innerText = data.nickname;
   }
 
   updateSoundFromVec2(pos: Vec2): void {
@@ -253,7 +278,6 @@ export default class PeerManager {
   localStream: MediaStream;
   pcConfig: RTCConfiguration | undefined;
   me: Me;
-  lastUpdateTimeStamp: number;
   audioContainer: HTMLDivElement;
   divContainer: HTMLDivElement;
   roomId: string;
@@ -278,7 +302,6 @@ export default class PeerManager {
       localStream,
       divContainer,
     );
-    this.lastUpdateTimeStamp = Date.now();
     this.localStream = localStream;
     this.socket = socket;
     if (pcConfig) this.pcConfig = pcConfig;

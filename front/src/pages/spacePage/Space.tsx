@@ -110,9 +110,7 @@ function Space(props: RouteComponentProps): JSX.Element {
           <SpaceCanvas peerManager={peerManager} />
           <Navigation peerManager={peerManager} goToHome={goToHome} />
         </>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <div id="divContainer" ref={divContainerRef}></div>
       <div
         id="audioContainer"
