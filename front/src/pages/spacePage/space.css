@@ -1,7 +1,7 @@
 /* canvas */
 canvas {
   width: 100vw;
-  height: 92vh;
+  height: 22vh;
   /* for Iphone */
   height: calc(var(--vh) * 92);
   height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px);
@@ -25,6 +25,7 @@ canvas {
 
 .canvasOverlay {
   position: absolute;
+  cursor: default;
 }
 
 /* navbar 전체 */
@@ -165,8 +166,8 @@ canvas {
   /* ios 사파리의 경우 좌우 safe area 고려가 되어있지 않음 */
   /* @media screen and (orientation: landscape) {
     .navbar_left {
-      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);  
-    } 
+      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);
+    }
   } */
   .navbar_left {
     overflow: hidden;
