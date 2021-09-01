@@ -1,0 +1,42 @@
+name: Docs_Deploy
+on:
+  push:
+    branches:
+      - SW-116/tsdoc-auto-deploy #master 브랜치에 push 이벤트가 일어났을 때만 실행
+    paths:
+      - front/src/** #front/src 디렉토리 내의 변화가 생겼을 때만 실행
+jobs:
+  Docs_Deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      #master 브랜치로 체크아웃
+      - name: 레포지토리 체크아웃
+        uses: actions/checkout@master
+
+      #노드 모듈을 캐싱하여 package-lock.json이 업데이트 되지 않으면 다음 스탭에서 재설치 하지 않도록
+      - name: 노드 모듈 캐싱
+        uses: actions/cache@v1
+        with:
+          path: front/node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('front/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: 노드 모듈 설치
+        run: cd front && npm install
+
+      - name: docs 만들기
+        run: cd front && npx typedoc --out docs
+
+      - name: VoiceSpaceDocs 레포지토리로 docs push
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.LIKILEE_ACCESS_CODE_FOR_REPO }}
+        with:
+          source_file: './front/docs'
+          destination_repo: 'VoiceSpaceUnder5/VoiceSpaceDocs'
+          destination_folder: './docs'
+          user_email: 'gnsdlrl@daum.net'
+          user_name: 'Likilee'
+          commit_message: '문서 자동 업데이트 by 깃헙액션'
