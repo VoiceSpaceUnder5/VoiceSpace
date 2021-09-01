@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
-import PeerManager from '../utils/RTCGameUtils';
+import PeerManager, {Vec2} from '../utils/RTCGameUtils';
 import GLHelper, {Camera} from '../utils/webGLUtils';
 import Joystick from './Joystick';
 
@@ -33,6 +33,27 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // function
+  const setIsMoving = (isMoving: boolean) => {
+    props.peerManager.me.isMoving = isMoving;
+  };
+
+  const setNextNormalizedDirectionVector = (dir: Vec2) => {
+    props.peerManager.me.nextNormalizedDirectionVector = dir;
+  };
+
+  const setCameraScaleByPinch = (value: number) => {
+    if (gLHelper) {
+      gLHelper.camera.upScaleByPinch(value);
+    }
+  };
+
+  const getCameraScale = (): number => {
+    if (gLHelper) {
+      return gLHelper.camera.scale;
+    }
+    return 0;
+  };
   // called only once
   useEffect(() => {
     if (!canvasRef.current) {
@@ -96,7 +117,13 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     <>
       <canvas ref={canvasRef} />
       {gLHelper ? (
-        <Joystick peerManager={props.peerManager} camera={gLHelper.camera} />
+        <Joystick
+          setIsMoving={setIsMoving}
+          setNextNormalizedDirectionVector={setNextNormalizedDirectionVector}
+          setCameraScaleByPinch={setCameraScaleByPinch}
+          getCameraScale={getCameraScale}
+          divContainer={props.peerManager.divContainer}
+        />
       ) : null}
       {!isLoading(loadStatus) ? (
         <div id="divLoad">{getPercentageFromLoadStatus(loadStatus)}</div>

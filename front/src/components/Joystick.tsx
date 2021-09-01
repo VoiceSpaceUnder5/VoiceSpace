@@ -1,10 +1,12 @@
 import React, {useEffect, useRef} from 'react';
-import PeerManager, {Vec2} from '../utils/RTCGameUtils';
-import {Camera} from '../utils/webGLUtils';
+import {Vec2} from '../utils/RTCGameUtils';
 
 export interface JoystickProps {
-  peerManager: PeerManager;
-  camera: Camera;
+  setIsMoving: (arg0: boolean) => void;
+  setNextNormalizedDirectionVector: (arg0: Vec2) => void;
+  setCameraScaleByPinch: (arg0: number) => void;
+  getCameraScale: () => number;
+  divContainer: HTMLDivElement;
 }
 
 export default function Joystick(props: JoystickProps): JSX.Element {
@@ -102,105 +104,112 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     return result;
   };
 
-  useEffect(() => {
-    if (!props.peerManager || !props.camera) return;
-    const peerManager = props.peerManager;
-    const camera = props.camera;
-    const divContainer = peerManager.divContainer;
+  const divMouseDownEventHandler = (e: MouseEvent) => {
+    e.preventDefault();
+    props.setIsMoving(true);
+    touchStartPosRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+    revealJoystickBase();
+  };
 
-    window.addEventListener('keydown', e => {
-      if (e.key === '+') {
-        camera.upScaleByKeyBoard(0.1);
-      } else if (e.key === '-') {
-        camera.upScaleByKeyBoard(-0.1);
-      }
-    });
-    //for Desktop
-    divContainer.addEventListener('mousedown', e => {
-      e.preventDefault();
-      peerManager.me.isMoving = true;
+  const divMouseMoveEventHandler = (e: MouseEvent) => {
+    e.preventDefault();
+    touchingPosRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+    props.setNextNormalizedDirectionVector(getDir());
+    moveJoystick();
+  };
+
+  const divMouseUpEventHandler = (e: MouseEvent) => {
+    e.preventDefault();
+    props.setIsMoving(false);
+    hideJoystickBase();
+  };
+
+  const divTouchStartEventHandler = (e: TouchEvent) => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      props.setIsMoving(true);
       touchStartPosRef.current = {
-        x: e.clientX,
-        y: e.clientY,
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
       };
       revealJoystickBase();
-    });
-
-    divContainer.addEventListener('mousemove', e => {
-      e.preventDefault();
-      touchingPosRef.current = {
-        x: e.clientX,
-        y: e.clientY,
-      };
-      peerManager.me.nextNormalizedDirectionVector = getDir();
-      moveJoystick();
-    });
-
-    divContainer.addEventListener('mouseup', e => {
-      e.preventDefault();
-      peerManager.me.isMoving = false;
+    } else {
+      props.setIsMoving(false);
       hideJoystickBase();
-    });
+      oldCameraScale.current = props.getCameraScale();
+      oldTouchesPositions.current[0] = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+      oldTouchesPositions.current[1] = {
+        x: e.touches[1].clientX,
+        y: e.touches[1].clientY,
+      };
+    }
+  };
+
+  const divTouchMoveEventHandler = (e: TouchEvent) => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      touchingPosRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+      props.setNextNormalizedDirectionVector(getDir());
+      moveJoystick();
+    } else {
+      hideJoystickBase();
+      const oldLen = getLen(
+        oldTouchesPositions.current[0],
+        oldTouchesPositions.current[1],
+      );
+      const newLen = getLen(
+        {x: e.touches[0].clientX, y: e.touches[0].clientY},
+        {x: e.touches[1].clientX, y: e.touches[1].clientY},
+      );
+      props.setCameraScaleByPinch((oldCameraScale.current * newLen) / oldLen);
+    }
+  };
+
+  const divTouchEndEventHandler = (e: TouchEvent) => {
+    e.preventDefault();
+    hideJoystickBase();
+    props.setIsMoving(false);
+    if (joystickRef.current && joystickBaseRef.current) {
+      joystickRef.current.style.left = '0px';
+      joystickRef.current.style.top = '0px';
+      joystickBaseRef.current.style.left = '0px';
+      joystickBaseRef.current.style.top = '0px';
+    }
+  };
+  useEffect(() => {
+    const divContainer = props.divContainer;
+    //for Desktop
+    divContainer.addEventListener('mousedown', divMouseDownEventHandler);
+    divContainer.addEventListener('mousemove', divMouseMoveEventHandler);
+    divContainer.addEventListener('mouseup', divMouseUpEventHandler);
 
     //for Phone
-    divContainer.addEventListener('touchstart', e => {
-      e.preventDefault();
-      if (e.touches.length === 1) {
-        peerManager.me.isMoving = true;
-        touchStartPosRef.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-        revealJoystickBase();
-      } else {
-        peerManager.me.isMoving = false;
-        hideJoystickBase();
-        oldCameraScale.current = camera.scale;
-        oldTouchesPositions.current[0] = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-        oldTouchesPositions.current[1] = {
-          x: e.touches[1].clientX,
-          y: e.touches[1].clientY,
-        };
-      }
-    });
+    divContainer.addEventListener('touchstart', divTouchStartEventHandler);
+    divContainer.addEventListener('touchmove', divTouchMoveEventHandler);
+    divContainer.addEventListener('touchend', divTouchEndEventHandler);
+    return () => {
+      //for Desktop
+      divContainer.removeEventListener('mousedown', divMouseDownEventHandler);
+      divContainer.removeEventListener('mousemove', divMouseMoveEventHandler);
+      divContainer.removeEventListener('mouseup', divMouseUpEventHandler);
 
-    divContainer.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (e.touches.length === 1) {
-        touchingPosRef.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-        peerManager.me.nextNormalizedDirectionVector = getDir();
-        moveJoystick();
-      } else {
-        hideJoystickBase();
-        const oldLen = getLen(
-          oldTouchesPositions.current[0],
-          oldTouchesPositions.current[1],
-        );
-        const newLen = getLen(
-          {x: e.touches[0].clientX, y: e.touches[0].clientY},
-          {x: e.touches[1].clientX, y: e.touches[1].clientY},
-        );
-        camera.upScaleByPinch((oldCameraScale.current * newLen) / oldLen);
-      }
-    });
-
-    divContainer.addEventListener('touchend', e => {
-      e.preventDefault();
-      hideJoystickBase();
-      peerManager.me.isMoving = false;
-      if (joystickRef.current && joystickBaseRef.current) {
-        joystickRef.current.style.left = '0px';
-        joystickRef.current.style.top = '0px';
-        joystickBaseRef.current.style.left = '0px';
-        joystickBaseRef.current.style.top = '0px';
-      }
-    });
+      //for Phone
+      divContainer.removeEventListener('touchstart', divTouchStartEventHandler);
+      divContainer.removeEventListener('touchmove', divTouchMoveEventHandler);
+      divContainer.removeEventListener('touchend', divTouchEndEventHandler);
+    };
   }, []);
   return (
     <>
