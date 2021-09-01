@@ -2,7 +2,7 @@ name: Docs_Deploy
 on:
   push:
     branches:
-      - SW-116/tsdoc-auto-deploy #master 브랜치에 push 이벤트가 일어났을 때만 실행
+      - master #master 브랜치에 push 이벤트가 일어났을 때만 실행
     paths:
       - front/src/** #front/src 디렉토리 내의 변화가 생겼을 때만 실행
 jobs:
