@@ -78,7 +78,7 @@ describe('Joystick test', () => {
       mockedJoystickProps.setNextNormalizedDirectionVector,
     ).toBeCalledTimes(2);
   });
-  test('divContainer 터치시 가상조이스틱(image 테그들) 클릭 위치에 보여야함.', () => {
+  test('divContainer 터치시 가상조이스틱(image 테그들) 터치 위치에 보여야함.', () => {
     if (!joystickBaseElement || !joystickElement) {
       expect(false).toBeTruthy();
       return;
@@ -91,7 +91,7 @@ describe('Joystick test', () => {
     expect(joystickBaseElement).toHaveStyle({left: '115px'});
     expect(joystickBaseElement).toHaveStyle({top: '115px'});
   });
-  test('divContainer 터치하고 이동시 joystick 이 해당 마우스 위치로 움직여야함(base 의 범위를 벗어나지 않으면서)', () => {
+  test('divContainer 터치하고 이동시 joystick 이 해당 터치 위치로 움직여야함(base 의 범위를 벗어나지 않으면서)', () => {
     if (!joystickBaseElement || !joystickElement) {
       expect(false).toBeTruthy();
       return;
