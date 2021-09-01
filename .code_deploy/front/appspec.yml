@@ -4,6 +4,7 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/frontEnd
+    overwrite: true
 hooks:
   BeforeInstall: # 코드 디플로이가 app 설치 전에 아래 실행
     - location: scripts/delete_previous_docker.sh
