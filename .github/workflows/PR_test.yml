@@ -15,10 +15,14 @@ jobs:
         with:
           ref: "${{ github.event.pull_request.head.sha }}"
 
-      - name: 체크아웃 테스트
-        run: cd .github/workflows && cat PR_test.yml
+      - name: 노드 모듈 캐싱
+        uses: actions/cache@v1
+        with:
+          path: front/node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('front/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
 
-      - name: 테스트 진행
-        run:
-          cd front && npm install
-          cd front && npm run test
+      - name: 노드 모듈 설치
+        run: cd front && npm install
