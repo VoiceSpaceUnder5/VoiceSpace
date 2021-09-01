@@ -1,0 +1,37 @@
+name: PR_test
+on:
+  #master Branch에서 pull request날라왔을 때만 실행
+  pull_request:
+    branches:
+      - [ SW-115/auto-tdd ] #master 브랜치에 push 이벤트가 일어났을 때만 실행
+jobs:
+  Run_Jest:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - name: 코드 테스트
+        run: npm install
+          npm test
+
+      # - name: if fail
+      #   uses: actions/github-script@0.2.0  // github-script 액션을 사용한다.
+      #   with:
+      #     github-token: ${{github.token}}  // github token을 선언해준다
+      #     script: |
+      #       const ref = "${{github.ref}}"
+      #       const pull_number = Number(ref.split("/")[2])
+      #       await github.pulls.createReview({
+      #         ...context.repo,
+      #         pull_number,
+      #         body:"테스트코드를 다시 확인해주세요. ",
+      #         event: "REQUEST_CHANGES"
+      #       })
+      #       await github.pulls.update({
+      #         ...context.repo,
+      #         pull_number,
+      #         state: "closed"
+      #       })
+      #   if: failure()                     // 이전 step이 실패했을 경우에만 이 step을 실행한다
