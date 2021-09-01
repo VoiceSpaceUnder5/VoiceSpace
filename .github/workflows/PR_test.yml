@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      # - name: 풀리퀘 브랜치 헤드로 체크아웃
-      # - uses: actions/checkout@v2
-      #   with:
-      #     ref: ${{ github.event.pull_request.head.sha }}
+      - name: 풀리퀘 브랜치 헤드로 체크아웃
+      - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.pull_request.head.sha }}"
 
       - name: 체크아웃 테스트
         run: cd .github/workflows && cat PR_test.yml
