@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: 체크아웃 테스트
-        run: cd /.github/workflows && cat PR_test.yml
+        run: cd .github/workflows && cat PR_test.yml
 
       # #노드 모듈을 캐싱하여 package-lock.json이 업데이트 되지 않으면 다음 스탭에서 재설치 하지 않도록
       # - name: 노드 모듈 캐싱
