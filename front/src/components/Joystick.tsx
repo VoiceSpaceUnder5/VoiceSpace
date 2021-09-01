@@ -11,6 +11,9 @@ export default function Joystick(props: JoystickProps): JSX.Element {
   // useRef
   const joystickBaseRef = useRef<HTMLImageElement>(null);
   const joystickRef = useRef<HTMLImageElement>(null);
+  const touchStartPosRef = useRef<Vec2>({x: 0, y: 0});
+  const touchingPosRef = useRef<Vec2>({x: 0, y: 0});
+
   const oldTouchesPositions = useRef<Vec2[]>([
     {x: 0, y: 0},
     {x: 0, y: 0},
@@ -20,12 +23,11 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
   const revealJoystickBase = () => {
     if (!joystickRef.current || !joystickBaseRef.current) return;
-    const peerManager = props.peerManager;
     const joystickBase = joystickBaseRef.current;
     const joystick = joystickRef.current;
 
-    const posX = peerManager.me.touchStartPos.x;
-    const posY = peerManager.me.touchStartPos.y;
+    const posX = touchStartPosRef.current.x;
+    const posY = touchStartPosRef.current.y;
 
     if (joystickBase === null) return;
     if (joystick === null) return;
@@ -46,14 +48,13 @@ export default function Joystick(props: JoystickProps): JSX.Element {
   };
   const moveJoystick = () => {
     if (!joystickRef.current || !joystickBaseRef.current) return;
-    const peerManager = props.peerManager;
     const joystickBase = joystickBaseRef.current;
     const joystick = joystickRef.current;
 
-    const startPosX = peerManager.me.touchStartPos.x;
-    const startPosY = peerManager.me.touchStartPos.y;
-    const endPosX = peerManager.me.touchingPos.x;
-    const endPosY = peerManager.me.touchingPos.y;
+    const startPosX = touchStartPosRef.current.x;
+    const startPosY = touchStartPosRef.current.y;
+    const endPosX = touchingPosRef.current.x;
+    const endPosY = touchingPosRef.current.y;
     if (joystick === null) return;
     if (joystickBase === null) return;
 
@@ -79,17 +80,33 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     }
   };
 
+  const getLen = (pos1: Vec2, pos2: Vec2): number => {
+    return Math.sqrt(
+      Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2),
+    );
+  };
+  const getDir = (
+    pos1: Vec2 = touchingPosRef.current,
+    pos2: Vec2 = touchStartPosRef.current,
+  ): Vec2 => {
+    const result: Vec2 = {
+      x: pos1.x - pos2.x,
+      y: pos1.y - pos2.y,
+    };
+    const len = getLen(pos1, pos2);
+    if (len === 0) {
+      return {x: 0, y: 1};
+    }
+    result.x /= len;
+    result.y /= len;
+    return result;
+  };
+
   useEffect(() => {
     if (!props.peerManager || !props.camera) return;
     const peerManager = props.peerManager;
     const camera = props.camera;
     const divContainer = peerManager.divContainer;
-
-    const getLen = (pos1: Vec2, pos2: Vec2) => {
-      return Math.sqrt(
-        Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2),
-      );
-    };
 
     window.addEventListener('keydown', e => {
       if (e.key === '+') {
@@ -102,7 +119,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     divContainer.addEventListener('mousedown', e => {
       e.preventDefault();
       peerManager.me.isMoving = true;
-      peerManager.me.touchStartPos = {
+      touchStartPosRef.current = {
         x: e.clientX,
         y: e.clientY,
       };
@@ -111,10 +128,11 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
     divContainer.addEventListener('mousemove', e => {
       e.preventDefault();
-      peerManager.me.touchingPos = {
+      touchingPosRef.current = {
         x: e.clientX,
         y: e.clientY,
       };
+      peerManager.me.nextNormalizedDirectionVector = getDir();
       moveJoystick();
     });
 
@@ -129,14 +147,14 @@ export default function Joystick(props: JoystickProps): JSX.Element {
       e.preventDefault();
       if (e.touches.length === 1) {
         peerManager.me.isMoving = true;
-        peerManager.me.touchStartPos = {
+        touchStartPosRef.current = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY,
         };
         revealJoystickBase();
       } else {
-        hideJoystickBase();
         peerManager.me.isMoving = false;
+        hideJoystickBase();
         oldCameraScale.current = camera.scale;
         oldTouchesPositions.current[0] = {
           x: e.touches[0].clientX,
@@ -152,14 +170,14 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     divContainer.addEventListener('touchmove', e => {
       e.preventDefault();
       if (e.touches.length === 1) {
-        peerManager.me.touchingPos = {
+        touchingPosRef.current = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY,
         };
+        peerManager.me.nextNormalizedDirectionVector = getDir();
         moveJoystick();
       } else {
         hideJoystickBase();
-        peerManager.me.isMoving = false;
         const oldLen = getLen(
           oldTouchesPositions.current[0],
           oldTouchesPositions.current[1],
@@ -174,9 +192,8 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
     divContainer.addEventListener('touchend', e => {
       e.preventDefault();
-      peerManager.me.isMoving = false;
       hideJoystickBase();
-
+      peerManager.me.isMoving = false;
       if (joystickRef.current && joystickBaseRef.current) {
         joystickRef.current.style.left = '0px';
         joystickRef.current.style.top = '0px';

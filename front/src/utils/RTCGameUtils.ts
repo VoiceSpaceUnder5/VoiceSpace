@@ -29,11 +29,10 @@ class Me implements IPlayer {
   div: HTMLDivElement;
   velocity: number;
   normalizedDirectionVector: Vec2;
-  touchStartPos: Vec2;
-  touchingPos: Vec2;
+  nextNormalizedDirectionVector: Vec2;
   isMoving: boolean;
-  analyser: AnalyserNode;
 
+  analyser: AnalyserNode;
   // value
   SpeakThrashHold: number;
   SpeakMouseThrashHold: number;
@@ -52,10 +51,9 @@ class Me implements IPlayer {
     this.centerPos = centerPos;
     this.velocity = velocity;
     this.normalizedDirectionVector = {x: 0, y: 1};
+    this.nextNormalizedDirectionVector = {x: 0, y: 1};
     this.rotateRadian = 0;
     this.volume = 0;
-    this.touchStartPos = {x: 0, y: 0};
-    this.touchingPos = {x: 0, y: 0};
     this.isMoving = false;
     this.lastUpdateTimeStamp = Date.now();
 
@@ -87,30 +85,51 @@ class Me implements IPlayer {
     return data;
   }
 
+  isCollision(glHelper: GLHelper): boolean {
+    const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
+    if (!glHelper.imageInfoProvider.pixelInfos) return false;
+    for (let i = 0; i < vertex4.length; i++) {
+      let left = vertex4[i];
+      let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
+      if (left.x > right.x) {
+        const temp = left;
+        left = right;
+        right = temp;
+      }
+      const a = (right.y - left.y) / (right.x - left.x);
+      for (let i = 0; i < right.x - left.x; i++) {
+        const posX = Math.round(left.x + i);
+        const posY = Math.round(left.y + a * i);
+        if (
+          posX < 0 ||
+          posX >= glHelper.imageInfoProvider.pixelInfos.length ||
+          posY < 0 ||
+          posY >= glHelper.imageInfoProvider.pixelInfos[0].length ||
+          glHelper.imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !==
+            0
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   update(glHelper: GLHelper): void {
     const millisDiff = Date.now() - this.lastUpdateTimeStamp;
     this.lastUpdateTimeStamp = Date.now();
     this.div.innerText = this.nickname; // update nickname div innerText
 
     if (this.isMoving) {
+      // saveOldValue
       const oldCenterPosX = this.centerPos.x;
       const oldCenterPosY = this.centerPos.y;
       const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
       const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
       const oldRotateRadian = this.rotateRadian;
 
-      const newDir: Vec2 = {
-        x: this.touchingPos.x - this.touchStartPos.x,
-        y: this.touchingPos.y - this.touchStartPos.y,
-      };
-      if (newDir.x === 0 && newDir.y === 0) return;
-
-      const len = Math.sqrt(Math.pow(newDir.x, 2) + Math.pow(newDir.y, 2));
-      newDir.x = newDir.x / len;
-      newDir.y = newDir.y / len;
-
       // position value update
-      this.normalizedDirectionVector = newDir;
+      this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
       this.centerPos.x +=
         this.velocity * this.normalizedDirectionVector.x * millisDiff;
       this.centerPos.y +=
@@ -120,39 +139,8 @@ class Me implements IPlayer {
         this.normalizedDirectionVector.y,
       );
       //collision detection part
-
-      const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
-
-      const isCollision = (vertex4: Vec2[]): boolean => {
-        if (!glHelper.imageInfoProvider.pixelInfos) return false;
-        for (let i = 0; i < vertex4.length; i++) {
-          let left = vertex4[i];
-          let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
-          if (left.x > right.x) {
-            const temp = left;
-            left = right;
-            right = temp;
-          }
-          const a = (right.y - left.y) / (right.x - left.x);
-          for (let i = 0; i < right.x - left.x; i++) {
-            const posX = Math.round(left.x + i);
-            const posY = Math.round(left.y + a * i);
-            if (
-              posX < 0 ||
-              posX >= glHelper.imageInfoProvider.pixelInfos.length ||
-              posY < 0 ||
-              posY >= glHelper.imageInfoProvider.pixelInfos[0].length ||
-              glHelper.imageInfoProvider.pixelInfos[posX][posY]
-                .collisionInfoKey !== 0
-            ) {
-              return true;
-            }
-          }
-        }
-        return false;
-      };
-
-      if (isCollision(vertex4)) {
+      if (this.isCollision(glHelper)) {
+        // if isCollision -> rollback value
         this.centerPos.x = oldCenterPosX;
         this.centerPos.y = oldCenterPosY;
         this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
@@ -160,7 +148,7 @@ class Me implements IPlayer {
         this.rotateRadian = oldRotateRadian;
       }
     }
-
+    // update mic volume
     const array = new Uint8Array(this.analyser.frequencyBinCount);
     this.analyser.getByteFrequencyData(array);
     this.volume =
@@ -168,6 +156,7 @@ class Me implements IPlayer {
         return acc + cur;
       }, 0) / array.length;
 
+    // update avatarFaceEnum by volume
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     if (this.volume > this.SpeakThrashHold)
       this.avatarFace = AvatarPartImageEnum.FACE_SPEAK;
