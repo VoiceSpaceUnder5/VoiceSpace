@@ -24,8 +24,7 @@ export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세�
   BODY = 0,
   FACE_MUTE = 1,
   FACE_SPEAK = 2,
-  FACE_SPEAK_MOUSE = 3,
-  FACE_SPEAK_SMILE = 4,
+  FACE_SPEAK_SMILE = 3,
 }
 
 // 낮은 layer 부터 먼저 그려진다.
@@ -256,15 +255,6 @@ export const brownBearMD: AvatarImageMD = {
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/avatar/brownBearFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 25,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
-    },
-    {
       src: './assets/spaceMain/avatar/brownBearFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
@@ -306,15 +296,6 @@ export const brownHorseMD: AvatarImageMD = {
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
-    },
-    {
-      src: './assets/spaceMain/avatar/brownHorseFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 12,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
       src: './assets/spaceMain/avatar/brownHorseFaceSpeakSmile.png',
@@ -360,15 +341,6 @@ export const whiteRabbitMD: AvatarImageMD = {
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 8,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
-    },
-    {
       src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
@@ -410,15 +382,6 @@ export const pinkPigMD: AvatarImageMD = {
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
-    },
-    {
-      src: './assets/spaceMain/avatar/pinkPigFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 28,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
       src: './assets/spaceMain/avatar/pinkPigFaceSpeakSmile.png',

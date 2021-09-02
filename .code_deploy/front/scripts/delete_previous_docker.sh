@@ -10,3 +10,5 @@ isExitedApp=$(sudo docker ps | grep vs_frontend | cut -f 1 -d " ")
 if [[ -n ${isExitedApp} ]]; then
 sudo docker rm $isExitedApp
 fi
+
+sudo docker rmi vs_frontend
