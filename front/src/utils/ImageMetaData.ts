@@ -18,6 +18,7 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   BROWN_HORSE = 1,
   WHITE_RABBIT = 2,
   PINK_PIG = 3,
+  WHITE_CAT = 4,
 }
 
 export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
@@ -83,6 +84,17 @@ export interface ObjectImageMD {
   collisionMDInfos: CollisionMDInfo[];
 }
 
+/**
+ * ## 몸통, 얼굴 Y축 offset 계산법
+ * 피그마 디자인 길이 참조
+ * - 세트 절반 : 세트 height / 2
+ * - 몸통 절반 : 몸통 height / 2
+ * - 얼굴 절반 : 얼굴 height / 2
+ * ### 몸통 Y 오프셋 값
+ * 몸통 절반 - 세트 절반
+ * ### 얼굴 Y 오프셋 값
+ * 세트 절반 - 얼굴 절반
+ */
 export interface AvatarImageMD {
   avatarMDInfos: AvatarMDInfo[];
   avatarType: AvatarImageEnum;
@@ -395,9 +407,53 @@ export const pinkPigMD: AvatarImageMD = {
   ],
 };
 
+export const whiteCatMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.WHITE_CAT,
+  avatarInitialName: '하얀 고양이',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/whiteCatBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -41,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
 export const avatarImageMDs = [
   brownBearMD,
   brownHorseMD,
   whiteRabbitMD,
   pinkPigMD,
+  whiteCatMD,
 ];
