@@ -77,8 +77,8 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       gl,
       new Camera(
         {width: canvas.clientWidth, height: canvas.clientHeight},
-        {x: 1200, y: 1200},
-        {width: 2400, height: 2400},
+        {...props.mapMakingInfo.respawnPosition},
+        {...props.mapMakingInfo.backgroundSize},
       ),
       imageInfoProvider,
     );
