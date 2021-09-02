@@ -1,5 +1,5 @@
 import ImageInfoProvider from '../ImageInfoProvider';
-import {seaAndMountainMap1MMI} from '../ImageMetaData';
+import {avatarImageMDs, brownBearMD, MapMakingInfo} from '../ImageMetaData';
 
 const saveImage = window.Image;
 let gl: any;
@@ -37,6 +37,12 @@ class mockedImage {
   }
 }
 
+const mockedMMI: MapMakingInfo = {
+  backgroundSize: {width: 2000, height: 2400},
+  respawnPosition: {x: 1200, y: 1200},
+  makingFunc: jest.fn(),
+};
+
 beforeEach(() => {
   window.Image = mockedImage as any;
   gl = new mockedGL();
@@ -48,19 +54,57 @@ afterEach(() => {
 });
 
 describe('ImageInfoProvider test', () => {
-  test('avatar', async () => {
+  test('imageInfoProvider 가 생성 된 후, 3번째 매개변수의 makingFunc 함수가 실행되어야 함.', async () => {
     if (!gl) {
       expect(false).toBeTruthy();
       return;
     }
     const setStatus = jest.fn();
-    const imageInfoProvider = new ImageInfoProvider(
-      gl,
-      setStatus,
-      seaAndMountainMap1MMI,
+    const imageInfoProvider = new ImageInfoProvider(gl, setStatus, mockedMMI);
+    expect(mockedMMI.makingFunc).toBeCalledTimes(1);
+  });
+
+  test('imageInfoProvider 가 생성 된 후, 모든 동물 아바타들이 로딩 되어야 함.', async () => {
+    if (!gl) {
+      expect(false).toBeTruthy();
+      return;
+    }
+    const setStatus = jest.fn();
+
+    const imageInfoProvider = new ImageInfoProvider(gl, setStatus, mockedMMI);
+    expect(imageInfoProvider.avatars.size).toBe(avatarImageMDs.length); // 모든 아바타가 로딩되어야 함.
+    imageInfoProvider.avatars.forEach(value => {
+      // 각각의 아바타의 모든 부위가 로딩되어야 함.
+      expect(value.size).toBe(brownBearMD.avatarMDInfos.length);
+    });
+  });
+
+  test('imageInfoProvider 가 생성 된 후, setStatus 함수는 모든 아바타 수 * 2 만큼 로딩되어야 함.', async () => {
+    if (!gl) {
+      expect(false).toBeTruthy();
+      return;
+    }
+    const setStatus = jest.fn();
+
+    const imageInfoProvider = new ImageInfoProvider(gl, setStatus, mockedMMI);
+    expect(setStatus).toBeCalledTimes(
+      avatarImageMDs.length * brownBearMD.avatarMDInfos.length * 2,
     );
-    console.log(imageInfoProvider.avatars);
-    const avatar = imageInfoProvider.getAvatarImageInfo(0, 0);
-    expect(avatar).not.toBe(undefined);
+  });
+
+  test('imageInfoProvider 가 생성 된 후, pixelInfos 의 크기는 MMI의 size 어야 함.', async () => {
+    if (!gl) {
+      expect(false).toBeTruthy();
+      return;
+    }
+    const setStatus = jest.fn();
+
+    const imageInfoProvider = new ImageInfoProvider(gl, setStatus, mockedMMI);
+    expect(imageInfoProvider.pixelInfos.length).toBe(
+      mockedMMI.backgroundSize.width,
+    );
+    expect(imageInfoProvider.pixelInfos[0].length).toBe(
+      mockedMMI.backgroundSize.height,
+    );
   });
 });

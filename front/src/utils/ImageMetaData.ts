@@ -103,7 +103,7 @@ export interface MapMakingInfo {
 export const seaAndMountainMap1MMI: MapMakingInfo = {
   backgroundSize: {width: 2400, height: 2400},
   respawnPosition: {x: 1200, y: 1200},
-  makingFunc: ImageInfoProvider.prototype.makeWorldMap1,
+  makingFunc: () => ImageInfoProvider.prototype.makeWorldMap1,
 };
 
 /////////////////////////////////////////////////////////////////////////////////
