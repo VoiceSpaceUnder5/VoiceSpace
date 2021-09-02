@@ -11,16 +11,12 @@ import {
   ObjectCollisionFigureEnum,
   ObjectImageMD,
   seaAndMountainVer1MD,
-  AvatarImageMD,
-  brownBearMD,
-  brownHorseMD,
-  whiteRabbitMD,
-  pinkPigMD,
   bigTreeMD,
   grayBlockMD,
   greenGrassMD,
   smallTreeMD,
   MapMakingInfo,
+  avatarImageMDs,
 } from './ImageMetaData';
 import {LoadingInfo} from '../pages/spacePage/Space';
 
@@ -337,15 +333,8 @@ class ImageInfoProvider {
     this.startLoading();
   }
 
-  makeAvatarMap(): void {
-    const loadAvatarArray: AvatarImageMD[] = [
-      brownBearMD,
-      brownHorseMD,
-      whiteRabbitMD,
-      pinkPigMD,
-    ];
-
-    loadAvatarArray.forEach(target => {
+  makeAvatarMap = (): void => {
+    avatarImageMDs.forEach(target => {
       const map = new Map<AvatarPartImageEnum, ImageInfo>();
       target.avatarMDInfos.forEach(info => {
         this.increaseNeedToLoad();
