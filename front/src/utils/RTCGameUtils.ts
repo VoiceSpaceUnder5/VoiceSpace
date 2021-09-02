@@ -1,6 +1,7 @@
 import {Socket} from 'socket.io-client';
 import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
+import {iceConfig} from './IceServerList';
 
 export interface Vec2 {
   x: number;
@@ -266,13 +267,6 @@ export class Peer extends RTCPeerConnection implements IPlayer {
 }
 
 export default class PeerManager {
-  static Config: RTCConfiguration = {
-    iceServers: [
-      {
-        urls: 'stun:stun.l.google.com:19302',
-      },
-    ],
-  };
   peers: Map<string, Peer>;
   socket: Socket;
   localStream: MediaStream;
@@ -305,7 +299,7 @@ export default class PeerManager {
     this.localStream = localStream;
     this.socket = socket;
     if (pcConfig) this.pcConfig = pcConfig;
-    else this.pcConfig = PeerManager.Config;
+    else this.pcConfig = iceConfig;
     this.peers = new Map();
     this.audioContainer = audioContainer;
 
