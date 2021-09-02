@@ -161,7 +161,7 @@ class Me implements IPlayer {
     if (this.volume > this.SpeakThrashHold)
       this.avatarFace = AvatarPartImageEnum.FACE_SPEAK;
     if (this.volume > this.SpeakMouseThrashHold)
-      this.avatarFace = AvatarPartImageEnum.FACE_SPEAK_MOUSE;
+      this.avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
   }
 }
 
