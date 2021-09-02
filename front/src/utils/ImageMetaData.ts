@@ -1,3 +1,4 @@
+import ImageInfoProvider from './ImageInfoProvider';
 import {Vec2} from './RTCGameUtils';
 // 파일이름은 imageInfo 지만 이 안에서 backgroundMetaData
 // image src 의 주소를 따로 관리 하는 방법도 생각해 볼것.
@@ -56,7 +57,6 @@ export interface ImageMDInfo {
   src: string; // image file 이 저장되어있는 상대주소. 상대주소의 시작은 public 폴더.
   centerPosPixelOffset: Vec2; // 이미지 정보가 로드되어 그림이 그려질때, 그리려고 하는 위치의 centerPosition 에서 얼만큼 떨어져야 하는지
   layerLev: LayerLevelEnum; // 몇번째 층에 그려져야 하는지 (0 ~ 9) // 낮은 레벨일수록 먼저 그려짐
-  backgroundSize?: Size;
 }
 
 export interface AvatarMDInfo extends ImageMDInfo {
@@ -89,8 +89,26 @@ export interface AvatarImageMD {
   avatarInitialName: string;
 }
 
+export interface MapMakingInfo {
+  backgroundSize: Size;
+  respawnPosition: Vec2;
+  makingFunc: (arg0: ImageInfoProvider) => void;
+}
+
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
+
+// MapMakerInfo
+export const seaAndMountainMap1MMI: MapMakingInfo = {
+  backgroundSize: {width: 2400, height: 2400},
+  respawnPosition: {x: 1200, y: 1200},
+  makingFunc: (imageInfoProvider: ImageInfoProvider) => {
+    // 이런식으론 안해도 될것 같은데... 그냥 makeFunc: ImageInfoProvider.prototype.makeWorldMap1 이런식으로 입력하면 테스트가 안돌아감 ㅠㅠ 망할 jest
+    const func =
+      ImageInfoProvider.prototype.makeWorldMap1.bind(imageInfoProvider);
+    func();
+  },
+};
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// ImageMetaData Part Start ////////////////////////////
@@ -100,7 +118,6 @@ export const seaAndMountainVer1MD: ObjectImageMD = {
       src: './assets/spaceMain/background/seaAndMountainVer1.png',
       centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.BACKGROUND_ZERO,
-      backgroundSize: {width: 2400, height: 2400},
     },
   ],
   collisionMDInfos: [

@@ -7,9 +7,13 @@
 */secrets
 */build
 
+# test coverage folder
+*/coverage
+
 # vscode
 */.vscode
 
 */sslKeys
 *.crt
 *.key
+
