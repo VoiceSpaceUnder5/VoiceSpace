@@ -65,8 +65,7 @@ class ImageInfoProvider {
     // 위 코드까지는 반드시 필요합니다. //
     // 아래 코드는 코드적으로 맵을 생성해내는 것입니다. //
 
-    const mapMaker = mapMakingInfo.makingFunc.bind(this);
-    mapMaker();
+    mapMakingInfo.makingFunc(this);
   }
 
   getAvatarImageInfo(

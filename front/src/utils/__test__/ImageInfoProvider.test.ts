@@ -3,7 +3,6 @@ import {avatarImageMDs, brownBearMD, MapMakingInfo} from '../ImageMetaData';
 
 const saveImage = window.Image;
 let gl: any;
-
 class mockedGL {
   createTexture(): any {
     return {};

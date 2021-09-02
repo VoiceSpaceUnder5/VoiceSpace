@@ -93,7 +93,7 @@ export interface AvatarImageMD {
 export interface MapMakingInfo {
   backgroundSize: Size;
   respawnPosition: Vec2;
-  makingFunc: () => void;
+  makingFunc: (arg0: ImageInfoProvider) => void;
 }
 
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
@@ -103,7 +103,12 @@ export interface MapMakingInfo {
 export const seaAndMountainMap1MMI: MapMakingInfo = {
   backgroundSize: {width: 2400, height: 2400},
   respawnPosition: {x: 1200, y: 1200},
-  makingFunc: () => ImageInfoProvider.prototype.makeWorldMap1,
+  makingFunc: (imageInfoProvider: ImageInfoProvider) => {
+    // 이런식으론 안해도 될것 같은데... 그냥 makeFunc: ImageInfoProvider.prototype.makeWorldMap1 이런식으로 입력하면 테스트가 안돌아감 ㅠㅠ 망할 jest
+    const func =
+      ImageInfoProvider.prototype.makeWorldMap1.bind(imageInfoProvider);
+    func();
+  },
 };
 
 /////////////////////////////////////////////////////////////////////////////////

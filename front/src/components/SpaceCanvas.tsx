@@ -1,12 +1,13 @@
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
-import {seaAndMountainMap1MMI} from '../utils/ImageMetaData';
+import {MapMakingInfo} from '../utils/ImageMetaData';
 import PeerManager, {Vec2} from '../utils/RTCGameUtils';
 import GLHelper, {Camera} from '../utils/webGLUtils';
 import Joystick from './Joystick';
 
 interface SpaceCanvasProps {
   peerManager: PeerManager;
+  mapMakingInfo: MapMakingInfo;
 }
 
 export interface LoadingInfo {
@@ -70,7 +71,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     const imageInfoProvider = new ImageInfoProvider(
       gl,
       setLoadStatus,
-      seaAndMountainMap1MMI,
+      props.mapMakingInfo,
     );
     const glHelper = new GLHelper(
       gl,
