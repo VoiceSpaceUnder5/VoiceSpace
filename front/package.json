@@ -29,7 +29,7 @@
     "serve": "npm run build && serve -s build --ssl-cert sslKeys/certificate.crt --ssl-key sslKeys/private.key",
     "start": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
-    "test-cover": "react-scripts test --env=jsdom --coverage --watchAll=false",
+    "testCover": "react-scripts test --coverage --watchAll=false",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
