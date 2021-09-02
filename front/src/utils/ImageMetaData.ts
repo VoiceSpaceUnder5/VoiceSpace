@@ -19,6 +19,7 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   WHITE_RABBIT = 2,
   PINK_PIG = 3,
   WHITE_CAT = 4,
+  YELLOW_DOG = 5,
 }
 
 export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
@@ -450,10 +451,53 @@ export const whiteCatMD: AvatarImageMD = {
   ],
 };
 
+export const yellowDogMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.YELLOW_DOG,
+  avatarInitialName: '노란 강아지',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/yellowDogBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -38,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
 export const avatarImageMDs = [
   brownBearMD,
   brownHorseMD,
   whiteRabbitMD,
   pinkPigMD,
   whiteCatMD,
+  yellowDogMD,
 ];
