@@ -1,5 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
+import {seaAndMountainMap1MMI} from '../utils/ImageMetaData';
 import PeerManager, {Vec2} from '../utils/RTCGameUtils';
 import GLHelper, {Camera} from '../utils/webGLUtils';
 import Joystick from './Joystick';
@@ -66,7 +67,11 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       console.error('getContext webgl error');
       return;
     }
-    const imageInfoProvider = new ImageInfoProvider(gl, setLoadStatus);
+    const imageInfoProvider = new ImageInfoProvider(
+      gl,
+      setLoadStatus,
+      seaAndMountainMap1MMI,
+    );
     const glHelper = new GLHelper(
       gl,
       new Camera(
