@@ -1,3 +1,4 @@
+
 ## [파비콘이미지] Giggle Forest (project.VoiceSpace) by Team - under5
 
 ### 개발 목적
@@ -11,8 +12,10 @@
 
 ---
 
-### 소개 동영상
+### 소개 동영상 및 사이트 링크
 [![YoutubeVideo](https://img.youtube.com/vi/ZcalOaRKCv8/maxresdefault.jpg)](https://www.youtube.com/embed/ZcalOaRKCv8)
+
+### [**여기**](https://under5.site)에서 바로 체험해보실 수 있습니다.
 
 ---
 
@@ -51,6 +54,7 @@
 - Avatar 끼리의 거리가 멀어질수록, 음성 볼륨도 낮아지는 기능 (현실감 있는 음성 채팅)
 - 목소리 크기에 따라 아바타의 얼굴 크기가 변함 (현실감 있는 음성 시각화)
 ![gif](https://user-images.githubusercontent.com/74593890/131952354-8176e60f-da09-4b66-9d6a-1356eb40a7d6.gif)
+### [**여기**](https://under5.site)에서 바로 체험해보실 수 있습니다.
 
 ---
 
@@ -78,9 +82,24 @@ npm run start
 - front 폴더의 .env.development 에서 백엔드 주소를 변경 하실 수 있습니다.
 
 ---
+### 프로젝트 배포하기
+#### Front
+1. npm run build (in front folder) (.env.production) 의 값이 적용됩니다.
+2. 위 스크립트의 아웃풋으로 나온 build 폴더를 root 로 하여 serve (저희팀은 nginx 를 사용하였습니다.)
+
+#### Back
+1. npm run build (in back folder) (이때 만약 https 로 설정하시길 원하신다면 main.ts 의 내용을 바꿔주세요 (주석참조))
+2. 
+
+---
 
 ### 문서
 - 각종 Component, Class, Function 정보는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs) 서 확인 하실 수 있습니다.
+
+---
+
+### 라이센스
+- [MIT](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/LICENSE)
 
 ---
 
