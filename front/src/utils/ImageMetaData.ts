@@ -18,6 +18,10 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   BROWN_HORSE = 1,
   WHITE_RABBIT = 2,
   PINK_PIG = 3,
+  WHITE_CAT = 4,
+  YELLOW_DOG = 5,
+  CREAM_PANDA = 6,
+  ORANGE_FOX = 7,
 }
 
 export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
@@ -83,6 +87,17 @@ export interface ObjectImageMD {
   collisionMDInfos: CollisionMDInfo[];
 }
 
+/**
+ * ## 몸통, 얼굴 Y축 offset 계산법
+ * 피그마 디자인 길이 참조
+ * - 세트 절반 : 세트 height / 2
+ * - 몸통 절반 : 몸통 height / 2
+ * - 얼굴 절반 : 얼굴 height / 2
+ * ### 몸통 Y 오프셋 값
+ * 몸통 절반 - 세트 절반
+ * ### 얼굴 Y 오프셋 값
+ * 세트 절반 - 얼굴 절반
+ */
 export interface AvatarImageMD {
   avatarMDInfos: AvatarMDInfo[];
   avatarType: AvatarImageEnum;
@@ -395,9 +410,185 @@ export const pinkPigMD: AvatarImageMD = {
   ],
 };
 
+export const whiteCatMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.WHITE_CAT,
+  avatarInitialName: '하얀 고양이',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/whiteCatBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -41,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
+export const yellowDogMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.YELLOW_DOG,
+  avatarInitialName: '노란 강아지',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/yellowDogBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -38,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
+export const creamPandaMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.CREAM_PANDA,
+  avatarInitialName: '크림 판다',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/creamPandaBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -44,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/creamPandaFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 36,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/creamPandaFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 36,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/creamPandaFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 36,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
+export const orangeFoxMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.ORANGE_FOX,
+  avatarInitialName: '주황 여우',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/orangeFoxBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -28,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/orangeFoxFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 48,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/orangeFoxFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 48,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/orangeFoxFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 48,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
 export const avatarImageMDs = [
   brownBearMD,
   brownHorseMD,
   whiteRabbitMD,
   pinkPigMD,
+  whiteCatMD,
+  yellowDogMD,
+  creamPandaMD,
+  orangeFoxMD,
 ];
