@@ -13,11 +13,7 @@ function Welcome(props: WelcomeProps): JSX.Element {
         src={props.logoImageSrc}
         onLoad={props.logoImageOnload}
       />
-      <div className="welcome">
-        WELCOME
-        <br />
-        VOICE SPACE
-      </div>
+      <div className="welcome">Giggle Forest</div>
     </>
   );
 }

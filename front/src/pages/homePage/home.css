@@ -1,3 +1,6 @@
+/*구글 웹폰트 Montserrat - 웰컴 타이틀용*/
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+
 .home {
   overflow: hidden;
   width: 100vw;
@@ -8,6 +11,11 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+.welcome {
+  font-family: 'Montserrat', sans-serif;
+  font-size: xx-large;
+  color: #53150d;
 }
 .logoImage {
   width: 200px;
