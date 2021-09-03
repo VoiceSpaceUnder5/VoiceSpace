@@ -249,6 +249,7 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     this.centerPos = data.centerPos;
     this.nickname = data.nickname;
     this.avatar = data.avatar;
+    this.avatarFace = data.avatarFace;
     this.rotateRadian = data.rotateRadian;
     this.volume = data.volume;
     this.div.innerText = data.nickname;

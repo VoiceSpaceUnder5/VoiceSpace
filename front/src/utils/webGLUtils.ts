@@ -458,6 +458,7 @@ class GLHelper {
         player,
         partEnum === player.avatarFace,
       );
+      //if (drawInfo) drawInfo.scale /= 2;
       if (!drawInfo) return;
       this.drawImage(drawInfo);
       const temp = [
