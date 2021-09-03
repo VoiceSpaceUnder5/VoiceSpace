@@ -347,7 +347,7 @@ class ImageInfoProvider {
       this.avatars.set(target.avatarType, map);
     });
     return;
-  }
+  };
 
   //   test() {
   //     console.log('hello');
