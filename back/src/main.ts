@@ -2,14 +2,19 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 async function bootstrap() {
+  // https 를 사용하신다면 아래의 코드를 사용하시면 됩니다.
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   //   const httpsOptions = {
   //     key: fs.readFileSync('./secrets/private.key'),
   //     cert: fs.readFileSync('./secrets/certificate.crt'),
   //   };
-
   //const app = await NestFactory.create(AppModule, { httpsOptions }); // service
-  const app = await NestFactory.create(AppModule); // dev
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // http (dev) 를 사용하신다면 아래의 코드를 사용하시면 됩니다.
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  const app = await NestFactory.create(AppModule); // dev
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   await app.listen(8080);
 }
 bootstrap();

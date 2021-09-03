@@ -37,22 +37,25 @@ function setNewPeerManager(
   navigator.mediaDevices
     .getUserMedia({video: false, audio: true}) // 오디오 연결
     .then((stream: MediaStream) => {
-      const socket = io('https://under5.site:8080');
+      const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
       if (!socket) {
         failCallBack();
         return;
       }
-      const peerManager = new PeerManager(
-        socket,
-        stream,
-        query.nickname,
-        query.avatarIdx,
-        audioContainer,
-        divContainer,
-        initialCenterPos,
-        query.roomId,
-      );
-      successCallBack(peerManager);
+      socket.on('connect', () => {
+        const peerManager = new PeerManager(
+          socket,
+          stream,
+          query.nickname,
+          query.avatarIdx,
+          audioContainer,
+          divContainer,
+          initialCenterPos,
+          query.roomId,
+        );
+        successCallBack(peerManager);
+        console.log('socket connected');
+      });
     })
     .catch(() => {
       failCallBack();
@@ -120,7 +123,9 @@ function Space(props: RouteComponentProps): JSX.Element {
           />
           <Navigation peerManager={peerManager} goToHome={goToHome} />
         </>
-      ) : null}
+      ) : (
+        '오디오를 가져오고 서버와 소켓을 연결하는 중입니다. 조금만 기다려주세요. 이상태가 지속 될 경우 깃허브에 버그리폿 해주시면 감사하겠습니다.'
+      )}
       <div id="divContainer" ref={divContainerRef}></div>
       <div
         id="audioContainer"
