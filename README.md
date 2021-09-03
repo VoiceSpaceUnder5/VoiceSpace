@@ -12,8 +12,9 @@
 ---
 
 ### 소개 동영상
+[![YoutubeVideo](https://img.youtube.com/vi/ZcalOaRKCv8/maxresdefault.jpg)](https://www.youtube.com/embed/ZcalOaRKCv8)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ZcalOaRKCv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+---
 
 ### 개발 및 배포 환경
 
