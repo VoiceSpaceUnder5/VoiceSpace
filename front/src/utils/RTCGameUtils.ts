@@ -229,10 +229,10 @@ export class Peer extends RTCPeerConnection implements IPlayer {
         this.update(data);
       };
       receviedDC.onopen = () => {
-        console.log('dataChannel created');
+        console.log(`dataChannel created with ${this.connectedClientSocketId}`);
       };
       receviedDC.onclose = () => {
-        console.log('dataChannel closed');
+        console.log(`dataChannel closed with ${this.connectedClientSocketId}`);
       };
     };
 
@@ -313,32 +313,43 @@ export default class PeerManager {
       }
       const offeredPeer = this.peers.get(offerDto.fromClientId);
       if (offeredPeer !== undefined) {
-        offeredPeer.setRemoteDescription(offerDto.sdp);
         offeredPeer
-          .createAnswer()
-          .then(sdp => {
-            offeredPeer.setLocalDescription(sdp);
-            const answerDto: OfferAnswerDto = {
-              fromClientId: offeredPeer.socketId,
-              toClientId: offeredPeer.connectedClientSocketId,
-              sdp: sdp,
-            };
-            this.socket.emit('answer', answerDto);
+          .setRemoteDescription(offerDto.sdp)
+          .then(() => {
+            offeredPeer
+              .createAnswer()
+              .then(sdp => {
+                offeredPeer.setLocalDescription(sdp);
+                const answerDto: OfferAnswerDto = {
+                  fromClientId: offeredPeer.socketId,
+                  toClientId: offeredPeer.connectedClientSocketId,
+                  sdp: sdp,
+                };
+                this.socket.emit('answer', answerDto);
+              })
+              .catch(error => {
+                console.error(
+                  `Peer SocketId: ${
+                    offeredPeer.connectedClientSocketId
+                  } createAnswer fail=> ${error.toString()}`,
+                );
+              });
           })
           .catch(error => {
             console.error(
               `Peer SocketId: ${
                 offeredPeer.connectedClientSocketId
-              } createAnswer fail=> ${error.toString()}`,
+              } setRemoteDescripton fail=> ${error.toString()}`,
             );
           });
       }
     });
 
     socket.on('needToOffer', (toSocketIds: string[]) => {
-      console.log('needToOfferCalled');
+      console.log(`needToOfferCalled number of users : ${toSocketIds.length}`);
       toSocketIds.forEach(connectedSocketId => {
         if (connectedSocketId !== this.socket.id) {
+          console.log(`my socketId : ${this.socket.id}`);
           const newPeer = this.createPeerWithEventSetting(
             connectedSocketId,
             this.socket.id,
@@ -366,6 +377,7 @@ export default class PeerManager {
     });
 
     this.socket.on('answer', (answerDto: OfferAnswerDto) => {
+      console.log(`receive answer from ${answerDto.fromClientId}`);
       const answeredPeer = this.peers.get(answerDto.fromClientId);
       if (answeredPeer) {
         answeredPeer.setRemoteDescription(answerDto.sdp);
@@ -377,6 +389,9 @@ export default class PeerManager {
       if (icedPeer) {
         icedPeer
           .addIceCandidate(new RTCIceCandidate(iceDto.ice))
+          .then(() => {
+            console.log(`set ice success from ${iceDto.fromClientId}`);
+          })
           .catch(error => {
             console.error(`addIceCandidate Fail : ${error.toString()}`);
           });
@@ -411,6 +426,7 @@ export default class PeerManager {
           ice: iceCandidate,
         };
         this.socket.emit('ice', iceDto);
+        console.log(`send iceCandidate to ${iceDto.toClientId}`);
       }
     });
     newPeer.addEventListener('track', event => {
@@ -423,6 +439,9 @@ export default class PeerManager {
         targetPeer.connectionState === 'disconnected' ||
         targetPeer.connectionState === 'failed'
       ) {
+        console.log(
+          `connectionState with ${targetPeer.connectedClientSocketId} is ${targetPeer.connectionState}`,
+        );
         this.peers.delete(targetPeer.connectedClientSocketId);
         if (!targetPeer.isDeleted) {
           this.divContainer.removeChild(targetPeer.div);
