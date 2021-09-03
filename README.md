@@ -1,5 +1,5 @@
 
-## [파비콘이미지] Giggle Forest (project.VoiceSpace) by Team - under5
+## ![img](https://user-images.githubusercontent.com/35288028/131969010-2f6197cc-2bd6-409e-b1f7-f23ccb77881a.png) Giggle Forest (project.VoiceSpace) by Team - under5
 
 ### 개발 목적
 
@@ -89,7 +89,7 @@ npm run start
 
 #### Back
 1. npm run build (in back folder) (이때 만약 https 로 설정하시길 원하신다면 main.ts 의 내용을 바꿔주세요 (주석참조))
-2. 
+2. 위 스크립트의 아웃풋으로 나온 dist 폴더의 main.js 를 nodeJS 로 실행하세요.
 
 ---
 
@@ -107,7 +107,7 @@ npm run start
 
 | Name     | Email               | Role | Major Part                    | Minor Part | Tech Stack                                   |
 | -------- | ------------------- | ---- | ----------------------------- | ---------- | -------------------------------------------- |
-| kilee    | (이메일 주소)       | 팀장 | 디자인, 프로젝트 배포 및 관리 | Front      | AWS, Github Action, CI/CD, React, Typescript |
+| kilee    | [gnsdlrl@daum.net](mailto:gnsdlrl@daum.net)       | 팀장 | 디자인, 프로젝트 배포 및 관리 | Front      | AWS, Github Action, CI/CD, React, Typescript |
 | honlee   | kij753@naver.com    | 팀원 | Front                         | Back       | AWS, React, NestJS, Typescript               |
 | hyeonkim | hyongtiii@gmail.com | 팀원 | Back                          | Front      | React, NestJS, Typescript                    |
 | mijeong  | minje70@naver.com   | 팀원 | Front                         | Back       | React, NestJS, Typescript                    |
