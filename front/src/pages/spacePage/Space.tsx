@@ -1,9 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import io from 'socket.io-client';
-import PeerManager from '../../utils/RTCGameUtils';
+import PeerManager, {Vec2} from '../../utils/RTCGameUtils';
 import Navigation from '../../components/Navigation';
-import {AvatarImageEnum} from '../../utils/ImageMetaData';
+import {
+  AvatarImageEnum,
+  seaAndMountainMap1MMI,
+} from '../../utils/ImageMetaData';
 import SpaceCanvas from '../../components/SpaceCanvas';
 import './space.css';
 import {message} from 'antd';
@@ -15,6 +18,7 @@ interface SpaceQuery {
   nickname: string;
   avatarIdx: number;
   isNew: boolean;
+  worldMapIdx: number;
 }
 
 export interface LoadingInfo {
@@ -26,28 +30,32 @@ function setNewPeerManager(
   divContainer: HTMLDivElement,
   audioContainer: HTMLDivElement,
   query: SpaceQuery,
+  initialCenterPos: Vec2,
   successCallBack: (arg0: PeerManager) => void,
   failCallBack: () => void,
 ): void {
   navigator.mediaDevices
     .getUserMedia({video: false, audio: true}) // 오디오 연결
     .then((stream: MediaStream) => {
-      const socket = io('https://under5.site:8080');
+      const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
       if (!socket) {
         failCallBack();
         return;
       }
-      const peerManager = new PeerManager(
-        socket,
-        stream,
-        query.nickname,
-        query.avatarIdx,
-        audioContainer,
-        divContainer,
-        {x: 1200, y: 1200},
-        query.roomId,
-      );
-      successCallBack(peerManager);
+      socket.on('connect', () => {
+        const peerManager = new PeerManager(
+          socket,
+          stream,
+          query.nickname,
+          query.avatarIdx,
+          audioContainer,
+          divContainer,
+          initialCenterPos,
+          query.roomId,
+        );
+        successCallBack(peerManager);
+        console.log('socket connected');
+      });
     })
     .catch(() => {
       failCallBack();
@@ -59,6 +67,7 @@ function setNewPeerManager(
 function Space(props: RouteComponentProps): JSX.Element {
   //query validate part
   const query = qs.parse(props.location.search) as SpaceQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
+  const mapMakingInfo = seaAndMountainMap1MMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
   if (!query.roomId || query.roomId === '') {
     message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
     props.history.push('/');
@@ -83,6 +92,7 @@ function Space(props: RouteComponentProps): JSX.Element {
       divContainerRef.current,
       audioContainerRef.current,
       query,
+      {...mapMakingInfo.respawnPosition},
       (peerManager: PeerManager) => {
         if (query.isNew)
           message.info(
@@ -107,11 +117,14 @@ function Space(props: RouteComponentProps): JSX.Element {
     <>
       {peerManager ? (
         <>
-          <SpaceCanvas peerManager={peerManager} />
+          <SpaceCanvas
+            peerManager={peerManager}
+            mapMakingInfo={mapMakingInfo}
+          />
           <Navigation peerManager={peerManager} goToHome={goToHome} />
         </>
       ) : (
-        <></>
+        '오디오를 가져오고 서버와 소켓을 연결하는 중입니다. 조금만 기다려주세요. 이상태가 지속 될 경우 깃허브에 버그리폿 해주시면 감사하겠습니다.'
       )}
       <div id="divContainer" ref={divContainerRef}></div>
       <div

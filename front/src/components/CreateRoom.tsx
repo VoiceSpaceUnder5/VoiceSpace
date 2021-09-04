@@ -15,7 +15,7 @@ function CreateRoom(props: CreateRoomProps): JSX.Element {
         type="primary"
         onClick={props.createRoomButtonClick}
       >
-        새로운 보이스 채팅
+        새로운 음성 미팅 시작하기
       </Button>
     </div>
   );

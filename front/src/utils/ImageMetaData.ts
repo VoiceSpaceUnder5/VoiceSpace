@@ -1,3 +1,4 @@
+import ImageInfoProvider from './ImageInfoProvider';
 import {Vec2} from './RTCGameUtils';
 // 파일이름은 imageInfo 지만 이 안에서 backgroundMetaData
 // image src 의 주소를 따로 관리 하는 방법도 생각해 볼것.
@@ -17,14 +18,17 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   BROWN_HORSE = 1,
   WHITE_RABBIT = 2,
   PINK_PIG = 3,
+  WHITE_CAT = 4,
+  YELLOW_DOG = 5,
+  CREAM_PANDA = 6,
+  ORANGE_FOX = 7,
 }
 
 export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
   BODY = 0,
   FACE_MUTE = 1,
   FACE_SPEAK = 2,
-  FACE_SPEAK_MOUSE = 3,
-  FACE_SPEAK_SMILE = 4,
+  FACE_SPEAK_SMILE = 3,
 }
 
 // 낮은 layer 부터 먼저 그려진다.
@@ -57,7 +61,6 @@ export interface ImageMDInfo {
   src: string; // image file 이 저장되어있는 상대주소. 상대주소의 시작은 public 폴더.
   centerPosPixelOffset: Vec2; // 이미지 정보가 로드되어 그림이 그려질때, 그리려고 하는 위치의 centerPosition 에서 얼만큼 떨어져야 하는지
   layerLev: LayerLevelEnum; // 몇번째 층에 그려져야 하는지 (0 ~ 9) // 낮은 레벨일수록 먼저 그려짐
-  backgroundSize?: Size;
 }
 
 export interface AvatarMDInfo extends ImageMDInfo {
@@ -84,14 +87,43 @@ export interface ObjectImageMD {
   collisionMDInfos: CollisionMDInfo[];
 }
 
+/**
+ * ## 몸통, 얼굴 Y축 offset 계산법
+ * 피그마 디자인 길이 참조
+ * - 세트 절반 : 세트 height / 2
+ * - 몸통 절반 : 몸통 height / 2
+ * - 얼굴 절반 : 얼굴 height / 2
+ * ### 몸통 Y 오프셋 값
+ * 몸통 절반 - 세트 절반
+ * ### 얼굴 Y 오프셋 값
+ * 세트 절반 - 얼굴 절반
+ */
 export interface AvatarImageMD {
   avatarMDInfos: AvatarMDInfo[];
   avatarType: AvatarImageEnum;
   avatarInitialName: string;
 }
 
+export interface MapMakingInfo {
+  backgroundSize: Size;
+  respawnPosition: Vec2;
+  makingFunc: (arg0: ImageInfoProvider) => void;
+}
+
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
+
+// MapMakerInfo
+export const seaAndMountainMap1MMI: MapMakingInfo = {
+  backgroundSize: {width: 2400, height: 2400},
+  respawnPosition: {x: 1200, y: 1200},
+  makingFunc: (imageInfoProvider: ImageInfoProvider) => {
+    // 이런식으론 안해도 될것 같은데... 그냥 makeFunc: ImageInfoProvider.prototype.makeWorldMap1 이런식으로 입력하면 테스트가 안돌아감 ㅠㅠ 망할 jest
+    const func =
+      ImageInfoProvider.prototype.makeWorldMap1.bind(imageInfoProvider);
+    func();
+  },
+};
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// ImageMetaData Part Start ////////////////////////////
@@ -101,7 +133,6 @@ export const seaAndMountainVer1MD: ObjectImageMD = {
       src: './assets/spaceMain/background/seaAndMountainVer1.png',
       centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.BACKGROUND_ZERO,
-      backgroundSize: {width: 2400, height: 2400},
     },
   ],
   collisionMDInfos: [
@@ -239,15 +270,6 @@ export const brownBearMD: AvatarImageMD = {
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/avatar/brownBearFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 25,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
-    },
-    {
       src: './assets/spaceMain/avatar/brownBearFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
@@ -289,15 +311,6 @@ export const brownHorseMD: AvatarImageMD = {
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK,
-    },
-    {
-      src: './assets/spaceMain/avatar/brownHorseFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 12,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
     },
     {
       src: './assets/spaceMain/avatar/brownHorseFaceSpeakSmile.png',
@@ -343,15 +356,6 @@ export const whiteRabbitMD: AvatarImageMD = {
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakMouse.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 8,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
-    },
-    {
       src: './assets/spaceMain/avatar/whiteRabbitFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
@@ -395,19 +399,182 @@ export const pinkPigMD: AvatarImageMD = {
       partType: AvatarPartImageEnum.FACE_SPEAK,
     },
     {
-      src: './assets/spaceMain/avatar/pinkPigFaceSpeakMouse.png',
+      src: './assets/spaceMain/avatar/pinkPigFaceSpeakSmile.png',
       centerPosPixelOffset: {
         x: 0,
         y: 28,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_MOUSE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
     },
+  ],
+};
+
+export const whiteCatMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.WHITE_CAT,
+  avatarInitialName: '하얀 고양이',
+  avatarMDInfos: [
     {
-      src: './assets/spaceMain/avatar/pinkPigFaceSpeakSmile.png',
+      src: './assets/spaceMain/avatar/whiteCatBody.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 28,
+        y: -41,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/whiteCatFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 27,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
+export const yellowDogMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.YELLOW_DOG,
+  avatarInitialName: '노란 강아지',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/yellowDogBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -38,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/yellowDogFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 30,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
+export const creamPandaMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.CREAM_PANDA,
+  avatarInitialName: '크림 판다',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/creamPandaBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -44,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/creamPandaFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 36,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/creamPandaFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 36,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/creamPandaFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 36,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+  ],
+};
+
+export const orangeFoxMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.ORANGE_FOX,
+  avatarInitialName: '주황 여우',
+  avatarMDInfos: [
+    {
+      src: './assets/spaceMain/avatar/orangeFoxBody.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: -28,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.BODY,
+    },
+    {
+      src: './assets/spaceMain/avatar/orangeFoxFaceMute.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 48,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_MUTE,
+    },
+    {
+      src: './assets/spaceMain/avatar/orangeFoxFaceSpeak.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 48,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_SPEAK,
+    },
+    {
+      src: './assets/spaceMain/avatar/orangeFoxFaceSpeakSmile.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 48,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
@@ -420,4 +587,8 @@ export const avatarImageMDs = [
   brownHorseMD,
   whiteRabbitMD,
   pinkPigMD,
+  whiteCatMD,
+  yellowDogMD,
+  creamPandaMD,
+  orangeFoxMD,
 ];

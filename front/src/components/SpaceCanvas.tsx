@@ -1,11 +1,13 @@
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
-import PeerManager from '../utils/RTCGameUtils';
+import {MapMakingInfo} from '../utils/ImageMetaData';
+import PeerManager, {Vec2} from '../utils/RTCGameUtils';
 import GLHelper, {Camera} from '../utils/webGLUtils';
 import Joystick from './Joystick';
 
 interface SpaceCanvasProps {
   peerManager: PeerManager;
+  mapMakingInfo: MapMakingInfo;
 }
 
 export interface LoadingInfo {
@@ -33,6 +35,27 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // function
+  const setIsMoving = (isMoving: boolean) => {
+    props.peerManager.me.isMoving = isMoving;
+  };
+
+  const setNextNormalizedDirectionVector = (dir: Vec2) => {
+    props.peerManager.me.nextNormalizedDirectionVector = dir;
+  };
+
+  const setCameraScaleByPinch = (value: number) => {
+    if (gLHelper) {
+      gLHelper.camera.upScaleByPinch(value);
+    }
+  };
+
+  const getCameraScale = (): number => {
+    if (gLHelper) {
+      return gLHelper.camera.scale;
+    }
+    return 0;
+  };
   // called only once
   useEffect(() => {
     if (!canvasRef.current) {
@@ -45,13 +68,17 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       console.error('getContext webgl error');
       return;
     }
-    const imageInfoProvider = new ImageInfoProvider(gl, setLoadStatus);
+    const imageInfoProvider = new ImageInfoProvider(
+      gl,
+      setLoadStatus,
+      props.mapMakingInfo,
+    );
     const glHelper = new GLHelper(
       gl,
       new Camera(
         {width: canvas.clientWidth, height: canvas.clientHeight},
-        {x: 1200, y: 1200},
-        {width: 2400, height: 2400},
+        {...props.mapMakingInfo.respawnPosition},
+        {...props.mapMakingInfo.backgroundSize},
       ),
       imageInfoProvider,
     );
@@ -76,19 +103,15 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     //계속해서 화면에 장면을 그려줌
     const requestAnimation = () => {
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
+      peerManager.me.update(gLHelper);
+
       gLHelper.drawObjectsBeforeAvatar();
-      peerManager.me.update(
-        Date.now() - peerManager.lastUpdateTimeStamp,
-        gLHelper.imageInfoProvider,
-        gLHelper,
-      );
+      const data = JSON.stringify(peerManager.me.getIPlayer());
       peerManager.peers.forEach(peer => {
-        if (peer.dc.readyState === 'open')
-          peer.dc.send(JSON.stringify(peerManager.me));
+        if (peer.dc.readyState === 'open') peer.dc.send(data);
         gLHelper.drawAvatar(peer, peer.div);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });
-      peerManager.lastUpdateTimeStamp = Date.now();
       gLHelper.drawAvatar(peerManager.me, peerManager.me.div);
       gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
       requestAnimationFrame(requestAnimation);
@@ -100,7 +123,13 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     <>
       <canvas ref={canvasRef} />
       {gLHelper ? (
-        <Joystick peerManager={props.peerManager} camera={gLHelper.camera} />
+        <Joystick
+          setIsMoving={setIsMoving}
+          setNextNormalizedDirectionVector={setNextNormalizedDirectionVector}
+          setCameraScaleByPinch={setCameraScaleByPinch}
+          getCameraScale={getCameraScale}
+          divContainer={props.peerManager.divContainer}
+        />
       ) : null}
       {!isLoading(loadStatus) ? (
         <div id="divLoad">{getPercentageFromLoadStatus(loadStatus)}</div>

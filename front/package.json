@@ -29,6 +29,7 @@
     "serve": "npm run build && serve -s build --ssl-cert sslKeys/certificate.crt --ssl-key sslKeys/private.key",
     "start": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
+    "testCover": "react-scripts test --coverage --watchAll=false",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -62,6 +63,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
-    "prettier": "2.3.2"
+    "prettier": "2.3.2",
+    "socket.io-mock": "^1.3.2"
   }
 }
