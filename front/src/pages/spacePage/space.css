@@ -236,25 +236,31 @@ canvas {
   height: 70px;
   background: rgba(196, 196, 196, 0);
 }
-.speeker_select,
-.mic_select {
-  display: inline;
-  width: 100%;
+
+.setting_dropdown_menu {
+  width: 15vh;
 }
 
 .setting_dropdown_menu_item {
   cursor: default;
 }
 
-.mic_select_img {
-  position: absolute;
-  height: 100%;
+.speaker_select,
+.mic_select {
+  display: inline;
+  width: 100%;
 }
 
-.mic_select_div {
+.speaker_select_img,
+.mic_select_img {
+  margin-left: 10px;
   position: absolute;
-  height: 22px;
-  width: 100%;
+  height: 20.17px;
+}
+
+.speaker_select_div,
+.mic_select_div {
+  width: 70%;
 }
 
 button .setting_button {

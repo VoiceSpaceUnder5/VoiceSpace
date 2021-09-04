@@ -33,19 +33,22 @@ function SettingDropDown(props: SettingProps): JSX.Element {
             </select>
             <img
               className="mic_select_img"
-              src="./assets/home/homeLogo.png"
+              src="./assets/navigation/mic.png"
             ></img>
           </div>
+          <div>스피커</div>
           <div className="speaker_select_div">
-            <div>스피커</div>
             <select className="speaker_select">
               <option value="earphone">이어폰</option>
               <option value="headphone">헤드폰</option>
               <option value="speaker">스피커</option>
               <option value="etc">등등</option>
             </select>
+            <img
+              className="speaker_select_img"
+              src="./assets/navigation/speaker.png"
+            ></img>
           </div>
-          <div className="empty"></div>
         </div>
         <div className="profile_button">
           <button onClick={props.onClickConfirm}>변경</button>
