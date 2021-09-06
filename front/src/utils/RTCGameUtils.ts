@@ -193,8 +193,10 @@ export class Peer extends RTCPeerConnection implements IPlayer {
   rotateRadian: number;
   volume: number;
   //
-
   isDeleted: boolean;
+
+  // volumne multiply value
+  volumnMultiplyValue: number;
 
   constructor(
     connectedClientSocketId: string,
@@ -221,6 +223,8 @@ export class Peer extends RTCPeerConnection implements IPlayer {
     this.rotateRadian = 0;
     this.volume = 0;
     //
+    this.volumnMultiplyValue = 1;
+
     this.dc = this.createDataChannel('dc');
     this.ondatachannel = event => {
       const receviedDC = event.channel;
@@ -260,10 +264,8 @@ export class Peer extends RTCPeerConnection implements IPlayer {
       Math.pow(this.centerPos.x - pos.x, 2) +
         Math.pow(this.centerPos.y - pos.y, 2),
     );
-    this.connectedAudioElement.volume = Math.max(
-      0,
-      1 - distance / this.maxSoundDistance,
-    );
+    const volumeValue = Math.max(0, 1 - distance / this.maxSoundDistance);
+    this.connectedAudioElement.volume = volumeValue * this.volumnMultiplyValue;
   }
 }
 
