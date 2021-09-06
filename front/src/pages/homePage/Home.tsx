@@ -18,7 +18,7 @@ function Home(props: RouteComponentProps): JSX.Element {
   };
 
   const aOnClick = () => {
-    window.open('https://www.naver.com');
+    window.open('https://github.com/VoiceSpaceUnder5/VoiceSpace');
   };
 
   return (
