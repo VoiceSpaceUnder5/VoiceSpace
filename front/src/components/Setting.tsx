@@ -1,13 +1,6 @@
-import React, {useState} from 'react';
-import {Menu, Dropdown} from 'antd';
-import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
+import React from 'react';
+import {Menu} from 'antd';
 import '../pages/spacePage/space.css';
-import {
-  AvatarImageEnum,
-  avatarImageMDs,
-  AvatarPartImageEnum,
-} from '../utils/ImageMetaData';
-import MenuItem from 'antd/lib/menu/MenuItem';
 
 export interface SettingProps {
   onClickConfirm: () => void;
