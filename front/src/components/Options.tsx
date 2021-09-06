@@ -20,7 +20,10 @@ function OptionDropDown(props: OptionDropDownProps) {
         </a>
       </Menu.Item>
       <Menu.Item key="1">
-        <a href="#"> 문제 해결 및 도움말</a>
+        <a href="https://github.com/VoiceSpaceUnder5/VoiceSpace">
+          {' '}
+          문제 해결 및 도움말
+        </a>
       </Menu.Item>
     </Menu>
   );

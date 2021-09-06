@@ -23,26 +23,24 @@ function SettingDropDown(props: SettingProps): JSX.Element {
       <Menu.Item className="setting_menu_item_content" key="1">
         <div>
           <div className="audio_title">오디오 설정</div>
-          <div>마이크</div>
+          <div>입력</div>
           <div className="mic_select_div">
             <select className="mic_select">
-              <option value="one">1번마이크</option>
-              <option value="two">2번마이크</option>
-              <option value="three">3번마이크</option>
-              <option value="etc">등등</option>
+              <option value="default_mic">기본값_내장마이크</option>
+              <option value="airpod_pro_mic">airpod_pro mic</option>
+              <option value="headphone_mic">headphone mic</option>
             </select>
             <img
               className="mic_select_img"
               src="./assets/navigation/mic.png"
             ></img>
           </div>
-          <div>스피커</div>
+          <div>출력</div>
           <div className="speaker_select_div">
             <select className="speaker_select">
-              <option value="earphone">이어폰</option>
-              <option value="headphone">헤드폰</option>
-              <option value="speaker">스피커</option>
-              <option value="etc">등등</option>
+              <option value="default_speaker">기본값-내장스피커</option>
+              <option value="airpod_pro">airpod-pro</option>
+              <option value="headphone">headphone</option>
             </select>
             <img
               className="speaker_select_img"
