@@ -13,7 +13,7 @@ export function PanelDropDown(props: PanelProps): JSX.Element {
     <Menu>
       <Menu.Item key="0">
         <CopyToClipboard
-          text={`https://under5.site/space?roomId=${props.roomId}`}
+          text={`https://giggleforest.com/space?roomId=${props.roomId}`}
           onCopy={props.onCopy}
         >
           <a>참여 링크 복사</a>
