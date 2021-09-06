@@ -21,7 +21,6 @@ function Navigation(props: NavigationProps): JSX.Element {
     props.peerManager.close();
     props.goToHome();
   };
-
   const setNickName = (nickname: string): void => {
     props.peerManager.me.nickname = nickname;
   };
@@ -54,7 +53,13 @@ function Navigation(props: NavigationProps): JSX.Element {
         </div>
       </div>
       <div className="navbar_right">
-        <Panel roomId={props.peerManager.roomId} onCopy={onCopy} />
+        <Panel
+          me={props.peerManager.me}
+          // nickname={props.peerManager.me.nickname}
+          roomId={props.peerManager.roomId}
+          peers={props.peerManager.peers}
+          onCopy={onCopy}
+        />
       </div>
     </nav>
   );

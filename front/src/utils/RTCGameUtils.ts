@@ -17,7 +17,7 @@ export interface IPlayer {
   volume: number;
 }
 
-class Me implements IPlayer {
+export class Me implements IPlayer {
   // IPlayer
   nickname: string;
   avatar: AvatarImageEnum;
