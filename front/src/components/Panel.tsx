@@ -3,7 +3,7 @@ import {Menu, Dropdown} from 'antd';
 import {UpOutlined, LeftCircleFilled} from '@ant-design/icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../pages/spacePage/space.css';
-import {Peer, Me} from '../utils/RTCGameUtils';
+import {Peer} from '../utils/RTCGameUtils';
 import {UserInfo, UsersDropDown} from './UserDropDown';
 
 export interface PanelProps {
