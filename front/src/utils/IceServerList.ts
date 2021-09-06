@@ -12,8 +12,13 @@ export const iceConfig: RTCConfiguration = {
     {urls: 'stun:stun.xten.com'},
     {
       urls: 'turn:numb.viagenie.ca',
-      credential: 'muazkh',
       username: 'webrtc@live.com',
+      credential: 'muazkh',
+    },
+    {
+      urls: 'turn:giggleforest.com:5349?transport=tcp',
+      username: 'honlee',
+      credential: '1234',
     },
   ],
   iceTransportPolicy: 'all', //참조 : https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration/iceTransportPolicy

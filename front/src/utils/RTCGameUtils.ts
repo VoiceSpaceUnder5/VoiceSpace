@@ -387,10 +387,14 @@ export default class PeerManager {
     this.socket.on('ice', (iceDto: IceDto) => {
       const icedPeer = this.peers.get(iceDto.fromClientId);
       if (icedPeer) {
+        const ice = new RTCIceCandidate(iceDto.ice);
         icedPeer
-          .addIceCandidate(new RTCIceCandidate(iceDto.ice))
+          .addIceCandidate(ice)
           .then(() => {
-            console.log(`set ice success from ${iceDto.fromClientId}`);
+            console.log(
+              `set ice success from ${iceDto.fromClientId} type: ${ice.type}`,
+            );
+            if (ice.type === 'relay') console.log(ice);
           })
           .catch(error => {
             console.error(`addIceCandidate Fail : ${error.toString()}`);
@@ -426,7 +430,16 @@ export default class PeerManager {
           ice: iceCandidate,
         };
         this.socket.emit('ice', iceDto);
-        console.log(`send iceCandidate to ${iceDto.toClientId}`);
+        if (iceCandidate.type === 'relay') {
+          console.log(
+            `send relay iceCandidate to ${iceDto.toClientId}`,
+            iceCandidate,
+          );
+        } else {
+          console.log(
+            `send iceCandidate to ${iceDto.toClientId} , type:${iceCandidate.type}`,
+          );
+        }
       }
     });
     newPeer.addEventListener('track', event => {
