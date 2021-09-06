@@ -27,6 +27,9 @@ jobs:
       - name: 노드 모듈 설치
         run: cd front && npm install
 
+      - name: 빌드 테트
+        run: cd front && npm run build
+        
       - name: 테스트 진행
         run: cd front && npm run test
 
