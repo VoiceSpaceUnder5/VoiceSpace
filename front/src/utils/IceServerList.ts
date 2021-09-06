@@ -16,5 +16,5 @@ export const iceConfig: RTCConfiguration = {
       username: 'webrtc@live.com',
     },
   ],
-  iceTransportPolicy: 'relay', //참조 : https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration/iceTransportPolicy
+  iceTransportPolicy: 'all', //참조 : https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration/iceTransportPolicy
 };
