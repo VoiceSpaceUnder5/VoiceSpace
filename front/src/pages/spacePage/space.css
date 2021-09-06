@@ -154,6 +154,22 @@ canvas {
   list-style: none;
   text-align: right;
 }
+.panel_button,
+.panel_button > * {
+  color: black;
+  border: 0px;
+  background-color: white;
+}
+.user_list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.user_list_avatar,
+.user_list_mic {
+  width: 20px;
+  height: 20px;
+}
 
 .navbar_button {
   color: black;
@@ -165,6 +181,21 @@ canvas {
   border-radius: 5px;
   box-shadow: 1px 1px 1px 0 gray;
   transition: 0.1s;
+}
+.users_title,
+.message_title {
+  min-width: 15vw;
+  display: flex;
+  justify-content: space-between;
+}
+.users_title > div:last-child,
+.message_title > div:last-child {
+  color: #2598f1;
+}
+.users_title > div:last-child:hover,
+.message_title > div:last-child:hover {
+  color: skyblue;
+  transition: 0.3s;
 }
 
 /* 네비게이션 모바일 */
