@@ -439,9 +439,6 @@ export default class PeerManager {
         targetPeer.connectionState === 'disconnected' ||
         targetPeer.connectionState === 'failed'
       ) {
-        console.log(
-          `connectionState with ${targetPeer.connectedClientSocketId} is ${targetPeer.connectionState}`,
-        );
         this.peers.delete(targetPeer.connectedClientSocketId);
         if (!targetPeer.isDeleted) {
           this.divContainer.removeChild(targetPeer.div);
@@ -449,6 +446,9 @@ export default class PeerManager {
           targetPeer.isDeleted = true;
         }
       }
+      console.log(
+        `connectionState with ${targetPeer.connectedClientSocketId} is ${targetPeer.connectionState}`,
+      );
     });
     return newPeer;
   }
