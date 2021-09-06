@@ -41,7 +41,9 @@ function Navigation(props: NavigationProps): JSX.Element {
         nickname: `${props.peerManager.me.nickname} (나)`,
         avatar: props.peerManager.me.avatar,
         setVolume: (arg0: number) => {
-          console.error('called setVolume of ME error');
+          console.error(
+            `called setVolume of ME error. so It doesn't work with ${arg0}`,
+          );
         },
       },
     ];

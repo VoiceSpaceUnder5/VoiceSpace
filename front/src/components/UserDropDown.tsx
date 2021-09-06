@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Menu, Dropdown} from 'antd';
+import React from 'react';
+import {Menu} from 'antd';
 import {AudioMutedOutlined, LeftCircleFilled} from '@ant-design/icons';
 import {
   AvatarImageEnum,
