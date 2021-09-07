@@ -108,7 +108,24 @@ npm run start
 
 ### 문서
 
-- 각종 Component, Class, Function 정보는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs) 서 확인 하실 수 있습니다.
+- 각종 Component, Class, Function 정보는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/) 서 확인 하실 수 있습니다.
+
+---
+
+### 테스트
+
+#### front 폴더에서
+- unit test
+```
+npm run test
+```
+
+- unit test with coverage report
+```
+npm run testCover
+```
+
+- 현재 master 의 커버리지 레포트는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/lcov-report/) 서 보실 수 있습니다.
 
 ---
 

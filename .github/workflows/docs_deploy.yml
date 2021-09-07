@@ -38,7 +38,7 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - name: coverage 디렉토리명 날짜 반영 변경
-        run: cd front && mv './front/coverage/lcov-report' $DIR_NAME
+        run: cd front && mv ./front/coverage/lcov-report $DIR_NAME
         env:
           DIR_NAME: coverage-${{ steps.date.outputs.date }}
 
