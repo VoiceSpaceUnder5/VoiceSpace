@@ -4,7 +4,8 @@ on:
     branches:
       - master #master 브랜치에 push 이벤트가 일어났을 때만 실행
     paths:
-      - front/src/** #front/src 디렉토리 내의 변화가 생겼을 때만 실행
+      - front/src/**
+      - front/public/**  #front/src , front/public 디렉토리 내의 변화가 생겼을 때만 실행
 jobs:
   Docs_Deploy:
     runs-on: ubuntu-18.04
@@ -29,6 +30,9 @@ jobs:
       - name: docs 만들기
         run: cd front && npx typedoc --out docs
 
+      - name: coverage 만들기
+        run: cd front && npm run testCover
+
       - name: VoiceSpaceDocs 레포지토리로 docs push
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
@@ -40,3 +44,15 @@ jobs:
           user_email: 'gnsdlrl@daum.net'
           user_name: 'Likilee'
           commit_message: '문서 자동 업데이트 by 깃헙액션'
+
+      - name: VoiceSpaceDocs 레포지토리로 coverage push
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.LIKILEE_ACCESS_CODE_FOR_REPO }}
+        with:
+          source_file: './front/coverge'
+          destination_repo: 'VoiceSpaceUnder5/VoiceSpaceDocs'
+          destination_folder: './coverage'
+          user_email: 'gnsdlrl@daum.net'
+          user_name: 'Likilee'
+          commit_message: 'Coverage 자동 업데이트 by 깃헙액션'
