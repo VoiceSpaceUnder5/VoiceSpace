@@ -10,7 +10,7 @@ import Panel from './Panel';
 import PeerManager from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
-import {UserInfo} from './UserDropDown';
+import {UserInfo} from './UserList';
 
 interface NavigationProps {
   peerManager: PeerManager;
