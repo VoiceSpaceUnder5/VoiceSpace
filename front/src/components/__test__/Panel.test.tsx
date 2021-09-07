@@ -1,13 +1,34 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {screen} from '@testing-library/react';
-import Panel, {PanelDropDown, PanelProps} from '../Panel';
+import Panel, {PanelDropDown, PanelDropDownProps, PanelProps} from '../Panel';
 import userEvent from '@testing-library/user-event';
 import {act} from 'react-dom/test-utils';
 
+// getUsers: () => UserInfo[];
+// roomId: string;
+// peers: Map<string, Peer>;
+// onCopy: () => void;
+
+const peers: any = [];
+
 const mockedPanelProps: PanelProps = {
-  roomId: 'hyeonkimRoom',
+  getUsers: () => {
+    return [];
+  },
+  roomId: 'testID',
+  peers: peers,
   onCopy: jest.fn(),
+};
+
+// roomId: string;
+// onCopy: () => void;
+// onClickSubMenu: (e: MenuItemProps) => void;
+
+const mockedPanelDropDownProps: PanelDropDownProps = {
+  roomId: 'testID',
+  onCopy: jest.fn(),
+  onClickSubMenu: jest.fn(),
 };
 
 // jest 의 render 함수가 사용하는 virtualDOM 은 거의 모든 window 함수들을 구현했지만
@@ -37,11 +58,14 @@ describe('PanelDropDown test', () => {
       return;
     }
     await act(async () => {
-      render(<PanelDropDown {...mockedPanelProps}></PanelDropDown>, container);
+      render(
+        <PanelDropDown {...mockedPanelDropDownProps}></PanelDropDown>,
+        container,
+      );
     });
     const aElement = screen.getByText(/참여 링크 복사/i);
     userEvent.click(aElement);
-    expect(mockedPanelProps.onCopy).toBeCalled();
+    expect(mockedPanelDropDownProps.onCopy).toBeCalled();
   });
 });
 
