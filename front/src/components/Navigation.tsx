@@ -40,6 +40,7 @@ function Navigation(props: NavigationProps): JSX.Element {
       {
         nickname: `${props.peerManager.me.nickname} (나)`,
         avatar: props.peerManager.me.avatar,
+        volume: 1,
         setVolume: (arg0: number) => {
           console.error(
             `called setVolume of ME error. so It doesn't work with ${arg0}`,
@@ -47,7 +48,6 @@ function Navigation(props: NavigationProps): JSX.Element {
         },
       },
     ];
-
     props.peerManager.peers.forEach(peer => {
       const setVolume = (volumnMultiplyValue: number): void => {
         peer.volumnMultiplyValue = volumnMultiplyValue;
@@ -55,6 +55,7 @@ function Navigation(props: NavigationProps): JSX.Element {
       const temp: UserInfo = {
         nickname: peer.nickname,
         avatar: peer.avatar,
+        volume: peer.volumnMultiplyValue,
         setVolume: setVolume,
       };
       result.push(temp);

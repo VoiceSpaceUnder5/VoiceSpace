@@ -48,6 +48,7 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
 function Panel(props: PanelProps): JSX.Element {
   const [subMenu, setSubMenu] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [volume, setVolume] = useState(0);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -63,6 +64,10 @@ function Panel(props: PanelProps): JSX.Element {
       setSubMenu(0);
     }, 500);
   };
+  const onChangeVolume = (changedVolume: number) => {
+    volume;
+    setVolume(changedVolume);
+  };
   return (
     <Dropdown
       visible={visible}
@@ -74,6 +79,7 @@ function Panel(props: PanelProps): JSX.Element {
           ? UserList({
               getUsers: props.getUsers,
               onClickPrevious: onClickPrevious,
+              onChangeVolume: onChangeVolume,
             })
           : Message({...props, onClickPrevious: onClickPrevious})
       }
