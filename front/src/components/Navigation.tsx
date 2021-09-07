@@ -10,6 +10,7 @@ import Panel from './Panel';
 import PeerManager from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
+import {UserInfo} from './UserList';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -34,6 +35,34 @@ function Navigation(props: NavigationProps): JSX.Element {
     message.info('클립보드에 복사 되었습니다!');
   };
 
+  const getUsers = (): UserInfo[] => {
+    const result: UserInfo[] = [
+      {
+        nickname: `${props.peerManager.me.nickname} (나)`,
+        avatar: props.peerManager.me.avatar,
+        volume: 1,
+        setVolume: (arg0: number) => {
+          console.error(
+            `called setVolume of ME error. so It doesn't work with ${arg0}`,
+          );
+        },
+      },
+    ];
+    props.peerManager.peers.forEach(peer => {
+      const setVolume = (volumnMultiplyValue: number): void => {
+        peer.volumnMultiplyValue = volumnMultiplyValue;
+      };
+      const temp: UserInfo = {
+        nickname: peer.nickname,
+        avatar: peer.avatar,
+        volume: peer.volumnMultiplyValue,
+        setVolume: setVolume,
+      };
+      result.push(temp);
+    });
+    return result;
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -54,8 +83,7 @@ function Navigation(props: NavigationProps): JSX.Element {
       </div>
       <div className="navbar_right">
         <Panel
-          me={props.peerManager.me}
-          // nickname={props.peerManager.me.nickname}
+          getUsers={getUsers}
           roomId={props.peerManager.roomId}
           peers={props.peerManager.peers}
           onCopy={onCopy}
