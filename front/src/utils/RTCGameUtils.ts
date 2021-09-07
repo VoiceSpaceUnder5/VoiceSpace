@@ -2,6 +2,7 @@ import {Socket} from 'socket.io-client';
 import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
 import {iceConfig} from './IceServerList';
+import {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
 
 export interface Vec2 {
   x: number;
@@ -164,18 +165,6 @@ export class Me implements IPlayer {
     if (this.volume > this.SpeakMouseThrashHold)
       this.avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
   }
-}
-
-interface OfferAnswerDto {
-  fromClientId: string;
-  toClientId: string;
-  sdp: RTCSessionDescriptionInit;
-}
-
-interface IceDto {
-  fromClientId: string;
-  toClientId: string;
-  ice: RTCIceCandidate;
 }
 
 export class Peer extends RTCPeerConnection implements IPlayer {
