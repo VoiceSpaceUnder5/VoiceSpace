@@ -5,7 +5,7 @@ on:
       - master #master 브랜치에 push 이벤트가 일어났을 때만 실행
     paths:
       - front/src/**
-      - front/public/**  #front/src , front/public 디렉토리 내의 변화가 생겼을 때만 실행
+      - front/public/** #front/src , front/public 디렉토리 내의 변화가 생겼을 때만 실행
 jobs:
   Docs_Deploy:
     runs-on: ubuntu-18.04
@@ -33,26 +33,36 @@ jobs:
       - name: coverage 만들기
         run: cd front && npm run testCover
 
+      - name: 오늘 날짜 가져오기
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: coverage 디렉토리명 날짜 반영 변경
+        run: cd front && mv './front/coverage/lcov-report' $DIR_NAME
+        env:
+          DIR_NAME: coverage-${{ steps.date.outputs.date }}
+
       - name: VoiceSpaceDocs 레포지토리로 docs push
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.LIKILEE_ACCESS_CODE_FOR_REPO }}
         with:
-          source_file: './front/docs'
-          destination_repo: 'VoiceSpaceUnder5/VoiceSpaceDocs'
-          destination_folder: './docs'
-          user_email: 'gnsdlrl@daum.net'
-          user_name: 'Likilee'
-          commit_message: '문서 자동 업데이트 by 깃헙액션'
+          source_file: "./front/docs"
+          destination_repo: "VoiceSpaceUnder5/VoiceSpaceDocs"
+          destination_folder: "./"
+          user_email: "gnsdlrl@daum.net"
+          user_name: "Likilee"
+          commit_message: "문서 자동 업데이트 by 깃헙액션"
 
       - name: VoiceSpaceDocs 레포지토리로 coverage push
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.LIKILEE_ACCESS_CODE_FOR_REPO }}
+          DIR_NAME: coverage-${{ steps.date.outputs.date }}
         with:
-          source_file: './front/coverge'
-          destination_repo: 'VoiceSpaceUnder5/VoiceSpaceDocs'
-          destination_folder: './coverage'
-          user_email: 'gnsdlrl@daum.net'
-          user_name: 'Likilee'
-          commit_message: 'Coverage 자동 업데이트 by 깃헙액션'
+          source_file: "./front/$DIR_NAME"
+          destination_repo: "VoiceSpaceUnder5/VoiceSpaceDocs"
+          destination_folder: "./coverage"
+          user_email: "gnsdlrl@daum.net"
+          user_name: "Likilee"
+          commit_message: "Coverage 자동 업데이트 by 깃헙액션"
