@@ -9,6 +9,7 @@
 
 # test coverage folder
 */coverage
+*/docs
 
 # vscode
 */.vscode
