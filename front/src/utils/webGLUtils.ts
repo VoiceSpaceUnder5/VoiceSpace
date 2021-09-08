@@ -302,8 +302,6 @@ class GLHelper {
   }
 
   getMy4VertexWorldPosition(me: PlayerDto, scale = 1): Vec2[] {
-    const result: Vec2[] = [];
-
     const originVertex = [
       [0, 0],
       [1, 0],
@@ -324,7 +322,7 @@ class GLHelper {
       centerPos: me.centerPos,
     });
 
-    originVertex.forEach(arr => {
+    return originVertex.map(arr => {
       const posX =
         this.imageMatrix[0] * arr[0] +
         this.imageMatrix[3] * arr[1] +
@@ -333,12 +331,12 @@ class GLHelper {
         this.imageMatrix[1] * arr[0] +
         this.imageMatrix[4] * arr[1] +
         this.imageMatrix[7];
-      result.push({
+      const vec2: Vec2 = {
         x: posX,
         y: posY,
-      });
+      };
+      return vec2;
     });
-    return result;
   }
 
   updateProjectionMatrix(): void {
