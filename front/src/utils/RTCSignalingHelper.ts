@@ -119,7 +119,7 @@ class RTCSignalingHelper {
   close(): void {
     this.socket.close();
   }
-  getClientID(): string {
+  getSocketID(): string {
     return this.socket.id;
   }
 }
