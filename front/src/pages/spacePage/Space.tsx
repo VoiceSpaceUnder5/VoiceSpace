@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import io from 'socket.io-client';
-import PeerManager, {Vec2} from '../../utils/RTCGameUtils';
+import PeerManager, {AudioAnalyser, Me, Vec2} from '../../utils/RTCGameUtils';
 import Navigation from '../../components/Navigation';
 import {
   AvatarImageEnum,
@@ -10,6 +10,8 @@ import {
 import SpaceCanvas from '../../components/SpaceCanvas';
 import './space.css';
 import {message} from 'antd';
+import RTCSignalingHelper from '../../utils/RTCSignalingHelper';
+import {iceConfig} from '../../utils/IceServerList';
 
 const qs = require('query-string');
 
@@ -27,7 +29,7 @@ export interface LoadingInfo {
 }
 
 function setNewPeerManager(
-  divContainer: HTMLDivElement,
+  nicknameContainer: HTMLDivElement,
   audioContainer: HTMLDivElement,
   query: SpaceQuery,
   initialCenterPos: Vec2,
@@ -43,15 +45,28 @@ function setNewPeerManager(
         return;
       }
       socket.on('connect', () => {
-        const peerManager = new PeerManager(
-          socket,
-          stream,
+        const signalingHelper = new RTCSignalingHelper(socket);
+        const audioAnalyser = new AudioAnalyser(stream);
+        const nicknameDiv = document.createElement('div') as HTMLDivElement;
+        nicknameDiv.className = 'canvasOverlay';
+        nicknameContainer.appendChild(nicknameDiv);
+
+        const me = new Me(
+          nicknameDiv,
+          audioAnalyser,
+          initialCenterPos,
           query.nickname,
           query.avatarIdx,
+        );
+
+        const peerManager = new PeerManager(
+          signalingHelper,
+          stream,
           audioContainer,
-          divContainer,
-          initialCenterPos,
+          nicknameContainer,
+          iceConfig,
           query.roomId,
+          me,
         );
         successCallBack(peerManager);
         console.log('socket connected');

@@ -1,9 +1,6 @@
-import {Socket} from 'socket.io-client';
 import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
-import {iceConfig} from './IceServerList';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
-import ImageInfoProvider from './ImageInfoProvider';
 
 /**
  * position 등 x, y 두 변수를 가지고 있을 때 주로 사용
@@ -129,6 +126,9 @@ export class Me implements PlayerDto {
     avatar = AvatarImageEnum.BROWN_BEAR,
     velocity = 0.2,
   ) {
+    //nickname overlay div
+    this.nicknameDiv = nicknameDiv;
+
     // PlayerDto
     this._nickname = nickname;
     this.nickname = nickname;
@@ -137,9 +137,6 @@ export class Me implements PlayerDto {
     this.avatarFaceScale = 1;
     this.centerPos = {...centerPos};
     this.rotateRadian = 0;
-
-    //nickname overlay div
-    this.nicknameDiv = nicknameDiv;
 
     // update avatar position values
     this.lastUpdateTimeStamp = Date.now();
@@ -203,6 +200,10 @@ export class Me implements PlayerDto {
   }
 
   update(glHelper: GLHelper): void {
+    const avatarFaceDto = this.audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
+    this.avatarFaceScale = avatarFaceDto.avatarFaceScale;
+    this.avatarFace = avatarFaceDto.avatarFace;
+
     const millisDiff = Date.now() - this.lastUpdateTimeStamp;
     this.lastUpdateTimeStamp = Date.now();
 
@@ -351,7 +352,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
       this.audio.srcObject = event.streams[0];
     });
 
-    this.addEventListener('connectionstatechange', event => {
+    this.addEventListener('connectionstatechange', () => {
       if (
         this.connectionState === 'closed' ||
         this.connectionState === 'disconnected' ||
@@ -380,6 +381,16 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     const volumeValue = Math.max(0, 1 - distance / this.maxSoundDistance);
     this.audio.volume = volumeValue * this.volumnMultiplyValue;
   }
+
+  transmitUsingDataChannel(data: string): void {
+    if (this.dc.readyState === 'open') {
+      this.dc.send(data);
+    } else {
+      //   console.error(
+      //     `${this.connectedClientSocketID} dataChannel is not opened`,
+      //   );
+    }
+  }
 }
 
 /**
@@ -390,9 +401,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 export default class PeerManager {
   // create new Peer params
   private readonly signalingHelper: RTCSignalingHelper;
-  private readonly localStream: MediaStream;
+  readonly localStream: MediaStream;
   private readonly audioContainer: HTMLDivElement;
-  private readonly nicknameContainer: HTMLDivElement;
+  readonly nicknameContainer: HTMLDivElement;
   private readonly connectionClosedDisconnectedFailedCallBack: (
     peer: Peer,
   ) => void;
@@ -404,6 +415,8 @@ export default class PeerManager {
   // Me
   me: Me;
 
+  // RoomID
+  readonly roomID: string;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -433,8 +446,18 @@ export default class PeerManager {
     // Me
     this.me = me;
 
+    // roomID
+    this.roomID = roomID;
+
+    // setEvent
+    this.setSignalingEvent();
+
     // JoinRoom
     this.signalingHelper.joinRoom(roomID);
+  }
+
+  forEachPeer(callback: (peer: Peer) => void): void {
+    this.peers.forEach(peer => callback(peer));
   }
 
   createNewPeerAndAddPeers(connectedClientSocketID: string): Peer {
@@ -537,5 +560,13 @@ export default class PeerManager {
         });
       }
     };
+  }
+
+  close(): void {
+    console.log('peerManager close called');
+    this.peers.forEach(peer => {
+      peer.close();
+    });
+    this.signalingHelper.close();
   }
 }

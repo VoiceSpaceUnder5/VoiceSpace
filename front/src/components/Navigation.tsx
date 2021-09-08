@@ -84,7 +84,7 @@ function Navigation(props: NavigationProps): JSX.Element {
       <div className="navbar_right">
         <Panel
           getUsers={getUsers}
-          roomId={props.peerManager.roomId}
+          roomId={props.peerManager.roomID}
           peers={props.peerManager.peers}
           onCopy={onCopy}
         />

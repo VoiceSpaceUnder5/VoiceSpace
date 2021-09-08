@@ -1,6 +1,6 @@
 import ImageInfoProvider from './ImageInfoProvider';
 import {Size, ImageInfo, AvatarPartImageEnum} from './ImageMetaData';
-import {IPlayer} from './RTCGameUtils';
+import {PlayerDto} from './RTCGameUtils';
 import {Vec2} from './RTCGameUtils';
 const m3 = require('m3.js');
 
@@ -207,7 +207,7 @@ export class Camera {
     }
   }
 
-  updateCenterPosFromPlayer(player: IPlayer): void {
+  updateCenterPosFromPlayer(player: PlayerDto): void {
     const oldCenterPos = {...this.centerPos};
     this.centerPos = {...player.centerPos};
     if (
@@ -234,7 +234,6 @@ class GLHelper {
 
   //value
   divHeightOffsetY: number;
-  volumeDivideValue: number;
 
   //Matrix, value for draw
   projectionMatrix: number[];
@@ -254,7 +253,6 @@ class GLHelper {
     this.imageInfoProvider = imageinfoProvider;
     //value
     this.divHeightOffsetY = -20;
-    this.volumeDivideValue = 250;
     //Matrix, value for draw
     this.projectionMatrix = [];
     this.cameraMatrix = [];
@@ -303,7 +301,7 @@ class GLHelper {
     };
   }
 
-  getMy4VertexWorldPosition(me: IPlayer, scale = 1): Vec2[] {
+  getMy4VertexWorldPosition(me: PlayerDto, scale = 1): Vec2[] {
     const result: Vec2[] = [];
 
     const originVertex = [
@@ -427,7 +425,7 @@ class GLHelper {
 
   makeAvatarImageInfoFromImageInfoProviderAndPlayer(
     avatarPart: AvatarPartImageEnum,
-    player: IPlayer,
+    player: PlayerDto,
     isFace = true,
   ): DrawInfo | undefined {
     const imageInfo = this.imageInfoProvider.getAvatarImageInfo(
@@ -443,13 +441,13 @@ class GLHelper {
     }
     return {
       ...imageInfo,
-      scale: isFace ? 1 + player.volume / this.volumeDivideValue : 1,
+      scale: isFace ? player.avatarFaceScale : 1,
       rotateRadian: player.rotateRadian,
       centerPos: player.centerPos,
     };
   }
 
-  drawAvatar(player: IPlayer, div: HTMLDivElement): void {
+  drawAvatar(player: PlayerDto, div: HTMLDivElement): void {
     const divSize = {...this.camera.size};
     const drawIdxs = [AvatarPartImageEnum.BODY, player.avatarFace]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
