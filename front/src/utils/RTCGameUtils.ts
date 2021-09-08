@@ -3,91 +3,181 @@ import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
 import {iceConfig} from './IceServerList';
 import {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
+import ImageInfoProvider from './ImageInfoProvider';
 
+/**
+ * position 등 x, y 두 변수를 가지고 있을 때 주로 사용
+ */
 export interface Vec2 {
   x: number;
   y: number;
 }
 
-export interface IPlayer {
-  nickname: string;
-  avatar: AvatarImageEnum;
+/**
+ * AudioAnalyser 인스턴스의 getAvatarFaceDtoByAudioAnalysis() 메소드의 output
+ * avatarFace 중 어떤 형태의 face 를 적용할지와 얼만큼의 scale 로 적용할지에 대한 정보를 담음.
+ */
+export interface AvatarFaceDto {
   avatarFace: AvatarPartImageEnum;
-  centerPos: Vec2;
-  rotateRadian: number;
-  volume: number;
+  avatarFaceScale: number;
 }
 
-export class Me implements IPlayer {
-  // IPlayer
+/**
+ * player 를 대표하는 아바타정보
+ * p2p dataChannel 을 통해 지속적으로 전송되는 정보.
+ */
+export interface PlayerDto extends AvatarFaceDto {
   nickname: string;
   avatar: AvatarImageEnum;
-  avatarFace: AvatarPartImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
-  volume: number;
-  //
-  lastUpdateTimeStamp: number;
-  div: HTMLDivElement;
-  velocity: number;
-  normalizedDirectionVector: Vec2;
-  nextNormalizedDirectionVector: Vec2;
-  isMoving: boolean;
+}
 
-  analyser: AnalyserNode;
-  // value
-  SpeakThrashHold: number;
-  SpeakMouseThrashHold: number;
-  //
+/**
+ * LocalAudioMediaStream 을 분석하여 avatarFace 를 어떻게 그려야 할지 결정해주는 책임을 가짐
+ *
+ */
+export class AudioAnalyser {
+  private analyser: AnalyserNode;
+  // value // 추후 자음을 분석하여 입모양을 결정하는 부분이 합쳐질 경우 변경될 가능성이 높음
+  private readonly speakThrashHold: number;
+  private readonly speakMouseThrashHold: number;
+  private readonly volumeDivideValue: number;
+
+  // for audio Analysis
+  private readonly byteFrequencyDataArray: Uint8Array;
+
   constructor(
-    nickname: string,
-    avatar: AvatarImageEnum,
-    centerPos: Vec2,
-    velocity: number,
-    stream: MediaStream,
-    divContainer: HTMLDivElement,
+    stream: MediaStream, // audio
+    volumeDivideValue = 250,
+    speakThrashHold = 30,
+    speakMouseThrashHold = 50,
   ) {
-    this.nickname = nickname;
-    this.avatar = avatar;
-    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
-    this.centerPos = centerPos;
-    this.velocity = velocity;
-    this.normalizedDirectionVector = {x: 0, y: 1};
-    this.nextNormalizedDirectionVector = {x: 0, y: 1};
-    this.rotateRadian = 0;
-    this.volume = 0;
-    this.isMoving = false;
-    this.lastUpdateTimeStamp = Date.now();
-
-    this.SpeakThrashHold = 30;
-    this.SpeakMouseThrashHold = 50;
-
-    this.div = document.createElement('div') as HTMLDivElement;
-    this.div.className = 'canvasOverlay';
-    this.div.innerText = this.nickname;
-    divContainer.appendChild(this.div);
-
+    // make analyser with stream
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     this.analyser = audioContext.createAnalyser();
     this.analyser.smoothingTimeConstant = 0.4;
     this.analyser.fftSize = 1024;
     source.connect(this.analyser);
+
+    // value
+    this.volumeDivideValue = volumeDivideValue;
+    this.speakThrashHold = speakThrashHold;
+    this.speakMouseThrashHold = speakMouseThrashHold;
+
+    // for audio Analysis
+    this.byteFrequencyDataArray = new Uint8Array(
+      this.analyser.frequencyBinCount,
+    );
   }
 
-  getIPlayer(): IPlayer {
-    const data: IPlayer = {
-      nickname: this.nickname,
+  getAvatarFaceDtoByAudioAnalysis(): AvatarFaceDto {
+    this.analyser.getByteFrequencyData(this.byteFrequencyDataArray);
+    // get volume
+    const volume =
+      this.byteFrequencyDataArray.reduce((acc, cur) => {
+        return acc + cur;
+      }, 0) / this.byteFrequencyDataArray.length;
+
+    // get avatarFaceEnum by volume
+    let avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    if (volume > this.speakThrashHold)
+      avatarFace = AvatarPartImageEnum.FACE_SPEAK;
+    if (volume > this.speakMouseThrashHold)
+      avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
+
+    // get avatarFace scale by volume and volumeDivideValue
+    const scale = 1 + volume / this.volumeDivideValue;
+    return {
+      avatarFace: avatarFace,
+      avatarFaceScale: scale,
+    };
+  }
+}
+
+/**
+ * 책임 : 자기 avatar 의 모든 정보를 가지고 있고, update 가 호출되면 현재 위치, 방향 등의 정보를 업데이트함
+ * 내부적으로 AudioAnalyser 를 가지고 연결된 peer 들에게 전송해야 되는 데이터를 output 함
+ */
+export class Me implements PlayerDto {
+  // PlayerDto
+  private _nickname: string; //외부에서 변경하는 것이 아니라, setter 를 통해서 변경. setter 에서는 nickname 이 변경되면 nicknameDiv 의 innerText 도 같이 변경함.
+  avatar: AvatarImageEnum;
+  avatarFace: AvatarPartImageEnum;
+  avatarFaceScale: number;
+  centerPos: Vec2;
+  rotateRadian: number;
+
+  //nickname overlay div
+  nicknameDiv: HTMLDivElement;
+
+  // update avatar position values
+  private lastUpdateTimeStamp: number;
+  private readonly velocity: number;
+  private normalizedDirectionVector: Vec2;
+  nextNormalizedDirectionVector: Vec2;
+  isMoving: boolean;
+
+  // AudioAnalyser
+  private readonly audioAnalyser: AudioAnalyser;
+  constructor(
+    nicknameDiv: HTMLDivElement,
+    audioAnalyser: AudioAnalyser,
+    centerPos: Vec2, // original centerPos
+    nickname = '익명의 곰', // 추후 .env 로 이동해야 될듯 (하드코딩 제거)
+    avatar = AvatarImageEnum.BROWN_BEAR,
+    velocity = 0.2,
+  ) {
+    // PlayerDto
+    this._nickname = nickname;
+    this.nickname = nickname;
+    this.avatar = avatar;
+    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatarFaceScale = 1;
+    this.centerPos = {...centerPos};
+    this.rotateRadian = 0;
+
+    //nickname overlay div
+    this.nicknameDiv = nicknameDiv;
+
+    // update avatar position values
+    this.lastUpdateTimeStamp = Date.now();
+    this.velocity = velocity;
+    this.normalizedDirectionVector = {x: 0, y: 1};
+    this.nextNormalizedDirectionVector = {x: 0, y: 1};
+    this.isMoving = false;
+
+    // AudioAnalyser
+    this.audioAnalyser = audioAnalyser;
+
+    // this.div = document.createElement('div') as HTMLDivElement;
+    // this.div.className = 'canvasOverlay';
+    // this.div.innerText = this.nickname;
+    // divContainer.appendChild(this.div);
+  }
+
+  set nickname(nickname: string) {
+    this._nickname = nickname;
+    this.nicknameDiv.innerText = nickname;
+  }
+
+  get nickname(): string {
+    return this._nickname;
+  }
+
+  getPlayerDto(): PlayerDto {
+    return {
+      nickname: this._nickname,
       avatar: this.avatar,
       avatarFace: this.avatarFace,
-      centerPos: this.centerPos,
+      avatarFaceScale: this.avatarFaceScale,
+      centerPos: {...this.centerPos},
       rotateRadian: this.rotateRadian,
-      volume: this.volume,
     };
-    return data;
   }
 
-  isCollision(glHelper: GLHelper): boolean {
+  private isCollision(glHelper: GLHelper): boolean {
     const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
     if (!glHelper.imageInfoProvider.pixelInfos) return false;
     for (let i = 0; i < vertex4.length; i++) {
@@ -120,7 +210,6 @@ export class Me implements IPlayer {
   update(glHelper: GLHelper): void {
     const millisDiff = Date.now() - this.lastUpdateTimeStamp;
     this.lastUpdateTimeStamp = Date.now();
-    this.div.innerText = this.nickname; // update nickname div innerText
 
     if (this.isMoving) {
       // saveOldValue
@@ -150,20 +239,6 @@ export class Me implements IPlayer {
         this.rotateRadian = oldRotateRadian;
       }
     }
-    // update mic volume
-    const array = new Uint8Array(this.analyser.frequencyBinCount);
-    this.analyser.getByteFrequencyData(array);
-    this.volume =
-      array.reduce((acc, cur) => {
-        return acc + cur;
-      }, 0) / array.length;
-
-    // update avatarFaceEnum by volume
-    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
-    if (this.volume > this.SpeakThrashHold)
-      this.avatarFace = AvatarPartImageEnum.FACE_SPEAK;
-    if (this.volume > this.SpeakMouseThrashHold)
-      this.avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
   }
 }
 
