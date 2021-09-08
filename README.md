@@ -11,13 +11,18 @@
 
 ---
 
-### 소개 동영상 및 사이트 링크
+### 소개 동영상
 
 [![YoutubeVideo](https://img.youtube.com/vi/Tdtk7nvgxqo/maxresdefault.jpg)](https://youtu.be/Tdtk7nvgxqo)
 
-### [**여기**](https://giggleforest.com)에서 바로 체험해보실 수 있습니다.
+---
+
+### 데모 사이트 링크
+- 주소 : https://giggleforest.com 
+- [**링크**](https://giggleforest.com)에서 바로 체험해보실 수 있습니다.
 
 ---
+
 
 ### 개발 및 배포 환경
 
@@ -108,7 +113,7 @@ npm run start
 
 ### 문서
 
-- 각종 Component, Class, Function 정보는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/) 서 확인 하실 수 있습니다.
+- 각종 Component, Class, Function 정보는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/)에서 확인 하실 수 있습니다.
 
 ---
 
@@ -125,7 +130,7 @@ npm run test
 npm run testCover
 ```
 
-- 현재 master 의 커버리지 레포트는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/lcov-report/) 서 보실 수 있습니다.
+- 현재 master 의 커버리지 레포트는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/lcov-report/)에서 보실 수 있습니다.
 
 ---
 
