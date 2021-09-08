@@ -3,21 +3,6 @@ import {AudioAnalyser} from '../RTCGameUtils';
 
 const mockedStream: any = [];
 
-beforeAll(() => {
-  //   window['RTCPeerConnection'] = () => {
-  //     return {
-  //       close: jest.fn(),
-  //       getTracks: jest.fn(),
-  //       addStream: jest.fn(),
-  //       createOffer: jest.fn(),
-  //       addIceCandidate: jest.fn(),
-  //       setRemoteDescription: jest.fn(),
-  //       createAnswer: jest.fn(),
-  //       setLocalDescription: jest.fn(),
-  //     };
-  //   };
-});
-
 describe('AudioAnalyser Test', () => {
   test('getAvatarFaceDtoByAudioAnalysis 호출시 정상적으로 AvatarFaceDto 가 리턴되어야 함', () => {
     const audioAnalyser = new AudioAnalyser(mockedStream, 2, 30, 50);
