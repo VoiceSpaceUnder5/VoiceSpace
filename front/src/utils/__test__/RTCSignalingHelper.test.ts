@@ -44,7 +44,7 @@ describe('RTCSignalingHelper Test', () => {
       expect(false).toBe(true);
       return;
     }
-    expect(rtcSignalingHelper.getClientID()).toBe('testID');
+    expect(rtcSignalingHelper.getSocketID()).toBe('testID');
   });
 
   test('close() 호출시 socket.close() 가 호출되어야 함', () => {

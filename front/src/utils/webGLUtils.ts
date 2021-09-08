@@ -146,12 +146,6 @@ export const isInRect = (
   return false;
 };
 
-// export interface ImageInfo {
-// 	centerPosPixelOffset: Vec2;
-// 	tex: WebGLTexture;
-// 	size: Size;
-// 	centerPos: Vec2;
-//   }
 export interface DrawInfo extends ImageInfo {
   scale: number;
   rotateRadian: number;
