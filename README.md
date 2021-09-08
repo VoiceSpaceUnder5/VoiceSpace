@@ -13,7 +13,7 @@
 
 ### 소개 동영상 및 사이트 링크
 
-[![YoutubeVideo](https://img.youtube.com/vi/ZcalOaRKCv8/maxresdefault.jpg)](https://www.youtube.com/embed/ZcalOaRKCv8)
+[![YoutubeVideo](https://img.youtube.com/vi/Tdtk7nvgxqo/maxresdefault.jpg)](https://youtu.be/Tdtk7nvgxqo)
 
 ### [**여기**](https://giggleforest.com)에서 바로 체험해보실 수 있습니다.
 
