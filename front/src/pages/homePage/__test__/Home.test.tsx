@@ -1,4 +1,4 @@
-import React from 'react'; //test
+import React from 'react';
 import {render} from '@testing-library/react';
 import Home from '../Home';
 
