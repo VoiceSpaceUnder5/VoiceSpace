@@ -106,13 +106,13 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       peerManager.me.update(gLHelper);
 
       gLHelper.drawObjectsBeforeAvatar();
-      const data = JSON.stringify(peerManager.me.getIPlayer());
-      peerManager.peers.forEach(peer => {
-        if (peer.dc.readyState === 'open') peer.dc.send(data);
-        gLHelper.drawAvatar(peer, peer.div);
+      const data = JSON.stringify(peerManager.me.getPlayerDto());
+      peerManager.forEachPeer(peer => {
+        peer.transmitUsingDataChannel(data);
+        gLHelper.drawAvatar(peer, peer.nicknameDiv);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });
-      gLHelper.drawAvatar(peerManager.me, peerManager.me.div);
+      gLHelper.drawAvatar(peerManager.me, peerManager.me.nicknameDiv);
       gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
       requestAnimationFrame(requestAnimation);
     };
@@ -128,7 +128,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
           setNextNormalizedDirectionVector={setNextNormalizedDirectionVector}
           setCameraScaleByPinch={setCameraScaleByPinch}
           getCameraScale={getCameraScale}
-          divContainer={props.peerManager.divContainer}
+          divContainer={props.peerManager.nicknameContainer}
         />
       ) : null}
       {!isLoading(loadStatus) ? (
