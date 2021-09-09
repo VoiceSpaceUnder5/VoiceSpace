@@ -135,7 +135,7 @@ npm run test
 npm run testCover
 ```
 
-- 현재 master 의 커버리지 레포트는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/lcov-report/)에서 보실 수 있습니다.
+- 현재 master 의 커버리지 레포트는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/coverage/)에서 보실 수 있습니다.
 
 ---
 
