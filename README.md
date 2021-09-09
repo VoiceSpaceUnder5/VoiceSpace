@@ -19,7 +19,7 @@
 
 ### 데모 사이트 링크
 - 주소 : https://giggleforest.com 
-- [**링크**](https://giggleforest.com)에서 바로 체험해보실 수 있습니다.
+- [**여기**](https://giggleforest.com)에서 바로 체험해보실 수 있습니다.
 
 ---
 
@@ -49,6 +49,10 @@
 ### 시스템 구성도
 
 #### 전체적인 시스템 구성
+- WebRTC를 이용한 Peer-to-peer 연결이 가장 중요한 부분 입니다.
+- 이 p2p 연결을 통해 audio stream 을 주고 받으며, avatar 관련 데이터 또한 지속적으로 서로에게 전송합니다.
+- 따라서 처음 유저가 접속하게되면 back signaling server 를 이용하여 p2p 연결 수립 부터 하게 됩니다.
+- 이후 연결이 완료되면 전송된 audio stream 을 지속적으로 실행하고, 전송된 avatar 정보를 통해 webGL 기술로 매 프레임 Animation 을 그려 냅니다.
 
 ![image](https://user-images.githubusercontent.com/74593890/131950983-cf735bf4-3a74-4074-bf3d-1bf79e3fc6cd.png)
 
