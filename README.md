@@ -57,7 +57,8 @@
 ![image](https://user-images.githubusercontent.com/74593890/131950983-cf735bf4-3a74-4074-bf3d-1bf79e3fc6cd.png)
 
 #### 다수의 Peer 연결 방식
-
+- 현재는 누구나 자신의 서버에서 서비스 할 수 있는 프로젝트를 지향하기 때문에 back server 의 역할을 최소화 하고자 Full Mesh 형태로 다수의 p2p 연결을 수립하게 하였습니다.
+- 이후 본격적으로 서비스 하게 된다면, SFU방식으로 다수의 연결방식을 변경할 계획입니다.
 ![Advantages and disadvantages of mesh topology - IT Release](https://www.itrelease.com/wp-content/uploads/2021/06/Full-Mesh-Topology-1024x640.jpg)
 
 ---
