@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; //docs 배포 테스트
 import {render} from '@testing-library/react';
 import Home from '../Home';
 
