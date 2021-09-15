@@ -90,6 +90,9 @@ function Navigation(props: NavigationProps): JSX.Element {
     return result;
   };
 
+  const changeEachAudio: (deviceId: string) => void = (deviceId: string) => {
+    props.peerManager.changeEachAudio(deviceId);
+  };
   return (
     <nav className="navbar">
       <div className="navbar_left">

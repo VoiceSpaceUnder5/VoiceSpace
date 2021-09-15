@@ -7,6 +7,10 @@ interface OptionDropDownProps {
   onClickSetting: () => void;
 }
 
+interface OptionsProps {
+  ChangeEachAudio: (deviceId: string) => void;
+}
+
 // interface SettingDropDownProps {
 //   onClickPrevious: () => void;
 // }
@@ -29,7 +33,7 @@ function OptionDropDown(props: OptionDropDownProps) {
   );
 }
 
-function Options(): JSX.Element {
+function Options(props: OptionsProps): JSX.Element {
   const [depth, setDepth] = useState(0);
   const [visible, setVisible] = useState(false);
   const onClickSetting = () => {
@@ -54,7 +58,10 @@ function Options(): JSX.Element {
       overlay={
         depth === 0
           ? OptionDropDown({onClickSetting: onClickSetting})
-          : SettingDropDown({onClickConfirm: onClickConfirm})
+          : SettingDropDown({
+              onClickConfirm: onClickConfirm,
+              ChangeEachAudio: props.ChangeEachAudio,
+            })
       }
       trigger={['click']}
     >

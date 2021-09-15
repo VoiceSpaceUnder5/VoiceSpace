@@ -501,6 +501,12 @@ export default class PeerManager {
     this.signalingHelper.joinRoom(roomID);
   }
 
+  changeEachAudio(deviceId: string): void {
+    this.forEachPeer((peer: Peer) => {
+      const audio = peer.audio as any;
+      audio.setSinkId(deviceId);
+    });
+  }
   forEachPeer(callback: (peer: Peer) => void): void {
     this.peers.forEach(peer => callback(peer));
   }
