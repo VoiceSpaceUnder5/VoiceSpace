@@ -48,6 +48,21 @@ function Navigation(props: NavigationProps): JSX.Element {
   const getMyNickname = (): string => {
     return props.peerManager.me.nickname;
   };
+  const addTrack = (stream: MediaStream) => {
+    props.peerManager.forEachPeer(peer => {
+      stream.getTracks().forEach(track => {
+        peer.addTrack(track);
+      });
+      props.peerManager.peerOffer(peer);
+    });
+  };
+
+  const setTrackEventHandler = (
+    trackEventHandler: (event: RTCTrackEvent) => void,
+  ) => {
+    console.log('trackEvent set');
+    props.peerManager.trackEventHandler = trackEventHandler;
+  };
   const getUsers = (): UserInfo[] => {
     const result: UserInfo[] = [
       {
@@ -88,7 +103,10 @@ function Navigation(props: NavigationProps): JSX.Element {
       </div>
       <div className="navbar_center">
         <MicOnOff setIsMicOn={setIsMicOn} />
-        <ScreenShare />
+        <ScreenShare
+          addTrack={addTrack}
+          setTrackEventHandler={setTrackEventHandler}
+        />
         <Options />
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
