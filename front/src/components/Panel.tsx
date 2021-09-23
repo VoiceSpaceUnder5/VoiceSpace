@@ -5,7 +5,7 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../pages/spacePage/space.css';
 import {Peer} from '../utils/RTCGameUtils';
 import {UserInfo, UserList} from './UserList';
-import {Message} from './Message';
+import {Messenger} from './Messenger';
 
 export interface PanelProps {
   getUsers: () => UserInfo[];
@@ -81,7 +81,7 @@ function Panel(props: PanelProps): JSX.Element {
               onClickPrevious: onClickPrevious,
               onChangeVolume: onChangeVolume,
             })
-          : Message({...props, onClickPrevious: onClickPrevious})
+          : Messenger({...props, onClickPrevious: onClickPrevious})
       }
       trigger={['click']}
     >

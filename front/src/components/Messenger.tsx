@@ -2,11 +2,11 @@ import React from 'react';
 import {Menu} from 'antd';
 import {LeftCircleFilled} from '@ant-design/icons';
 
-export interface MessageProps {
+export interface MessengerProps {
   onClickPrevious: () => void;
 }
 
-export function Message(props: MessageProps): JSX.Element {
+export function Messenger(props: MessengerProps): JSX.Element {
   return (
     <Menu className="message_drop_down">
       <Menu.Item key="0">

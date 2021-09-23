@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -16,10 +20,18 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "exclude": ["src/setupTests.ts"],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/setupTests.ts"
+  ],
   "typedocOptions": {
     "out": "VoiceSpace 프론트앤드",
-    "entryPoints": ["./src/components", "./src/pages", "./src/utils"]
+    "entryPoints": [
+      "./src/components",
+      "./src/pages",
+      "./src/utils"
+    ]
   }
 }
