@@ -273,6 +273,8 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
   //onMessageCallback
   onMessageCallback: (message: Message) => void;
+  //trackEventHandler
+  private trackEventHandler: (event: RTCTrackEvent) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
     connectedClientSocketID: string,
@@ -282,6 +284,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
     onMessageCallback: (message: Message) => void,
+    trackEventHandler: (event: RTCTrackEvent) => void,
     maxSoundDistance = 500,
   ) {
     super(pcConfig);
@@ -312,10 +315,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
     //onMessageCallback
     this.onMessageCallback = onMessageCallback;
+    //trackEventHandler
+    this.trackEventHandler = trackEventHandler;
 
     // connect localStream
     localStream.getTracks().forEach(track => {
-      this.addTrack(track, localStream);
+      this.addTrack(track);
     });
 
     // event setting
@@ -365,7 +370,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
-      this.audio.srcObject = event.streams[0];
+      if (event.track.kind === 'audio') {
+        const stream = new MediaStream();
+        stream.addTrack(event.track);
+        this.audio.srcObject = stream;
+      }
+      this.trackEventHandler(event);
     });
 
     this.addEventListener('connectionstatechange', () => {
@@ -436,6 +446,8 @@ export default class PeerManager {
 
   // DataChannel onMessage callback
   onMessageCallback: (message: Message) => void;
+  // trackEventHadler
+  trackEventHandler: (event: RTCTrackEvent) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -470,6 +482,10 @@ export default class PeerManager {
 
     // onMessageCallback
     this.onMessageCallback = () => {
+      return;
+    }
+    // trackEventHandler
+    this.trackEventHandler = () => {
       return;
     };
 
@@ -510,10 +526,32 @@ export default class PeerManager {
       this.connectionClosedDisconnectedFailedCallBack,
       this.pcConfig,
       this.onMessageCallback,
+      this.trackEventHandler,
       500,
     );
     this.peers.set(connectedClientSocketID, peer);
     return peer;
+  }
+
+  peerOffer(peer: Peer): void {
+    peer
+      .createOffer()
+      .then(sdp => {
+        peer.setLocalDescription(sdp);
+        const offerDto: OfferAnswerDto = {
+          toClientId: peer.connectedClientSocketID,
+          fromClientId: peer.socketID,
+          sdp: sdp,
+        };
+        this.signalingHelper.emitOffer(offerDto);
+      })
+      .catch(error => {
+        console.error(
+          `Peer SocketId: ${
+            peer.connectedClientSocketID
+          } createAnswer fail=> ${error.toString()}`,
+        );
+      });
   }
 
   setSignalingEvent(): void {
@@ -550,24 +588,7 @@ export default class PeerManager {
       toSocketIDs.forEach(connectedSocketId => {
         if (connectedSocketId !== this.signalingHelper.getSocketID()) {
           const newPeer = this.createNewPeerAndAddPeers(connectedSocketId);
-          newPeer
-            .createOffer()
-            .then(sdp => {
-              newPeer.setLocalDescription(sdp);
-              const offerDto: OfferAnswerDto = {
-                toClientId: newPeer.connectedClientSocketID,
-                fromClientId: newPeer.socketID,
-                sdp: sdp,
-              };
-              this.signalingHelper.emitOffer(offerDto);
-            })
-            .catch(error => {
-              console.error(
-                `Peer SocketId: ${
-                  newPeer.connectedClientSocketID
-                } createAnswer fail=> ${error.toString()}`,
-              );
-            });
+          this.peerOffer(newPeer);
         }
       });
     };
