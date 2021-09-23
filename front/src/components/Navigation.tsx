@@ -34,6 +34,11 @@ function Navigation(props: NavigationProps): JSX.Element {
   const onCopy = () => {
     message.info('클립보드에 복사 되었습니다!');
   };
+  const sendMessage = (message: string) => {
+    props.peerManager.peers.forEach(peer => {
+      peer.transmitUsingDataChannel(message);
+    });
+  };
 
   const getUsers = (): UserInfo[] => {
     const result: UserInfo[] = [
@@ -87,6 +92,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           roomId={props.peerManager.roomID}
           peers={props.peerManager.peers}
           onCopy={onCopy}
+          sendMessage={sendMessage}
         />
       </div>
     </nav>

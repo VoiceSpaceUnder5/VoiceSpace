@@ -12,6 +12,7 @@ export interface PanelProps {
   roomId: string;
   peers: Map<string, Peer>;
   onCopy: () => void;
+  sendMessage: (message: string) => void;
 }
 
 interface MenuItemProps {
@@ -49,6 +50,7 @@ function Panel(props: PanelProps): JSX.Element {
   const [subMenu, setSubMenu] = useState(0);
   const [visible, setVisible] = useState(false);
   const [volume, setVolume] = useState(0);
+  const [message, setMessage] = useState('');
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -68,6 +70,15 @@ function Panel(props: PanelProps): JSX.Element {
     volume;
     setVolume(changedVolume);
   };
+  const onMessageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+  const onSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    const messageData = JSON.stringify({type: 'message', data: message});
+    props.sendMessage(messageData);
+    setMessage('');
+  };
   return (
     <Dropdown
       visible={visible}
@@ -81,7 +92,12 @@ function Panel(props: PanelProps): JSX.Element {
               onClickPrevious: onClickPrevious,
               onChangeVolume: onChangeVolume,
             })
-          : Messenger({...props, onClickPrevious: onClickPrevious})
+          : Messenger({
+              onClickPrevious: onClickPrevious,
+              message: message,
+              onMessageInput: onMessageInput,
+              onSendMessage: onSendMessage,
+            })
       }
       trigger={['click']}
     >

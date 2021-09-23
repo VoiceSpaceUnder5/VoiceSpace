@@ -323,8 +323,17 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.ondatachannel = event => {
       const receviedDC = event.channel;
       receviedDC.onmessage = event => {
-        const data = JSON.parse(event.data) as PlayerDto;
-        this.update(data);
+        // 1. Dto에 타입까지 넣어줘서 조건분기
+        const data = JSON.parse(event.data);
+        if (data.type === 'playerDto') {
+          delete data.type;
+          this.update(data);
+        } else if (data.type === 'message') {
+          console.log(data);
+        }
+        // 2. 뭔가 콜백함수 호출하게?
+        // const data = JSON.parse(event.data) as PlayerDto;
+        // this.update(data);
       };
       receviedDC.onopen = () => {
         console.log(`dataChannel created with ${this.connectedClientSocketID}`);
