@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../pages/spacePage/space.css';
-import {Peer} from '../utils/RTCGameUtils';
 import {UserInfo, UserList} from './UserList';
-import {Messenger} from './Messenger';
+import {Message, Messenger} from './Messenger';
 
 export interface PanelProps {
+  getMyNickname: () => string;
   getUsers: () => UserInfo[];
   roomId: string;
-  peers: Map<string, Peer>;
   onCopy: () => void;
   sendMessage: (message: string) => void;
+  setOnMessageCallback: (arg0: (message: Message) => void) => void;
 }
 
 interface MenuItemProps {
@@ -51,6 +51,7 @@ function Panel(props: PanelProps): JSX.Element {
   const [visible, setVisible] = useState(false);
   const [volume, setVolume] = useState(0);
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -75,10 +76,30 @@ function Panel(props: PanelProps): JSX.Element {
   };
   const onSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    const messageData = JSON.stringify({type: 'message', data: message});
-    props.sendMessage(messageData);
+    const messageData: Message = {
+      type: 'message',
+      nickname: props.getMyNickname(),
+      data: message,
+    };
+    props.sendMessage(JSON.stringify(messageData));
     setMessage('');
+    if (messages === undefined) {
+      setMessages([`나: ${message}`]);
+    } else {
+      setMessages(messages.concat(`나: ${message}`));
+    }
   };
+  const onMessageCallback = (message: Message): void => {
+    const newMessage = `${message.nickname}: ${message.data}`;
+    setMessages(before => {
+      return [...before, newMessage];
+    });
+  };
+
+  useEffect(() => {
+    props.setOnMessageCallback(onMessageCallback);
+  }, []);
+
   return (
     <Dropdown
       visible={visible}
@@ -93,6 +114,7 @@ function Panel(props: PanelProps): JSX.Element {
               onChangeVolume: onChangeVolume,
             })
           : Messenger({
+              messages: messages,
               onClickPrevious: onClickPrevious,
               message: message,
               onMessageInput: onMessageInput,

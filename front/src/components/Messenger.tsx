@@ -2,7 +2,14 @@ import React, {FormEvent} from 'react';
 import {Menu} from 'antd';
 import {LeftCircleFilled} from '@ant-design/icons';
 
+export interface Message {
+  type: string;
+  nickname: string;
+  data: string;
+}
+
 export interface MessengerProps {
+  messages: string[] | undefined;
   onClickPrevious: () => void;
   message: string;
   onMessageInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -22,6 +29,13 @@ export function Messenger(props: MessengerProps): JSX.Element {
       </Menu.Item>
       <Menu.Divider></Menu.Divider>
       <Menu.Item key="1">
+        <>
+          {props.messages?.map((message, index) => {
+            return <div key={index}>{message}</div>;
+          })}
+        </>
+      </Menu.Item>
+      <Menu.Item key="2">
         <form onSubmit={props.onSendMessage}>
           <input
             type="text"
