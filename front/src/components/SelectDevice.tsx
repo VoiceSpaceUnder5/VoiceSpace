@@ -12,10 +12,18 @@ interface SelectDeviceOptionProps {
   audio: HTMLAudioElement | null;
   deviceInfos: MediaDeviceInfo[] | null;
   ChangeEachAudio: (deviceId: string) => void;
+  setSelectOutputDevice: React.Dispatch<React.SetStateAction<string>>;
+  seletedOutputDevice: string;
+  setSelectInputDevice: React.Dispatch<React.SetStateAction<string>>;
+  seletedInputDevice: string;
 }
 
 interface SelectDeviceProps {
   ChangeEachAudio: (deviceId: string) => void;
+  setSelectOutputDevice: React.Dispatch<React.SetStateAction<string>>;
+  seletedOutputDevice: string;
+  setSelectInputDevice: React.Dispatch<React.SetStateAction<string>>;
+  seletedInputDevice: string;
 }
 
 // audioElement에 소리를
@@ -24,8 +32,8 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
     const selectedOption = event.target as HTMLOptionElement;
     const deviceId = selectedOption.value;
     const audio = props.audio as any;
+    props.setSelectOutputDevice(deviceId);
     if (audio) {
-      console.log('audio에 뭔가가 들어있다!!!');
       audio.setSinkId(deviceId);
       props.ChangeEachAudio(deviceId);
     }
@@ -33,6 +41,7 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
   const onChangeInput: React.ReactEventHandler<HTMLSelectElement> = event => {
     const selectedOption = event.target as HTMLOptionElement;
     const deviceId = selectedOption.value;
+    props.setSelectInputDevice(deviceId);
     navigator.mediaDevices
       .getUserMedia({video: false, audio: {deviceId: deviceId}})
       .then(stream => {
@@ -54,9 +63,22 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
         <select className="speaker_select" onChange={onChangeOutput}>
           {props.deviceInfos.map(deviceInfo => {
             if (deviceInfo.kind === 'audiooutput') {
-              return (
-                <option value={deviceInfo.deviceId}>{deviceInfo.label}</option>
-              );
+              // 선택한 deviceInfo이면 selected
+              if (props.seletedOutputDevice === deviceInfo.deviceId) {
+                console.log(`selected!! ${props.seletedOutputDevice}`);
+                return (
+                  <option value={deviceInfo.deviceId} selected>
+                    {deviceInfo.label}
+                  </option>
+                );
+              } else {
+                console.log(`not selected!! ${props.seletedOutputDevice}`);
+                return (
+                  <option value={deviceInfo.deviceId}>
+                    {deviceInfo.label}
+                  </option>
+                );
+              }
             } else {
               return;
             }
@@ -72,9 +94,20 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
         <select className="mic_select" onChange={onChangeInput}>
           {props.deviceInfos.map(deviceInfo => {
             if (deviceInfo.kind === 'audioinput') {
-              return (
-                <option value={deviceInfo.deviceId}>{deviceInfo.label}</option>
-              );
+              // 선택한 deviceInfo이면 selected
+              if (props.seletedInputDevice === deviceInfo.deviceId) {
+                return (
+                  <option value={deviceInfo.deviceId} selected>
+                    {deviceInfo.label}
+                  </option>
+                );
+              } else {
+                return (
+                  <option value={deviceInfo.deviceId}>
+                    {deviceInfo.label}
+                  </option>
+                );
+              }
             } else {
               return;
             }
@@ -113,6 +146,10 @@ export default function SelectDevice(props: SelectDeviceProps): JSX.Element {
           audio={audioRef.current}
           deviceInfos={deviceList}
           ChangeEachAudio={props.ChangeEachAudio}
+          setSelectOutputDevice={props.setSelectOutputDevice}
+          seletedOutputDevice={props.seletedOutputDevice}
+          setSelectInputDevice={props.setSelectInputDevice}
+          seletedInputDevice={props.seletedInputDevice}
         ></SelectOption>
       ) : (
         <div>loading...</div>

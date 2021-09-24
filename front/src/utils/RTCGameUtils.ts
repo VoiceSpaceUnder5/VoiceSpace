@@ -505,6 +505,7 @@ export default class PeerManager {
     this.forEachPeer((peer: Peer) => {
       const audio = peer.audio as any;
       audio.setSinkId(deviceId);
+      console.log(peer);
     });
   }
   forEachPeer(callback: (peer: Peer) => void): void {
