@@ -6,6 +6,10 @@ import SelectDevice from './SelectDevice';
 export interface SettingProps {
   onClickConfirm: () => void;
   ChangeEachAudio: (deviceId: string) => void;
+  setSelectOutputDevice: React.Dispatch<React.SetStateAction<string>>;
+  seletedOutputDevice: string;
+  setSelectInputDevice: React.Dispatch<React.SetStateAction<string>>;
+  seletedInputDevice: string;
 }
 // 옵션에다가 기계를 넣어줘야합니다.
 function SettingDropDown(props: SettingProps): JSX.Element {
@@ -18,7 +22,13 @@ function SettingDropDown(props: SettingProps): JSX.Element {
       <Menu.Item className="setting_menu_item_content" key="1">
         <div>
           <div className="audio_title">오디오 설정</div>
-          <SelectDevice ChangeEachAudio={props.ChangeEachAudio}></SelectDevice>
+          <SelectDevice
+            ChangeEachAudio={props.ChangeEachAudio}
+            setSelectOutputDevice={props.setSelectOutputDevice}
+            seletedOutputDevice={props.seletedOutputDevice}
+            setSelectInputDevice={props.setSelectInputDevice}
+            seletedInputDevice={props.seletedInputDevice}
+          ></SelectDevice>
         </div>
         <div className="profile_button">
           <button onClick={props.onClickConfirm}>변경</button>

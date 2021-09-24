@@ -36,6 +36,8 @@ function OptionDropDown(props: OptionDropDownProps) {
 function Options(props: OptionsProps): JSX.Element {
   const [depth, setDepth] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [seletedOutputDevice, setSelectOutputDevice] = useState('');
+  const [seletedInputDevice, setSelectInputDevice] = useState('');
   const onClickSetting = () => {
     setVisible(true);
     setDepth(1);
@@ -61,6 +63,10 @@ function Options(props: OptionsProps): JSX.Element {
           : SettingDropDown({
               onClickConfirm: onClickConfirm,
               ChangeEachAudio: props.ChangeEachAudio,
+              setSelectOutputDevice: setSelectOutputDevice,
+              seletedOutputDevice: seletedOutputDevice,
+              setSelectInputDevice: setSelectInputDevice,
+              seletedInputDevice: seletedInputDevice,
             })
       }
       trigger={['click']}
