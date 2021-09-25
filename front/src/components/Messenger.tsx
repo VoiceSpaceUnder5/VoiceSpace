@@ -9,7 +9,7 @@ export interface Message {
 }
 
 export interface MessengerProps {
-  messages: string[] | undefined;
+  messageArray: string[] | undefined;
   onClickPrevious: () => void;
   message: string;
   onMessageInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -30,7 +30,7 @@ export function Messenger(props: MessengerProps): JSX.Element {
       <Menu.Divider></Menu.Divider>
       <Menu.Item key="1">
         <>
-          {props.messages?.map((message, index) => {
+          {props.messageArray?.map((message, index) => {
             return <div key={index}>{message}</div>;
           })}
         </>
@@ -40,6 +40,7 @@ export function Messenger(props: MessengerProps): JSX.Element {
           <input
             type="text"
             placeholder="메시지를 입력하세요"
+            required
             onChange={props.onMessageInput}
             value={props.message}
           />

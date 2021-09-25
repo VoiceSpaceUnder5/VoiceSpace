@@ -51,7 +51,7 @@ function Panel(props: PanelProps): JSX.Element {
   const [visible, setVisible] = useState(false);
   const [volume, setVolume] = useState(0);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messageArray, setMessageArray] = useState<string[]>([]);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -83,15 +83,15 @@ function Panel(props: PanelProps): JSX.Element {
     };
     props.sendMessage(JSON.stringify(messageData));
     setMessage('');
-    if (messages === undefined) {
-      setMessages([`나: ${message}`]);
+    if (messageArray === undefined) {
+      setMessageArray([`나: ${message}`]);
     } else {
-      setMessages(messages.concat(`나: ${message}`));
+      setMessageArray(messageArray.concat(`나: ${message}`));
     }
   };
   const onMessageCallback = (message: Message): void => {
     const newMessage = `${message.nickname}: ${message.data}`;
-    setMessages(before => {
+    setMessageArray(before => {
       return [...before, newMessage];
     });
   };
@@ -114,7 +114,7 @@ function Panel(props: PanelProps): JSX.Element {
               onChangeVolume: onChangeVolume,
             })
           : Messenger({
-              messages: messages,
+              messageArray: messageArray,
               onClickPrevious: onClickPrevious,
               message: message,
               onMessageInput: onMessageInput,
