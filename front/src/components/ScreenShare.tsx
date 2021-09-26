@@ -59,7 +59,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const [streams, setStreams] = useState<MediaStream[]>([]);
   const screenShareOnClick = async () => {
     // eslint-disable-next-line
-    const stream = await (navigator.mediaDevices as any).getDisplayMedia();
+    const stream = await (navigator.mediaDevices as any).getDisplayMedia(); // 핸드폰일 경우 사용 불가.
     props.addTrack(stream);
     setStreams([stream, ...streams]);
   };
@@ -67,6 +67,12 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const trackEventHandler = (event: RTCTrackEvent) => {
     if (event.track.kind === 'video') {
       const stream = new MediaStream();
+      stream.onremovetrack = () => {
+        console.error('nope! track removed!!');
+      };
+      event.track.onended = () => {
+        console.error('nope! track ended!!');
+      };
       stream.addTrack(event.track);
       setStreams(before => {
         return [stream, ...before];

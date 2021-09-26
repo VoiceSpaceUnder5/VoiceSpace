@@ -331,6 +331,11 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     signalingHelper: RTCSignalingHelper,
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
   ): void {
+    // negotitateneeded
+    this.onnegotiationneeded = () => {
+      console.log('onnegotiationneede!!');
+    };
+
     // fire when peer connection is established
     this.ondatachannel = event => {
       const receviedDC = event.channel;

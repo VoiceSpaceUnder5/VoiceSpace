@@ -56,7 +56,6 @@ function Navigation(props: NavigationProps): JSX.Element {
       props.peerManager.peerOffer(peer);
     });
   };
-
   const setTrackEventHandler = (
     trackEventHandler: (event: RTCTrackEvent) => void,
   ) => {
