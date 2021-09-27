@@ -10,6 +10,7 @@ interface ScreenViewerProps {
 }
 
 interface ScreenShareData {
+  peerId: string;
   stream: MediaStream;
   trackKind: TrackKind;
 }
@@ -57,7 +58,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 interface ScreenShareProps {
   addTrack: (stream: MediaStream, trackKind: TrackKind) => void;
   setTrackEventHandler: (
-    trackEventHandler: (event: RTCTrackEvent) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
   ) => void;
   removeTrack: (trackKind: TrackKind) => void;
 }
@@ -71,7 +72,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     const stream = await (navigator.mediaDevices as any).getDisplayMedia(); // 핸드폰일 경우 사용 불가.
     props.addTrack(stream, TrackKind.LOCAL_VIDEO);
     setScreenShareDatas([
-      {stream: stream, trackKind: TrackKind.LOCAL_VIDEO},
+      {peerId: '', stream: stream, trackKind: TrackKind.LOCAL_VIDEO},
       ...screenShareDatas,
     ]);
   };
@@ -85,18 +86,27 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     });
   };
 
-  const trackEventHandler = (event: RTCTrackEvent) => {
-    if (event.track.kind === 'video') {
-      const stream = new MediaStream();
-      stream.onremovetrack = () => {
-        console.error('nope! track removed!!');
-      };
-      event.track.onended = () => {
-        console.error('nope! track ended!!');
-      };
-      stream.addTrack(event.track);
+  const trackEventHandler = (peerId: string, event: RTCTrackEvent | null) => {
+    if (event) {
+      if (event.track.kind === 'video') {
+        const stream = new MediaStream();
+        stream.addTrack(event.track);
+        setScreenShareDatas(before => {
+          return [
+            {
+              peerId: peerId,
+              stream: stream,
+              trackKind: TrackKind.REMOTE_VIDEO,
+            },
+            ...before,
+          ];
+        });
+      }
+    } else {
       setScreenShareDatas(before => {
-        return [{stream: stream, trackKind: TrackKind.REMOTE_VIDEO}, ...before];
+        return before.filter(data => {
+          return data.peerId !== peerId;
+        });
       });
     }
   };
