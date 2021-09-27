@@ -50,6 +50,9 @@ function Navigation(props: NavigationProps): JSX.Element {
   };
 
   const addVideoTrack = (stream: MediaStream): void => {
+    stream.getTracks().forEach(track => {
+      props.peerManager.screenVideoTracks.push(track);
+    });
     props.peerManager.forEachPeer(peer => {
       stream.getTracks().forEach(track => {
         peer.addTrack(track);
@@ -59,6 +62,10 @@ function Navigation(props: NavigationProps): JSX.Element {
   };
 
   const removeVideoTrack = (): void => {
+    props.peerManager.screenVideoTracks =
+      props.peerManager.screenVideoTracks.filter(track => {
+        return track.kind !== 'video';
+      });
     props.peerManager.forEachPeer(peer => {
       peer.getSenders().forEach(sender => {
         if (sender.track?.kind === 'video') peer.removeTrack(sender);

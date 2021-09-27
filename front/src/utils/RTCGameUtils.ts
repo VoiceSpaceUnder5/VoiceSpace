@@ -279,10 +279,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   onMessageCallback: (message: Message) => void;
 
   //trackEventHandler (ontrack 으로 새로운 트랙이 들어왔을 때)
-  private trackEventHandler: (
-    peerId: string,
-    event: RTCTrackEvent | null,
-  ) => void;
+  trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
 
   //dataChannel 을 통해 videoTrack 이 off 될 때
 
@@ -330,7 +327,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     //trackEventHandler
     this.trackEventHandler = trackEventHandler;
 
-    // connect localStream
+    //    connect localStream
     localStream.getTracks().forEach(track => {
       this.addTrack(track);
     });
@@ -389,7 +386,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
-      console.log(this.getReceivers());
       if (event.track.kind === 'audio') {
         const stream = new MediaStream();
         stream.addTrack(event.track);
@@ -470,6 +466,9 @@ export default class PeerManager {
 
   // trackEventHadler
   trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
+
+  // screenVideoTracks
+  screenVideoTracks: MediaStreamTrack[];
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -509,10 +508,14 @@ export default class PeerManager {
     this.onMessageCallback = () => {
       return;
     };
+
     // trackEventHandler
     this.trackEventHandler = () => {
       return;
     };
+
+    // screenVideoTracks
+    this.screenVideoTracks = [];
 
     // setEvent
     this.setSignalingEvent();
@@ -562,6 +565,20 @@ export default class PeerManager {
       this.trackEventHandler,
       500,
     );
+    if (this.screenVideoTracks.length > 0) {
+      peer.addEventListener('connectionstatechange', () => {
+        if (peer.connectionState === 'connected') {
+          this.screenVideoTracks.forEach(track => {
+            try {
+              peer.addTrack(track);
+              this.peerOffer(peer);
+            } catch (error) {
+              console.error('screenVideoTracks error!');
+            }
+          });
+        }
+      });
+    }
     this.peers.set(connectedClientSocketID, peer);
     return peer;
   }
@@ -648,6 +665,9 @@ export default class PeerManager {
   close(): void {
     console.log('peerManager close called');
     this.peers.forEach(peer => {
+      peer.transmitUsingDataChannel(
+        JSON.stringify({type: 'closeVideo', data: ''}),
+      );
       peer.close();
     });
     this.signalingHelper.close();
