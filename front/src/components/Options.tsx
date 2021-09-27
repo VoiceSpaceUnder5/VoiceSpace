@@ -8,7 +8,8 @@ interface OptionDropDownProps {
 }
 
 interface OptionsProps {
-  ChangeEachAudio: (deviceId: string) => void;
+  changeEachAudio: (deviceId: string) => void;
+  changeInputStream: (stream: MediaStream) => void;
 }
 
 // interface SettingDropDownProps {
@@ -62,7 +63,8 @@ function Options(props: OptionsProps): JSX.Element {
           ? OptionDropDown({onClickSetting: onClickSetting})
           : SettingDropDown({
               onClickConfirm: onClickConfirm,
-              ChangeEachAudio: props.ChangeEachAudio,
+              changeEachAudio: props.changeEachAudio,
+              changeInputStream: props.changeInputStream,
               setSelectOutputDevice: setSelectOutputDevice,
               seletedOutputDevice: seletedOutputDevice,
               setSelectInputDevice: setSelectInputDevice,

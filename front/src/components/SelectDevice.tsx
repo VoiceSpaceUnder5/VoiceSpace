@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 // import {} from '../utils/RTCGameUtils';
 
 // HTMLMediaElement.setSinkId(sinkId).then(function() { ... })
@@ -9,9 +9,9 @@ import React, {useState, useEffect, useRef} from 'react';
 // 2번에서 리스트를 받아서 -> select 컴포넌트를 렌더링 하고, 그리고 셀렉트안에있는 옵션을 선택을 하면 해당 디바이스로 setSinkId 를 호출한다.
 
 interface SelectDeviceOptionProps {
-  audio: HTMLAudioElement | null;
   deviceInfos: MediaDeviceInfo[] | null;
-  ChangeEachAudio: (deviceId: string) => void;
+  changeEachAudio: (deviceId: string) => void;
+  changeInputStream: (stream: MediaStream) => void;
   setSelectOutputDevice: React.Dispatch<React.SetStateAction<string>>;
   seletedOutputDevice: string;
   setSelectInputDevice: React.Dispatch<React.SetStateAction<string>>;
@@ -19,7 +19,8 @@ interface SelectDeviceOptionProps {
 }
 
 interface SelectDeviceProps {
-  ChangeEachAudio: (deviceId: string) => void;
+  changeEachAudio: (deviceId: string) => void;
+  changeInputStream: (stream: MediaStream) => void;
   setSelectOutputDevice: React.Dispatch<React.SetStateAction<string>>;
   seletedOutputDevice: string;
   setSelectInputDevice: React.Dispatch<React.SetStateAction<string>>;
@@ -31,12 +32,9 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
   const onChangeOutput: React.ReactEventHandler<HTMLSelectElement> = event => {
     const selectedOption = event.target as HTMLOptionElement;
     const deviceId = selectedOption.value;
-    const audio = props.audio as any;
+    // eslint-disable-next-line
     props.setSelectOutputDevice(deviceId);
-    if (audio) {
-      audio.setSinkId(deviceId);
-      props.ChangeEachAudio(deviceId);
-    }
+    props.changeEachAudio(deviceId);
   };
   const onChangeInput: React.ReactEventHandler<HTMLSelectElement> = event => {
     const selectedOption = event.target as HTMLOptionElement;
@@ -45,11 +43,7 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
     navigator.mediaDevices
       .getUserMedia({video: false, audio: {deviceId: deviceId}})
       .then(stream => {
-        if (props) {
-          if (props.audio) {
-            props.audio.srcObject = stream;
-          }
-        }
+        props.changeInputStream(stream);
       });
   };
   if (!props.deviceInfos) {
@@ -121,7 +115,6 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
 
 export default function SelectDevice(props: SelectDeviceProps): JSX.Element {
   const [deviceList, setDeviceList] = useState<MediaDeviceInfo[] | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   useEffect(() => {
     navigator.mediaDevices
       .enumerateDevices()
@@ -129,23 +122,15 @@ export default function SelectDevice(props: SelectDeviceProps): JSX.Element {
         setDeviceList(deviceInfos);
       })
       .catch(handleError);
-
-    navigator.mediaDevices
-      .getUserMedia({video: false, audio: true})
-      .then(stream => {
-        if (audioRef.current) {
-          audioRef.current.srcObject = stream;
-        }
-      });
   }, []);
 
   return (
     <>
-      {deviceList && audioRef.current ? (
+      {deviceList ? (
         <SelectOption
-          audio={audioRef.current}
           deviceInfos={deviceList}
-          ChangeEachAudio={props.ChangeEachAudio}
+          changeEachAudio={props.changeEachAudio}
+          changeInputStream={props.changeInputStream}
           setSelectOutputDevice={props.setSelectOutputDevice}
           seletedOutputDevice={props.seletedOutputDevice}
           setSelectInputDevice={props.setSelectInputDevice}
@@ -154,7 +139,6 @@ export default function SelectDevice(props: SelectDeviceProps): JSX.Element {
       ) : (
         <div>loading...</div>
       )}
-      <audio ref={audioRef} autoPlay></audio>
     </>
   );
 }

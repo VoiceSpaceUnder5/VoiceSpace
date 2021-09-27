@@ -7,7 +7,7 @@ import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
-import PeerManager from '../utils/RTCGameUtils';
+import PeerManager, {TrackKind} from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
@@ -48,18 +48,24 @@ function Navigation(props: NavigationProps): JSX.Element {
   const getMyNickname = (): string => {
     return props.peerManager.me.nickname;
   };
-  const addTrack = (stream: MediaStream) => {
+  const addTrack = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
       stream.getTracks().forEach(track => {
-        peer.addTrack(track);
+        peer.addTrackAndSaveOutput(track, TrackKind.VIDEO);
       });
       props.peerManager.peerOffer(peer);
     });
   };
+  const removeTrack = (trackKind: TrackKind): void => {
+    props.peerManager.forEachPeer(peer => {
+      peer.removeTrackFromSaveOutput(trackKind);
+      props.peerManager.peerOffer(peer);
+    });
+  };
+
   const setTrackEventHandler = (
     trackEventHandler: (event: RTCTrackEvent) => void,
   ) => {
-    console.log('trackEvent set');
     props.peerManager.trackEventHandler = trackEventHandler;
   };
   const getUsers = (): UserInfo[] => {
@@ -90,9 +96,19 @@ function Navigation(props: NavigationProps): JSX.Element {
     return result;
   };
 
-  const changeEachAudio: (deviceId: string) => void = (deviceId: string) => {
+  const changeEachAudio = (deviceId: string): void => {
     props.peerManager.changeEachAudio(deviceId);
   };
+  const changeInputStream = (stream: MediaStream): void => {
+    props.peerManager.forEachPeer(peer => {
+      peer.removeTrackFromSaveOutput(TrackKind.AUDIO);
+      stream.getTracks().forEach(track => {
+        peer.addTrackAndSaveOutput(track, TrackKind.AUDIO);
+      });
+      props.peerManager.peerOffer(peer);
+    });
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -108,8 +124,12 @@ function Navigation(props: NavigationProps): JSX.Element {
         <ScreenShare
           addTrack={addTrack}
           setTrackEventHandler={setTrackEventHandler}
+          removeTrack={removeTrack}
         />
-        <Options />
+        <Options
+          changeEachAudio={changeEachAudio}
+          changeInputStream={changeInputStream}
+        />
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>

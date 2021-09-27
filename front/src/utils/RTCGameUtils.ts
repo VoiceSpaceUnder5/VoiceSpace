@@ -12,6 +12,23 @@ export interface Vec2 {
 }
 
 /**
+ * track 의 종류를 담당
+ */
+export enum TrackKind {
+  ALL,
+  AUDIO,
+  VIDEO,
+}
+
+/**
+ * addTrackOutputs 의 데이터 형태
+ */
+export interface AddTrackOutput {
+  sender: RTCRtpSender;
+  trackKind: TrackKind;
+}
+
+/**
  * AudioAnalyser 인스턴스의 getAvatarFaceDtoByAudioAnalysis() 메소드의 output
  * avatarFace 중 어떤 형태의 face 를 적용할지와 얼만큼의 scale 로 적용할지에 대한 정보를 담음.
  */
@@ -273,8 +290,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
   //onMessageCallback
   onMessageCallback: (message: Message) => void;
+
   //trackEventHandler
   private trackEventHandler: (event: RTCTrackEvent) => void;
+
+  //addTrackOutputs
+  private addTrackOutputs: AddTrackOutput[];
   constructor(
     signalingHelper: RTCSignalingHelper,
     connectedClientSocketID: string,
@@ -315,16 +336,39 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
     //onMessageCallback
     this.onMessageCallback = onMessageCallback;
+
     //trackEventHandler
     this.trackEventHandler = trackEventHandler;
 
+    //addTrackOutputs
+    this.addTrackOutputs = [];
+
     // connect localStream
     localStream.getTracks().forEach(track => {
-      this.addTrack(track);
+      this.addTrackAndSaveOutput(track, TrackKind.AUDIO);
     });
 
     // event setting
     this.setEvent(signalingHelper, connectionClosedDisconnectedFailedCallBack);
+  }
+
+  addTrackAndSaveOutput(track: MediaStreamTrack, trackKind: TrackKind): void {
+    this.addTrackOutputs.push({
+      sender: this.addTrack(track),
+      trackKind: trackKind,
+    });
+  }
+
+  removeTrackFromSaveOutput(trackKind: TrackKind): void {
+    const newAddTrackOutputs: AddTrackOutput[] = [];
+    this.addTrackOutputs.forEach(addTrackOutput => {
+      if (trackKind === addTrackOutput.trackKind) {
+        this.removeTrack(addTrackOutput.sender);
+      } else {
+        newAddTrackOutputs.push(addTrackOutput);
+      }
+    });
+    this.addTrackOutputs = newAddTrackOutputs;
   }
 
   private setEvent(
@@ -379,8 +423,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
         const stream = new MediaStream();
         stream.addTrack(event.track);
         this.audio.srcObject = stream;
+      } else {
+        this.trackEventHandler(event);
       }
-      this.trackEventHandler(event);
     });
 
     this.addEventListener('connectionstatechange', () => {
@@ -488,7 +533,7 @@ export default class PeerManager {
     // onMessageCallback
     this.onMessageCallback = () => {
       return;
-    }
+    };
     // trackEventHandler
     this.trackEventHandler = () => {
       return;
@@ -503,6 +548,7 @@ export default class PeerManager {
 
   changeEachAudio(deviceId: string): void {
     this.forEachPeer((peer: Peer) => {
+      // eslint-disable-next-line
       const audio = peer.audio as any;
       audio.setSinkId(deviceId);
       console.log(peer);

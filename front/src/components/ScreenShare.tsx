@@ -3,6 +3,7 @@ import {Menu, Dropdown} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
 import '../pages/spacePage/space.css';
+import {TrackKind} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
   stream: MediaStream;
@@ -53,6 +54,7 @@ interface ScreenShareProps {
   setTrackEventHandler: (
     trackEventHandler: (event: RTCTrackEvent) => void,
   ) => void;
+  removeTrack: (trackKind: TrackKind) => void;
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
