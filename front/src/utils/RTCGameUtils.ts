@@ -136,7 +136,7 @@ export class Me implements PlayerDto {
   isMoving: boolean;
 
   // AudioAnalyser
-  private readonly audioAnalyser: AudioAnalyser;
+  private audioAnalyser: AudioAnalyser;
   constructor(
     nicknameDiv: HTMLDivElement,
     audioAnalyser: AudioAnalyser,
@@ -216,6 +216,10 @@ export class Me implements PlayerDto {
       }
     }
     return false;
+  }
+
+  setAnalyser(analyser: AudioAnalyser): void {
+    this.audioAnalyser = analyser;
   }
 
   update(glHelper: GLHelper): void {
@@ -511,6 +515,9 @@ export default class PeerManager {
     // create new Peer params
     this.signalingHelper = signalingHelper;
     this.localStream = localStream;
+    this.localStream.getAudioTracks()[0].onended = () => {
+      console.log('localStream·audio·track·ended');
+    };
     this.audioContainer = audioContainer;
     this.nicknameContainer = nicknameContainer;
     this.connectionClosedDisconnectedFailedCallBack = (peer: Peer): void => {
