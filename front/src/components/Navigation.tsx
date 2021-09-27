@@ -11,6 +11,7 @@ import PeerManager from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
+import {Message} from './Messenger';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -34,7 +35,19 @@ function Navigation(props: NavigationProps): JSX.Element {
   const onCopy = () => {
     message.info('클립보드에 복사 되었습니다!');
   };
-
+  const sendMessage = (message: string) => {
+    props.peerManager.peers.forEach(peer => {
+      peer.transmitUsingDataChannel(message);
+    });
+  };
+  const setOnMessageCallback = (
+    onMessageCallback: (message: Message) => void,
+  ) => {
+    props.peerManager.setOnMessageCallback(onMessageCallback);
+  };
+  const getMyNickname = (): string => {
+    return props.peerManager.me.nickname;
+  };
   const getUsers = (): UserInfo[] => {
     const result: UserInfo[] = [
       {
@@ -83,10 +96,12 @@ function Navigation(props: NavigationProps): JSX.Element {
       </div>
       <div className="navbar_right">
         <Panel
+          getMyNickname={getMyNickname}
           getUsers={getUsers}
           roomId={props.peerManager.roomID}
-          peers={props.peerManager.peers}
           onCopy={onCopy}
+          sendMessage={sendMessage}
+          setOnMessageCallback={setOnMessageCallback}
         />
       </div>
     </nav>

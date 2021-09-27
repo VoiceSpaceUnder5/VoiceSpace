@@ -4,6 +4,7 @@ import {screen} from '@testing-library/react';
 import Panel, {PanelDropDown, PanelDropDownProps, PanelProps} from '../Panel';
 import userEvent from '@testing-library/user-event';
 import {act} from 'react-dom/test-utils';
+import {Message} from '../Messenger';
 
 // getUsers: () => UserInfo[];
 // roomId: string;
@@ -15,6 +16,9 @@ const peers: any = [];
 const mockedPanelProps: PanelProps = {
   getUsers: () => {
     return [];
+  },
+  setOnMessageCallback: () => {
+    return;
   },
   roomId: 'testID',
   peers: peers,

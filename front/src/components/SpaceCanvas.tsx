@@ -106,7 +106,9 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       peerManager.me.update(gLHelper);
 
       gLHelper.drawObjectsBeforeAvatar();
-      const data = JSON.stringify(peerManager.me.getPlayerDto());
+      const data = JSON.stringify(
+        Object.assign({type: 'playerDto'}, peerManager.me.getPlayerDto()),
+      );
       peerManager.forEachPeer(peer => {
         peer.transmitUsingDataChannel(data);
         gLHelper.drawAvatar(peer, peer.nicknameDiv);

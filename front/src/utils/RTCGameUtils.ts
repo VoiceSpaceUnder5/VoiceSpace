@@ -1,6 +1,7 @@
 import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
+import {Message} from '../components/Messenger';
 
 /**
  * position 등 x, y 두 변수를 가지고 있을 때 주로 사용
@@ -270,6 +271,8 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
 
+  //onMessageCallback
+  onMessageCallback: (message: Message) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
     connectedClientSocketID: string,
@@ -278,6 +281,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     nicknameDiv: HTMLDivElement,
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
+    onMessageCallback: (message: Message) => void,
     maxSoundDistance = 500,
   ) {
     super(pcConfig);
@@ -306,6 +310,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     //nickname overlay div
     this.nicknameDiv = nicknameDiv;
 
+    //onMessageCallback
+    this.onMessageCallback = onMessageCallback;
+
     // connect localStream
     localStream.getTracks().forEach(track => {
       this.addTrack(track, localStream);
@@ -323,8 +330,17 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.ondatachannel = event => {
       const receviedDC = event.channel;
       receviedDC.onmessage = event => {
-        const data = JSON.parse(event.data) as PlayerDto;
-        this.update(data);
+        // 1. Dto에 타입까지 넣어줘서 조건분기
+        const data = JSON.parse(event.data);
+        if (data.type === 'playerDto') {
+          delete data.type;
+          this.update(data);
+        } else if (data.type === 'message') {
+          console.log(data);
+          this.onMessageCallback(data);
+          // 2. 뭔가 콜백함수 호출하게?
+          // onMessageCallBack(data);
+        }
       };
       receviedDC.onopen = () => {
         console.log(`dataChannel created with ${this.connectedClientSocketID}`);
@@ -417,6 +433,9 @@ export default class PeerManager {
 
   // RoomID
   readonly roomID: string;
+
+  // DataChannel onMessage callback
+  onMessageCallback: (message: Message) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -449,6 +468,11 @@ export default class PeerManager {
     // roomID
     this.roomID = roomID;
 
+    // onMessageCallback
+    this.onMessageCallback = () => {
+      return;
+    };
+
     // setEvent
     this.setSignalingEvent();
 
@@ -458,6 +482,10 @@ export default class PeerManager {
 
   forEachPeer(callback: (peer: Peer) => void): void {
     this.peers.forEach(peer => callback(peer));
+  }
+
+  setOnMessageCallback(onMessageCallback: (message: Message) => void): void {
+    this.onMessageCallback = onMessageCallback;
   }
 
   createNewPeerAndAddPeers(connectedClientSocketID: string): Peer {
@@ -481,6 +509,7 @@ export default class PeerManager {
       nicknameDiv,
       this.connectionClosedDisconnectedFailedCallBack,
       this.pcConfig,
+      this.onMessageCallback,
       500,
     );
     this.peers.set(connectedClientSocketID, peer);

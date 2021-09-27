@@ -1,17 +1,18 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../pages/spacePage/space.css';
-import {Peer} from '../utils/RTCGameUtils';
 import {UserInfo, UserList} from './UserList';
-import {Message} from './Message';
+import {Message, Messenger} from './Messenger';
 
 export interface PanelProps {
+  getMyNickname: () => string;
   getUsers: () => UserInfo[];
   roomId: string;
-  peers: Map<string, Peer>;
   onCopy: () => void;
+  sendMessage: (message: string) => void;
+  setOnMessageCallback: (arg0: (message: Message) => void) => void;
 }
 
 interface MenuItemProps {
@@ -49,6 +50,8 @@ function Panel(props: PanelProps): JSX.Element {
   const [subMenu, setSubMenu] = useState(0);
   const [visible, setVisible] = useState(false);
   const [volume, setVolume] = useState(0);
+  const [message, setMessage] = useState('');
+  const [messageArray, setMessageArray] = useState<string[]>([]);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -68,6 +71,35 @@ function Panel(props: PanelProps): JSX.Element {
     volume;
     setVolume(changedVolume);
   };
+  const onMessageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+  const onSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    const messageData: Message = {
+      type: 'message',
+      nickname: props.getMyNickname(),
+      data: message,
+    };
+    props.sendMessage(JSON.stringify(messageData));
+    setMessage('');
+    if (messageArray === undefined) {
+      setMessageArray([`나: ${message}`]);
+    } else {
+      setMessageArray(messageArray.concat(`나: ${message}`));
+    }
+  };
+  const onMessageCallback = (message: Message): void => {
+    const newMessage = `${message.nickname}: ${message.data}`;
+    setMessageArray(before => {
+      return [...before, newMessage];
+    });
+  };
+
+  useEffect(() => {
+    props.setOnMessageCallback(onMessageCallback);
+  }, []);
+
   return (
     <Dropdown
       visible={visible}
@@ -81,7 +113,13 @@ function Panel(props: PanelProps): JSX.Element {
               onClickPrevious: onClickPrevious,
               onChangeVolume: onChangeVolume,
             })
-          : Message({...props, onClickPrevious: onClickPrevious})
+          : Messenger({
+              messageArray: messageArray,
+              onClickPrevious: onClickPrevious,
+              message: message,
+              onMessageInput: onMessageInput,
+              onSendMessage: onSendMessage,
+            })
       }
       trigger={['click']}
     >
