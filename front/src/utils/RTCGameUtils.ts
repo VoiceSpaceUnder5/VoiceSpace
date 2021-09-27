@@ -17,7 +17,8 @@ export interface Vec2 {
 export enum TrackKind {
   ALL,
   AUDIO,
-  VIDEO,
+  LOCAL_VIDEO,
+  REMOTE_VIDEO,
 }
 
 /**
