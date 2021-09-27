@@ -427,6 +427,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
+      console.log(this.getReceivers());
       if (event.track.kind === 'audio') {
         const stream = new MediaStream();
         stream.addTrack(event.track);
@@ -504,6 +505,7 @@ export default class PeerManager {
 
   // DataChannel onMessage callback
   onMessageCallback: (message: Message) => void;
+
   // trackEventHadler
   trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
   constructor(
