@@ -7,7 +7,7 @@ import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
-import PeerManager, {TrackKind} from '../utils/RTCGameUtils';
+import PeerManager, {AudioAnalyser, TrackKind} from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
@@ -110,6 +110,7 @@ function Navigation(props: NavigationProps): JSX.Element {
         peer.addTrackAndSaveOutput(track, TrackKind.AUDIO);
       });
       props.peerManager.peerOffer(peer);
+      props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
     });
   };
 
