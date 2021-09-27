@@ -7,7 +7,7 @@ import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
-import PeerManager, {AudioAnalyser, TrackKind} from '../utils/RTCGameUtils';
+import PeerManager, {AudioAnalyser} from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
@@ -49,18 +49,20 @@ function Navigation(props: NavigationProps): JSX.Element {
     return props.peerManager.me.nickname;
   };
 
-  const addTrack = (stream: MediaStream, trackKind: TrackKind): void => {
+  const addVideoTrack = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
       stream.getTracks().forEach(track => {
-        peer.addTrackAndSaveOutput(track, trackKind);
+        peer.addTrack(track);
       });
       props.peerManager.peerOffer(peer);
     });
   };
 
-  const removeTrack = (trackKind: TrackKind): void => {
+  const removeVideoTrack = (): void => {
     props.peerManager.forEachPeer(peer => {
-      peer.removeTrackFromSaveOutput(trackKind);
+      peer.getSenders().forEach(sender => {
+        if (sender.track?.kind === 'video') peer.removeTrack(sender);
+      });
       peer.transmitUsingDataChannel(
         JSON.stringify({type: 'closeVideo', data: ''}),
       );
@@ -105,9 +107,11 @@ function Navigation(props: NavigationProps): JSX.Element {
   };
   const changeInputStream = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
-      peer.removeTrackFromSaveOutput(TrackKind.AUDIO);
+      peer.getSenders().forEach(sender => {
+        if (sender.track?.kind === 'audio') peer.removeTrack(sender);
+      });
       stream.getTracks().forEach(track => {
-        peer.addTrackAndSaveOutput(track, TrackKind.AUDIO);
+        peer.addTrack(track);
       });
       props.peerManager.peerOffer(peer);
       props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
@@ -127,9 +131,9 @@ function Navigation(props: NavigationProps): JSX.Element {
       <div className="navbar_center">
         <MicOnOff setIsMicOn={setIsMicOn} />
         <ScreenShare
-          addTrack={addTrack}
+          addVideoTrack={addVideoTrack}
           setTrackEventHandler={setTrackEventHandler}
-          removeTrack={removeTrack}
+          removeVideoTrack={removeVideoTrack}
         />
         <Options
           changeEachAudio={changeEachAudio}
