@@ -3,7 +3,6 @@ import {Menu, Dropdown} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
 import '../pages/spacePage/space.css';
-import {TrackKind} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
   stream: MediaStream;
@@ -12,7 +11,6 @@ interface ScreenViewerProps {
 interface ScreenShareData {
   peerId: string;
   stream: MediaStream;
-  trackKind: TrackKind;
 }
 
 function ScreenViewer(props: ScreenViewerProps): JSX.Element {
@@ -56,11 +54,11 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 }
 
 interface ScreenShareProps {
-  addTrack: (stream: MediaStream, trackKind: TrackKind) => void;
+  addVideoTrack: (stream: MediaStream) => void;
   setTrackEventHandler: (
     trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
   ) => void;
-  removeTrack: (trackKind: TrackKind) => void;
+  removeVideoTrack: () => void;
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
@@ -70,18 +68,15 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const screenShareOnClick = async () => {
     // eslint-disable-next-line
     const stream = await (navigator.mediaDevices as any).getDisplayMedia(); // 핸드폰일 경우 사용 불가.
-    props.addTrack(stream, TrackKind.LOCAL_VIDEO);
-    setScreenShareDatas([
-      {peerId: '', stream: stream, trackKind: TrackKind.LOCAL_VIDEO},
-      ...screenShareDatas,
-    ]);
+    props.addVideoTrack(stream);
+    setScreenShareDatas([{peerId: '', stream: stream}, ...screenShareDatas]);
   };
 
   const screenShareStopOnClick = () => {
-    props.removeTrack(TrackKind.LOCAL_VIDEO);
+    props.removeVideoTrack();
     setScreenShareDatas(before => {
       return before.filter(data => {
-        return data.trackKind !== TrackKind.LOCAL_VIDEO;
+        return data.peerId !== '';
       });
     });
   };
@@ -96,7 +91,6 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
             {
               peerId: peerId,
               stream: stream,
-              trackKind: TrackKind.REMOTE_VIDEO,
             },
             ...before,
           ];
