@@ -48,6 +48,7 @@ function Navigation(props: NavigationProps): JSX.Element {
   const getMyNickname = (): string => {
     return props.peerManager.me.nickname;
   };
+
   const addTrack = (stream: MediaStream, trackKind: TrackKind): void => {
     props.peerManager.forEachPeer(peer => {
       stream.getTracks().forEach(track => {
@@ -56,15 +57,18 @@ function Navigation(props: NavigationProps): JSX.Element {
       props.peerManager.peerOffer(peer);
     });
   };
+
   const removeTrack = (trackKind: TrackKind): void => {
     props.peerManager.forEachPeer(peer => {
       peer.removeTrackFromSaveOutput(trackKind);
-      props.peerManager.peerOffer(peer);
+      peer.transmitUsingDataChannel(
+        JSON.stringify({type: 'closeVideo', data: ''}),
+      );
     });
   };
 
   const setTrackEventHandler = (
-    trackEventHandler: (event: RTCTrackEvent) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
   ) => {
     props.peerManager.trackEventHandler = trackEventHandler;
   };

@@ -292,8 +292,13 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   //onMessageCallback
   onMessageCallback: (message: Message) => void;
 
-  //trackEventHandler
-  private trackEventHandler: (event: RTCTrackEvent) => void;
+  //trackEventHandler (ontrack 으로 새로운 트랙이 들어왔을 때)
+  private trackEventHandler: (
+    peerId: string,
+    event: RTCTrackEvent | null,
+  ) => void;
+
+  //dataChannel 을 통해 videoTrack 이 off 될 때
 
   //addTrackOutputs
   private addTrackOutputs: AddTrackOutput[];
@@ -306,7 +311,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
     onMessageCallback: (message: Message) => void,
-    trackEventHandler: (event: RTCTrackEvent) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
     maxSoundDistance = 500,
   ) {
     super(pcConfig);
@@ -378,7 +383,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   ): void {
     // negotitateneeded
     this.onnegotiationneeded = () => {
-      console.log('onnegotiationneede!!');
+      console.log('onnegotiationneeded!!');
     };
 
     // fire when peer connection is established
@@ -395,6 +400,8 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
           this.onMessageCallback(data);
           // 2. 뭔가 콜백함수 호출하게?
           // onMessageCallBack(data);
+        } else if (data.type === 'closeVideo') {
+          this.trackEventHandler(this.connectedClientSocketID, null);
         }
       };
       receviedDC.onopen = () => {
@@ -425,7 +432,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
         stream.addTrack(event.track);
         this.audio.srcObject = stream;
       } else {
-        this.trackEventHandler(event);
+        this.trackEventHandler(this.connectedClientSocketID, event);
       }
     });
 
@@ -498,7 +505,7 @@ export default class PeerManager {
   // DataChannel onMessage callback
   onMessageCallback: (message: Message) => void;
   // trackEventHadler
-  trackEventHandler: (event: RTCTrackEvent) => void;
+  trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
