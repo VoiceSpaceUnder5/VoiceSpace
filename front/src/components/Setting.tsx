@@ -5,7 +5,8 @@ import SelectDevice from './SelectDevice';
 
 export interface SettingProps {
   onClickConfirm: () => void;
-  ChangeEachAudio: (deviceId: string) => void;
+  changeEachAudio: (deviceId: string) => void;
+  changeInputStream: (stream: MediaStream) => void;
   setSelectOutputDevice: React.Dispatch<React.SetStateAction<string>>;
   seletedOutputDevice: string;
   setSelectInputDevice: React.Dispatch<React.SetStateAction<string>>;
@@ -23,7 +24,8 @@ function SettingDropDown(props: SettingProps): JSX.Element {
         <div>
           <div className="audio_title">오디오 설정</div>
           <SelectDevice
-            ChangeEachAudio={props.ChangeEachAudio}
+            changeEachAudio={props.changeEachAudio}
+            changeInputStream={props.changeInputStream}
             setSelectOutputDevice={props.setSelectOutputDevice}
             seletedOutputDevice={props.seletedOutputDevice}
             setSelectInputDevice={props.setSelectInputDevice}
