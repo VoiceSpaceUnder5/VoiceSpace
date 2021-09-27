@@ -48,10 +48,10 @@ function Navigation(props: NavigationProps): JSX.Element {
   const getMyNickname = (): string => {
     return props.peerManager.me.nickname;
   };
-  const addTrack = (stream: MediaStream): void => {
+  const addTrack = (stream: MediaStream, trackKind: TrackKind): void => {
     props.peerManager.forEachPeer(peer => {
       stream.getTracks().forEach(track => {
-        peer.addTrackAndSaveOutput(track, TrackKind.VIDEO);
+        peer.addTrackAndSaveOutput(track, trackKind);
       });
       props.peerManager.peerOffer(peer);
     });

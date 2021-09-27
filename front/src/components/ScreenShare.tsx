@@ -9,6 +9,11 @@ interface ScreenViewerProps {
   stream: MediaStream;
 }
 
+interface ScreenShareData {
+  stream: MediaStream;
+  trackKind: TrackKind;
+}
+
 function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -50,7 +55,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 }
 
 interface ScreenShareProps {
-  addTrack: (stream: MediaStream) => void;
+  addTrack: (stream: MediaStream, trackKind: TrackKind) => void;
   setTrackEventHandler: (
     trackEventHandler: (event: RTCTrackEvent) => void,
   ) => void;
@@ -58,12 +63,26 @@ interface ScreenShareProps {
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
-  const [streams, setStreams] = useState<MediaStream[]>([]);
+  const [screenShareDatas, setScreenShareDatas] = useState<ScreenShareData[]>(
+    [],
+  );
   const screenShareOnClick = async () => {
     // eslint-disable-next-line
     const stream = await (navigator.mediaDevices as any).getDisplayMedia(); // 핸드폰일 경우 사용 불가.
-    props.addTrack(stream);
-    setStreams([stream, ...streams]);
+    props.addTrack(stream, TrackKind.LOCAL_VIDEO);
+    setScreenShareDatas([
+      {stream: stream, trackKind: TrackKind.LOCAL_VIDEO},
+      ...screenShareDatas,
+    ]);
+  };
+
+  const screenShareStopOnClick = () => {
+    props.removeTrack(TrackKind.LOCAL_VIDEO);
+    setScreenShareDatas(before => {
+      return before.filter(data => {
+        return data.trackKind !== TrackKind.LOCAL_VIDEO;
+      });
+    });
   };
 
   const trackEventHandler = (event: RTCTrackEvent) => {
@@ -76,8 +95,8 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         console.error('nope! track ended!!');
       };
       stream.addTrack(event.track);
-      setStreams(before => {
-        return [stream, ...before];
+      setScreenShareDatas(before => {
+        return [{stream: stream, trackKind: TrackKind.REMOTE_VIDEO}, ...before];
       });
     }
   };
@@ -95,7 +114,9 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
             </a>
           </Menu.Item>
           <Menu.Item key="1">
-            <a href="https://www.aliyun.com"> 창</a>
+            <a role="button" onClick={screenShareStopOnClick}>
+              정지
+            </a>
           </Menu.Item>
         </Menu>
       </>
@@ -103,8 +124,13 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
   return (
     <>
-      {streams.map(stream => {
-        return <ScreenViewer key={stream.id} stream={stream}></ScreenViewer>;
+      {screenShareDatas.map(screenShareData => {
+        return (
+          <ScreenViewer
+            key={screenShareData.stream.id}
+            stream={screenShareData.stream}
+          ></ScreenViewer>
+        );
       })}
       <Dropdown overlay={screenshare} trigger={['click']}>
         <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
