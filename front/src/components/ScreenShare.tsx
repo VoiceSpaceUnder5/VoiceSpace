@@ -1,8 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Menu, Dropdown, message, Switch, Button} from 'antd';
+import {Menu, Dropdown, message, Switch} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
-import '../pages/spacePage/space.css';
+import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
 
 interface ScreenViewerProps {
@@ -26,9 +26,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
     if (videoRef.current) videoRef.current.srcObject = props.stream;
   }, []);
 
-  const aspectRatio = props.stream
-    .getVideoTracks()[0]
-    .getSettings().aspectRatio;
+  const aspectRatio = props.stream.getTracks()[0].getSettings().aspectRatio;
 
   const drawToogleChagne: SwitchChangeEventHandler = () => {
     // if (rndRef.current) {
@@ -40,14 +38,14 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
     ? originVideoHeight * aspectRatio
     : originVideoHeight * originAspectRatio;
   return (
-    <div style={{position: 'absolute', left: 20, top: 20}}>
+    <div className="rndContainer">
       <Rnd
+        className="rnd"
         minWidth={width}
         minHeight={height}
         ref={rndRef}
         lockAspectRatio={aspectRatio ? aspectRatio : originAspectRatio}
         lockAspectRatioExtraHeight={headerHeight + 1}
-        style={{zIndex: 999, padding: 0, margin: 0, border: '2px solid white'}}
         default={{
           x: 0,
           y: 0,
@@ -55,7 +53,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
           height: height,
         }}
       >
-        <p
+        <div
           style={{
             width: '100%',
             height: `${headerHeight}px`,
@@ -71,7 +69,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
           <div
             style={{
               margin: 0,
-              paddingRight: `${headerHeight / 2}px`,
+              paddingRight: `${2}px`,
               paddingLeft: `${headerHeight / 2}px`,
             }}
           >
@@ -83,25 +81,11 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
                 left: 0,
                 top: 0,
                 height: `${headerHeight - 1}px`,
-                marginRight: `${headerHeight / 4}px`,
                 padding: 0,
               }}
             ></Switch>
-            <Button
-              style={{
-                margin: 0,
-                padding: 0,
-                minWidth: `${headerHeight * 0.9}px`,
-                height: `${headerHeight * 0.9}px`,
-                width: `${headerHeight * 0.9}px`,
-                fontSize: `${headerHeight / 4}px`,
-              }}
-              shape="circle"
-            >
-              X
-            </Button>
           </div>
-        </p>
+        </div>
         <video
           style={{
             top: 0,

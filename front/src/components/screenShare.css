@@ -1,0 +1,12 @@
+.rndContainer {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+.rnd {
+  z-index: 999;
+  padding: 0;
+  margin: 0;
+  border: 2px solid white;
+}
