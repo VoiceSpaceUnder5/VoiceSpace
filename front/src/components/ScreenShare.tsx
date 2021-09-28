@@ -4,6 +4,7 @@ import {DesktopOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
 import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
+import {HexColorPicker} from 'react-colorful';
 
 interface ScreenViewerProps {
   stream: MediaStream;
@@ -22,11 +23,11 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const rndRef = useRef<Rnd>(null);
+  const aspectRatio = props.stream.getTracks()[0].getSettings().aspectRatio;
+
   useEffect(() => {
     if (videoRef.current) videoRef.current.srcObject = props.stream;
   }, []);
-
-  const aspectRatio = props.stream.getTracks()[0].getSettings().aspectRatio;
 
   const drawToogleChagne: SwitchChangeEventHandler = () => {
     // if (rndRef.current) {
@@ -98,9 +99,6 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
           controls={false}
         ></video>
         <canvas
-          onClick={() => {
-            console.log('canvas clicked!');
-          }}
           style={{
             top: '20px',
             left: 0,
@@ -126,6 +124,8 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const [screenShareDatas, setScreenShareDatas] = useState<ScreenShareData[]>(
     [],
   );
+  const [isDisplayColorPicker, setIsDisplayColorPicker] = useState(false);
+  const [color, setColor] = useState('#000000');
   const screenShareOnClick = async () => {
     if (
       screenShareDatas.find(data => {
@@ -133,7 +133,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       })
     ) {
       message.info(
-        '이미 공유중인 화면이 존재합니다. 중지후 다시 선택해주세요!',
+        '이미 공유중인 화면이 존재합니다. 중지 후 다시 선택해주세요!',
       );
       return;
     }
@@ -192,6 +192,28 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
             <a role="button" onClick={screenShareStopOnClick}>
               정지
             </a>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Dropdown
+              visible={isDisplayColorPicker}
+              onVisibleChange={() => {
+                setIsDisplayColorPicker(!isDisplayColorPicker);
+              }}
+              overlay={
+                <HexColorPicker
+                  color={color}
+                  onChange={setColor}
+                ></HexColorPicker>
+              }
+              trigger={['click']}
+            >
+              <a
+                onClick={e => e.preventDefault()}
+                className="ant_dropdown_link"
+              >
+                그리기 색상,굵기 선택
+              </a>
+            </Dropdown>
           </Menu.Item>
         </Menu>
       </>
