@@ -4,25 +4,21 @@ import {screen} from '@testing-library/react';
 import Panel, {PanelDropDown, PanelDropDownProps, PanelProps} from '../Panel';
 import userEvent from '@testing-library/user-event';
 import {act} from 'react-dom/test-utils';
-import {Message} from '../Messenger';
 
+// getMyNickname: () => string;
 // getUsers: () => UserInfo[];
 // roomId: string;
-// peers: Map<string, Peer>;
 // onCopy: () => void;
-
-const peers: any = [];
+// sendMessage: (message: string) => void;
+// setOnMessageCallback: (arg0: (message: Message) => void) => void;
 
 const mockedPanelProps: PanelProps = {
-  getUsers: () => {
-    return [];
-  },
-  setOnMessageCallback: () => {
-    return;
-  },
-  roomId: 'testID',
-  peers: peers,
+  getMyNickname: jest.fn(),
+  getUsers: jest.fn(),
+  roomId: 'testRoomID',
   onCopy: jest.fn(),
+  sendMessage: jest.fn(),
+  setOnMessageCallback: jest.fn(),
 };
 
 // roomId: string;

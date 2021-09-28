@@ -7,7 +7,7 @@ import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
-import PeerManager from '../utils/RTCGameUtils';
+import PeerManager, {AudioAnalyser} from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
@@ -48,6 +48,39 @@ function Navigation(props: NavigationProps): JSX.Element {
   const getMyNickname = (): string => {
     return props.peerManager.me.nickname;
   };
+
+  const addVideoTrack = (stream: MediaStream): void => {
+    stream.getTracks().forEach(track => {
+      props.peerManager.screenVideoTracks.push(track);
+    });
+    props.peerManager.forEachPeer(peer => {
+      stream.getTracks().forEach(track => {
+        peer.addTrack(track);
+      });
+      props.peerManager.peerOffer(peer);
+    });
+  };
+
+  const removeVideoTrack = (): void => {
+    props.peerManager.screenVideoTracks =
+      props.peerManager.screenVideoTracks.filter(track => {
+        return track.kind !== 'video';
+      });
+    props.peerManager.forEachPeer(peer => {
+      peer.getSenders().forEach(sender => {
+        if (sender.track?.kind === 'video') peer.removeTrack(sender);
+      });
+      peer.transmitUsingDataChannel(
+        JSON.stringify({type: 'closeVideo', data: ''}),
+      );
+    });
+  };
+
+  const setTrackEventHandler = (
+    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
+  ) => {
+    props.peerManager.trackEventHandler = trackEventHandler;
+  };
   const getUsers = (): UserInfo[] => {
     const result: UserInfo[] = [
       {
@@ -76,6 +109,22 @@ function Navigation(props: NavigationProps): JSX.Element {
     return result;
   };
 
+  const changeEachAudio = (deviceId: string): void => {
+    props.peerManager.changeEachAudio(deviceId);
+  };
+  const changeInputStream = (stream: MediaStream): void => {
+    props.peerManager.forEachPeer(peer => {
+      peer.getSenders().forEach(sender => {
+        if (sender.track?.kind === 'audio') peer.removeTrack(sender);
+      });
+      stream.getTracks().forEach(track => {
+        peer.addTrack(track);
+      });
+      props.peerManager.peerOffer(peer);
+      props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
+    });
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -88,8 +137,15 @@ function Navigation(props: NavigationProps): JSX.Element {
       </div>
       <div className="navbar_center">
         <MicOnOff setIsMicOn={setIsMicOn} />
-        <ScreenShare />
-        <Options />
+        <ScreenShare
+          addVideoTrack={addVideoTrack}
+          setTrackEventHandler={setTrackEventHandler}
+          removeVideoTrack={removeVideoTrack}
+        />
+        <Options
+          changeEachAudio={changeEachAudio}
+          changeInputStream={changeInputStream}
+        />
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>

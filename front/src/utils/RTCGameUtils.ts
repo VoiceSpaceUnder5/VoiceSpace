@@ -118,7 +118,7 @@ export class Me implements PlayerDto {
   isMoving: boolean;
 
   // AudioAnalyser
-  private readonly audioAnalyser: AudioAnalyser;
+  private audioAnalyser: AudioAnalyser;
   constructor(
     nicknameDiv: HTMLDivElement,
     audioAnalyser: AudioAnalyser,
@@ -200,6 +200,10 @@ export class Me implements PlayerDto {
     return false;
   }
 
+  setAnalyser(analyser: AudioAnalyser): void {
+    this.audioAnalyser = analyser;
+  }
+
   update(glHelper: GLHelper): void {
     const avatarFaceDto = this.audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
     this.avatarFaceScale = avatarFaceDto.avatarFaceScale;
@@ -273,6 +277,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
   //onMessageCallback
   onMessageCallback: (message: Message) => void;
+
+  //trackEventHandler (ontrack 으로 새로운 트랙이 들어왔을 때)
+  trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
+
+  //dataChannel 을 통해 videoTrack 이 off 될 때
+
   constructor(
     signalingHelper: RTCSignalingHelper,
     connectedClientSocketID: string,
@@ -282,6 +292,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
     onMessageCallback: (message: Message) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
     maxSoundDistance = 500,
   ) {
     super(pcConfig);
@@ -313,9 +324,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     //onMessageCallback
     this.onMessageCallback = onMessageCallback;
 
-    // connect localStream
+    //trackEventHandler
+    this.trackEventHandler = trackEventHandler;
+
+    //    connect localStream
     localStream.getTracks().forEach(track => {
-      this.addTrack(track, localStream);
+      this.addTrack(track);
     });
 
     // event setting
@@ -326,6 +340,11 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     signalingHelper: RTCSignalingHelper,
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
   ): void {
+    // negotitateneeded
+    this.onnegotiationneeded = () => {
+      console.log('onnegotiationneeded!!');
+    };
+
     // fire when peer connection is established
     this.ondatachannel = event => {
       const receviedDC = event.channel;
@@ -340,6 +359,8 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
           this.onMessageCallback(data);
           // 2. 뭔가 콜백함수 호출하게?
           // onMessageCallBack(data);
+        } else if (data.type === 'closeVideo') {
+          this.trackEventHandler(this.connectedClientSocketID, null);
         }
       };
       receviedDC.onopen = () => {
@@ -365,7 +386,13 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
-      this.audio.srcObject = event.streams[0];
+      if (event.track.kind === 'audio') {
+        const stream = new MediaStream();
+        stream.addTrack(event.track);
+        this.audio.srcObject = stream;
+      } else {
+        this.trackEventHandler(this.connectedClientSocketID, event);
+      }
     });
 
     this.addEventListener('connectionstatechange', () => {
@@ -436,6 +463,12 @@ export default class PeerManager {
 
   // DataChannel onMessage callback
   onMessageCallback: (message: Message) => void;
+
+  // trackEventHadler
+  trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
+
+  // screenVideoTracks
+  screenVideoTracks: MediaStreamTrack[];
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -448,6 +481,9 @@ export default class PeerManager {
     // create new Peer params
     this.signalingHelper = signalingHelper;
     this.localStream = localStream;
+    this.localStream.getAudioTracks()[0].onended = () => {
+      console.log('localStream·audio·track·ended');
+    };
     this.audioContainer = audioContainer;
     this.nicknameContainer = nicknameContainer;
     this.connectionClosedDisconnectedFailedCallBack = (peer: Peer): void => {
@@ -473,6 +509,14 @@ export default class PeerManager {
       return;
     };
 
+    // trackEventHandler
+    this.trackEventHandler = () => {
+      return;
+    };
+
+    // screenVideoTracks
+    this.screenVideoTracks = [];
+
     // setEvent
     this.setSignalingEvent();
 
@@ -480,6 +524,14 @@ export default class PeerManager {
     this.signalingHelper.joinRoom(roomID);
   }
 
+  changeEachAudio(deviceId: string): void {
+    this.forEachPeer((peer: Peer) => {
+      // eslint-disable-next-line
+      const audio = peer.audio as any;
+      audio.setSinkId(deviceId);
+      console.log(peer);
+    });
+  }
   forEachPeer(callback: (peer: Peer) => void): void {
     this.peers.forEach(peer => callback(peer));
   }
@@ -510,10 +562,46 @@ export default class PeerManager {
       this.connectionClosedDisconnectedFailedCallBack,
       this.pcConfig,
       this.onMessageCallback,
+      this.trackEventHandler,
       500,
     );
+    if (this.screenVideoTracks.length > 0) {
+      peer.addEventListener('connectionstatechange', () => {
+        if (peer.connectionState === 'connected') {
+          this.screenVideoTracks.forEach(track => {
+            try {
+              peer.addTrack(track);
+              this.peerOffer(peer);
+            } catch (error) {
+              console.error('screenVideoTracks error!');
+            }
+          });
+        }
+      });
+    }
     this.peers.set(connectedClientSocketID, peer);
     return peer;
+  }
+
+  peerOffer(peer: Peer): void {
+    peer
+      .createOffer()
+      .then(sdp => {
+        peer.setLocalDescription(sdp);
+        const offerDto: OfferAnswerDto = {
+          toClientId: peer.connectedClientSocketID,
+          fromClientId: peer.socketID,
+          sdp: sdp,
+        };
+        this.signalingHelper.emitOffer(offerDto);
+      })
+      .catch(error => {
+        console.error(
+          `Peer SocketId: ${
+            peer.connectedClientSocketID
+          } createAnswer fail=> ${error.toString()}`,
+        );
+      });
   }
 
   setSignalingEvent(): void {
@@ -550,24 +638,7 @@ export default class PeerManager {
       toSocketIDs.forEach(connectedSocketId => {
         if (connectedSocketId !== this.signalingHelper.getSocketID()) {
           const newPeer = this.createNewPeerAndAddPeers(connectedSocketId);
-          newPeer
-            .createOffer()
-            .then(sdp => {
-              newPeer.setLocalDescription(sdp);
-              const offerDto: OfferAnswerDto = {
-                toClientId: newPeer.connectedClientSocketID,
-                fromClientId: newPeer.socketID,
-                sdp: sdp,
-              };
-              this.signalingHelper.emitOffer(offerDto);
-            })
-            .catch(error => {
-              console.error(
-                `Peer SocketId: ${
-                  newPeer.connectedClientSocketID
-                } createAnswer fail=> ${error.toString()}`,
-              );
-            });
+          this.peerOffer(newPeer);
         }
       });
     };
@@ -594,6 +665,9 @@ export default class PeerManager {
   close(): void {
     console.log('peerManager close called');
     this.peers.forEach(peer => {
+      peer.transmitUsingDataChannel(
+        JSON.stringify({type: 'closeVideo', data: ''}),
+      );
       peer.close();
     });
     this.signalingHelper.close();

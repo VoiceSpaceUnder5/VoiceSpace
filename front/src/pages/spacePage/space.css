@@ -167,7 +167,7 @@ canvas {
   justify-content: space-between;
   align-items: center;
 }
-.user_list>div:first-child {
+.user_list > div:first-child {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -331,4 +331,8 @@ button .setting_button {
 .setting_menu_item_title:hover,
 .setting_menu_item_content:hover {
   background-color: none;
+}
+
+.ant-page-header-content {
+  padding: 0;
 }
