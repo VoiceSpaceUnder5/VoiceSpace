@@ -60,13 +60,17 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
               // 선택한 deviceInfo이면 selected
               if (props.seletedOutputDevice === deviceInfo.deviceId) {
                 return (
-                  <option value={deviceInfo.deviceId} selected>
+                  <option
+                    key={deviceInfo.deviceId}
+                    value={deviceInfo.deviceId}
+                    selected
+                  >
                     {deviceInfo.label}
                   </option>
                 );
               } else {
                 return (
-                  <option value={deviceInfo.deviceId}>
+                  <option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
                     {deviceInfo.label}
                   </option>
                 );
@@ -89,13 +93,17 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
               // 선택한 deviceInfo이면 selected
               if (props.seletedInputDevice === deviceInfo.deviceId) {
                 return (
-                  <option value={deviceInfo.deviceId} selected>
+                  <option
+                    key={deviceInfo.deviceId}
+                    value={deviceInfo.deviceId}
+                    selected
+                  >
                     {deviceInfo.label}
                   </option>
                 );
               } else {
                 return (
-                  <option value={deviceInfo.deviceId}>
+                  <option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
                     {deviceInfo.label}
                   </option>
                 );

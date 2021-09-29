@@ -32,9 +32,6 @@ function SettingDropDown(props: SettingProps): JSX.Element {
             seletedInputDevice={props.seletedInputDevice}
           ></SelectDevice>
         </div>
-        <div className="profile_button">
-          <button onClick={props.onClickConfirm}>변경</button>
-        </div>
       </Menu.Item>
     </Menu>
   );
