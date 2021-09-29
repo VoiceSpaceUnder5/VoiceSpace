@@ -36,15 +36,17 @@ function EnterRoom(props: EnterRoomProps): JSX.Element {
     <div>
       또는
       <br />
-      <input
-        className="input"
-        onFocus={onFocus}
-        onBlur={onBlur}
-        placeholder={props.inputPlaceHolder} //코드(RoomId)를 입력해주세요.
-        value={roomId}
-        onChange={inputOnchange}
-      />
-      {focus ? element : null}
+      <form onSubmit={() => props.enterRoomButtonClick(roomId)}>
+        <input
+          className="input"
+          onFocus={onFocus}
+          onBlur={onBlur}
+          placeholder={props.inputPlaceHolder} //코드(RoomId)를 입력해주세요.
+          value={roomId}
+          onChange={inputOnchange}
+        />
+        {focus ? element : null}
+      </form>
     </div>
   );
 }
