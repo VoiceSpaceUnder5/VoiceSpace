@@ -16,6 +16,9 @@ interface ScreenShareData {
 }
 
 function ScreenViewer(props: ScreenViewerProps): JSX.Element {
+  // state
+  const [isDragging, setIsDragging] = useState(true);
+
   // values
   const headerHeight = 20;
   const originVideoHeight = 120;
@@ -29,10 +32,8 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
     if (videoRef.current) videoRef.current.srcObject = props.stream;
   }, []);
 
-  const drawToogleChagne: SwitchChangeEventHandler = () => {
-    // if (rndRef.current) {
-    //   console.log(rndRef.current.draggable);
-    // }
+  const drawToogleChagne: SwitchChangeEventHandler = (checked: boolean) => {
+    setIsDragging(!checked);
   };
   const height = originVideoHeight + headerHeight;
   const width = aspectRatio
@@ -41,6 +42,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   return (
     <div className="rndContainer">
       <Rnd
+        disableDragging={!isDragging}
         className="rnd"
         minWidth={width}
         minHeight={height}
@@ -72,6 +74,8 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
               margin: 0,
               paddingRight: `${2}px`,
               paddingLeft: `${headerHeight / 2}px`,
+              paddingTop: 0,
+              paddingBottom: 0,
             }}
           >
             <Switch
@@ -80,11 +84,12 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
               onChange={drawToogleChagne}
               style={{
                 left: 0,
-                top: 0,
+                top: -headerHeight / 10,
                 height: `${headerHeight - 1}px`,
                 padding: 0,
               }}
             ></Switch>
+            <button style={{height: `${headerHeight - 1}px`}}>Clear</button>
           </div>
         </div>
         <video
@@ -200,10 +205,13 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
                 setIsDisplayColorPicker(!isDisplayColorPicker);
               }}
               overlay={
-                <HexColorPicker
-                  color={color}
-                  onChange={setColor}
-                ></HexColorPicker>
+                <>
+                  <HexColorPicker
+                    color={color}
+                    onChange={setColor}
+                  ></HexColorPicker>
+                  <div>Hello</div>
+                </>
               }
               trigger={['click']}
             >
