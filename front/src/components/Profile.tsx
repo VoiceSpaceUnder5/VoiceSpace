@@ -53,37 +53,50 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
       <Menu.Divider></Menu.Divider>
       <Menu.Item key="2" disabled={true}>
         <div className="name_title">이름</div>
-        <div className="profile_input">
-          <input
-            data-testid="profileDropdownInputTestId"
-            maxLength={10}
-            value={newNickname}
-            onChange={onNicknameInput}
-          />
-        </div>
-        <div className="avatar_title">아바타</div>
-        <div className="profile_avatar">
-          <button>
-            <LeftCircleFilled
-              data-testid="profileDropdownLeftButtonTestId"
-              onClick={onLeftClick}
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            onProfileChangeClick();
+          }}
+        >
+          <div className="profile_input">
+            <input
+              data-testid="profileDropdownInputTestId"
+              maxLength={10}
+              value={newNickname}
+              onChange={onNicknameInput}
             />
-          </button>
-          <img
-            className="avatar_preview"
-            src={
-              avatarImageMDs[newAvatar].avatarMDInfos[
-                AvatarPartImageEnum.FACE_MUTE
-              ].src
-            }
-          ></img>
-          <button>
-            <RightCircleFilled
-              data-testid="profileDropdownRightButtonTestId"
-              onClick={onRightClick}
-            />
-          </button>
-        </div>
+          </div>
+          <div className="avatar_title">아바타</div>
+          <div className="profile_avatar">
+            <button>
+              <LeftCircleFilled
+                data-testid="profileDropdownLeftButtonTestId"
+                onClick={e => {
+                  e.preventDefault();
+                  onLeftClick();
+                }}
+              />
+            </button>
+            <img
+              className="avatar_preview"
+              src={
+                avatarImageMDs[newAvatar].avatarMDInfos[
+                  AvatarPartImageEnum.FACE_MUTE
+                ].src
+              }
+            ></img>
+            <button>
+              <RightCircleFilled
+                data-testid="profileDropdownRightButtonTestId"
+                onClick={e => {
+                  e.preventDefault();
+                  onRightClick();
+                }}
+              />
+            </button>
+          </div>
+        </form>
       </Menu.Item>
       <Menu.Item
         key="3"
