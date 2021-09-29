@@ -1,13 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Menu, Dropdown, message, Switch} from 'antd';
+import {Menu, Dropdown, message, Switch, Slider} from 'antd';
 import {DesktopOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
 import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
 import {HexColorPicker} from 'react-colorful';
+import {Vec2} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
   stream: MediaStream;
+  strokeColor: string;
+  lineWidth: number;
 }
 
 interface ScreenShareData {
@@ -15,9 +18,64 @@ interface ScreenShareData {
   stream: MediaStream;
 }
 
+function getXYClampOneZero(
+  bound: DOMRect,
+  clientX: number,
+  clientY: number,
+): Vec2 {
+  const width = bound.right - bound.left;
+  const height = bound.bottom - bound.top;
+  const x = clientX - bound.left;
+  const y = clientY - bound.top;
+  return {x: x / width, y: y / height};
+}
+
+class DrawHelper {
+  private canvas: HTMLCanvasElement;
+  private context: CanvasRenderingContext2D | null;
+  private drawStartPos: Vec2;
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+    this.context = canvas.getContext('2d');
+    if (!this.context) console.error('can not create context in DrawHelper');
+    this.drawStartPos = {x: 0, y: 0};
+  }
+  setDrawStartPos(pos: Vec2): void {
+    this.drawStartPos = {...pos};
+  }
+  clear(): void {
+    this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+  drawLineAndSaveStartPos(
+    toPos: Vec2,
+    strokeColor: string,
+    lineWidth: number,
+  ): void {
+    if (!this.context) return;
+    this.context.beginPath();
+    this.context.moveTo(
+      this.drawStartPos.x * this.canvas.width,
+      this.drawStartPos.y * this.canvas.height,
+    );
+    this.context.lineTo(
+      toPos.x * this.canvas.width,
+      toPos.y * this.canvas.height,
+    );
+    this.context.strokeStyle = strokeColor;
+    this.context.lineWidth = lineWidth;
+    this.context.stroke();
+    this.setDrawStartPos(toPos);
+  }
+}
+
 function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   // state
   const [isDragging, setIsDragging] = useState(true);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+
+  // canvasRef
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawHelperRef = useRef<DrawHelper | null>(null);
 
   // values
   const headerHeight = 20;
@@ -28,13 +86,77 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   const rndRef = useRef<Rnd>(null);
   const aspectRatio = props.stream.getTracks()[0].getSettings().aspectRatio;
 
+  const canvasWidth = 2000;
+  const canvasHeight = 2000;
+
   useEffect(() => {
     if (videoRef.current) videoRef.current.srcObject = props.stream;
   }, []);
 
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    drawHelperRef.current = new DrawHelper(canvasRef.current);
+  }, [canvasRef]);
+
   const drawToogleChagne: SwitchChangeEventHandler = (checked: boolean) => {
     setIsDragging(!checked);
   };
+
+  const clearClickHandler = () => {
+    drawHelperRef.current?.clear();
+  };
+
+  const canvasMouseEventHandler: React.MouseEventHandler<HTMLCanvasElement> =
+    event => {
+      if (isDragging) return;
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+      switch (event.type) {
+        case 'mousedown': {
+          setIsMouseDown(true);
+          drawHelperRef.current?.setDrawStartPos(
+            getXYClampOneZero(
+              canvas.getBoundingClientRect(),
+              event.clientX,
+              event.clientY,
+            ),
+          );
+          break;
+        }
+        case 'mousemove': {
+          if (isMouseDown) {
+            const context = canvas.getContext('2d');
+            if (!context) return;
+            const vec = getXYClampOneZero(
+              canvas.getBoundingClientRect(),
+              event.clientX,
+              event.clientY,
+            );
+            drawHelperRef.current?.drawLineAndSaveStartPos(
+              vec,
+              props.strokeColor,
+              props.lineWidth,
+            );
+          }
+          break;
+        }
+        case 'mouseup': {
+          setIsMouseDown(false);
+          break;
+        }
+        case 'mouseleave': {
+          setIsMouseDown(false);
+          break;
+        }
+        default: {
+          console.error(
+            `canvasMouseEventHandler called with wrong event type :${event.type}`,
+          );
+          break;
+        }
+      }
+    };
+
   const height = originVideoHeight + headerHeight;
   const width = aspectRatio
     ? originVideoHeight * aspectRatio
@@ -89,7 +211,12 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
                 padding: 0,
               }}
             ></Switch>
-            <button style={{height: `${headerHeight - 1}px`}}>Clear</button>
+            <button
+              style={{height: `${headerHeight - 1}px`}}
+              onClick={clearClickHandler}
+            >
+              Clear
+            </button>
           </div>
         </div>
         <video
@@ -104,6 +231,13 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
           controls={false}
         ></video>
         <canvas
+          ref={canvasRef}
+          width={canvasWidth}
+          height={canvasHeight}
+          onMouseDown={canvasMouseEventHandler}
+          onMouseMove={canvasMouseEventHandler}
+          onMouseUp={canvasMouseEventHandler}
+          onMouseLeave={canvasMouseEventHandler}
           style={{
             top: '20px',
             left: 0,
@@ -131,6 +265,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   );
   const [isDisplayColorPicker, setIsDisplayColorPicker] = useState(false);
   const [color, setColor] = useState('#000000');
+  const [lineWidth, setLineWidth] = useState(1);
   const screenShareOnClick = async () => {
     if (
       screenShareDatas.find(data => {
@@ -205,13 +340,18 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
                 setIsDisplayColorPicker(!isDisplayColorPicker);
               }}
               overlay={
-                <>
+                <div style={{background: 'white', borderRadius: '3%'}}>
                   <HexColorPicker
                     color={color}
                     onChange={setColor}
                   ></HexColorPicker>
-                  <div>Hello</div>
-                </>
+                  <Slider
+                    min={1}
+                    max={10}
+                    value={lineWidth}
+                    onChange={setLineWidth}
+                  ></Slider>
+                </div>
               }
               trigger={['click']}
             >
@@ -234,6 +374,8 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
           <ScreenViewer
             key={screenShareData.peerId}
             stream={screenShareData.stream}
+            strokeColor={color}
+            lineWidth={lineWidth}
           ></ScreenViewer>
         );
       })}

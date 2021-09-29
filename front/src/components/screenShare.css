@@ -10,3 +10,7 @@
   margin: 0;
   border: 2px solid white;
 }
+/* 하드코딩 추후 수정 가능하면 수정할 것. */
+.ant-switch-handle {
+  height: 16px;
+}
