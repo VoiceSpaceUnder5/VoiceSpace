@@ -122,10 +122,10 @@ function Navigation(props: NavigationProps): JSX.Element {
       stream.getTracks().forEach(track => {
         peer.addTrack(track);
       });
-      props.peerManager.localStream = stream;
       props.peerManager.peerOffer(peer);
-      props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
     });
+    props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
+    props.peerManager.localStream = stream;
     catchAudioTrackEnended(stream);
   };
   const catchAudioTrackEnended = (catchedStream: MediaStream) => {
