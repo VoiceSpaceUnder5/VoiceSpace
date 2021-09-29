@@ -444,7 +444,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 export default class PeerManager {
   // create new Peer params
   private readonly signalingHelper: RTCSignalingHelper;
-  readonly localStream: MediaStream;
+  localStream: MediaStream;
   private readonly audioContainer: HTMLDivElement;
   readonly nicknameContainer: HTMLDivElement;
   private readonly connectionClosedDisconnectedFailedCallBack: (
@@ -481,9 +481,9 @@ export default class PeerManager {
     // create new Peer params
     this.signalingHelper = signalingHelper;
     this.localStream = localStream;
-    this.localStream.getAudioTracks()[0].onended = () => {
-      console.log('localStream·audio·track·ended');
-    };
+    // this.localStream.getAudioTracks()[0].onended = () => {
+    //   console.log('RTCGameUtils에서 오디오 트랙 종료를 잡아보자.');
+    // };
     this.audioContainer = audioContainer;
     this.nicknameContainer = nicknameContainer;
     this.connectionClosedDisconnectedFailedCallBack = (peer: Peer): void => {
