@@ -115,15 +115,36 @@ function Navigation(props: NavigationProps): JSX.Element {
   const changeInputStream = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
       peer.getSenders().forEach(sender => {
-        if (sender.track?.kind === 'audio') peer.removeTrack(sender);
+        if (sender.track?.kind === 'audio') {
+          peer.removeTrack(sender);
+        }
       });
       stream.getTracks().forEach(track => {
         peer.addTrack(track);
       });
+      props.peerManager.localStream = stream;
       props.peerManager.peerOffer(peer);
       props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
     });
+    catchAudioTrackEnended(stream);
   };
+  const catchAudioTrackEnended = (catchedStream: MediaStream) => {
+    catchedStream.getAudioTracks()[0].onended = () => {
+      console.log('!!!!change localStream!!!!');
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((deviceInfos: MediaDeviceInfo[]) => {
+          const deviceId = deviceInfos[1].deviceId;
+          navigator.mediaDevices
+            .getUserMedia({video: false, audio: {deviceId: deviceId}})
+            .then(stream => {
+              console.log('지대로 바뀌었다!!!!');
+              changeInputStream(stream);
+            });
+        });
+    };
+  };
+  catchAudioTrackEnended(props.peerManager.localStream);
 
   return (
     <nav className="navbar">

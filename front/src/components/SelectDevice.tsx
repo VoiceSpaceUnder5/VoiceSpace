@@ -43,11 +43,11 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
     navigator.mediaDevices
       .getUserMedia({video: false, audio: {deviceId: deviceId}})
       .then(stream => {
+        console.log(`onChangeInput 안에 input 스트림`);
         props.changeInputStream(stream);
       });
   };
   if (!props.deviceInfos) {
-    console.log('deviceInfos가 없다');
     return <></>;
   }
   return (
@@ -59,14 +59,12 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
             if (deviceInfo.kind === 'audiooutput') {
               // 선택한 deviceInfo이면 selected
               if (props.seletedOutputDevice === deviceInfo.deviceId) {
-                console.log(`selected!! ${props.seletedOutputDevice}`);
                 return (
                   <option value={deviceInfo.deviceId} selected>
                     {deviceInfo.label}
                   </option>
                 );
               } else {
-                console.log(`not selected!! ${props.seletedOutputDevice}`);
                 return (
                   <option value={deviceInfo.deviceId}>
                     {deviceInfo.label}
