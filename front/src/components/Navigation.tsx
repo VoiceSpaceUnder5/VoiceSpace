@@ -12,6 +12,7 @@ import PeerManager, {
   DataDto,
   DataDtoType,
   Peer,
+  Vec2,
 } from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
@@ -84,6 +85,54 @@ function Navigation(props: NavigationProps): JSX.Element {
         data: peer.socketID,
       };
       peer.transmitUsingDataChannel(JSON.stringify(data));
+    });
+  };
+
+  const setOtherSideDrawStartPos = (socketID: string, startPos: Vec2) => {
+    const dataDto: DataDto = {
+      type: DataDtoType.SHARED_SCREEN_DRAW_START,
+      data: {
+        socketID: socketID,
+        startPos: startPos,
+      },
+    };
+    const sendData = JSON.stringify(dataDto);
+    props.peerManager.forEachPeer(peer => {
+      peer.transmitUsingDataChannel(sendData);
+    });
+  };
+
+  const setOtherSideDraw = (
+    socketID: string,
+    toPos: Vec2,
+    strokeColor: string,
+    lineWidth: number,
+  ) => {
+    const dataDto: DataDto = {
+      type: DataDtoType.SHARED_SCREEN_DRAWING,
+      data: {
+        socketID: socketID,
+        toPos: toPos,
+        strokeColor: strokeColor,
+        lineWidth: lineWidth,
+      },
+    };
+    const sendData = JSON.stringify(dataDto);
+    props.peerManager.forEachPeer(peer => {
+      peer.transmitUsingDataChannel(sendData);
+    });
+  };
+
+  const setOtherSideClear = (socketID: string) => {
+    const dataDto: DataDto = {
+      type: DataDtoType.SHARED_SCREEN_CLEAR,
+      data: {
+        socketID: socketID,
+      },
+    };
+    const sendData = JSON.stringify(dataDto);
+    props.peerManager.forEachPeer(peer => {
+      peer.transmitUsingDataChannel(sendData);
     });
   };
 
@@ -170,10 +219,14 @@ function Navigation(props: NavigationProps): JSX.Element {
       <div className="navbar_center">
         <MicOnOff setIsMicOn={setIsMicOn} />
         <ScreenShare
+          socketID={props.peerManager.socketID}
           addVideoTrack={addVideoTrack}
           setTrackEventHandler={setTrackEventHandler}
           removeVideoTrack={removeVideoTrack}
           setDataChannelEventHandler={setDataChannelEventHandler}
+          setOtherSideDrawStartPos={setOtherSideDrawStartPos}
+          setOtherSideDraw={setOtherSideDraw}
+          setOtherSideClear={setOtherSideClear}
         />
         <Options
           changeEachAudio={changeEachAudio}

@@ -9,7 +9,9 @@ export enum DataDtoType {
   PLAYER_INFO,
   CHAT_MESSAGE,
   SHARED_SCREEN_CLOSE,
-  SHARED_SCREEN_DRAW,
+  SHARED_SCREEN_CLEAR,
+  SHARED_SCREEN_DRAWING,
+  SHARED_SCREEN_DRAW_START,
 }
 
 /**
@@ -488,6 +490,9 @@ export default class PeerManager {
 
   // screenVideoTracks
   screenVideoTracks: MediaStreamTrack[];
+
+  // my socket ID
+  readonly socketID: string;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -533,6 +538,9 @@ export default class PeerManager {
 
     // screenVideoTracks
     this.screenVideoTracks = [];
+
+    // my socket ID
+    this.socketID = signalingHelper.getSocketID();
 
     // setEvent
     this.setSignalingEvent();
