@@ -1,7 +1,13 @@
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
 import {MapMakingInfo} from '../utils/ImageMetaData';
-import PeerManager, {Vec2} from '../utils/RTCGameUtils';
+import PeerManager, {
+  DataDto,
+  DataDtoType,
+  Peer,
+  PlayerDto,
+  Vec2,
+} from '../utils/RTCGameUtils';
 import GLHelper, {Camera} from '../utils/webGLUtils';
 import Joystick from './Joystick';
 
@@ -58,6 +64,14 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   };
   // called only once
   useEffect(() => {
+    // peerManager event add
+    props.peerManager.setDataChannelEventHandler(
+      DataDtoType.PLAYER_INFO,
+      (playerDto: PlayerDto, peer: Peer) => {
+        peer.update(playerDto);
+      },
+    );
+
     if (!canvasRef.current) {
       console.error('canvas is not rendered error');
       return;
@@ -106,11 +120,13 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       peerManager.me.update(gLHelper);
 
       gLHelper.drawObjectsBeforeAvatar();
-      const data = JSON.stringify(
-        Object.assign({type: 'playerDto'}, peerManager.me.getPlayerDto()),
-      );
+      const data: DataDto = {
+        type: DataDtoType.PLAYER_INFO,
+        data: peerManager.me.getPlayerDto(),
+      };
+      const transData = JSON.stringify(data);
       peerManager.forEachPeer(peer => {
-        peer.transmitUsingDataChannel(data);
+        peer.transmitUsingDataChannel(transData);
         gLHelper.drawAvatar(peer, peer.nicknameDiv);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });

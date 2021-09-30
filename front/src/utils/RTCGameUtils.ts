@@ -1,7 +1,27 @@
 import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
-import {Message} from '../components/Messenger';
+
+/**
+ * DataDto 의 type enum
+ */
+export enum DataDtoType {
+  PLAYER_INFO,
+  CHAT_MESSAGE,
+  SHARED_SCREEN_CLOSE,
+  SHARED_SCREEN_CLEAR,
+  SHARED_SCREEN_DRAWING,
+  SHARED_SCREEN_DRAW_START,
+}
+
+/**
+ * peerConnection 의 dataChannel 을 통해서 Data 를 전송할때 규약
+ */
+export interface DataDto {
+  type: DataDtoType;
+  // eslint-disable-next-line
+  data: any;
+}
 
 /**
  * position 등 x, y 두 변수를 가지고 있을 때 주로 사용
@@ -275,14 +295,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
 
-  //onMessageCallback
-  onMessageCallback: (message: Message) => void;
-
   //trackEventHandler (ontrack 으로 새로운 트랙이 들어왔을 때)
-  trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
+  trackEventHandler: (peerId: string, event: RTCTrackEvent) => void;
 
-  //dataChannel 을 통해 videoTrack 이 off 될 때
-
+  //dataChannel onMessageEvents container
+  // eslint-disable-next-line
+  dataChannelEventHandlers: Map<DataDtoType, (data: any, peer: Peer) => void>;
   constructor(
     signalingHelper: RTCSignalingHelper,
     connectedClientSocketID: string,
@@ -291,8 +309,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     nicknameDiv: HTMLDivElement,
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
-    onMessageCallback: (message: Message) => void,
-    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
+    // eslint-disable-next-line
+    dataChannelEventHandlers: Map<DataDtoType, (data: any, peer: Peer) => void>,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent) => void,
     maxSoundDistance = 500,
   ) {
     super(pcConfig);
@@ -321,11 +340,11 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     //nickname overlay div
     this.nicknameDiv = nicknameDiv;
 
-    //onMessageCallback
-    this.onMessageCallback = onMessageCallback;
-
     //trackEventHandler
     this.trackEventHandler = trackEventHandler;
+
+    //dataChannel onMessageEvents container
+    this.dataChannelEventHandlers = dataChannelEventHandlers;
 
     //    connect localStream
     localStream.getTracks().forEach(track => {
@@ -334,6 +353,13 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
     // event setting
     this.setEvent(signalingHelper, connectionClosedDisconnectedFailedCallBack);
+  }
+
+  private getDataChannelEventHandler(
+    type: DataDtoType,
+    // eslint-disable-next-line
+  ): ((data: any, peer: Peer) => void) | undefined {
+    return this.dataChannelEventHandlers.get(type);
   }
 
   private setEvent(
@@ -349,19 +375,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.ondatachannel = event => {
       const receviedDC = event.channel;
       receviedDC.onmessage = event => {
-        // 1. Dto에 타입까지 넣어줘서 조건분기
-        const data = JSON.parse(event.data);
-        if (data.type === 'playerDto') {
-          delete data.type;
-          this.update(data);
-        } else if (data.type === 'message') {
-          console.log(data);
-          this.onMessageCallback(data);
-          // 2. 뭔가 콜백함수 호출하게?
-          // onMessageCallBack(data);
-        } else if (data.type === 'closeVideo') {
-          this.trackEventHandler(this.connectedClientSocketID, null);
-        }
+        const dataDto = JSON.parse(event.data) as DataDto;
+        const cb = this.getDataChannelEventHandler(dataDto.type);
+        if (cb) cb(dataDto.data, this);
       };
       receviedDC.onopen = () => {
         console.log(`dataChannel created with ${this.connectedClientSocketID}`);
@@ -425,6 +441,10 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.audio.volume = volumeValue * this.volumnMultiplyValue;
   }
 
+  /**
+   *
+   * @param data JSON.stringify(dataDto: DataDto)
+   */
   transmitUsingDataChannel(data: string): void {
     if (this.dc.readyState === 'open') {
       this.dc.send(data);
@@ -461,14 +481,18 @@ export default class PeerManager {
   // RoomID
   readonly roomID: string;
 
-  // DataChannel onMessage callback
-  onMessageCallback: (message: Message) => void;
+  //dataChannel onMessageEvents container
+  // eslint-disable-next-line
+  dataChannelEventHandlers: Map<DataDtoType, (data: any, peer: Peer) => void>;
 
   // trackEventHadler
-  trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void;
+  trackEventHandler: (peerId: string, event: RTCTrackEvent) => void;
 
   // screenVideoTracks
   screenVideoTracks: MediaStreamTrack[];
+
+  // my socket ID
+  readonly socketID: string;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -504,10 +528,8 @@ export default class PeerManager {
     // roomID
     this.roomID = roomID;
 
-    // onMessageCallback
-    this.onMessageCallback = () => {
-      return;
-    };
+    //dataChannel onMessageEvents container
+    this.dataChannelEventHandlers = new Map();
 
     // trackEventHandler
     this.trackEventHandler = () => {
@@ -516,6 +538,9 @@ export default class PeerManager {
 
     // screenVideoTracks
     this.screenVideoTracks = [];
+
+    // my socket ID
+    this.socketID = signalingHelper.getSocketID();
 
     // setEvent
     this.setSignalingEvent();
@@ -536,8 +561,12 @@ export default class PeerManager {
     this.peers.forEach(peer => callback(peer));
   }
 
-  setOnMessageCallback(onMessageCallback: (message: Message) => void): void {
-    this.onMessageCallback = onMessageCallback;
+  setDataChannelEventHandler(
+    type: DataDtoType,
+    // eslint-disable-next-line
+    handler: (data: any, peer: Peer) => void,
+  ): void {
+    this.dataChannelEventHandlers.set(type, handler);
   }
 
   createNewPeerAndAddPeers(connectedClientSocketID: string): Peer {
@@ -561,7 +590,7 @@ export default class PeerManager {
       nicknameDiv,
       this.connectionClosedDisconnectedFailedCallBack,
       this.pcConfig,
-      this.onMessageCallback,
+      this.dataChannelEventHandlers,
       this.trackEventHandler,
       500,
     );
@@ -665,9 +694,11 @@ export default class PeerManager {
   close(): void {
     console.log('peerManager close called');
     this.peers.forEach(peer => {
-      peer.transmitUsingDataChannel(
-        JSON.stringify({type: 'closeVideo', data: ''}),
-      );
+      const data: DataDto = {
+        type: DataDtoType.SHARED_SCREEN_CLOSE,
+        data: peer.socketID,
+      };
+      peer.transmitUsingDataChannel(JSON.stringify(data));
       peer.close();
     });
     this.signalingHelper.close();

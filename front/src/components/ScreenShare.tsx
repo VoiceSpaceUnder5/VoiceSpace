@@ -5,17 +5,28 @@ import {Rnd} from 'react-rnd';
 import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
 import {HexColorPicker} from 'react-colorful';
-import {Vec2} from '../utils/RTCGameUtils';
+import {DataDtoType, Peer, Vec2} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
+  socketID: string;
   stream: MediaStream;
   strokeColor: string;
   lineWidth: number;
+  drawHelper: DrawHelper;
+  setOtherSideDrawStartPos: (socketID: string, startPos: Vec2) => void;
+  setOtherSideDraw: (
+    socketID: string,
+    toPos: Vec2,
+    strokeColor: string,
+    lineWidth: number,
+  ) => void;
+  setOtherSideClear: (socketID: string) => void;
 }
 
 interface ScreenShareData {
   peerId: string;
   stream: MediaStream;
+  drawHelper: DrawHelper;
 }
 
 function getXYClampOneZero(
@@ -31,27 +42,33 @@ function getXYClampOneZero(
 }
 
 class DrawHelper {
-  private canvas: HTMLCanvasElement;
+  private canvas: HTMLCanvasElement | null;
   private context: CanvasRenderingContext2D | null;
   private drawStartPos: Vec2;
-  constructor(canvas: HTMLCanvasElement) {
+  constructor() {
+    this.canvas = null;
+    this.context = null;
+    this.drawStartPos = {x: 0, y: 0};
+  }
+  setUp(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     if (!this.context) console.error('can not create context in DrawHelper');
-    this.drawStartPos = {x: 0, y: 0};
   }
+
   setDrawStartPos(pos: Vec2): void {
     this.drawStartPos = {...pos};
   }
   clear(): void {
-    this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.canvas && this.context)
+      this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
   drawLineAndSaveStartPos(
     toPos: Vec2,
     strokeColor: string,
     lineWidth: number,
   ): void {
-    if (!this.context) return;
+    if (!this.canvas || !this.context) return;
     this.context.beginPath();
     this.context.moveTo(
       this.drawStartPos.x * this.canvas.width,
@@ -72,19 +89,22 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   // state
   const [isDragging, setIsDragging] = useState(true);
   const [isMouseDown, setIsMouseDown] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState(
+    props.stream.getTracks()[0].getSettings().aspectRatio
+      ? // eslint-disable-next-line
+        props.stream.getTracks()[0].getSettings().aspectRatio!
+      : 16 / 9,
+  );
 
   // canvasRef
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const drawHelperRef = useRef<DrawHelper | null>(null);
 
   // values
   const headerHeight = 20;
   const originVideoHeight = 120;
-  const originAspectRatio = 16 / 9;
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const rndRef = useRef<Rnd>(null);
-  const aspectRatio = props.stream.getTracks()[0].getSettings().aspectRatio;
 
   const canvasWidth = 2000;
   const canvasHeight = 2000;
@@ -95,7 +115,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    drawHelperRef.current = new DrawHelper(canvasRef.current);
+    props.drawHelper.setUp(canvasRef.current);
   }, [canvasRef]);
 
   const drawToogleChagne: SwitchChangeEventHandler = (checked: boolean) => {
@@ -103,7 +123,8 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   };
 
   const clearClickHandler = () => {
-    drawHelperRef.current?.clear();
+    props.drawHelper.clear();
+    props.setOtherSideClear(props.socketID);
   };
 
   const canvasMouseEventHandler: React.MouseEventHandler<HTMLCanvasElement> =
@@ -114,13 +135,13 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
       switch (event.type) {
         case 'mousedown': {
           setIsMouseDown(true);
-          drawHelperRef.current?.setDrawStartPos(
-            getXYClampOneZero(
-              canvas.getBoundingClientRect(),
-              event.clientX,
-              event.clientY,
-            ),
+          const startPos = getXYClampOneZero(
+            canvas.getBoundingClientRect(),
+            event.clientX,
+            event.clientY,
           );
+          props.drawHelper.setDrawStartPos(startPos);
+          props.setOtherSideDrawStartPos(props.socketID, startPos);
           break;
         }
         case 'mousemove': {
@@ -132,7 +153,13 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
               event.clientX,
               event.clientY,
             );
-            drawHelperRef.current?.drawLineAndSaveStartPos(
+            props.drawHelper.drawLineAndSaveStartPos(
+              vec,
+              props.strokeColor,
+              props.lineWidth,
+            );
+            props.setOtherSideDraw(
+              props.socketID,
               vec,
               props.strokeColor,
               props.lineWidth,
@@ -157,19 +184,25 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
       }
     };
 
+  const onResize = () => {
+    if (props.stream.getTracks()[0].getSettings().aspectRatio) {
+      // eslint-disable-next-line
+      setAspectRatio(props.stream.getTracks()[0].getSettings().aspectRatio!);
+    }
+  };
+
   const height = originVideoHeight + headerHeight;
-  const width = aspectRatio
-    ? originVideoHeight * aspectRatio
-    : originVideoHeight * originAspectRatio;
+  const width = originVideoHeight * aspectRatio;
   return (
     <div className="rndContainer">
       <Rnd
+        onResize={onResize}
         disableDragging={!isDragging}
         className="rnd"
         minWidth={width}
         minHeight={height}
         ref={rndRef}
-        lockAspectRatio={aspectRatio ? aspectRatio : originAspectRatio}
+        lockAspectRatio={aspectRatio}
         lockAspectRatioExtraHeight={headerHeight + 1}
         default={{
           x: 0,
@@ -252,11 +285,25 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 }
 
 interface ScreenShareProps {
+  socketID: string;
   addVideoTrack: (stream: MediaStream) => void;
   setTrackEventHandler: (
-    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent) => void,
   ) => void;
   removeVideoTrack: () => void;
+  setDataChannelEventHandler: (
+    dataType: DataDtoType,
+    // eslint-disable-next-line
+    dataChannelEventHandler: (arg0: any, peer: Peer) => void,
+  ) => void;
+  setOtherSideDrawStartPos: (socketID: string, startPos: Vec2) => void;
+  setOtherSideDraw: (
+    socketID: string,
+    toPos: Vec2,
+    strokeColor: string,
+    lineWidth: number,
+  ) => void;
+  setOtherSideClear: (socketID: string) => void;
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
@@ -280,44 +327,94 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     // eslint-disable-next-line
     const stream = await (navigator.mediaDevices as any).getDisplayMedia(); // 핸드폰일 경우 사용 불가.
     props.addVideoTrack(stream);
-    setScreenShareDatas([{peerId: '', stream: stream}, ...screenShareDatas]);
+    setScreenShareDatas([
+      {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
+      ...screenShareDatas,
+    ]);
   };
 
   const screenShareStopOnClick = () => {
     props.removeVideoTrack();
     setScreenShareDatas(before => {
       return before.filter(data => {
-        return data.peerId !== '';
+        return data.peerId !== props.socketID;
       });
     });
   };
 
-  const trackEventHandler = (peerId: string, event: RTCTrackEvent | null) => {
-    if (event) {
-      if (event.track.kind === 'video') {
-        const stream = new MediaStream();
-        stream.addTrack(event.track);
-        setScreenShareDatas(before => {
-          return [
-            {
-              peerId: peerId,
-              stream: stream,
-            },
-            ...before,
-          ];
-        });
-      }
-    } else {
+  const trackEventHandler = (peerId: string, event: RTCTrackEvent) => {
+    if (event.track.kind === 'video') {
+      console.log('trackEventHandler', peerId);
+      const stream = new MediaStream();
+      stream.addTrack(event.track);
       setScreenShareDatas(before => {
-        return before.filter(data => {
-          return data.peerId !== peerId;
-        });
+        return [
+          {
+            peerId: peerId,
+            stream: stream,
+            drawHelper: new DrawHelper(),
+          },
+          ...before,
+        ];
       });
     }
   };
 
   useEffect(() => {
     props.setTrackEventHandler(trackEventHandler);
+    props.setDataChannelEventHandler(
+      DataDtoType.SHARED_SCREEN_CLOSE,
+      peerId => {
+        setScreenShareDatas(before => {
+          return before.filter(data => {
+            return data.peerId !== peerId;
+          });
+        });
+      },
+    );
+    props.setDataChannelEventHandler(
+      DataDtoType.SHARED_SCREEN_DRAW_START,
+      data => {
+        setScreenShareDatas(screenDatas => {
+          const screenShareData = screenDatas.find(ssd => {
+            return ssd.peerId === data.socketID;
+          });
+          if (screenShareData) {
+            screenShareData.drawHelper.setDrawStartPos(data.startPos);
+          }
+          return screenDatas;
+        });
+      },
+    );
+    props.setDataChannelEventHandler(
+      DataDtoType.SHARED_SCREEN_DRAWING,
+      data => {
+        setScreenShareDatas(screenDatas => {
+          const screenShareData = screenDatas.find(ssd => {
+            return ssd.peerId === data.socketID;
+          });
+          if (screenShareData) {
+            screenShareData.drawHelper.drawLineAndSaveStartPos(
+              data.toPos,
+              data.strokeColor,
+              data.lineWidth,
+            );
+          }
+          return screenDatas;
+        });
+      },
+    );
+    props.setDataChannelEventHandler(DataDtoType.SHARED_SCREEN_CLEAR, data => {
+      setScreenShareDatas(screenDatas => {
+        const screenShareData = screenDatas.find(ssd => {
+          return ssd.peerId === data.socketID;
+        });
+        if (screenShareData) {
+          screenShareData.drawHelper.clear();
+        }
+        return screenDatas;
+      });
+    });
   }, []);
   const screenshare = () => {
     return (
@@ -340,7 +437,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
                 setIsDisplayColorPicker(!isDisplayColorPicker);
               }}
               overlay={
-                <div style={{background: 'white', borderRadius: '3%'}}>
+                <div style={{background: 'white', borderRadius: '4%'}}>
                   <HexColorPicker
                     color={color}
                     onChange={setColor}
@@ -373,9 +470,14 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         return (
           <ScreenViewer
             key={screenShareData.peerId}
+            socketID={screenShareData.peerId}
             stream={screenShareData.stream}
             strokeColor={color}
             lineWidth={lineWidth}
+            drawHelper={screenShareData.drawHelper}
+            setOtherSideDraw={props.setOtherSideDraw}
+            setOtherSideDrawStartPos={props.setOtherSideDrawStartPos}
+            setOtherSideClear={props.setOtherSideClear}
           ></ScreenViewer>
         );
       })}
