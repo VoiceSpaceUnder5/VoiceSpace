@@ -134,6 +134,8 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
       const canvas = canvasRef.current;
       switch (event.type) {
         case 'mousedown': {
+          canvas.style.cursor =
+            'url(https://fonts.google.com/icons?selected=Material%20Icons%20Outlined%3Aedit%3A) 0 50, auto';
           setIsMouseDown(true);
           const startPos = getXYClampOneZero(
             canvas.getBoundingClientRect(),
