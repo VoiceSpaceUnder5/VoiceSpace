@@ -138,7 +138,6 @@ function Navigation(props: NavigationProps): JSX.Element {
           navigator.mediaDevices
             .getUserMedia({video: false, audio: {deviceId: deviceId}})
             .then(stream => {
-              console.log('지대로 바뀌었다!!!!');
               changeInputStream(stream);
             });
         });
