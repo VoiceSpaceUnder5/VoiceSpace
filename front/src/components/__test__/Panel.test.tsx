@@ -18,7 +18,7 @@ const mockedPanelProps: PanelProps = {
   roomId: 'testRoomID',
   onCopy: jest.fn(),
   sendMessage: jest.fn(),
-  setOnMessageCallback: jest.fn(),
+  setDataChannelEventHandler: jest.fn(),
 };
 
 // roomId: string;
