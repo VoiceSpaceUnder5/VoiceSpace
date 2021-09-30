@@ -1,0 +1,16 @@
+.rndContainer {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+.rnd {
+  z-index: 999;
+  padding: 0;
+  margin: 0;
+  border: 2px solid white;
+}
+/* 하드코딩 추후 수정 가능하면 수정할 것. */
+.ant-switch-handle {
+  height: 16px;
+}
