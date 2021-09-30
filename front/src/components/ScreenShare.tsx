@@ -5,7 +5,7 @@ import {Rnd} from 'react-rnd';
 import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
 import {HexColorPicker} from 'react-colorful';
-import {Vec2} from '../utils/RTCGameUtils';
+import {DataDtoType, Peer, Vec2} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
   stream: MediaStream;
@@ -254,9 +254,14 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 interface ScreenShareProps {
   addVideoTrack: (stream: MediaStream) => void;
   setTrackEventHandler: (
-    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent) => void,
   ) => void;
   removeVideoTrack: () => void;
+  setDataChannelEventHandler: (
+    dataType: DataDtoType,
+    // eslint-disable-next-line
+    dataChannelEventHandler: (arg0: any, peer: Peer) => void,
+  ) => void;
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
@@ -292,32 +297,34 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     });
   };
 
-  const trackEventHandler = (peerId: string, event: RTCTrackEvent | null) => {
-    if (event) {
-      if (event.track.kind === 'video') {
-        const stream = new MediaStream();
-        stream.addTrack(event.track);
-        setScreenShareDatas(before => {
-          return [
-            {
-              peerId: peerId,
-              stream: stream,
-            },
-            ...before,
-          ];
-        });
-      }
-    } else {
+  const trackEventHandler = (peerId: string, event: RTCTrackEvent) => {
+    if (event.track.kind === 'video') {
+      const stream = new MediaStream();
+      stream.addTrack(event.track);
       setScreenShareDatas(before => {
-        return before.filter(data => {
-          return data.peerId !== peerId;
-        });
+        return [
+          {
+            peerId: peerId,
+            stream: stream,
+          },
+          ...before,
+        ];
       });
     }
   };
 
   useEffect(() => {
     props.setTrackEventHandler(trackEventHandler);
+    props.setDataChannelEventHandler(
+      DataDtoType.SHARED_SCREEN_CLOSE,
+      peerId => {
+        setScreenShareDatas(before => {
+          return before.filter(data => {
+            return data.peerId !== peerId;
+          });
+        });
+      },
+    );
   }, []);
   const screenshare = () => {
     return (

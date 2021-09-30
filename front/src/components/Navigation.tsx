@@ -7,11 +7,15 @@ import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
-import PeerManager, {AudioAnalyser} from '../utils/RTCGameUtils';
+import PeerManager, {
+  AudioAnalyser,
+  DataDto,
+  DataDtoType,
+  Peer,
+} from '../utils/RTCGameUtils';
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
-import {Message} from './Messenger';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -40,10 +44,15 @@ function Navigation(props: NavigationProps): JSX.Element {
       peer.transmitUsingDataChannel(message);
     });
   };
-  const setOnMessageCallback = (
-    onMessageCallback: (message: Message) => void,
+  const setDataChannelEventHandler = (
+    dataType: DataDtoType,
+    // eslint-disable-next-line
+    dataChannelEventHandler: (arg0: any, peer: Peer) => void,
   ) => {
-    props.peerManager.setOnMessageCallback(onMessageCallback);
+    props.peerManager.setDataChannelEventHandler(
+      dataType,
+      dataChannelEventHandler,
+    );
   };
   const getMyNickname = (): string => {
     return props.peerManager.me.nickname;
@@ -70,14 +79,16 @@ function Navigation(props: NavigationProps): JSX.Element {
       peer.getSenders().forEach(sender => {
         if (sender.track?.kind === 'video') peer.removeTrack(sender);
       });
-      peer.transmitUsingDataChannel(
-        JSON.stringify({type: 'closeVideo', data: ''}),
-      );
+      const data: DataDto = {
+        type: DataDtoType.SHARED_SCREEN_CLOSE,
+        data: peer.socketID,
+      };
+      peer.transmitUsingDataChannel(JSON.stringify(data));
     });
   };
 
   const setTrackEventHandler = (
-    trackEventHandler: (peerId: string, event: RTCTrackEvent | null) => void,
+    trackEventHandler: (peerId: string, event: RTCTrackEvent) => void,
   ) => {
     props.peerManager.trackEventHandler = trackEventHandler;
   };
@@ -162,6 +173,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           addVideoTrack={addVideoTrack}
           setTrackEventHandler={setTrackEventHandler}
           removeVideoTrack={removeVideoTrack}
+          setDataChannelEventHandler={setDataChannelEventHandler}
         />
         <Options
           changeEachAudio={changeEachAudio}
@@ -178,7 +190,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           roomId={props.peerManager.roomID}
           onCopy={onCopy}
           sendMessage={sendMessage}
-          setOnMessageCallback={setOnMessageCallback}
+          setDataChannelEventHandler={setDataChannelEventHandler}
         />
       </div>
     </nav>

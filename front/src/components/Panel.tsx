@@ -5,6 +5,7 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../pages/spacePage/space.css';
 import {UserInfo, UserList} from './UserList';
 import {Message, Messenger} from './Messenger';
+import {DataDto, DataDtoType} from '../utils/RTCGameUtils';
 
 export interface PanelProps {
   getMyNickname: () => string;
@@ -12,7 +13,11 @@ export interface PanelProps {
   roomId: string;
   onCopy: () => void;
   sendMessage: (message: string) => void;
-  setOnMessageCallback: (arg0: (message: Message) => void) => void;
+  setDataChannelEventHandler: (
+    arg0: DataDtoType,
+    // eslint-disable-next-line
+    arg1: (data: any) => void,
+  ) => void;
 }
 
 interface MenuItemProps {
@@ -76,12 +81,14 @@ function Panel(props: PanelProps): JSX.Element {
   };
   const onSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    const messageData: Message = {
-      type: 'message',
-      nickname: props.getMyNickname(),
-      data: message,
+    const data: DataDto = {
+      type: DataDtoType.CHAT_MESSAGE,
+      data: {
+        nickname: props.getMyNickname(),
+        data: message,
+      },
     };
-    props.sendMessage(JSON.stringify(messageData));
+    props.sendMessage(JSON.stringify(data));
     setMessage('');
     if (messageArray === undefined) {
       setMessageArray([`나: ${message}`]);
@@ -97,7 +104,10 @@ function Panel(props: PanelProps): JSX.Element {
   };
 
   useEffect(() => {
-    props.setOnMessageCallback(onMessageCallback);
+    props.setDataChannelEventHandler(
+      DataDtoType.CHAT_MESSAGE,
+      onMessageCallback,
+    );
   }, []);
 
   return (
