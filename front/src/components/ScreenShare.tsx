@@ -355,19 +355,21 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
 
   const trackEventHandler = (peerId: string, event: RTCTrackEvent) => {
-    if (event.track.kind === 'video') {
-      console.log('trackEventHandler', peerId);
-      const stream = new MediaStream();
-      stream.addTrack(event.track);
+    if (event.streams[0]) {
       setScreenShareDatas(before => {
-        return [
-          {
-            peerId: peerId,
-            stream: stream,
-            drawHelper: new DrawHelper(),
-          },
-          ...before,
-        ];
+        const alreadyExist = before.find(data => {
+          return data.stream.id === event.streams[0].id;
+        });
+        if (alreadyExist) return before;
+        else
+          return [
+            {
+              peerId: peerId,
+              stream: event.streams[0],
+              drawHelper: new DrawHelper(),
+            },
+            ...before,
+          ];
       });
     }
   };

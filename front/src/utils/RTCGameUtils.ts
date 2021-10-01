@@ -402,7 +402,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
-      if (event.track.kind === 'audio') {
+      if (!event.streams[0]) {
         const stream = new MediaStream();
         stream.addTrack(event.track);
         this.audio.srcObject = stream;

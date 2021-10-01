@@ -65,7 +65,7 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
     props.peerManager.forEachPeer(peer => {
       stream.getTracks().forEach(track => {
-        peer.addTrack(track);
+        peer.addTrack(track, stream);
       });
       props.peerManager.peerOffer(peer);
     });
