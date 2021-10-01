@@ -28,6 +28,91 @@ canvas {
   cursor: default;
 }
 
+/* default */
+.canvasOverlay-textMessage-bottom {
+  position: absolute;
+  cursor: default;
+  max-width: 150px;
+  padding: 3px 5px;
+  word-break: break-all;
+  line-break: normal;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+.canvasOverlay-textMessage-bottom:after {
+  border-top: 10px solid rgba(255, 255, 255, 0.3);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  content: '';
+  position: absolute;
+  left: 42%;
+  bottom: -20px;
+}
+/* top */
+.canvasOverlay-textMessage-top {
+  position: absolute;
+  cursor: default;
+  max-width: 150px;
+  padding: 3px 5px;
+  word-break: break-all;
+  line-break: normal;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+.canvasOverlay-textMessage-top:after {
+  border-top: 10px solid transparent;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(255, 255, 255, 0.3);
+  content: '';
+  position: absolute;
+  left: 42%;
+  top: -20px;
+}
+/* left */
+.canvasOverlay-textMessage-left {
+  position: absolute;
+  cursor: default;
+  max-width: 150px;
+  padding: 3px 5px;
+  word-break: break-all;
+  line-break: normal;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+.canvasOverlay-textMessage-left:after {
+  border-top: 5px solid transparent;
+  border-left: 5px solid transparent;
+  border-right: 10px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 5px solid transparent;
+  content: '';
+  position: absolute;
+  top: 42%;
+  right: 100%;
+}
+/* right */
+.canvasOverlay-textMessage-right {
+  position: absolute;
+  cursor: default;
+  max-width: 150px;
+  padding: 3px 5px;
+  word-break: break-all;
+  line-break: normal;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+.canvasOverlay-textMessage-right:after {
+  border-top: 5px solid transparent;
+  border-left: 10px solid rgba(255, 255, 255, 0.3);
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  content: '';
+  position: absolute;
+  top: 42%;
+  left: 100%;
+}
+
 /* navbar 전체 */
 .navbar {
   height: 8vh;

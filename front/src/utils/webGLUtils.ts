@@ -439,7 +439,11 @@ class GLHelper {
     };
   }
 
-  drawAvatar(player: PlayerDto, div: HTMLDivElement): void {
+  drawAvatar(
+    player: PlayerDto,
+    nicknameDiv: HTMLDivElement,
+    textMessageDiv: HTMLDivElement,
+  ): void {
     const divSize = {...this.camera.size};
     const drawIdxs = [AvatarPartImageEnum.BODY, player.avatarFace]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
@@ -474,17 +478,61 @@ class GLHelper {
       const pixelX = (clipspace[0] * 0.5 + 0.5) * this.camera.originSize.width;
       divSize.width = pixelX;
     });
-    if (divSize.height + this.divHeightOffsetY < 0)
-      divSize.height = -this.divHeightOffsetY;
-    if (divSize.height > this.camera.originSize.height)
-      divSize.height = this.camera.originSize.height - div.clientHeight;
-    if (divSize.width - div.clientWidth / 2 < 0)
-      divSize.width = div.clientWidth / 2;
-    if (divSize.width + div.clientWidth / 2 > this.camera.originSize.width)
-      divSize.width = this.camera.originSize.width - div.clientWidth / 2;
 
-    div.style.left = Math.floor(divSize.width) - div.clientWidth / 2 + 'px';
-    div.style.top = Math.floor(divSize.height) + this.divHeightOffsetY + 'px';
+    if (textMessageDiv.innerText === '') {
+      if (divSize.height + this.divHeightOffsetY < 0)
+        divSize.height = -this.divHeightOffsetY + nicknameDiv.clientHeight;
+      if (divSize.height > this.camera.originSize.height)
+        divSize.height =
+          this.camera.originSize.height - nicknameDiv.clientHeight;
+      if (divSize.width - nicknameDiv.clientWidth / 2 < 0)
+        divSize.width = nicknameDiv.clientWidth / 2;
+      if (
+        divSize.width + nicknameDiv.clientWidth / 2 >
+        this.camera.originSize.width
+      )
+        divSize.width =
+          this.camera.originSize.width - nicknameDiv.clientWidth / 2;
+      nicknameDiv.style.visibility = 'visible';
+      textMessageDiv.className = 'canvasOverlay';
+      nicknameDiv.style.left =
+        Math.floor(divSize.width) - nicknameDiv.clientWidth / 2 + 'px';
+      nicknameDiv.style.top =
+        Math.floor(divSize.height) + this.divHeightOffsetY + 'px';
+    } else {
+      let direction = 'bottom';
+      nicknameDiv.style.visibility = 'hidden';
+      // 위
+      if (divSize.height + this.divHeightOffsetY < 0) {
+        divSize.height = -this.divHeightOffsetY + textMessageDiv.clientHeight;
+        direction = 'top';
+      }
+      // 아래
+      if (divSize.height > this.camera.originSize.height) {
+        divSize.height =
+          this.camera.originSize.height - textMessageDiv.clientHeight - 30;
+        direction = 'bottom';
+      }
+      // 왼쪽
+      if (divSize.width - textMessageDiv.clientWidth / 2 < 0) {
+        divSize.width = textMessageDiv.clientWidth / 2 + 10;
+        direction = 'left';
+      }
+      // 오른쪽
+      if (
+        divSize.width + textMessageDiv.clientWidth / 2 >
+        this.camera.originSize.width
+      ) {
+        divSize.width =
+          this.camera.originSize.width - textMessageDiv.clientWidth / 2 - 10;
+        direction = 'right';
+      }
+      textMessageDiv.className = `canvasOverlay-textMessage-${direction}`;
+      textMessageDiv.style.left =
+        Math.floor(divSize.width) - textMessageDiv.clientWidth / 2 + 'px';
+      textMessageDiv.style.top =
+        Math.floor(divSize.height) - textMessageDiv.clientHeight - 10 + 'px';
+    }
   }
 
   updateFromCavnas(canvas: HTMLCanvasElement): void {
