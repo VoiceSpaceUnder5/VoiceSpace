@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Vec2} from '../utils/RTCGameUtils';
 
 export interface JoystickProps {
@@ -15,6 +15,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
   const joystickRef = useRef<HTMLImageElement>(null);
   const touchStartPosRef = useRef<Vec2>({x: 0, y: 0});
   const touchingPosRef = useRef<Vec2>({x: 0, y: 0});
+  const [isClick, setIsClick] = useState(false);
 
   const oldTouchesPositions = useRef<Vec2[]>([
     {x: 0, y: 0},
@@ -47,6 +48,11 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     const joystick = joystickRef.current;
     joystickBase.style.visibility = 'hidden';
     joystick.style.visibility = 'hidden';
+
+    joystickBase.style.left = '0px';
+    joystickBase.style.top = '0px';
+    joystick.style.left = '0px';
+    joystick.style.top = '0px';
   };
   const moveJoystick = () => {
     if (!joystickRef.current || !joystickBaseRef.current) return;
@@ -59,6 +65,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     const endPosY = touchingPosRef.current.y;
     if (joystick === null) return;
     if (joystickBase === null) return;
+    if (!isClick) return;
 
     const dist2 = Math.sqrt(
       Math.pow(endPosX - startPosX, 2) + Math.pow(endPosY - startPosY, 2),
@@ -106,6 +113,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
   const divMouseDownEventHandler = (e: MouseEvent) => {
     e.preventDefault();
+    setIsClick(true);
     props.setIsMoving(true);
     touchStartPosRef.current = {
       x: e.clientX,
@@ -126,6 +134,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
   const divMouseUpEventHandler = (e: MouseEvent) => {
     e.preventDefault();
+    setIsClick(false);
     props.setIsMoving(false);
     hideJoystickBase();
   };
