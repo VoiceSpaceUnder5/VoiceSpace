@@ -119,6 +119,13 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   }, [canvasRef]);
 
   const drawToogleChagne: SwitchChangeEventHandler = (checked: boolean) => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      if (checked)
+        canvas.style.cursor = 'url(./assets/navigation/pencil.png) 4 20, auto';
+      else canvas.style.cursor = 'move';
+    }
+
     setIsDragging(!checked);
   };
 
@@ -196,6 +203,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   return (
     <div className="rndContainer">
       <Rnd
+        bounds={'body'}
         onResize={onResize}
         disableDragging={!isDragging}
         className="rnd"
@@ -259,6 +267,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             width: '100%',
             height: `calc(100% - ${headerHeight}px)`,
           }}
+          muted={false}
           autoPlay={true}
           ref={videoRef}
           controls={false}
@@ -325,7 +334,10 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       return;
     }
     // eslint-disable-next-line
-    const stream = await (navigator.mediaDevices as any).getDisplayMedia(); // 핸드폰일 경우 사용 불가.
+    const stream = await (navigator.mediaDevices as any).getDisplayMedia({
+      audio: true,
+      video: true,
+    }); // 핸드폰일 경우 사용 불가.
     props.addVideoTrack(stream);
     setScreenShareDatas([
       {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
