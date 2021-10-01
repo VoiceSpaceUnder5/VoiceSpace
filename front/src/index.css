@@ -2,8 +2,17 @@ html {
   padding: env(safe-area-inset);
 }
 
+/* scrollbar hidden */
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
+
 body,
 #root {
+  /* scrollbar hidden */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
   margin: 0;
   padding: 0;
   width: 100vw;

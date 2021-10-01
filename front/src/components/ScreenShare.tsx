@@ -203,6 +203,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   return (
     <div className="rndContainer">
       <Rnd
+        bounds={'body'}
         onResize={onResize}
         disableDragging={!isDragging}
         className="rnd"
