@@ -51,11 +51,17 @@ function setNewPeerManager(
         nicknameDiv.className = 'canvasOverlay';
         nicknameContainer.appendChild(nicknameDiv);
 
+        const textMessageDiv = document.createElement('div') as HTMLDivElement;
+        textMessageDiv.className = 'canvasOverlay';
+        nicknameContainer.appendChild(textMessageDiv);
+
         const me = new Me(
           nicknameDiv,
+          textMessageDiv,
           audioAnalyser,
           initialCenterPos,
           query.nickname,
+          '',
           query.avatarIdx,
         );
 

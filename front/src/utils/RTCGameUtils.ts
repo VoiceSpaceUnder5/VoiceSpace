@@ -46,6 +46,7 @@ export interface AvatarFaceDto {
  */
 export interface PlayerDto extends AvatarFaceDto {
   nickname: string;
+  textMessage: string;
   avatar: AvatarImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
@@ -121,6 +122,7 @@ export class AudioAnalyser {
 export class Me implements PlayerDto {
   // PlayerDto
   private _nickname: string; //외부에서 변경하는 것이 아니라, setter 를 통해서 변경. setter 에서는 nickname 이 변경되면 nicknameDiv 의 innerText 도 같이 변경함.
+  private _textMessage: string;
   avatar: AvatarImageEnum;
   avatarFace: AvatarPartImageEnum;
   avatarFaceScale: number;
@@ -129,6 +131,9 @@ export class Me implements PlayerDto {
 
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
+
+  //textMessage overlay div
+  textMessageDiv: HTMLDivElement;
 
   // update avatar position values
   private lastUpdateTimeStamp: number;
@@ -141,18 +146,25 @@ export class Me implements PlayerDto {
   private audioAnalyser: AudioAnalyser;
   constructor(
     nicknameDiv: HTMLDivElement,
+    textMessageDiv: HTMLDivElement,
     audioAnalyser: AudioAnalyser,
     centerPos: Vec2, // original centerPos
     nickname = '익명의 곰', // 추후 .env 로 이동해야 될듯 (하드코딩 제거)
+    textMessage: string,
     avatar = AvatarImageEnum.BROWN_BEAR,
     velocity = 0.2,
   ) {
     //nickname overlay div
     this.nicknameDiv = nicknameDiv;
 
+    //textMessage overlay div
+    this.textMessageDiv = textMessageDiv;
+
     // PlayerDto
     this._nickname = nickname;
     this.nickname = nickname;
+    this._textMessage = textMessage;
+    this.textMessage = textMessage;
     this.avatar = avatar;
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
@@ -179,9 +191,19 @@ export class Me implements PlayerDto {
     return this._nickname;
   }
 
+  set textMessage(textMessage: string) {
+    this._textMessage = textMessage;
+    this.textMessageDiv.innerText = textMessage;
+  }
+
+  get textMessage(): string {
+    return this._textMessage;
+  }
+
   getPlayerDto(): PlayerDto {
     return {
       nickname: this._nickname,
+      textMessage: this._textMessage,
       avatar: this.avatar,
       avatarFace: this.avatarFace,
       avatarFaceScale: this.avatarFaceScale,
@@ -286,6 +308,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
   // PlayerDto
   nickname: string; //외부에서 변경하는 것이 아니라, setter 를 통해서 변경. setter 에서는 nickname 이 변경되면 nicknameDiv 의 innerText 도 같이 변경함.
+  textMessage: string;
   avatar: AvatarImageEnum;
   avatarFace: AvatarPartImageEnum;
   avatarFaceScale: number;
@@ -294,6 +317,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
+
+  // textMessage overlay div
+  textMessageDiv: HTMLDivElement;
 
   //trackEventHandler (ontrack 으로 새로운 트랙이 들어왔을 때)
   trackEventHandler: (peerId: string, event: RTCTrackEvent) => void;
@@ -307,6 +333,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     localStream: MediaStream,
     audio: HTMLAudioElement,
     nicknameDiv: HTMLDivElement,
+    textMessageDiv: HTMLDivElement,
     connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
     // eslint-disable-next-line
@@ -331,6 +358,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
     // PlayerDto
     this.nickname = 'Loading...';
+    this.textMessage = '';
     this.avatar = AvatarImageEnum.BROWN_BEAR;
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
@@ -339,6 +367,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
 
     //nickname overlay div
     this.nicknameDiv = nicknameDiv;
+
+    //textMessage overlay div
+    this.textMessageDiv = textMessageDiv;
 
     //trackEventHandler
     this.trackEventHandler = trackEventHandler;
@@ -425,11 +456,13 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   update(data: PlayerDto): void {
     this.centerPos = data.centerPos;
     this.nickname = data.nickname;
+    this.textMessage = data.textMessage;
     this.avatar = data.avatar;
     this.avatarFace = data.avatarFace;
     this.avatarFaceScale = data.avatarFaceScale;
     this.rotateRadian = data.rotateRadian;
     this.nicknameDiv.innerText = data.nickname;
+    this.textMessageDiv.innerText = data.textMessage;
   }
 
   updateSoundFromVec2(pos: Vec2): void {
@@ -515,6 +548,7 @@ export default class PeerManager {
         this.peers.delete(peer.connectedClientSocketID);
         this.audioContainer.removeChild(peer.audio);
         this.nicknameContainer.removeChild(peer.nicknameDiv);
+        this.nicknameContainer.removeChild(peer.textMessageDiv);
       }
     };
     this.pcConfig = pcConfig;
@@ -581,6 +615,9 @@ export default class PeerManager {
     const nicknameDiv = document.createElement('div') as HTMLDivElement;
     nicknameDiv.className = 'canvasOverlay';
     this.nicknameContainer.appendChild(nicknameDiv);
+    const textMessageDiv = document.createElement('div') as HTMLDivElement;
+    textMessageDiv.className = 'canvasOverlay';
+    this.nicknameContainer.appendChild(textMessageDiv);
 
     const peer = new Peer(
       this.signalingHelper,
@@ -588,6 +625,7 @@ export default class PeerManager {
       this.localStream,
       audio,
       nicknameDiv,
+      textMessageDiv,
       this.connectionClosedDisconnectedFailedCallBack,
       this.pcConfig,
       this.dataChannelEventHandlers,

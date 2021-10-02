@@ -127,10 +127,14 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       const transData = JSON.stringify(data);
       peerManager.forEachPeer(peer => {
         peer.transmitUsingDataChannel(transData);
-        gLHelper.drawAvatar(peer, peer.nicknameDiv);
+        gLHelper.drawAvatar(peer, peer.nicknameDiv, peer.textMessageDiv);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });
-      gLHelper.drawAvatar(peerManager.me, peerManager.me.nicknameDiv);
+      gLHelper.drawAvatar(
+        peerManager.me,
+        peerManager.me.nicknameDiv,
+        peerManager.me.textMessageDiv,
+      );
       gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
       requestAnimationFrame(requestAnimation);
     };

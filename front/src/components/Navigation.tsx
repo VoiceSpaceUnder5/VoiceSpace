@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import 'antd/dist/antd.css';
 import '../pages/spacePage/space.css';
 import {LogoutOutlined} from '@ant-design/icons';
@@ -23,6 +23,11 @@ interface NavigationProps {
   goToHome: () => void;
 }
 
+interface textMessageDivInnerTextArray {
+  time: number;
+  textMessage: string;
+}
+
 function Navigation(props: NavigationProps): JSX.Element {
   const exit = () => {
     props.peerManager.close();
@@ -40,11 +45,38 @@ function Navigation(props: NavigationProps): JSX.Element {
   const onCopy = () => {
     message.info('클립보드에 복사 되었습니다!');
   };
-  const sendMessage = (message: string) => {
+
+  const textMessageDivInnerTextArray: textMessageDivInnerTextArray[] = [];
+  const sendMessage = (stringifiedMessageData: string) => {
+    const parsedMessageData = JSON.parse(stringifiedMessageData);
+    const textMessage = `${parsedMessageData.data.nickname}: ${parsedMessageData.data.data}`;
+    // props.peerManager.me.textMessage = textMessage;
+    textMessageDivInnerTextArray.push({
+      time: Date.now(),
+      textMessage: textMessage,
+    });
     props.peerManager.peers.forEach(peer => {
-      peer.transmitUsingDataChannel(message);
+      peer.transmitUsingDataChannel(stringifiedMessageData);
     });
   };
+  useEffect(() => {
+    setInterval(() => {
+      if (textMessageDivInnerTextArray.length === 1) {
+        if (Date.now() - textMessageDivInnerTextArray[0].time < 3000) {
+          props.peerManager.me.textMessage =
+            textMessageDivInnerTextArray[0].textMessage;
+        } else {
+          props.peerManager.me.textMessage = '';
+          textMessageDivInnerTextArray.shift();
+        }
+      } else if (textMessageDivInnerTextArray.length > 1) {
+        textMessageDivInnerTextArray.shift();
+        props.peerManager.me.textMessage =
+          textMessageDivInnerTextArray[0].textMessage;
+      }
+    }, 50);
+  }, []);
+
   const setDataChannelEventHandler = (
     dataType: DataDtoType,
     // eslint-disable-next-line
