@@ -67,7 +67,15 @@ function Panel(props: PanelProps): JSX.Element {
     setSubMenu(0);
   };
   const handleVisibleChange = () => {
-    setVisible(!visible);
+    if (subMenu !== 2) {
+      setVisible(!visible);
+      setTimeout(() => {
+        setSubMenu(0);
+      }, 500);
+    }
+  };
+  const onClickClose = () => {
+    setVisible(false);
     setTimeout(() => {
       setSubMenu(0);
     }, 500);
@@ -129,6 +137,7 @@ function Panel(props: PanelProps): JSX.Element {
               message: message,
               onMessageInput: onMessageInput,
               onSendMessage: onSendMessage,
+              onClickClose: onClickClose,
             })
       }
       trigger={['click']}
