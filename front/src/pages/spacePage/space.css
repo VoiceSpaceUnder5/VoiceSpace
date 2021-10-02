@@ -233,6 +233,7 @@ canvas {
 .navbar_center > * {
   padding: 0 1vw;
 }
+
 /* navbar 오른쪽 부분 */
 .navbar_right {
   flex: 1 1 0;
@@ -246,7 +247,7 @@ canvas {
   background-color: white;
 }
 .user_list {
-  width: 200px;
+  width: 15vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -304,6 +305,25 @@ canvas {
   width: 5px;
   margin-right: 20px;
   padding-left: 5px;
+}
+.message_array {
+  width: 15vw;
+  height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.message {
+  width: 15vw;
+  word-break: break-all;
+  word-wrap: break-word;
+  line-break: normal;
+  white-space: normal;
+}
+.message_input {
+  width: 80%;
+}
+.message_input_button {
+  width: 20%;
 }
 
 /* 네비게이션 모바일 */

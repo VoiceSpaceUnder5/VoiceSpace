@@ -29,22 +29,27 @@ export function Messenger(props: MessengerProps): JSX.Element {
       </Menu.Item>
       <Menu.Divider></Menu.Divider>
       <Menu.Item key="1">
-        <>
+        <div className="message_array">
           {props.messageArray?.map((message, index) => {
-            return <div key={index}>{message}</div>;
+            return (
+              <div className="message" key={index}>
+                {message}
+              </div>
+            );
           })}
-        </>
+        </div>
       </Menu.Item>
       <Menu.Item key="2">
         <form onSubmit={props.onSendMessage}>
           <input
+            className="message_input"
             type="text"
             placeholder="메시지를 입력하세요"
             required
             onChange={props.onMessageInput}
             value={props.message}
           />
-          <button>전송</button>
+          <button className="message_input_button">전송</button>
         </form>
       </Menu.Item>
     </Menu>
