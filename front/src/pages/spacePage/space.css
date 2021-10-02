@@ -247,7 +247,7 @@ canvas {
   background-color: white;
 }
 .user_list {
-  width: 15ㅍ;
+  width: 15vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
