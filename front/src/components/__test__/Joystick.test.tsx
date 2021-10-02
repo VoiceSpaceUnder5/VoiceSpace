@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {render, screen, fireEvent} from '@testing-library/react';
 import Joystick, {JoystickProps} from '../Joystick';
 
@@ -8,6 +8,7 @@ const mockedJoystickProps: JoystickProps = {
   setIsMoving: jest.fn(),
   setNextNormalizedDirectionVector: jest.fn(),
   setCameraScaleByPinch: jest.fn(),
+  isClickRef: useRef(false),
   getCameraScale: jest.fn(),
   divContainer: divContainer,
 };
