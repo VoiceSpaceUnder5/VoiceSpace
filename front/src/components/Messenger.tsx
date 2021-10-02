@@ -1,6 +1,6 @@
 import React, {FormEvent} from 'react';
 import {Menu} from 'antd';
-import {LeftCircleFilled} from '@ant-design/icons';
+import {LeftCircleFilled, CloseCircleFilled} from '@ant-design/icons';
 
 export interface Message {
   type: string;
@@ -14,6 +14,7 @@ export interface MessengerProps {
   message: string;
   onMessageInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSendMessage: (e: FormEvent) => void;
+  onClickClose: () => void;
 }
 
 export function Messenger(props: MessengerProps): JSX.Element {
@@ -24,6 +25,10 @@ export function Messenger(props: MessengerProps): JSX.Element {
           <div>메시지</div>
           <div>
             <LeftCircleFilled onClick={props.onClickPrevious} />
+            <CloseCircleFilled
+              style={{marginLeft: '10px'}}
+              onClick={props.onClickClose}
+            />
           </div>
         </div>
       </Menu.Item>
