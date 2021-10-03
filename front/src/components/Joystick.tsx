@@ -1,5 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {createImportSpecifier} from 'typescript';
+import React, {useEffect, useRef} from 'react';
 import {Vec2} from '../utils/RTCGameUtils';
 
 export interface JoystickProps {
