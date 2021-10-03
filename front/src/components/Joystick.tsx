@@ -5,6 +5,7 @@ export interface JoystickProps {
   setIsMoving: (arg0: boolean) => void;
   setNextNormalizedDirectionVector: (arg0: Vec2) => void;
   setCameraScaleByPinch: (arg0: number) => void;
+  // isClickRef: React.MutableRefObject<boolean>;
   getCameraScale: () => number;
   divContainer: HTMLDivElement;
 }
@@ -15,6 +16,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
   const joystickRef = useRef<HTMLImageElement>(null);
   const touchStartPosRef = useRef<Vec2>({x: 0, y: 0});
   const touchingPosRef = useRef<Vec2>({x: 0, y: 0});
+  const isClickRef = useRef(false);
 
   const oldTouchesPositions = useRef<Vec2[]>([
     {x: 0, y: 0},
@@ -47,6 +49,11 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     const joystick = joystickRef.current;
     joystickBase.style.visibility = 'hidden';
     joystick.style.visibility = 'hidden';
+
+    joystickBase.style.left = '0px';
+    joystickBase.style.top = '0px';
+    joystick.style.left = '0px';
+    joystick.style.top = '0px';
   };
   const moveJoystick = () => {
     if (!joystickRef.current || !joystickBaseRef.current) return;
@@ -59,6 +66,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     const endPosY = touchingPosRef.current.y;
     if (joystick === null) return;
     if (joystickBase === null) return;
+    if (!isClickRef.current) return;
 
     const dist2 = Math.sqrt(
       Math.pow(endPosX - startPosX, 2) + Math.pow(endPosY - startPosY, 2),
@@ -104,16 +112,6 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     return result;
   };
 
-  const divMouseDownEventHandler = (e: MouseEvent) => {
-    e.preventDefault();
-    props.setIsMoving(true);
-    touchStartPosRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-    revealJoystickBase();
-  };
-
   const divMouseMoveEventHandler = (e: MouseEvent) => {
     e.preventDefault();
     touchingPosRef.current = {
@@ -124,14 +122,31 @@ export default function Joystick(props: JoystickProps): JSX.Element {
     moveJoystick();
   };
 
+  const divMouseDownEventHandler = (e: MouseEvent) => {
+    e.preventDefault();
+    // test.current = false;
+    // console.log(`down ${test.current}`);
+    isClickRef.current = true;
+    props.setIsMoving(true);
+    touchStartPosRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+    revealJoystickBase();
+  };
+
   const divMouseUpEventHandler = (e: MouseEvent) => {
     e.preventDefault();
+    // test.current = true;
+    // console.log(`up ${test.current}`);
+    isClickRef.current = false;
     props.setIsMoving(false);
     hideJoystickBase();
   };
 
   const divTouchStartEventHandler = (e: TouchEvent) => {
     e.preventDefault();
+    isClickRef.current = true;
     if (e.touches.length === 1) {
       props.setIsMoving(true);
       touchStartPosRef.current = {
@@ -179,6 +194,7 @@ export default function Joystick(props: JoystickProps): JSX.Element {
 
   const divTouchEndEventHandler = (e: TouchEvent) => {
     e.preventDefault();
+    isClickRef.current = false;
     hideJoystickBase();
     props.setIsMoving(false);
     if (joystickRef.current && joystickBaseRef.current) {

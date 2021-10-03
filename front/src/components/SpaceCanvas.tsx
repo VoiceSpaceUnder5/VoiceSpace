@@ -40,7 +40,6 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
   // function
   const setIsMoving = (isMoving: boolean) => {
     props.peerManager.me.isMoving = isMoving;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {render, screen, fireEvent} from '@testing-library/react';
 import Joystick, {JoystickProps} from '../Joystick';
 
