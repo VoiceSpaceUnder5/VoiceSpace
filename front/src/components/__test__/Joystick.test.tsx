@@ -8,7 +8,6 @@ const mockedJoystickProps: JoystickProps = {
   setIsMoving: jest.fn(),
   setNextNormalizedDirectionVector: jest.fn(),
   setCameraScaleByPinch: jest.fn(),
-  isClickRef: useRef(false),
   getCameraScale: jest.fn(),
   divContainer: divContainer,
 };

@@ -40,7 +40,6 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
   // function
   const setIsMoving = (isMoving: boolean) => {
     props.peerManager.me.isMoving = isMoving;
@@ -141,10 +140,6 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     requestAnimationFrame(requestAnimation);
   }, [loadStatus]);
 
-  // const [isClick, setIsClick] = useState(false);
-  const isClickRef = useRef<boolean>(false);
-  console.log('**spaceCanvas**');
-
   return (
     <>
       <canvas ref={canvasRef} />
@@ -153,7 +148,6 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
           setIsMoving={setIsMoving}
           setNextNormalizedDirectionVector={setNextNormalizedDirectionVector}
           setCameraScaleByPinch={setCameraScaleByPinch}
-          isClickRef={isClickRef}
           getCameraScale={getCameraScale}
           divContainer={props.peerManager.nicknameContainer}
         />
