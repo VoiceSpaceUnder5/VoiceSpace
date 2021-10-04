@@ -29,6 +29,11 @@ export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세�
   FACE_MUTE = 1,
   FACE_SPEAK = 2,
   FACE_SPEAK_SMILE = 3,
+  FACE_A = 4,
+  FACE_E = 5,
+  FACE_I = 6,
+  FACE_O = 7,
+  FACE_U = 8,
 }
 
 // 낮은 layer 부터 먼저 그려진다.
@@ -277,6 +282,51 @@ export const brownBearMD: AvatarImageMD = {
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+    },
+    {
+      src: './assets/vowel/A.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 25,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_A,
+    },
+    {
+      src: './assets/vowel/E.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 25,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_E,
+    },
+    {
+      src: './assets/vowel/I.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 25,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_I,
+    },
+    {
+      src: './assets/vowel/O.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 25,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_O,
+    },
+    {
+      src: './assets/vowel/U.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 25,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_U,
     },
   ],
 };
@@ -592,3 +642,9 @@ export const avatarImageMDs = [
   creamPandaMD,
   orangeFoxMD,
 ];
+
+export interface Formant {
+  label: string;
+  array: number[];
+  Image: HTMLImageElement | null;
+}
