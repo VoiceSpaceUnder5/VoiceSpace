@@ -370,8 +370,8 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     }); // 핸드폰일 경우 사용 불가.
     props.addVideoTrack(stream);
     setScreenShareDatas([
-      {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
       ...screenShareDatas,
+      {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
     ]);
   };
 
@@ -386,7 +386,6 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
 
   const trackEventHandler = (peerId: string, event: RTCTrackEvent) => {
     if (event.streams[0]) {
-      console.log(event);
       setScreenShareDatas(before => {
         const alreadyExist = before.find(data => {
           return data.stream.id === event.streams[0].id;
@@ -394,12 +393,12 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         if (alreadyExist) return before;
         else
           return [
+            ...before,
             {
               peerId: peerId,
               stream: event.streams[0],
               drawHelper: new DrawHelper(),
             },
-            ...before,
           ];
       });
     } else if (event.track.kind === 'video') {
@@ -407,8 +406,8 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         const stream = new MediaStream();
         stream.addTrack(event.track);
         return [
-          {peerId: peerId, stream: stream, drawHelper: new DrawHelper()},
           ...before,
+          {peerId: peerId, stream: stream, drawHelper: new DrawHelper()},
         ];
       });
     }
