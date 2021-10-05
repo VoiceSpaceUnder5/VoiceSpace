@@ -640,7 +640,7 @@ export default class PeerManager {
               peer.addTrack(track);
               this.peerOffer(peer);
             } catch (error) {
-              console.error('screenVideoTracks error!');
+              console.error(`screenVideoTracks error!`);
             }
           });
         }
