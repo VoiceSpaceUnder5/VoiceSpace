@@ -91,6 +91,15 @@ function Navigation(props: NavigationProps): JSX.Element {
     return props.peerManager.me.nickname;
   };
 
+  const getNickNameFromSocketID = (socketID: string): string => {
+    if (props.peerManager.peers.has(socketID)) {
+      // eslint-disable-next-line
+      return props.peerManager.peers.get(socketID)!.nickname;
+    } else {
+      return '나';
+    }
+  };
+
   const addVideoTrack = (stream: MediaStream): void => {
     stream.getTracks().forEach(track => {
       props.peerManager.screenVideoTracks.push(track);
@@ -267,6 +276,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           setOtherSideDrawStartPos={setOtherSideDrawStartPos}
           setOtherSideDraw={setOtherSideDraw}
           setOtherSideClear={setOtherSideClear}
+          getNickNameFromSocketID={getNickNameFromSocketID}
         />
         <Options
           changeEachAudio={changeEachAudio}
