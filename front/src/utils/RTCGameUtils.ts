@@ -133,6 +133,7 @@ export class AudioAnalyser {
         avatarFaceScale: scale,
       };
     } else {
+      avatarFace = 8;
       const sma = getMonvingAverage(16);
       this.smad.length = 0;
       this.byteFrequencyDataArray.forEach(value => {

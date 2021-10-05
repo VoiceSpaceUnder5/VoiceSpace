@@ -328,6 +328,15 @@ export const brownBearMD: AvatarImageMD = {
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_U,
     },
+    {
+      src: './assets/vowel/FACE_MUTE.png',
+      centerPosPixelOffset: {
+        x: 0,
+        y: 25,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ONE,
+      partType: AvatarPartImageEnum.FACE_U,
+    },
   ],
 };
 
