@@ -355,11 +355,11 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const screenShareOnClick = async () => {
     if (
       screenShareDatas.find(data => {
-        return data.peerId === '';
+        return data.peerId === props.socketID;
       })
     ) {
       message.info(
-        '이미 공유중인 화면이 존재합니다. 중지 후 다시 선택해주세요!',
+        '이미 공유중인 화면이 존재합니다. 정지 후 다시 선택해주세요!',
       );
       return;
     }
