@@ -110,7 +110,9 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   const canvasHeight = 2000;
 
   useEffect(() => {
-    if (videoRef.current) videoRef.current.srcObject = props.stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = props.stream;
+    }
   }, []);
 
   useEffect(() => {
