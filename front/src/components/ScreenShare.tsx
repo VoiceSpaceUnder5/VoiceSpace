@@ -8,6 +8,7 @@ import {HexColorPicker} from 'react-colorful';
 import {DataDtoType, Peer, Vec2} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
+  nickname: string;
   mySocketID: string;
   sharedSocketID: string;
   stream: MediaStream;
@@ -256,7 +257,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             justifyContent: 'space-between',
           }}
         >
-          <div>Shared Screen</div>
+          <div>{`${props.nickname}`}</div>
           <div
             style={{
               margin: 0,
@@ -343,6 +344,7 @@ interface ScreenShareProps {
     lineWidth: number,
   ) => void;
   setOtherSideClear: (fromSocketID: string, toSocketID: string) => void;
+  getNickNameFromSocketID: (socketID: string) => string;
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
@@ -351,8 +353,10 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   );
   const [isDisplayColorPicker, setIsDisplayColorPicker] = useState(false);
   const [color, setColor] = useState('#000000');
-  const [lineWidth, setLineWidth] = useState(1);
+  const [lineWidth, setLineWidth] = useState(5);
+  const [isVisible, setIsVisible] = useState(false);
   const screenShareOnClick = async () => {
+    setIsVisible(false);
     if (
       screenShareDatas.find(data => {
         return data.peerId === props.socketID;
@@ -363,16 +367,22 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       );
       return;
     }
-    // eslint-disable-next-line
-    const stream = await (navigator.mediaDevices as any).getDisplayMedia({
-      audio: true,
-      video: true,
-    }); // 핸드폰일 경우 사용 불가.
-    props.addVideoTrack(stream);
-    setScreenShareDatas([
-      ...screenShareDatas,
-      {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
-    ]);
+    try {
+      // eslint-disable-next-line
+      const stream = await (navigator.mediaDevices as any).getDisplayMedia({
+        audio: true,
+        video: true,
+      }); // 핸드폰일 경우 사용 불가.
+      props.addVideoTrack(stream);
+      setScreenShareDatas([
+        ...screenShareDatas,
+        {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
+      ]);
+    } catch (error) {
+      message.error(
+        '스크린을 선택하지 않으셨거나, 스크린 공유 권한이 없습니다.',
+      );
+    }
   };
 
   const screenShareStopOnClick = () => {
@@ -510,7 +520,10 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
               trigger={['click']}
             >
               <a
-                onClick={e => e.preventDefault()}
+                onClick={e => {
+                  e.preventDefault();
+                  setIsVisible(false);
+                }}
                 className="ant_dropdown_link"
               >
                 그리기 색상,굵기 선택
@@ -527,6 +540,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         return (
           <ScreenViewer
             key={screenShareData.peerId}
+            nickname={props.getNickNameFromSocketID(screenShareData.peerId)}
             mySocketID={props.socketID}
             sharedSocketID={screenShareData.peerId}
             stream={screenShareData.stream}
@@ -539,7 +553,12 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
           ></ScreenViewer>
         );
       })}
-      <Dropdown overlay={screenshare} trigger={['click']}>
+      <Dropdown
+        overlay={screenshare}
+        trigger={['click']}
+        visible={isVisible}
+        onVisibleChange={setIsVisible}
+      >
         <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
           <DesktopOutlined className="navbar_button" />
         </a>
