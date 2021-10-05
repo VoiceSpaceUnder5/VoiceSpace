@@ -385,8 +385,8 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
 
   const trackEventHandler = (peerId: string, event: RTCTrackEvent) => {
-    console.error('trackEventHandler');
     if (event.streams[0]) {
+      console.log(event);
       setScreenShareDatas(before => {
         const alreadyExist = before.find(data => {
           return data.stream.id === event.streams[0].id;
@@ -401,6 +401,15 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
             },
             ...before,
           ];
+      });
+    } else if (event.track.kind === 'video') {
+      setScreenShareDatas(before => {
+        const stream = new MediaStream();
+        stream.addTrack(event.track);
+        return [
+          {peerId: peerId, stream: stream, drawHelper: new DrawHelper()},
+          ...before,
+        ];
       });
     }
   };
