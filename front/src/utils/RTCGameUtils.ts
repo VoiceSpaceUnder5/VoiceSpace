@@ -78,6 +78,7 @@ export class AudioAnalyser {
   private readonly speakThrashHold: number;
   private readonly speakMouseThrashHold: number;
   private readonly volumeDivideValue: number;
+  private readonly smad: number[];
 
   // for audio Analysis
   private readonly byteFrequencyDataArray: Uint8Array;
@@ -92,9 +93,10 @@ export class AudioAnalyser {
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     this.analyser = audioContext.createAnalyser();
-    this.analyser.smoothingTimeConstant = 0.4;
-    this.analyser.fftSize = 1024;
     source.connect(this.analyser);
+    this.analyser.smoothingTimeConstant = 0.6;
+    this.analyser.fftSize = 2048;
+    this.smad = [];
 
     // value
     this.volumeDivideValue = volumeDivideValue;
@@ -108,71 +110,69 @@ export class AudioAnalyser {
   }
 
   getAvatarFaceDtoByAudioAnalysis(): AvatarFaceDto {
-    const smad: number[] = [];
-    const formantsString = localStorage.getItem('formants');
-    if (formantsString === null) {
-      return {
-        avatarFace: AvatarPartImageEnum.FACE_MUTE,
-        avatarFaceScale: 1,
-      };
-    }
-    this.analyser.getByteFrequencyData(this.byteFrequencyDataArray);
-
-    const sma = getMonvingAverage(16);
-    smad.length = 0;
-    this.byteFrequencyDataArray.forEach(value => {
-      smad.push(sma(value));
-    });
-
-    const formants = JSON.parse(formantsString) as Formant[];
-    const candidates = formants.map(value => {
-      let vowelsSelfDist = 0;
-      const dot = value.array.reduce((acc, cur, idx) => {
-        vowelsSelfDist += cur * cur;
-        return acc + cur * smad[idx];
-      }, 0);
-      const smadSelfDist = smad.reduce((acc, cur) => {
-        return acc + cur * cur;
-      }, 0);
-      const similarity =
-        dot / (Math.sqrt(vowelsSelfDist) * Math.sqrt(smadSelfDist));
-      return {
-        vowel: value.label,
-        similarity: similarity,
-        image: value.Image,
-        distPercent: smadSelfDist / vowelsSelfDist,
-      };
-    });
-    candidates.sort((a, b) => b.similarity - a.similarity);
+    let avatarFace = AvatarPartImageEnum.FACE_MUTE;
 
     this.analyser.getByteFrequencyData(this.byteFrequencyDataArray);
+
     // get volume
     const volume =
       this.byteFrequencyDataArray.reduce((acc, cur) => {
         return acc + cur;
       }, 0) / this.byteFrequencyDataArray.length;
-
-    // get avatarFaceEnum by volume
-    let avatarFace = AvatarPartImageEnum.FACE_MUTE;
-    // if (volume > this.speakThrashHold)
-    //   avatarFace = AvatarPartImageEnum.FACE_SPEAK;
-    // if (volume > this.speakMouseThrashHold)
-    //   avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
-    if (candidates[0].similarity > 0.9 && candidates[0].distPercent > 0.5) {
-      console.log(candidates[0].vowel);
-      if (candidates[0].vowel === 'A') avatarFace = 4;
-      else if (candidates[0].vowel === 'E') avatarFace = 5;
-      else if (candidates[0].vowel === 'I') avatarFace = 6;
-      else if (candidates[0].vowel === 'O') avatarFace = 7;
-      else if (candidates[0].vowel === 'U') avatarFace = 8;
-    }
-
     // get avatarFace scale by volume and volumeDivideValue
     const scale = 1 + volume / this.volumeDivideValue;
-    return {
-      avatarFace: avatarFace,
-      avatarFaceScale: scale,
-    };
+    const stringFormants = localStorage.getItem('formants');
+    if (stringFormants === null) {
+      // get avatarFaceEnum by volume
+      if (volume > this.speakThrashHold)
+        avatarFace = AvatarPartImageEnum.FACE_SPEAK;
+      if (volume > this.speakMouseThrashHold)
+        avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
+      return {
+        avatarFace: avatarFace,
+        avatarFaceScale: scale,
+      };
+    } else {
+      const sma = getMonvingAverage(16);
+      this.smad.length = 0;
+      this.byteFrequencyDataArray.forEach(value => {
+        this.smad.push(sma(value));
+      });
+
+      const formants = JSON.parse(stringFormants) as Formant[];
+      const candidates = formants.map(value => {
+        let vowelsSelfDist = 0;
+        const dot = value.array.reduce((acc, cur, idx) => {
+          vowelsSelfDist += cur * cur;
+          return acc + cur * this.smad[idx];
+        }, 0);
+        const smadSelfDist = this.smad.reduce((acc, cur) => {
+          return acc + cur * cur;
+        }, 0);
+        const similarity =
+          dot / (Math.sqrt(vowelsSelfDist) * Math.sqrt(smadSelfDist));
+        return {
+          vowel: value.label,
+          similarity: similarity,
+          image: value.Image,
+          distPercent: smadSelfDist / vowelsSelfDist,
+        };
+      });
+      candidates.sort((a, b) => b.similarity - a.similarity);
+
+      if (candidates[0].similarity > 0.9 && candidates[0].distPercent > 0.5) {
+        console.log(candidates[0].vowel);
+        if (candidates[0].vowel === 'A') avatarFace = 4;
+        else if (candidates[0].vowel === 'E') avatarFace = 5;
+        else if (candidates[0].vowel === 'I') avatarFace = 6;
+        else if (candidates[0].vowel === 'O') avatarFace = 7;
+        else if (candidates[0].vowel === 'U') avatarFace = 8;
+      }
+      return {
+        avatarFace: avatarFace,
+        avatarFaceScale: scale,
+      };
+    }
   }
 }
 
