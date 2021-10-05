@@ -17,6 +17,8 @@ import PeerManager, {
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
+import {Message} from './Messenger';
+import VowelDetectButton from './VowelDetectButton';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -230,55 +232,56 @@ function Navigation(props: NavigationProps): JSX.Element {
           navigator.mediaDevices
             .getUserMedia({video: false, audio: {deviceId: deviceId}})
             .then(stream => {
-              console.log('지대로 바뀌었다!!!!');
               changeInputStream(stream);
             });
         });
     };
   };
   catchAudioTrackEnended(props.peerManager.localStream);
-
   return (
-    <nav className="navbar">
-      <div className="navbar_left">
-        <Profile
-          nickname={props.peerManager.me.nickname}
-          avatar={props.peerManager.me.avatar}
-          setNickname={setNickName}
-          setAvatar={setAvatar}
-        />
-      </div>
-      <div className="navbar_center">
-        <MicOnOff setIsMicOn={setIsMicOn} />
-        <ScreenShare
-          socketID={props.peerManager.socketID}
-          addVideoTrack={addVideoTrack}
-          setTrackEventHandler={setTrackEventHandler}
-          removeVideoTrack={removeVideoTrack}
-          setDataChannelEventHandler={setDataChannelEventHandler}
-          setOtherSideDrawStartPos={setOtherSideDrawStartPos}
-          setOtherSideDraw={setOtherSideDraw}
-          setOtherSideClear={setOtherSideClear}
-        />
-        <Options
-          changeEachAudio={changeEachAudio}
-          changeInputStream={changeInputStream}
-        />
-        <div>
-          <LogoutOutlined className="navbar_button" onClick={exit} />
+    <>
+      <nav className="navbar">
+        <div className="navbar_left">
+          <Profile
+            nickname={props.peerManager.me.nickname}
+            avatar={props.peerManager.me.avatar}
+            setNickname={setNickName}
+            setAvatar={setAvatar}
+          />
         </div>
-      </div>
-      <div className="navbar_right">
-        <Panel
-          getMyNickname={getMyNickname}
-          getUsers={getUsers}
-          roomId={props.peerManager.roomID}
-          onCopy={onCopy}
-          sendMessage={sendMessage}
-          setDataChannelEventHandler={setDataChannelEventHandler}
-        />
-      </div>
-    </nav>
+        <div className="navbar_center">
+          <MicOnOff setIsMicOn={setIsMicOn} />
+          <ScreenShare
+            socketID={props.peerManager.socketID}
+            addVideoTrack={addVideoTrack}
+            setTrackEventHandler={setTrackEventHandler}
+            removeVideoTrack={removeVideoTrack}
+            setDataChannelEventHandler={setDataChannelEventHandler}
+            setOtherSideDrawStartPos={setOtherSideDrawStartPos}
+            setOtherSideDraw={setOtherSideDraw}
+            setOtherSideClear={setOtherSideClear}
+          />
+          <Options
+            changeEachAudio={changeEachAudio}
+            changeInputStream={changeInputStream}
+          />
+          <VowelDetectButton />
+          <div>
+            <LogoutOutlined className="navbar_button" onClick={exit} />
+          </div>
+        </div>
+        <div className="navbar_right">
+          <Panel
+            getMyNickname={getMyNickname}
+            getUsers={getUsers}
+            roomId={props.peerManager.roomID}
+            onCopy={onCopy}
+            sendMessage={sendMessage}
+            setDataChannelEventHandler={setDataChannelEventHandler}
+          />
+        </div>
+      </nav>
+    </>
   );
 }
 

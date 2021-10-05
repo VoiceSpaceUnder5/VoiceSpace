@@ -1,6 +1,7 @@
 import GLHelper from './webGLUtils';
 import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
+import {Formant} from './ImageMetaData';
 
 /**
  * DataDto 의 type enum
@@ -52,6 +53,21 @@ export interface PlayerDto extends AvatarFaceDto {
   rotateRadian: number;
 }
 
+function getMonvingAverage(period: number) {
+  const arr: number[] = [];
+  let sum = 0;
+  return (value: number) => {
+    sum += value;
+    arr.push(value);
+    if (arr.length >= period) {
+      sum -= arr[0];
+      arr.shift();
+    }
+    if (arr.length < period / 2) return 0;
+    return sum / arr.length;
+  };
+}
+
 /**
  * LocalAudioMediaStream 을 분석하여 avatarFace 를 어떻게 그려야 할지 결정해주는 책임을 가짐
  *
@@ -92,6 +108,43 @@ export class AudioAnalyser {
   }
 
   getAvatarFaceDtoByAudioAnalysis(): AvatarFaceDto {
+    const smad: number[] = [];
+    const formantsString = localStorage.getItem('formants');
+    if (formantsString === null) {
+      return {
+        avatarFace: AvatarPartImageEnum.FACE_MUTE,
+        avatarFaceScale: 1,
+      };
+    }
+    this.analyser.getByteFrequencyData(this.byteFrequencyDataArray);
+
+    const sma = getMonvingAverage(16);
+    smad.length = 0;
+    this.byteFrequencyDataArray.forEach(value => {
+      smad.push(sma(value));
+    });
+
+    const formants = JSON.parse(formantsString) as Formant[];
+    const candidates = formants.map(value => {
+      let vowelsSelfDist = 0;
+      const dot = value.array.reduce((acc, cur, idx) => {
+        vowelsSelfDist += cur * cur;
+        return acc + cur * smad[idx];
+      }, 0);
+      const smadSelfDist = smad.reduce((acc, cur) => {
+        return acc + cur * cur;
+      }, 0);
+      const similarity =
+        dot / (Math.sqrt(vowelsSelfDist) * Math.sqrt(smadSelfDist));
+      return {
+        vowel: value.label,
+        similarity: similarity,
+        image: value.Image,
+        distPercent: smadSelfDist / vowelsSelfDist,
+      };
+    });
+    candidates.sort((a, b) => b.similarity - a.similarity);
+
     this.analyser.getByteFrequencyData(this.byteFrequencyDataArray);
     // get volume
     const volume =
@@ -101,10 +154,18 @@ export class AudioAnalyser {
 
     // get avatarFaceEnum by volume
     let avatarFace = AvatarPartImageEnum.FACE_MUTE;
-    if (volume > this.speakThrashHold)
-      avatarFace = AvatarPartImageEnum.FACE_SPEAK;
-    if (volume > this.speakMouseThrashHold)
-      avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
+    // if (volume > this.speakThrashHold)
+    //   avatarFace = AvatarPartImageEnum.FACE_SPEAK;
+    // if (volume > this.speakMouseThrashHold)
+    //   avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
+    if (candidates[0].similarity > 0.9 && candidates[0].distPercent > 0.5) {
+      console.log(candidates[0].vowel);
+      if (candidates[0].vowel === 'A') avatarFace = 4;
+      else if (candidates[0].vowel === 'E') avatarFace = 5;
+      else if (candidates[0].vowel === 'I') avatarFace = 6;
+      else if (candidates[0].vowel === 'O') avatarFace = 7;
+      else if (candidates[0].vowel === 'U') avatarFace = 8;
+    }
 
     // get avatarFace scale by volume and volumeDivideValue
     const scale = 1 + volume / this.volumeDivideValue;
