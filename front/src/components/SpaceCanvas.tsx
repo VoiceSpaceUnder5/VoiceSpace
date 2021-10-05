@@ -102,8 +102,14 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
     resizeEventHandler();
     window.addEventListener('resize', resizeEventHandler);
+
+    const unLoadEventHandler = () => {
+      props.peerManager.close();
+    };
+    window.addEventListener('beforeunload', unLoadEventHandler);
     return () => {
       window.removeEventListener('resize', resizeEventHandler);
+      window.removeEventListener('beforeunload', unLoadEventHandler);
     };
   }, []);
 
