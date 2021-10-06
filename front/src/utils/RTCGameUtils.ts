@@ -50,8 +50,8 @@ export interface PlayerDto extends AvatarFaceDto {
   textMessage: string;
   avatar: AvatarImageEnum;
   centerPos: Vec2;
-  armAndLegRotateDegree: number;
-  armAndLegTouchSwitch: boolean;
+  partRotatedegree: number;
+  rotateCounterclockwise: boolean;
   lookLeft: boolean;
 }
 
@@ -196,8 +196,8 @@ export class Me implements PlayerDto {
   avatarFace: AvatarPartImageEnum;
   avatarFaceScale: number;
   centerPos: Vec2;
-  armAndLegRotateDegree: number;
-  armAndLegTouchSwitch: boolean;
+  partRotatedegree: number;
+  rotateCounterclockwise: boolean;
   lookLeft: boolean;
 
   //nickname overlay div
@@ -240,8 +240,8 @@ export class Me implements PlayerDto {
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {...centerPos};
-    this.armAndLegRotateDegree = 0;
-    this.armAndLegTouchSwitch = false;
+    this.partRotatedegree = 0;
+    this.rotateCounterclockwise = false;
     this.lookLeft = false;
 
     // update avatar position values
@@ -281,8 +281,8 @@ export class Me implements PlayerDto {
       avatarFace: this.avatarFace,
       avatarFaceScale: this.avatarFaceScale,
       centerPos: {...this.centerPos},
-      armAndLegRotateDegree: this.armAndLegRotateDegree,
-      armAndLegTouchSwitch: this.armAndLegTouchSwitch,
+      partRotatedegree: this.partRotatedegree,
+      rotateCounterclockwise: this.rotateCounterclockwise,
       lookLeft: this.lookLeft,
     };
   }
@@ -335,7 +335,7 @@ export class Me implements PlayerDto {
       const oldCenterPosY = this.centerPos.y;
       const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
       const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
-      const oldarmAndLegRotateDegree = this.armAndLegRotateDegree;
+      const oldpartRotatedegree = this.partRotatedegree;
 
       // position value update
       this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
@@ -343,13 +343,11 @@ export class Me implements PlayerDto {
         this.velocity * this.normalizedDirectionVector.x * millisDiff;
       this.centerPos.y +=
         this.velocity * this.normalizedDirectionVector.y * millisDiff;
-      if (this.armAndLegTouchSwitch === false)
-        this.armAndLegRotateDegree += 1.2;
-      else this.armAndLegRotateDegree -= 1.2;
-      if (this.armAndLegRotateDegree > 15) this.armAndLegTouchSwitch = true;
-      else if (this.armAndLegRotateDegree < -15)
-        this.armAndLegTouchSwitch = false;
-      // this.armAndLegRotateDegree = Math.atan2(
+      if (this.rotateCounterclockwise === false) this.partRotatedegree += 1.2;
+      else this.partRotatedegree -= 1.2;
+      if (this.partRotatedegree > 15) this.rotateCounterclockwise = true;
+      else if (this.partRotatedegree < -15) this.rotateCounterclockwise = false;
+      // this.partRotatedegree = Math.atan2(
       //   this.normalizedDirectionVector.x,
       //   this.normalizedDirectionVector.y,
       // );
@@ -361,7 +359,7 @@ export class Me implements PlayerDto {
         this.centerPos.y = oldCenterPosY;
         this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
         this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
-        this.armAndLegRotateDegree = oldarmAndLegRotateDegree;
+        this.partRotatedegree = oldpartRotatedegree;
       }
     }
   }
@@ -395,8 +393,8 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   avatarFace: AvatarPartImageEnum;
   avatarFaceScale: number;
   centerPos: Vec2;
-  armAndLegRotateDegree: number;
-  armAndLegTouchSwitch: boolean;
+  partRotatedegree: number;
+  rotateCounterclockwise: boolean;
   lookLeft: boolean;
 
   //nickname overlay div
@@ -447,8 +445,8 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {x: -1000, y: -1000};
-    this.armAndLegRotateDegree = 0;
-    this.armAndLegTouchSwitch = false;
+    this.partRotatedegree = 0;
+    this.rotateCounterclockwise = false;
     this.lookLeft = false;
 
     //nickname overlay div
@@ -546,7 +544,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.avatar = data.avatar;
     this.avatarFace = data.avatarFace;
     this.avatarFaceScale = data.avatarFaceScale;
-    this.armAndLegRotateDegree = data.armAndLegRotateDegree;
+    this.partRotatedegree = data.partRotatedegree;
     this.nicknameDiv.innerText = data.nickname;
     this.textMessageDiv.innerText = data.textMessage;
   }

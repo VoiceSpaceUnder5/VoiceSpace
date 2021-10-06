@@ -148,7 +148,7 @@ export const isInRect = (
 
 export interface DrawInfo extends ImageInfo {
   scale: number;
-  armAndLegRotateRadian: number;
+  partRotateRadian: number;
 }
 
 export class Camera {
@@ -312,7 +312,7 @@ class GLHelper {
     this.updateImageMatrixFromDrawInfo({
       ...imageinfo,
       scale: scale,
-      armAndLegRotateRadian: me.armAndLegRotateDegree,
+      partRotateRadian: me.partRotatedegree,
       centerPos: me.centerPos,
     });
 
@@ -373,7 +373,7 @@ class GLHelper {
     );
     this.imageMatrix = m3.rotate(
       this.imageMatrix,
-      this.degreeToRadian(drawImageInfo.armAndLegRotateRadian),
+      this.degreeToRadian(drawImageInfo.partRotateRadian),
     ); // rotate
 
     this.imageMatrix = m3.translate(
@@ -400,7 +400,7 @@ class GLHelper {
     ); // 원래 크기로 스케일
   }
 
-  updateArmAndLegMatrixFromDrawInfo(drawImageInfo: DrawInfo): void {
+  updatepartMatrixFromDrawInfo(drawImageInfo: DrawInfo): void {
     this.imageMatrix = m3.identity();
     this.imageMatrix = m3.translate(
       this.imageMatrix,
@@ -419,7 +419,7 @@ class GLHelper {
     );
     this.imageMatrix = m3.rotate(
       this.imageMatrix,
-      this.degreeToRadian(drawImageInfo.armAndLegRotateRadian),
+      this.degreeToRadian(drawImageInfo.partRotateRadian),
     ); // rotate
 
     this.imageMatrix = m3.scale(
@@ -464,11 +464,11 @@ class GLHelper {
     this.drawArray(drawImageInfo.tex);
   }
 
-  drawArmAndLeg(drawImageInfo: DrawInfo): void {
+  drawpart(drawImageInfo: DrawInfo): void {
     this.updateProjectionMatrix();
     this.updateCameraMatrix();
     // line: 359 이미지를 이동, 회전 또는 스케일 하는 함수
-    this.updateArmAndLegMatrixFromDrawInfo(drawImageInfo);
+    this.updatepartMatrixFromDrawInfo(drawImageInfo);
     // 실제로 그리는 함수
     this.drawArray(drawImageInfo.tex);
   }
@@ -490,24 +490,17 @@ class GLHelper {
       return;
     }
 
+    const part = AvatarPartImageEnum;
     // 그리는 데에 필요한 info
     // 팔 다리의 경우, scale은 몸통을 CenterPos로
     // 회전은 관절부분을 CenterPos로
-    const centerPos = player.centerPos;
-
-    let armAndLegRotateDegree = 0;
-    if (
-      avatarPart === AvatarPartImageEnum.LEFT_ARM ||
-      avatarPart === AvatarPartImageEnum.RIGHT_LEG
-    ) {
-      armAndLegRotateDegree = player.armAndLegRotateDegree;
-    } else if (
-      avatarPart === AvatarPartImageEnum.RIGHT_ARM ||
-      avatarPart === AvatarPartImageEnum.LEFT_LEG
-    ) {
-      armAndLegRotateDegree = -player.armAndLegRotateDegree;
-    } else if (avatarPart !== AvatarPartImageEnum.BODY)
-      armAndLegRotateDegree = player.armAndLegRotateDegree / 7.5;
+    let partRotatedegree = 0;
+    if (avatarPart === part.LEFT_ARM || avatarPart === part.RIGHT_LEG) {
+      partRotatedegree = player.partRotatedegree;
+    } else if (avatarPart === part.RIGHT_ARM || avatarPart === part.LEFT_LEG) {
+      partRotatedegree = -player.partRotatedegree;
+    } else if (avatarPart !== part.BODY)
+      partRotatedegree = player.partRotatedegree / 7.5;
     let scale = 1;
     if (isFace) scale = player.avatarFaceScale;
     if (player.lookLeft) scale *= -1;
@@ -515,8 +508,8 @@ class GLHelper {
     return {
       ...imageInfo,
       scale: scale,
-      armAndLegRotateRadian: armAndLegRotateDegree, // armAndLegRotateRadian,
-      centerPos: centerPos,
+      partRotateRadian: partRotatedegree, // partRotateRadian,
+      centerPos: player.centerPos,
     };
   }
 
@@ -563,7 +556,7 @@ class GLHelper {
         partEnum <= AvatarPartImageEnum.LEFT_LEG &&
         partEnum != 2
       )
-        this.drawArmAndLeg(drawInfo);
+        this.drawpart(drawInfo);
       else this.drawImage(drawInfo);
       const temp = [
         [0, 0],
@@ -662,7 +655,7 @@ class GLHelper {
       this.drawImage({
         ...this.imageInfoProvider.background,
         scale: 1,
-        armAndLegRotateRadian: 0,
+        partRotateRadian: 0,
       });
     }
 
@@ -672,7 +665,7 @@ class GLHelper {
         this.drawImage({
           ...imageInfo,
           scale: 1,
-          armAndLegRotateRadian: 0,
+          partRotateRadian: 0,
         });
       });
     });
@@ -688,7 +681,7 @@ class GLHelper {
         this.drawImage({
           ...imageInfo,
           scale: 1,
-          armAndLegRotateRadian: 0,
+          partRotateRadian: 0,
         });
         this.transparency = 1.0;
       });
