@@ -3,10 +3,7 @@ import {RouteComponentProps} from 'react-router-dom';
 import io from 'socket.io-client';
 import PeerManager, {AudioAnalyser, Me, Vec2} from '../../utils/RTCGameUtils';
 import Navigation from '../../components/Navigation';
-import {
-  AvatarImageEnum,
-  seaAndMountainMap1MMI,
-} from '../../utils/ImageMetaData';
+import {seaAndMountainMap1MMI} from '../../utils/ImageMetaData';
 import SpaceCanvas from '../../components/SpaceCanvas';
 import './space.css';
 import {message} from 'antd';
@@ -87,18 +84,36 @@ function setNewPeerManager(
   return;
 }
 
+function isQueryValid(query: SpaceQuery) {
+  if (!query.nickname || query.nickname === '') {
+    return false;
+  }
+  if (!query.avatarIdx) {
+    return false;
+  } else {
+    query.avatarIdx = Number(query.avatarIdx);
+  }
+  if (!query.micDeviceID) {
+    query.micDeviceID = 'default';
+  }
+  if (!query.speakerDeviceID) {
+    query.speakerDeviceID = 'default';
+  }
+  return true;
+}
+
 function Space(props: RouteComponentProps): JSX.Element {
   //query validate part
   const query = qs.parse(props.location.search) as SpaceQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
-  const mapMakingInfo = seaAndMountainMap1MMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
   if (!query.roomId || query.roomId === '') {
     message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
     props.history.push('/');
   }
-  if (!query.nickname || query.nickname === '') query.nickname = '익명의 곰';
-  if (!query.avatarIdx) query.avatarIdx = AvatarImageEnum.BROWN_BEAR;
-  query.avatarIdx = Number(query.avatarIdx);
-
+  if (!isQueryValid(query)) {
+    message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
+    props.history.push(`/setting?roomId=${query.roomId}`);
+  }
+  const mapMakingInfo = seaAndMountainMap1MMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
   //ref
   const divContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
