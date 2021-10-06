@@ -1,0 +1,201 @@
+.settingAudioVisualizer {
+  position: absolute;
+  width: 70%;
+  height: 30%;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid #53150d;
+  border-radius: 10%;
+}
+
+.soundControllMainDiv {
+  border: 3px solid #325932;
+  border-radius: 3%;
+  border-color: #325932;
+  width: 100%;
+  height: 100%;
+  padding: 3%;
+}
+
+.soundControllSelectDiv {
+  display: flex;
+  width: 100%;
+  height: 15%;
+  margin: 1%;
+}
+
+.soundControllSelect {
+  width: 80%;
+}
+
+.settingMainDiv {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.settingAvatarAndSoundOuterDiv {
+  border-radius: 3%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #7d965e;
+  margin: auto;
+}
+
+.settingAvatarAndSoundinnerDiv {
+  position: absolute;
+  width: 100%;
+  height: 80%;
+  display: flex;
+}
+
+.settingAvatarMainDiv {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  padding: 3%;
+}
+
+.settingAvatarinnerDiv {
+  border: 3px solid #325932;
+  border-radius: 3%;
+  border-color: #325932;
+  width: 100%;
+  height: 100%;
+}
+
+.settingAvatarNameInput {
+  border: 3px solid #325932;
+  border-radius: 10%;
+  border-color: #325932;
+  text-align: center;
+  position: absolute;
+  height: 10%;
+  width: 70%;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 100%;
+}
+
+.settingAvatarImg {
+  position: absolute;
+  width: 70%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.settingAvatarButtonContainerDiv {
+  text-align: center;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  width: 80%;
+  height: 10%;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.settingAvatarButton {
+  margin: 1%;
+  border-radius: 7px;
+  border-color: #325932;
+  background-color: #689f38;
+}
+
+.soundControllContainerDiv {
+  position: absolute;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  padding: 3%;
+}
+
+.soundControllReloadButton {
+  position: absolute;
+  width: 70%;
+  height: 10%;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
+
+.soundControllReloadButton:hover {
+  position: absolute;
+  width: 70%;
+  height: 10%;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
+
+.soundControllReloadButton:focus {
+  position: absolute;
+  width: 70%;
+  height: 10%;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
+
+.soundControllMuteSwitch {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
+
+.enterButtonContainerDiv {
+  position: absolute;
+  top: 80%;
+  width: 100%;
+  height: 20%;
+}
+
+.enterButton {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
+
+.enterButton:hover {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
+
+.enterButton:focus {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #53150d;
+  color: white;
+}
