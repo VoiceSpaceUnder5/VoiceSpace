@@ -257,8 +257,8 @@ export const brownBearMD: AvatarImageMD = {
     {
       src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
       centerPosPixelOffset: {
-        x: 25,
-        y: 40,
+        x: 12.5,
+        y: 20,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.RIGHT_ARM,
@@ -266,8 +266,8 @@ export const brownBearMD: AvatarImageMD = {
     {
       src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
       centerPosPixelOffset: {
-        x: 20,
-        y: 98,
+        x: 10,
+        y: 49,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.RIGHT_LEG,
@@ -276,7 +276,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/body.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 40,
+        y: 20,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
@@ -284,8 +284,8 @@ export const brownBearMD: AvatarImageMD = {
     {
       src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
       centerPosPixelOffset: {
-        x: -25,
-        y: 40,
+        x: -12.5,
+        y: 20,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.LEFT_ARM,
@@ -293,8 +293,8 @@ export const brownBearMD: AvatarImageMD = {
     {
       src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
       centerPosPixelOffset: {
-        x: -18,
-        y: 98,
+        x: -9,
+        y: 49,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.LEFT_LEG,
@@ -303,7 +303,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/mute.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -100,
+        y: -50,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
@@ -312,7 +312,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/A.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -100,
+        y: -50,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_A,
@@ -321,7 +321,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/E.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -100,
+        y: -50,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_E,
@@ -330,7 +330,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/I.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -100,
+        y: -50,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_I,
@@ -339,7 +339,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/O.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -100,
+        y: -50,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_O,
@@ -348,7 +348,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/U.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -100,
+        y: -50,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_U,
