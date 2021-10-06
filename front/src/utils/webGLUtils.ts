@@ -304,7 +304,7 @@ class GLHelper {
     ];
     const imageinfo = this.imageInfoProvider.getAvatarImageInfo(
       me.avatar,
-      AvatarPartImageEnum.FACE_MUTE,
+      AvatarPartImageEnum.BODY,
     );
     if (!imageinfo) {
       return [];
