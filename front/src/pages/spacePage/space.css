@@ -1,5 +1,5 @@
 /* canvas */
-canvas {
+.space-canvas {
   width: 100vw;
   height: 92vh;
   /* for Iphone */
@@ -324,6 +324,14 @@ canvas {
 }
 .message_input_button {
   width: 20%;
+}
+
+.vowel-detect {
+  position: absolute;
+  width: '500px';
+  left: 0;
+  top: 0;
+  z-index: 20;
 }
 
 /* 네비게이션 모바일 */

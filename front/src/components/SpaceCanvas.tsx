@@ -148,7 +148,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
 
   return (
     <>
-      <canvas ref={canvasRef} />
+      <canvas className="space-canvas" ref={canvasRef} />
       {gLHelper ? (
         <Joystick
           setIsMoving={setIsMoving}

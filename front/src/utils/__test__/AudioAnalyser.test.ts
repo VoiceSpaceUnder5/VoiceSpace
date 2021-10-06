@@ -8,7 +8,7 @@ describe('AudioAnalyser Test', () => {
     const audioAnalyser = new AudioAnalyser(mockedStream, 2, 30, 50);
     const result = audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
     expect(result.avatarFaceScale).toBe(1 + 50);
-    expect(result.avatarFace).toBe(AvatarPartImageEnum.FACE_SPEAK_SMILE);
+    expect(result.avatarFace).toBe(AvatarPartImageEnum.FACE_A);
   });
 
   test('getAvatarFaceDtoByAudioAnalysis 호출시 정상적으로 AvatarFaceDto 가 리턴되어야 함', () => {
@@ -22,6 +22,6 @@ describe('AudioAnalyser Test', () => {
     const audioAnalyser = new AudioAnalyser(mockedStream, 2, 50, 500);
     const result = audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
     expect(result.avatarFaceScale).toBe(1 + 50);
-    expect(result.avatarFace).toBe(AvatarPartImageEnum.FACE_SPEAK);
+    expect(result.avatarFace).toBe(AvatarPartImageEnum.FACE_A);
   });
 });

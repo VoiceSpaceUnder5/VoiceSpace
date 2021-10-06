@@ -148,7 +148,7 @@ export const isInRect = (
 
 export interface DrawInfo extends ImageInfo {
   scale: number;
-  rotateRadian: number;
+  partRotateRadian: number;
 }
 
 export class Camera {
@@ -304,7 +304,7 @@ class GLHelper {
     ];
     const imageinfo = this.imageInfoProvider.getAvatarImageInfo(
       me.avatar,
-      AvatarPartImageEnum.FACE_MUTE,
+      AvatarPartImageEnum.BODY,
     );
     if (!imageinfo) {
       return [];
@@ -312,7 +312,7 @@ class GLHelper {
     this.updateImageMatrixFromDrawInfo({
       ...imageinfo,
       scale: scale,
-      rotateRadian: me.rotateRadian,
+      partRotateRadian: me.partRotatedegree,
       centerPos: me.centerPos,
     });
 
@@ -355,6 +355,10 @@ class GLHelper {
     this.cameraMatrix = m3.inverse(this.cameraMatrix);
   }
 
+  degreeToRadian(degree: number): number {
+    return degree * (Math.PI / 180);
+  }
+  // 이미지를 이동, 회전 또는 스케일 하는 함수
   updateImageMatrixFromDrawInfo(drawImageInfo: DrawInfo): void {
     this.imageMatrix = m3.identity();
     this.imageMatrix = m3.translate(
@@ -367,8 +371,11 @@ class GLHelper {
       drawImageInfo.size.width / 2,
       drawImageInfo.size.height / 2,
     );
+    this.imageMatrix = m3.rotate(
+      this.imageMatrix,
+      this.degreeToRadian(drawImageInfo.partRotateRadian),
+    ); // rotate
 
-    this.imageMatrix = m3.rotate(this.imageMatrix, drawImageInfo.rotateRadian); // rotate
     this.imageMatrix = m3.translate(
       this.imageMatrix,
       drawImageInfo.centerPosPixelOffset.x,
@@ -378,13 +385,53 @@ class GLHelper {
     this.imageMatrix = m3.scale(
       this.imageMatrix,
       drawImageInfo.scale,
-      drawImageInfo.scale,
+      drawImageInfo.scale < 0 ? -drawImageInfo.scale : drawImageInfo.scale,
     ); // 중앙점을 기준으로 스케일값 만큼 스케일
 
     this.imageMatrix = m3.translate(
       this.imageMatrix,
       -drawImageInfo.size.width / 2,
       -drawImageInfo.size.height / 2,
+    );
+    this.imageMatrix = m3.scale(
+      this.imageMatrix,
+      drawImageInfo.size.width,
+      drawImageInfo.size.height,
+    ); // 원래 크기로 스케일
+  }
+
+  updatepartMatrixFromDrawInfo(drawImageInfo: DrawInfo): void {
+    this.imageMatrix = m3.identity();
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      drawImageInfo.centerPosPixelOffset.x,
+      drawImageInfo.centerPosPixelOffset.y - drawImageInfo.size.height / 2,
+    );
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      drawImageInfo.centerPos.x - drawImageInfo.size.width / 2,
+      drawImageInfo.centerPos.y - drawImageInfo.size.height / 2,
+    ); // 2d 이동
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      drawImageInfo.size.width / 2,
+      drawImageInfo.size.height / 2,
+    );
+    this.imageMatrix = m3.rotate(
+      this.imageMatrix,
+      this.degreeToRadian(drawImageInfo.partRotateRadian),
+    ); // rotate
+
+    this.imageMatrix = m3.scale(
+      this.imageMatrix,
+      drawImageInfo.scale,
+      drawImageInfo.scale < 0 ? -drawImageInfo.scale : drawImageInfo.scale,
+    ); // 중앙점을 기준으로 스케일값 만큼 스케일
+
+    this.imageMatrix = m3.translate(
+      this.imageMatrix,
+      -drawImageInfo.size.width / 2,
+      0,
     );
     this.imageMatrix = m3.scale(
       this.imageMatrix,
@@ -411,7 +458,18 @@ class GLHelper {
   drawImage(drawImageInfo: DrawInfo): void {
     this.updateProjectionMatrix();
     this.updateCameraMatrix();
+    // line: 359 이미지를 이동, 회전 또는 스케일 하는 함수
     this.updateImageMatrixFromDrawInfo(drawImageInfo);
+    // 실제로 그리는 함수
+    this.drawArray(drawImageInfo.tex);
+  }
+
+  drawpart(drawImageInfo: DrawInfo): void {
+    this.updateProjectionMatrix();
+    this.updateCameraMatrix();
+    // line: 359 이미지를 이동, 회전 또는 스케일 하는 함수
+    this.updatepartMatrixFromDrawInfo(drawImageInfo);
+    // 실제로 그리는 함수
     this.drawArray(drawImageInfo.tex);
   }
 
@@ -431,10 +489,26 @@ class GLHelper {
       );
       return;
     }
+
+    const part = AvatarPartImageEnum;
+    // 그리는 데에 필요한 info
+    // 팔 다리의 경우, scale은 몸통을 CenterPos로
+    // 회전은 관절부분을 CenterPos로
+    let partRotatedegree = 0;
+    if (avatarPart === part.LEFT_ARM || avatarPart === part.RIGHT_LEG) {
+      partRotatedegree = player.partRotatedegree;
+    } else if (avatarPart === part.RIGHT_ARM || avatarPart === part.LEFT_LEG) {
+      partRotatedegree = -player.partRotatedegree;
+    } else if (avatarPart !== part.BODY)
+      partRotatedegree = player.partRotatedegree / 7.5;
+    let scale = 1;
+    if (isFace) scale = player.avatarFaceScale;
+    if (player.lookLeft) scale *= -1;
+
     return {
       ...imageInfo,
-      scale: isFace ? player.avatarFaceScale : 1,
-      rotateRadian: player.rotateRadian,
+      scale: scale,
+      partRotateRadian: partRotatedegree, // partRotateRadian,
       centerPos: player.centerPos,
     };
   }
@@ -445,7 +519,30 @@ class GLHelper {
     textMessageDiv: HTMLDivElement,
   ): void {
     const divSize = {...this.camera.size};
-    const drawIdxs = [AvatarPartImageEnum.BODY, player.avatarFace]; // 0은 몸통
+    const drawIdxs = [
+      !player.lookLeft
+        ? AvatarPartImageEnum.RIGHT_ARM
+        : AvatarPartImageEnum.LEFT_ARM,
+      !player.lookLeft
+        ? AvatarPartImageEnum.RIGHT_LEG
+        : AvatarPartImageEnum.LEFT_LEG,
+      AvatarPartImageEnum.BODY,
+      !player.lookLeft
+        ? AvatarPartImageEnum.LEFT_ARM
+        : AvatarPartImageEnum.RIGHT_ARM,
+      !player.lookLeft
+        ? AvatarPartImageEnum.LEFT_LEG
+        : AvatarPartImageEnum.RIGHT_LEG,
+      player.avatarFace,
+    ]; // 0은 몸통
+    // const drawIdxs = [
+    //   AvatarPartImageEnum.RIGHT_ARM,
+    //   AvatarPartImageEnum.RIGHT_LEG,
+    //   AvatarPartImageEnum.BODY,
+    //   AvatarPartImageEnum.LEFT_ARM,
+    //   AvatarPartImageEnum.LEFT_LEG,
+    //   player.avatarFace,
+    // ]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
       const drawInfo = this.makeAvatarImageInfoFromImageInfoProviderAndPlayer(
         partEnum,
@@ -454,7 +551,13 @@ class GLHelper {
       );
       //if (drawInfo) drawInfo.scale /= 2;
       if (!drawInfo) return;
-      this.drawImage(drawInfo);
+      if (
+        partEnum >= AvatarPartImageEnum.RIGHT_ARM &&
+        partEnum <= AvatarPartImageEnum.LEFT_LEG &&
+        partEnum != 2
+      )
+        this.drawpart(drawInfo);
+      else this.drawImage(drawInfo);
       const temp = [
         [0, 0],
         [0, 1],
@@ -552,7 +655,7 @@ class GLHelper {
       this.drawImage({
         ...this.imageInfoProvider.background,
         scale: 1,
-        rotateRadian: 0,
+        partRotateRadian: 0,
       });
     }
 
@@ -562,7 +665,7 @@ class GLHelper {
         this.drawImage({
           ...imageInfo,
           scale: 1,
-          rotateRadian: 0,
+          partRotateRadian: 0,
         });
       });
     });
@@ -578,7 +681,7 @@ class GLHelper {
         this.drawImage({
           ...imageInfo,
           scale: 1,
-          rotateRadian: 0,
+          partRotateRadian: 0,
         });
         this.transparency = 1.0;
       });
