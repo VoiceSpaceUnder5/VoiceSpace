@@ -1,6 +1,6 @@
 .settingAudioVisualizer {
   position: absolute;
-  width: 70%;
+  width: 75%;
   height: 30%;
   top: 75%;
   left: 50%;
@@ -120,7 +120,7 @@
 
 .soundControllReloadButton {
   position: absolute;
-  width: 70%;
+  width: 75%;
   height: 10%;
   top: 40%;
   left: 50%;
@@ -131,7 +131,7 @@
 
 .soundControllReloadButton:hover {
   position: absolute;
-  width: 70%;
+  width: 75%;
   height: 10%;
   top: 40%;
   left: 50%;
@@ -142,7 +142,7 @@
 
 .soundControllReloadButton:focus {
   position: absolute;
-  width: 70%;
+  width: 75%;
   height: 10%;
   top: 40%;
   left: 50%;
@@ -155,9 +155,11 @@
   position: absolute;
   top: 52%;
   left: 50%;
+  width: 75%;
   transform: translate(-50%, -50%);
   background-color: #53150d;
   color: white;
+  font-size: 50%;
 }
 
 .enterButtonContainerDiv {

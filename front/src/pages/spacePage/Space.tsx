@@ -110,7 +110,6 @@ function Space(props: RouteComponentProps): JSX.Element {
     props.history.push('/');
   }
   if (!isQueryValid(query)) {
-    message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
     props.history.push(`/setting?roomId=${query.roomId}`);
   }
   const mapMakingInfo = seaAndMountainMap1MMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
