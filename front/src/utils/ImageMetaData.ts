@@ -25,15 +25,19 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
 }
 
 export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
-  BODY = 0,
-  FACE_MUTE = 1,
-  FACE_SPEAK = 2,
-  FACE_SPEAK_SMILE = 3,
-  FACE_A = 4,
-  FACE_E = 5,
-  FACE_I = 6,
-  FACE_O = 7,
-  FACE_U = 8,
+  RIGHT_ARM = 0,
+  RIGHT_LEG = 1,
+  BODY = 2,
+  LEFT_ARM = 3,
+  LEFT_LEG = 4,
+  FACE_MUTE = 5,
+  FACE_SPEAK = 6,
+  FACE_SPEAK_SMILE = 7,
+  FACE_A = 8,
+  FACE_E = 9,
+  FACE_I = 10,
+  FACE_O = 11,
+  FACE_U = 12,
 }
 
 // 낮은 layer 부터 먼저 그려진다.
@@ -243,102 +247,158 @@ export const grayBlockMD: ObjectImageMD = {
 };
 
 //////////////////////////////// AvatarSizeInfo /////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// 말하는 토끼
 export const brownBearMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.BROWN_BEAR,
   avatarInitialName: '갈색 곰',
   avatarMDInfos: [
     {
-      src: './assets/spaceMain/avatar/brownBearBody.png',
+      src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
+      centerPosPixelOffset: {
+        x: 25,
+        y: 40,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.RIGHT_ARM,
+    },
+    {
+      src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
+      centerPosPixelOffset: {
+        x: 20,
+        y: 95,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.RIGHT_LEG,
+    },
+    {
+      src: './assets/spaceMain/vowel_avatar/body.png',
       centerPosPixelOffset: {
         x: 0,
-        y: -33,
+        y: 40,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
     },
     {
-      src: './assets/spaceMain/avatar/brownBearFaceMute.png',
+      src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
+      centerPosPixelOffset: {
+        x: -25,
+        y: 40,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.LEFT_ARM,
+    },
+    {
+      src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
+      centerPosPixelOffset: {
+        x: -15,
+        y: 95,
+      },
+      layerLev: LayerLevelEnum.AVATAR_ZERO,
+      partType: AvatarPartImageEnum.LEFT_LEG,
+    },
+    {
+      src: './assets/spaceMain/vowel_avatar/mute.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 25,
+        y: -100,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
-      src: './assets/spaceMain/avatar/brownBearFaceSpeak.png',
+      src: './assets/spaceMain/vowel_avatar/A.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 25,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK,
-    },
-    {
-      src: './assets/spaceMain/avatar/brownBearFaceSpeakSmile.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 25,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
-    },
-    {
-      src: './assets/vowel/A.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 25,
+        y: -100,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_A,
     },
     {
-      src: './assets/vowel/E.png',
+      src: './assets/spaceMain/vowel_avatar/E.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 25,
+        y: -100,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_E,
     },
     {
-      src: './assets/vowel/I.png',
+      src: './assets/spaceMain/vowel_avatar/I.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 25,
+        y: -100,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_I,
     },
     {
-      src: './assets/vowel/O.png',
+      src: './assets/spaceMain/vowel_avatar/O.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 25,
+        y: -100,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_O,
     },
     {
-      src: './assets/vowel/U.png',
+      src: './assets/spaceMain/vowel_avatar/U.png',
       centerPosPixelOffset: {
         x: 0,
-        y: 25,
-      },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
-      partType: AvatarPartImageEnum.FACE_U,
-    },
-    {
-      src: './assets/vowel/FACE_MUTE.png',
-      centerPosPixelOffset: {
-        x: 0,
-        y: 25,
+        y: -100,
       },
       layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_U,
     },
   ],
 };
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+// export const brownBearMD: AvatarImageMD = {
+//   avatarType: AvatarImageEnum.WHITE_RABBIT,
+//   avatarInitialName: '갈색 곰',
+//   avatarMDInfos: [
+//     {
+//       src: './assets/spaceMain/avatar/brownBearBody.png',
+//       centerPosPixelOffset: {
+//         x: 0,
+//         y: -33,
+//       },
+//       layerLev: LayerLevelEnum.AVATAR_ZERO,
+//       partType: AvatarPartImageEnum.BODY,
+//     },
+//     {
+//       src: './assets/spaceMain/avatar/brownBearFaceMute.png',
+//       centerPosPixelOffset: {
+//         x: 0,
+//         y: 25,
+//       },
+//       layerLev: LayerLevelEnum.AVATAR_ONE,
+//       partType: AvatarPartImageEnum.FACE_MUTE,
+//     },
+//     {
+//       src: './assets/spaceMain/avatar/brownBearFaceSpeak.png',
+//       centerPosPixelOffset: {
+//         x: 0,
+//         y: 25,
+//       },
+//       layerLev: LayerLevelEnum.AVATAR_ONE,
+//       partType: AvatarPartImageEnum.FACE_SPEAK,
+//     },
+//     {
+//       src: './assets/spaceMain/avatar/brownBearFaceSpeakSmile.png',
+//       centerPosPixelOffset: {
+//         x: 0,
+//         y: 25,
+//       },
+//       layerLev: LayerLevelEnum.AVATAR_ONE,
+//       partType: AvatarPartImageEnum.FACE_SPEAK_SMILE,
+//     },
+// };
 
 export const brownHorseMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.BROWN_HORSE,
@@ -643,13 +703,13 @@ export const orangeFoxMD: AvatarImageMD = {
 
 export const avatarImageMDs = [
   brownBearMD,
-  brownHorseMD,
-  whiteRabbitMD,
-  pinkPigMD,
-  whiteCatMD,
-  yellowDogMD,
-  creamPandaMD,
-  orangeFoxMD,
+  // brownHorseMD,
+  // whiteRabbitMD,
+  // pinkPigMD,
+  // whiteCatMD,
+  // yellowDogMD,
+  // creamPandaMD,
+  // orangeFoxMD,
 ];
 
 export interface Formant {

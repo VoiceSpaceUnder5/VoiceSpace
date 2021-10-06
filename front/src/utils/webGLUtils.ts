@@ -431,11 +431,14 @@ class GLHelper {
       );
       return;
     }
+
+    // 그리는 데에 필요한 info
+    const centerPos = player.centerPos;
     return {
       ...imageInfo,
       scale: isFace ? player.avatarFaceScale : 1,
-      rotateRadian: player.rotateRadian,
-      centerPos: player.centerPos,
+      rotateRadian: 0, // rotateRadian,
+      centerPos: centerPos,
     };
   }
 
@@ -445,7 +448,14 @@ class GLHelper {
     textMessageDiv: HTMLDivElement,
   ): void {
     const divSize = {...this.camera.size};
-    const drawIdxs = [AvatarPartImageEnum.BODY, player.avatarFace]; // 0은 몸통
+    const drawIdxs = [
+      AvatarPartImageEnum.RIGHT_ARM,
+      AvatarPartImageEnum.RIGHT_LEG,
+      AvatarPartImageEnum.BODY,
+      AvatarPartImageEnum.LEFT_ARM,
+      AvatarPartImageEnum.LEFT_LEG,
+      player.avatarFace,
+    ]; // 0은 몸통
     drawIdxs.forEach(partEnum => {
       const drawInfo = this.makeAvatarImageInfoFromImageInfoProviderAndPlayer(
         partEnum,

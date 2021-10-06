@@ -125,15 +125,15 @@ export class AudioAnalyser {
     if (stringFormants === null) {
       // get avatarFaceEnum by volume
       if (volume > this.speakThrashHold)
-        avatarFace = AvatarPartImageEnum.FACE_SPEAK;
+        avatarFace = AvatarPartImageEnum.FACE_A;
       if (volume > this.speakMouseThrashHold)
-        avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
+        avatarFace = AvatarPartImageEnum.FACE_A;
       return {
         avatarFace: avatarFace,
         avatarFaceScale: scale,
       };
     } else {
-      avatarFace = 8;
+      avatarFace = AvatarPartImageEnum.FACE_MUTE;
       const sma = getMonvingAverage(16);
       this.smad.length = 0;
       this.byteFrequencyDataArray.forEach(value => {

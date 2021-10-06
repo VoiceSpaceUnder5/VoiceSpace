@@ -17,7 +17,6 @@ import PeerManager, {
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
-import {Message} from './Messenger';
 import VowelDetectButton from './VowelDetectButton';
 
 interface NavigationProps {
