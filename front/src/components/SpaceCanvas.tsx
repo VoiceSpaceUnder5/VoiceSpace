@@ -39,11 +39,10 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     finishLoad: 0,
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
-  const [gLHelper2, setGLHelper2] = useState<GLHelper | null>(null);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvas2Ref = useRef<HTMLCanvasElement>(null);
-  const canvas3Ref = useRef<HTMLCanvasElement>(null);
+  const spaceCanvasRef = useRef<HTMLCanvasElement>(null);
+  const savedGroundCanvasRef = useRef<HTMLCanvasElement>(null);
+  const groundCanvasRef = useRef<HTMLCanvasElement>(null);
   // function
   const setIsMoving = (isMoving: boolean) => {
     props.peerManager.me.isMoving = isMoving;
@@ -75,56 +74,42 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       },
     );
 
-    if (!canvasRef.current || !canvas2Ref.current || !canvas3Ref.current) {
+    if (
+      !spaceCanvasRef.current ||
+      !savedGroundCanvasRef.current ||
+      !groundCanvasRef.current
+    ) {
       console.error('canvas is not rendered error');
       return;
     }
-    const canvas = canvasRef.current;
-    const canvas2 = canvas2Ref.current;
-    const canvas3 = canvas3Ref.current;
-    const gl = canvas.getContext('webgl');
-    const gl2 = canvas2.getContext('webgl', {preserveDrawingBuffer: true});
-    const gl3 = canvas3?.getContext('2d');
-    if (!gl || !gl2 || !gl3) {
+    const spaceCanvas = spaceCanvasRef.current;
+    const groundCanvas = groundCanvasRef.current;
+    const gl = spaceCanvas.getContext('webgl');
+    if (!gl) {
       console.error('getContext webgl error');
       return;
     }
+    //test
     const imageInfoProvider = new ImageInfoProvider(
       gl,
-      setLoadStatus,
-      props.mapMakingInfo,
-    );
-    const imageInfoProvider2 = new ImageInfoProvider(
-      gl2,
       setLoadStatus,
       props.mapMakingInfo,
     );
     const glHelper = new GLHelper(
       gl,
       new Camera(
-        {width: canvas.clientWidth, height: canvas.clientHeight},
+        {width: spaceCanvas.clientWidth, height: spaceCanvas.clientHeight},
         {...props.mapMakingInfo.respawnPosition},
         {...props.mapMakingInfo.backgroundSize},
       ),
       imageInfoProvider,
     );
-    const gLHelper2 = new GLHelper(
-      gl2,
-      new Camera(
-        {width: canvas2.clientWidth, height: canvas2.clientHeight},
-        {...props.mapMakingInfo.respawnPosition},
-        {...props.mapMakingInfo.backgroundSize},
-      ),
-      imageInfoProvider2,
-    );
 
     setGLHelper(glHelper);
-    setGLHelper2(gLHelper2);
     const resizeEventHandler = () => {
-      if (!gLHelper2) return;
-      glHelper.updateFromCavnas(canvas);
-      canvas3.width = canvas3.clientWidth;
-      canvas3.height = canvas3.clientHeight;
+      glHelper.updateFromCavnas(spaceCanvas);
+      groundCanvas.width = groundCanvas.clientWidth;
+      groundCanvas.height = groundCanvas.clientHeight;
     };
     resizeEventHandler();
     window.addEventListener('resize', resizeEventHandler);
@@ -139,7 +124,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
   }, []);
 
-  const drawBackgroundFromBuffer = (xNumber: number) => {
+  const drawBackgroundFromBuffer = (savedGroundCanvas: HTMLCanvasElement) => {
     if (!gLHelper) return;
     const centerX = gLHelper.camera.centerPos.x;
     const centerY = gLHelper.camera.centerPos.y;
@@ -147,12 +132,18 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     const cameraHeight = gLHelper.camera.originSize.height;
     const leftTopX = centerX - cameraWidth / 2;
     const leftTopY = centerY - cameraHeight / 2;
-    const gl3 = canvas3Ref.current?.getContext('2d');
-    const canvas2 = canvas2Ref.current;
+    const gl = groundCanvasRef.current?.getContext('2d');
 
-    if (gl3 && canvas2) {
-      gl3.drawImage(
-        canvas2,
+    // console.log(`width: ${cameraWidth}, height: ${cameraHeight}`);
+    if (gl && savedGroundCanvas) {
+      gl.clearRect(
+        0,
+        0,
+        groundCanvasRef.current!.clientWidth,
+        groundCanvasRef.current!.clientHeight,
+      );
+      gl.drawImage(
+        savedGroundCanvas,
         leftTopX,
         leftTopY,
         cameraWidth,
@@ -165,22 +156,26 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     }
   };
 
-  let count = 0;
   useEffect(() => {
-    if (!isLoading(loadStatus) || !gLHelper || !gLHelper2) {
+    // background savedGroundCanvas에 따로 저장.
+    const backgroundImage = new Image();
+    backgroundImage.src =
+      './assets/spaceMain/background/seaAndMountainVer1.png';
+    const savedGroundCanvas = savedGroundCanvasRef.current;
+    if (!savedGroundCanvas) return;
+    const gl2 = savedGroundCanvas.getContext('2d');
+    if (!gl2) return;
+    gl2.drawImage(backgroundImage, 0, 0);
+    if (!isLoading(loadStatus) || !gLHelper) {
       return;
     }
     const peerManager = props.peerManager;
-    // test
-    gLHelper2.drawObjectsBeforeAvatar();
-    // gLHelper2.gl.canvas.getContext('2d')?.save();
-    //계속해서 화면에 장면을 그려줌
+    //화면에 장면을 그려줌
     const requestAnimation = () => {
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
       peerManager.me.update(gLHelper);
 
-      drawBackgroundFromBuffer(count++);
-      gLHelper.drawObjectsBeforeAvatar();
+      drawBackgroundFromBuffer(savedGroundCanvas);
       const data: DataDto = {
         type: DataDtoType.PLAYER_INFO,
         data: peerManager.me.getPlayerDto(),
@@ -204,7 +199,16 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
 
   return (
     <>
-      <canvas className="spaceCanvas" ref={canvasRef} />
+      <canvas
+        className="spaceCanvas"
+        ref={groundCanvasRef}
+        style={{position: 'absolute', left: '0px', top: '0px', zIndex: -10}}
+      ></canvas>
+      <canvas
+        className="spaceCanvas"
+        ref={spaceCanvasRef}
+        // style={{position: 'absolute', left: '0px', top: '0px'}}
+      />
       {gLHelper ? (
         <Joystick
           setIsMoving={setIsMoving}
@@ -217,11 +221,20 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       {!isLoading(loadStatus) ? (
         <div id="divLoad">{getPercentageFromLoadStatus(loadStatus)}</div>
       ) : null}
-      <button>x</button>
-      <canvas className="spaceCanvas" ref={canvas3Ref}></canvas>
-      <button>x</button>
-      <canvas width={2400} height={2400} ref={canvas2Ref}></canvas>
-      <button>xx</button>
+      <canvas
+        width={2400}
+        height={2400}
+        ref={savedGroundCanvasRef}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: 0,
+          height: 0,
+          visibility: 'hidden',
+          // display: 'none',
+        }}
+      ></canvas>
     </>
   );
 }
