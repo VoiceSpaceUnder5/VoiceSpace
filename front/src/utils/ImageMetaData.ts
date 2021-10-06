@@ -267,7 +267,7 @@ export const brownBearMD: AvatarImageMD = {
       src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
       centerPosPixelOffset: {
         x: 20,
-        y: 95,
+        y: 98,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.RIGHT_LEG,
@@ -293,8 +293,8 @@ export const brownBearMD: AvatarImageMD = {
     {
       src: './assets/spaceMain/vowel_avatar/armAndLeg.png',
       centerPosPixelOffset: {
-        x: -15,
-        y: 95,
+        x: -18,
+        y: 98,
       },
       layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.LEFT_LEG,
