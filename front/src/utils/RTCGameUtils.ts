@@ -222,7 +222,7 @@ export class Me implements PlayerDto {
     centerPos: Vec2, // original centerPos
     nickname = '익명의 곰', // 추후 .env 로 이동해야 될듯 (하드코딩 제거)
     textMessage: string,
-    avatar = AvatarImageEnum.BROWN_BEAR,
+    avatar = AvatarImageEnum.WHITE_RABBIT,
     velocity = 0.2,
   ) {
     //nickname overlay div
@@ -443,7 +443,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     // PlayerDto
     this.nickname = 'Loading...';
     this.textMessage = '';
-    this.avatar = AvatarImageEnum.BROWN_BEAR;
+    this.avatar = AvatarImageEnum.WHITE_RABBIT;
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {x: -1000, y: -1000};

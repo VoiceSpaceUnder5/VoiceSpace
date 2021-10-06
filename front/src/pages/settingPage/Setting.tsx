@@ -136,8 +136,8 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const query = qs.parse(props.location.search) as SettingQuery;
   const settingWindowWidth = 400;
   const settingWindowHeight = 400;
-  const avatarIdxMax = AvatarImageEnum.YELLOW_DOG;
-  const avatarIdxMin = AvatarImageEnum.BROWN_BEAR;
+  const avatarIdxMax = AvatarImageEnum.WHITE_RABBIT;
+  const avatarIdxMin = AvatarImageEnum.WHITE_RABBIT;
 
   //states
   const [deviceInfos, setDeviceInfos] = useState<MediaDeviceInfo[]>([]);
@@ -149,7 +149,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const [isListenMyMic, setIsListenMyMic] = useState(false);
   const [nickname, setNickname] = useState('익명의 토끼');
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
-    AvatarImageEnum.BROWN_BEAR,
+    AvatarImageEnum.WHITE_RABBIT,
   );
 
   //ref
@@ -318,7 +318,11 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 <img
                   ref={avatarImgRef}
                   className="settingAvatarImg"
-                  src="./assets/spaceMain/avatar/brownBearFaceMute.png"
+                  src={
+                    avatarImageMDs[AvatarImageEnum.WHITE_RABBIT].avatarMDInfos[
+                      AvatarPartImageEnum.FACE_MUTE
+                    ].src
+                  }
                 ></img>
                 <div className="settingAvatarButtonContainerDiv">
                   <button
