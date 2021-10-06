@@ -138,7 +138,7 @@ function VowelDetect(props: VowelDetectProps): JSX.Element {
 
   formants.forEach(value => {
     value.Image = new Image();
-    value.Image.src = `./assets/vowel/${value.label}.png`;
+    value.Image.src = `./assets/spaceMain/vowel_avatar/${value.label}.png`;
   });
 
   useEffect(() => {

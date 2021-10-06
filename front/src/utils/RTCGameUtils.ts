@@ -50,7 +50,9 @@ export interface PlayerDto extends AvatarFaceDto {
   textMessage: string;
   avatar: AvatarImageEnum;
   centerPos: Vec2;
-  rotateRadian: number;
+  partRotatedegree: number;
+  rotateCounterclockwise: boolean;
+  lookLeft: boolean;
 }
 
 function getMonvingAverage(period: number) {
@@ -125,15 +127,15 @@ export class AudioAnalyser {
     if (stringFormants === null) {
       // get avatarFaceEnum by volume
       if (volume > this.speakThrashHold)
-        avatarFace = AvatarPartImageEnum.FACE_SPEAK;
+        avatarFace = AvatarPartImageEnum.FACE_A;
       if (volume > this.speakMouseThrashHold)
-        avatarFace = AvatarPartImageEnum.FACE_SPEAK_SMILE;
+        avatarFace = AvatarPartImageEnum.FACE_A;
       return {
         avatarFace: avatarFace,
         avatarFaceScale: scale,
       };
     } else {
-      avatarFace = 8;
+      avatarFace = AvatarPartImageEnum.FACE_MUTE;
       const sma = getMonvingAverage(16);
       this.smad.length = 0;
       this.byteFrequencyDataArray.forEach(value => {
@@ -163,11 +165,16 @@ export class AudioAnalyser {
 
       if (candidates[0].similarity > 0.9 && candidates[0].distPercent > 0.5) {
         console.log(candidates[0].vowel);
-        if (candidates[0].vowel === 'A') avatarFace = 4;
-        else if (candidates[0].vowel === 'E') avatarFace = 5;
-        else if (candidates[0].vowel === 'I') avatarFace = 6;
-        else if (candidates[0].vowel === 'O') avatarFace = 7;
-        else if (candidates[0].vowel === 'U') avatarFace = 8;
+        if (candidates[0].vowel === 'A')
+          avatarFace = AvatarPartImageEnum.FACE_A;
+        else if (candidates[0].vowel === 'E')
+          avatarFace = AvatarPartImageEnum.FACE_E;
+        else if (candidates[0].vowel === 'I')
+          avatarFace = AvatarPartImageEnum.FACE_I;
+        else if (candidates[0].vowel === 'O')
+          avatarFace = AvatarPartImageEnum.FACE_O;
+        else if (candidates[0].vowel === 'U')
+          avatarFace = AvatarPartImageEnum.FACE_U;
       }
       return {
         avatarFace: avatarFace,
@@ -189,7 +196,9 @@ export class Me implements PlayerDto {
   avatarFace: AvatarPartImageEnum;
   avatarFaceScale: number;
   centerPos: Vec2;
-  rotateRadian: number;
+  partRotatedegree: number;
+  rotateCounterclockwise: boolean;
+  lookLeft: boolean;
 
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
@@ -231,7 +240,9 @@ export class Me implements PlayerDto {
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {...centerPos};
-    this.rotateRadian = 0;
+    this.partRotatedegree = 0;
+    this.rotateCounterclockwise = false;
+    this.lookLeft = false;
 
     // update avatar position values
     this.lastUpdateTimeStamp = Date.now();
@@ -270,7 +281,9 @@ export class Me implements PlayerDto {
       avatarFace: this.avatarFace,
       avatarFaceScale: this.avatarFaceScale,
       centerPos: {...this.centerPos},
-      rotateRadian: this.rotateRadian,
+      partRotatedegree: this.partRotatedegree,
+      rotateCounterclockwise: this.rotateCounterclockwise,
+      lookLeft: this.lookLeft,
     };
   }
 
@@ -322,7 +335,7 @@ export class Me implements PlayerDto {
       const oldCenterPosY = this.centerPos.y;
       const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
       const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
-      const oldRotateRadian = this.rotateRadian;
+      const oldpartRotatedegree = this.partRotatedegree;
 
       // position value update
       this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
@@ -330,10 +343,17 @@ export class Me implements PlayerDto {
         this.velocity * this.normalizedDirectionVector.x * millisDiff;
       this.centerPos.y +=
         this.velocity * this.normalizedDirectionVector.y * millisDiff;
-      this.rotateRadian = Math.atan2(
-        this.normalizedDirectionVector.x,
-        this.normalizedDirectionVector.y,
-      );
+      if (this.rotateCounterclockwise === false) {
+        this.partRotatedegree += 1.2;
+      } else {
+        this.partRotatedegree -= 1.2;
+      }
+      if (this.partRotatedegree > 15) {
+        this.rotateCounterclockwise = true;
+      } else if (this.partRotatedegree < -15) {
+        this.rotateCounterclockwise = false;
+      }
+      this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
       //collision detection part
       if (this.isCollision(glHelper)) {
         // if isCollision -> rollback value
@@ -341,7 +361,7 @@ export class Me implements PlayerDto {
         this.centerPos.y = oldCenterPosY;
         this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
         this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
-        this.rotateRadian = oldRotateRadian;
+        this.partRotatedegree = oldpartRotatedegree;
       }
     }
   }
@@ -375,7 +395,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   avatarFace: AvatarPartImageEnum;
   avatarFaceScale: number;
   centerPos: Vec2;
-  rotateRadian: number;
+  partRotatedegree: number;
+  rotateCounterclockwise: boolean;
+  lookLeft: boolean;
 
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
@@ -425,7 +447,9 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {x: -1000, y: -1000};
-    this.rotateRadian = 0;
+    this.partRotatedegree = 0;
+    this.rotateCounterclockwise = false;
+    this.lookLeft = false;
 
     //nickname overlay div
     this.nicknameDiv = nicknameDiv;
@@ -522,9 +546,10 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.avatar = data.avatar;
     this.avatarFace = data.avatarFace;
     this.avatarFaceScale = data.avatarFaceScale;
-    this.rotateRadian = data.rotateRadian;
+    this.partRotatedegree = data.partRotatedegree;
     this.nicknameDiv.innerText = data.nickname;
     this.textMessageDiv.innerText = data.textMessage;
+    this.lookLeft = data.lookLeft;
   }
 
   updateSoundFromVec2(pos: Vec2): void {

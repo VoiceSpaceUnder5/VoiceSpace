@@ -17,7 +17,6 @@ import PeerManager, {
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
-import {Message} from './Messenger';
 import VowelDetectButton from './VowelDetectButton';
 
 interface NavigationProps {
@@ -265,7 +264,7 @@ function Navigation(props: NavigationProps): JSX.Element {
             changeEachAudio={changeEachAudio}
             changeInputStream={changeInputStream}
           />
-          <VowelDetectButton />
+          {/* <VowelDetectButton /> */}
           <div>
             <LogoutOutlined className="navbar_button" onClick={exit} />
           </div>
