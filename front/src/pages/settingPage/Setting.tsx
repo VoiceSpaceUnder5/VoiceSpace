@@ -1,13 +1,24 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
-import {Button, Select, message} from 'antd';
+import {Button, Select, message, Switch} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
+import './setting.css';
+import {
+  AvatarImageEnum,
+  avatarImageMDs,
+  AvatarPartImageEnum,
+} from '../../utils/ImageMetaData';
+
 const qs = require('query-string');
 const {Option} = Select;
 
 interface SettingQuery {
   roomId: string;
   isNew: boolean;
+}
+
+interface AudioVisualizerProps {
+  audioStream: MediaStream;
 }
 
 interface SoundControllProps {
@@ -28,31 +39,15 @@ function SoundControll(props: SoundControllProps): JSX.Element {
   };
 
   return (
-    <div
-      style={{
-        border: '3px solid #325932',
-        borderRadius: '3%',
-        borderColor: '#325932',
-        width: '100%',
-        height: '100%',
-        padding: '3%',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          height: '15%',
-          margin: '1%',
-        }}
-      >
+    <div className="soundControllMainDiv">
+      <div className="soundControllSelectDiv">
         <img
-          src="./assets/navigation/speaker.png"
           style={{width: '20%', height: 32}}
+          src="./assets/navigation/speaker.png"
         ></img>
         <Select
+          className="soundControllSelect"
           onChange={onSpeakerChange}
-          style={{width: '80%'}}
           value={props.selectedSpeakerDeviceID}
         >
           {props.deviceInfos
@@ -68,21 +63,15 @@ function SoundControll(props: SoundControllProps): JSX.Element {
             })}
         </Select>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          height: '15%',
-          margin: '1%',
-        }}
-      >
+      <div className="soundControllSelectDiv">
         <img
+          className="soundControllSelectLogoImg"
           src="./assets/navigation/mic.png"
           style={{width: '20%', height: 32}}
         ></img>
         <Select
+          className="soundControllSelect"
           onChange={onMicChange}
-          style={{width: '80%'}}
           value={props.selectedMicDeviceID}
         >
           {props.deviceInfos
@@ -102,11 +91,53 @@ function SoundControll(props: SoundControllProps): JSX.Element {
   );
 }
 
+function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const context = canvasRef.current.getContext('2d');
+      if (!context) return;
+      context.fillStyle = '#325932';
+      // make analyser with stream
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaStreamSource(props.audioStream);
+      const analyser = audioContext.createAnalyser();
+      analyser.smoothingTimeConstant = 0.85;
+      analyser.fftSize = 32;
+      source.connect(analyser);
+      // for audio Analysis
+      const byteFrequencyDataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      const canvas = canvasRef.current;
+      const widthStep = canvasRef.current.width / analyser.frequencyBinCount;
+      const animationLoop = () => {
+        analyser.getByteFrequencyData(byteFrequencyDataArray);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        byteFrequencyDataArray.forEach((value, idx) => {
+          context.fillRect(
+            widthStep * idx,
+            canvas.height,
+            widthStep,
+            -value / 2,
+          );
+        });
+        requestAnimationFrame(animationLoop);
+      };
+      requestAnimationFrame(animationLoop);
+    }
+  }, [props.audioStream]);
+
+  return <canvas className="settingAudioVisualizer" ref={canvasRef}></canvas>;
+}
+
 function Setting(props: RouteComponentProps): JSX.Element {
   // values
   const query = qs.parse(props.location.search) as SettingQuery;
   const settingWindowWidth = 400;
   const settingWindowHeight = 400;
+  const avatarIdxMax = AvatarImageEnum.YELLOW_DOG;
+  const avatarIdxMin = AvatarImageEnum.BROWN_BEAR;
 
   //states
   const [deviceInfos, setDeviceInfos] = useState<MediaDeviceInfo[]>([]);
@@ -115,42 +146,33 @@ function Setting(props: RouteComponentProps): JSX.Element {
     useState('default');
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isListenMyMic, setIsListenMyMic] = useState(false);
+  const [nickname, setNickname] = useState('익명의 토끼');
+  const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
+    AvatarImageEnum.BROWN_BEAR,
+  );
 
   //ref
   const testAudioRef = useRef<HTMLAudioElement>(null);
+  const avatarImgRef = useRef<HTMLImageElement>(null);
 
+  // functions
   const getAudioStreamFromDeviceID = (
     deviceID: string,
   ): Promise<MediaStream> => {
-    return navigator.mediaDevices.getUserMedia({audio: {deviceId: 'default'}});
+    return navigator.mediaDevices.getUserMedia({audio: {deviceId: deviceID}});
   };
 
   const getDeviceInfos = (): Promise<MediaDeviceInfo[]> => {
     return navigator.mediaDevices.enumerateDevices();
   };
 
-  useEffect(() => {
-    getAudioStreamFromDeviceID('default')
-      .then(audioStream => {
-        setAudioStream(audioStream);
-        return getDeviceInfos();
-      })
-      .then(deviceInfos => {
-        setDeviceInfos(deviceInfos);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        message.error(
-          '음향 장치를 가져오는데 실패하였습니다. 장치 연결상태나 권한을 확인해 주세요.',
-        );
-      });
-  }, []);
-
   const setSelectedMicDeviceAndSetAudioStream = (deviceID: string) => {
     setIsLoading(true);
     getAudioStreamFromDeviceID(deviceID)
       .then(audioStream => {
         setSelectedMicDeviceID(deviceID);
+        setAudioStream(audioStream);
       })
       .catch(error => {
         message.error(
@@ -210,130 +232,113 @@ function Setting(props: RouteComponentProps): JSX.Element {
   };
 
   const enterClick = () => {
-    console.log(selectedSpeakerDeviceID, selectedMicDeviceID);
+    console.log(
+      query.roomId,
+      nickname,
+      avatarIdx,
+      selectedSpeakerDeviceID,
+      selectedMicDeviceID,
+    );
   };
+
+  const nickNameOnInput: React.ChangeEventHandler<HTMLInputElement> = e => {
+    setNickname(e.target.value);
+  };
+
+  const changeAvatarImgWithIdx = (avatarIdx: AvatarImageEnum) => {
+    const src =
+      avatarImageMDs[avatarIdx].avatarMDInfos[AvatarPartImageEnum.FACE_MUTE]
+        .src;
+    if (avatarImgRef.current) {
+      avatarImgRef.current.src = src;
+    }
+  };
+
+  const avatarImgLeftOnClick = () => {
+    let nextAvatarIdx = avatarIdx - 1;
+    if (nextAvatarIdx < avatarIdxMin) nextAvatarIdx = avatarIdxMax;
+    changeAvatarImgWithIdx(nextAvatarIdx);
+    setAvatarIdx(nextAvatarIdx);
+  };
+
+  const avatarImgRightOnClick = () => {
+    let nextAvatarIdx = avatarIdx + 1;
+    if (nextAvatarIdx > avatarIdxMax) nextAvatarIdx = avatarIdxMin;
+    changeAvatarImgWithIdx(nextAvatarIdx);
+    setAvatarIdx(nextAvatarIdx);
+  };
+
+  // useEffects
+  useEffect(() => {
+    getAudioStreamFromDeviceID('default')
+      .then(audioStream => {
+        setAudioStream(audioStream);
+        return getDeviceInfos();
+      })
+      .then(deviceInfos => {
+        setDeviceInfos(deviceInfos);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        message.error(
+          '음향 장치를 가져오는데 실패하였습니다. 장치 연결상태나 권한을 확인해 주세요.',
+        );
+      });
+  }, []);
+
+  useEffect(() => {
+    if (testAudioRef.current) {
+      testAudioRef.current.srcObject = audioStream;
+    }
+  }, [audioStream]);
+
+  useEffect(() => {
+    if (testAudioRef.current) {
+      const audio = testAudioRef.current;
+      (audio as any).setSinkId(selectedSpeakerDeviceID);
+    }
+  }, [selectedSpeakerDeviceID]);
 
   return (
     <>
-      <div
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-        }}
-      >
+      <div className="settingMainDiv">
         <div
+          className="settingAvatarAndSoundOuterDiv"
           style={{
-            borderRadius: '3%',
-            position: 'absolute',
             width: settingWindowWidth,
             height: settingWindowHeight,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%,-50%)',
-            backgroundColor: '#7D965E',
-            margin: 'auto',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '80%',
-              display: 'flex',
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                width: '50%',
-                height: '100%',
-                padding: '3%',
-              }}
-            >
-              <div
-                style={{
-                  border: '3px solid #325932',
-                  borderRadius: '3%',
-                  borderColor: '#325932',
-                  width: '100%',
-                  height: '100%',
-                }}
-              >
-                <div
-                  style={{
-                    textAlign: 'center',
-                    position: 'absolute',
-                    top: '15%',
-                    left: '50%',
-                    transform: 'translate(-50%,-50%)',
-                    fontSize: '150%',
-                  }}
-                >
-                  익명의 곰
-                </div>
+          <div className="settingAvatarAndSoundinnerDiv">
+            <div className="settingAvatarMainDiv">
+              <div className="settingAvatarinnerDiv">
+                <input
+                  value={nickname}
+                  onChange={nickNameOnInput}
+                  className="settingAvatarNameInput"
+                ></input>
                 <img
+                  ref={avatarImgRef}
+                  className="settingAvatarImg"
                   src="./assets/spaceMain/avatar/brownBearFaceMute.png"
-                  style={{
-                    position: 'absolute',
-                    width: '70%',
-                    height: '50%',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%,-50%)',
-                  }}
                 ></img>
-                <div
-                  style={{
-                    textAlign: 'center',
-                    position: 'absolute',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    width: '80%',
-                    height: '10%',
-                    top: '85%',
-                    left: '50%',
-                    transform: 'translate(-50%,-50%)',
-                  }}
-                >
+                <div className="settingAvatarButtonContainerDiv">
                   <button
-                    style={{
-                      borderRadius: '7px',
-                      borderColor: '#325932',
-                      backgroundColor: '#689F38',
-                    }}
+                    className="settingAvatarButton"
+                    onClick={avatarImgLeftOnClick}
                   >
                     <LeftCircleFilled></LeftCircleFilled>
                   </button>
-                  <input
-                    style={{
-                      width: '70%',
-                      borderRadius: '7px',
-                      borderColor: '#325932',
-                    }}
-                  ></input>
                   <button
-                    style={{
-                      borderRadius: '7px',
-                      borderColor: '#325932',
-                      backgroundColor: '#689F38',
-                    }}
+                    className="settingAvatarButton"
+                    onClick={avatarImgRightOnClick}
                   >
                     <RightCircleFilled></RightCircleFilled>
                   </button>
                 </div>
               </div>
             </div>
-            <div
-              style={{
-                position: 'absolute',
-                left: '50%',
-                width: '50%',
-                height: '100%',
-                padding: '3%',
-              }}
-            >
+            <div className="soundControllContainerDiv">
               <SoundControll
                 deviceInfos={deviceInfos}
                 selectedMicDeviceID={selectedMicDeviceID}
@@ -346,53 +351,38 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 }
               ></SoundControll>
               <Button
+                className="soundControllReloadButton"
                 onClick={reloadDeviceInfoClick}
                 shape="round"
                 loading={isLoading}
-                style={{
-                  position: 'absolute',
-                  width: '70%',
-                  height: '10%',
-                  top: '40%',
-                  left: '50%',
-                  transform: 'translate(-50%,-50%)',
-                  backgroundColor: '#53150D',
-                  color: 'white',
-                }}
               >
                 장치 재검색
               </Button>
+              <Switch
+                className="soundControllMuteSwitch"
+                checkedChildren="내 소리 듣는 중"
+                unCheckedChildren="내 소리 안 듣는 중"
+                defaultChecked={false}
+                onChange={setIsListenMyMic}
+              ></Switch>
+              {audioStream ? (
+                <AudioVisualizer audioStream={audioStream}></AudioVisualizer>
+              ) : null}
             </div>
           </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '80%',
-              width: '100%',
-              height: '20%',
-            }}
-          >
+          <div className="enterButtonContainerDiv">
             <Button
+              className="enterButton"
               onClick={enterClick}
               shape="round"
               loading={isLoading}
-              style={{
-                position: 'absolute',
-                width: '50%',
-                height: '50%',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%,-50%)',
-                backgroundColor: '#53150D',
-                color: 'white',
-              }}
             >
               입장하기
             </Button>
           </div>
         </div>
       </div>
-      <audio ref={testAudioRef} autoPlay={false} muted={true}></audio>
+      <audio ref={testAudioRef} autoPlay={true} muted={!isListenMyMic}></audio>
     </>
   );
 }
