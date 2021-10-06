@@ -17,6 +17,7 @@ import PeerManager, {
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
+// import VowelDetectButton from './VowelDetectButton';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -247,14 +248,12 @@ function Navigation(props: NavigationProps): JSX.Element {
           navigator.mediaDevices
             .getUserMedia({video: false, audio: {deviceId: deviceId}})
             .then(stream => {
-              console.log('지대로 바뀌었다!!!!');
               changeInputStream(stream);
             });
         });
     };
   };
   catchAudioTrackEnended(props.peerManager.localStream);
-
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -282,6 +281,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           changeEachAudio={changeEachAudio}
           changeInputStream={changeInputStream}
         />
+        {/* <VowelDetectButton /> */}
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>

@@ -13,14 +13,14 @@ import {act} from 'react-dom/test-utils';
 const mockedProfileDropDownProps: ProfileProps = {
   nickname: 'hyeonkim',
   setNickname: jest.fn(),
-  avatar: AvatarImageEnum.PINK_PIG,
+  avatar: AvatarImageEnum.BROWN_BEAR,
   setAvatar: jest.fn(),
 };
 
 const mockedProfileProps: ProfileProps = {
   nickname: 'hyeonkim',
   setNickname: jest.fn(),
-  avatar: AvatarImageEnum.PINK_PIG,
+  avatar: AvatarImageEnum.BROWN_BEAR,
   setAvatar: jest.fn(),
 };
 
