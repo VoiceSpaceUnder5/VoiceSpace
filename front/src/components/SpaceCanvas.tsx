@@ -1,4 +1,3 @@
-import {render} from '@testing-library/react';
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
 import {MapMakingInfo} from '../utils/ImageMetaData';
@@ -41,6 +40,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
   const [gLHelper2, setGLHelper2] = useState<GLHelper | null>(null);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvas2Ref = useRef<HTMLCanvasElement>(null);
   const canvas3Ref = useRef<HTMLCanvasElement>(null);
@@ -75,15 +75,17 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       },
     );
 
-    if (!canvasRef.current || !canvas2Ref.current) {
+    if (!canvasRef.current || !canvas2Ref.current || !canvas3Ref.current) {
       console.error('canvas is not rendered error');
       return;
     }
     const canvas = canvasRef.current;
     const canvas2 = canvas2Ref.current;
+    const canvas3 = canvas3Ref.current;
     const gl = canvas.getContext('webgl');
-    const gl2 = canvas2.getContext('webgl');
-    if (!gl || !gl2) {
+    const gl2 = canvas2.getContext('webgl', {preserveDrawingBuffer: true});
+    const gl3 = canvas3?.getContext('2d');
+    if (!gl || !gl2 || !gl3) {
       console.error('getContext webgl error');
       return;
     }
@@ -107,21 +109,22 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       imageInfoProvider,
     );
     const gLHelper2 = new GLHelper(
-      canvas2Ref.current!.getContext('webgl')!,
+      gl2,
       new Camera(
-        {width: canvas.clientWidth, height: canvas.clientHeight},
+        {width: canvas2.clientWidth, height: canvas2.clientHeight},
         {...props.mapMakingInfo.respawnPosition},
         {...props.mapMakingInfo.backgroundSize},
       ),
       imageInfoProvider2,
     );
+
     setGLHelper(glHelper);
     setGLHelper2(gLHelper2);
-
     const resizeEventHandler = () => {
       if (!gLHelper2) return;
       glHelper.updateFromCavnas(canvas);
-      gLHelper2.updateFromCavnas(canvas2);
+      canvas3.width = canvas3.clientWidth;
+      canvas3.height = canvas3.clientHeight;
     };
     resizeEventHandler();
     window.addEventListener('resize', resizeEventHandler);
@@ -136,17 +139,33 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
   }, []);
 
-  const onClickTest = () => {
-    const image = new Image();
-    image.src = './assets/spaceMain/background/seaAndMountainVer1.png';
-    const ctx = gLHelper2?.gl.canvas.getContext('2d');
-    ctx?.drawImage(image, 0, 0, 1000, 1000);
-    // if (!gLHelper2) return;
-    // gLHelper2.gl.enable(gLHelper2.gl.SCISSOR_TEST);
-    // gLHelper2.gl.scissor(0, 0, 1000, 1000);
-    // gLHelper2.gl.clearColor(0, 0, 1, 1);
-    // gLHelper2.gl.clear(gLHelper2.gl.COLOR_BUFFER_BIT);
+  const drawBackgroundFromBuffer = (xNumber: number) => {
+    if (!gLHelper) return;
+    const centerX = gLHelper.camera.centerPos.x;
+    const centerY = gLHelper.camera.centerPos.y;
+    const cameraWidth = gLHelper.camera.originSize.width;
+    const cameraHeight = gLHelper.camera.originSize.height;
+    const leftTopX = centerX - cameraWidth / 2;
+    const leftTopY = centerY - cameraHeight / 2;
+    const gl3 = canvas3Ref.current?.getContext('2d');
+    const canvas2 = canvas2Ref.current;
+
+    if (gl3 && canvas2) {
+      gl3.drawImage(
+        canvas2,
+        leftTopX,
+        leftTopY,
+        cameraWidth,
+        cameraHeight,
+        0,
+        0,
+        cameraWidth,
+        cameraHeight,
+      );
+    }
   };
+
+  let count = 0;
   useEffect(() => {
     if (!isLoading(loadStatus) || !gLHelper || !gLHelper2) {
       return;
@@ -154,12 +173,13 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     const peerManager = props.peerManager;
     // test
     gLHelper2.drawObjectsBeforeAvatar();
-
+    // gLHelper2.gl.canvas.getContext('2d')?.save();
     //계속해서 화면에 장면을 그려줌
     const requestAnimation = () => {
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
       peerManager.me.update(gLHelper);
 
+      drawBackgroundFromBuffer(count++);
       gLHelper.drawObjectsBeforeAvatar();
       const data: DataDto = {
         type: DataDtoType.PLAYER_INFO,
@@ -184,7 +204,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
 
   return (
     <>
-      <canvas className="space-canvas" ref={canvasRef} />
+      <canvas className="spaceCanvas" ref={canvasRef} />
       {gLHelper ? (
         <Joystick
           setIsMoving={setIsMoving}
@@ -198,15 +218,10 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
         <div id="divLoad">{getPercentageFromLoadStatus(loadStatus)}</div>
       ) : null}
       <button>x</button>
-      <canvas ref={canvas2Ref}></canvas>
-      <button onClick={onClickTest}>x</button>
-      <canvas ref={canvas3Ref}></canvas>
+      <canvas className="spaceCanvas" ref={canvas3Ref}></canvas>
+      <button>x</button>
+      <canvas width={2400} height={2400} ref={canvas2Ref}></canvas>
       <button>xx</button>
-      <img
-        src="./assets/spaceMain/background/seaAndMountainVer1.png"
-        width="1000px"
-        height="1000px"
-      ></img>
     </>
   );
 }
