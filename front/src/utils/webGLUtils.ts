@@ -506,8 +506,8 @@ class GLHelper {
       avatarPart === AvatarPartImageEnum.LEFT_LEG
     ) {
       armAndLegRotateDegree = -player.armAndLegRotateDegree;
-    }
-
+    } else if (avatarPart !== AvatarPartImageEnum.BODY)
+      armAndLegRotateDegree = player.armAndLegRotateDegree / 7.5;
     let scale = 1;
     if (isFace) scale = player.avatarFaceScale;
     if (player.lookLeft) scale *= -1;
@@ -559,10 +559,9 @@ class GLHelper {
       //if (drawInfo) drawInfo.scale /= 2;
       if (!drawInfo) return;
       if (
-        partEnum === AvatarPartImageEnum.RIGHT_ARM ||
-        partEnum === AvatarPartImageEnum.RIGHT_LEG ||
-        partEnum === AvatarPartImageEnum.LEFT_ARM ||
-        partEnum === AvatarPartImageEnum.LEFT_LEG
+        partEnum >= AvatarPartImageEnum.RIGHT_ARM &&
+        partEnum <= AvatarPartImageEnum.LEFT_LEG &&
+        partEnum != 2
       )
         this.drawArmAndLeg(drawInfo);
       else this.drawImage(drawInfo);
