@@ -92,6 +92,15 @@ function Navigation(props: NavigationProps): JSX.Element {
     return props.peerManager.me.nickname;
   };
 
+  const getNickNameFromSocketID = (socketID: string): string => {
+    if (props.peerManager.peers.has(socketID)) {
+      // eslint-disable-next-line
+      return props.peerManager.peers.get(socketID)!.nickname;
+    } else {
+      return '나';
+    }
+  };
+
   const addVideoTrack = (stream: MediaStream): void => {
     stream.getTracks().forEach(track => {
       props.peerManager.screenVideoTracks.push(track);
@@ -121,11 +130,16 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
   };
 
-  const setOtherSideDrawStartPos = (socketID: string, startPos: Vec2) => {
+  const setOtherSideDrawStartPos = (
+    fromSocketID: string,
+    toSocketID: string,
+    startPos: Vec2,
+  ) => {
     const dataDto: DataDto = {
       type: DataDtoType.SHARED_SCREEN_DRAW_START,
       data: {
-        socketID: socketID,
+        fromSocketID: fromSocketID,
+        toSocketID: toSocketID,
         startPos: startPos,
       },
     };
@@ -136,7 +150,8 @@ function Navigation(props: NavigationProps): JSX.Element {
   };
 
   const setOtherSideDraw = (
-    socketID: string,
+    fromSocketID: string,
+    toSocketID: string,
     toPos: Vec2,
     strokeColor: string,
     lineWidth: number,
@@ -144,7 +159,8 @@ function Navigation(props: NavigationProps): JSX.Element {
     const dataDto: DataDto = {
       type: DataDtoType.SHARED_SCREEN_DRAWING,
       data: {
-        socketID: socketID,
+        fromSocketID: fromSocketID,
+        toSocketID: toSocketID,
         toPos: toPos,
         strokeColor: strokeColor,
         lineWidth: lineWidth,
@@ -156,11 +172,12 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
   };
 
-  const setOtherSideClear = (socketID: string) => {
+  const setOtherSideClear = (fromSocketID: string, toSocketID: string) => {
     const dataDto: DataDto = {
       type: DataDtoType.SHARED_SCREEN_CLEAR,
       data: {
-        socketID: socketID,
+        fromSocketID: fromSocketID,
+        toSocketID: toSocketID,
       },
     };
     const sendData = JSON.stringify(dataDto);
@@ -259,6 +276,7 @@ function Navigation(props: NavigationProps): JSX.Element {
             setOtherSideDrawStartPos={setOtherSideDrawStartPos}
             setOtherSideDraw={setOtherSideDraw}
             setOtherSideClear={setOtherSideClear}
+            getNickNameFromSocketID={getNickNameFromSocketID}
           />
           <Options
             changeEachAudio={changeEachAudio}

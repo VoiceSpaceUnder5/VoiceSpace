@@ -519,7 +519,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
-      if (!event.streams[0]) {
+      if (!event.streams[0] && event.track.kind === 'audio') {
         const stream = new MediaStream();
         stream.addTrack(event.track);
         this.audio.srcObject = stream;
@@ -722,14 +722,15 @@ export default class PeerManager {
     if (this.screenVideoTracks.length > 0) {
       peer.addEventListener('connectionstatechange', () => {
         if (peer.connectionState === 'connected') {
+          const stream = new MediaStream();
           this.screenVideoTracks.forEach(track => {
             try {
-              peer.addTrack(track);
-              this.peerOffer(peer);
+              peer.addTrack(track, stream);
             } catch (error) {
-              console.error('screenVideoTracks error!');
+              console.error(`screenVideoTracks error!`);
             }
           });
+          this.peerOffer(peer);
         }
       });
     }
@@ -817,7 +818,6 @@ export default class PeerManager {
   }
 
   close(): void {
-    console.log('peerManager close called');
     this.peers.forEach(peer => {
       const data: DataDto = {
         type: DataDtoType.SHARED_SCREEN_CLOSE,

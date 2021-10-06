@@ -8,19 +8,26 @@ import {HexColorPicker} from 'react-colorful';
 import {DataDtoType, Peer, Vec2} from '../utils/RTCGameUtils';
 
 interface ScreenViewerProps {
-  socketID: string;
+  nickname: string;
+  mySocketID: string;
+  sharedSocketID: string;
   stream: MediaStream;
   strokeColor: string;
   lineWidth: number;
   drawHelper: DrawHelper;
-  setOtherSideDrawStartPos: (socketID: string, startPos: Vec2) => void;
+  setOtherSideDrawStartPos: (
+    fromSocketID: string,
+    toSocketID: string,
+    startPos: Vec2,
+  ) => void;
   setOtherSideDraw: (
-    socketID: string,
+    fromSocketID: string,
+    toSocketID: string,
     toPos: Vec2,
     strokeColor: string,
     lineWidth: number,
   ) => void;
-  setOtherSideClear: (socketID: string) => void;
+  setOtherSideClear: (fromSocketID: string, toSocketID: string) => void;
 }
 
 interface ScreenShareData {
@@ -44,11 +51,11 @@ function getXYClampOneZero(
 class DrawHelper {
   private canvas: HTMLCanvasElement | null;
   private context: CanvasRenderingContext2D | null;
-  private drawStartPos: Vec2;
+  private drawStartPositions: Map<string, Vec2>;
   constructor() {
     this.canvas = null;
     this.context = null;
-    this.drawStartPos = {x: 0, y: 0};
+    this.drawStartPositions = new Map();
   }
   setUp(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -56,8 +63,8 @@ class DrawHelper {
     if (!this.context) console.error('can not create context in DrawHelper');
   }
 
-  setDrawStartPos(pos: Vec2): void {
-    this.drawStartPos = {...pos};
+  setDrawStartPos(pos: Vec2, socketID: string): void {
+    this.drawStartPositions.set(socketID, {...pos});
   }
   clear(): void {
     if (this.canvas && this.context)
@@ -67,12 +74,22 @@ class DrawHelper {
     toPos: Vec2,
     strokeColor: string,
     lineWidth: number,
+    socketID: string,
   ): void {
-    if (!this.canvas || !this.context) return;
+    if (
+      !this.canvas ||
+      !this.context ||
+      !this.drawStartPositions.has(socketID)
+    ) {
+      return;
+    }
+    // eslint-disable-next-line
+    const drawStartPos = this.drawStartPositions.get(socketID)!;
+
     this.context.beginPath();
     this.context.moveTo(
-      this.drawStartPos.x * this.canvas.width,
-      this.drawStartPos.y * this.canvas.height,
+      drawStartPos.x * this.canvas.width,
+      drawStartPos.y * this.canvas.height,
     );
     this.context.lineTo(
       toPos.x * this.canvas.width,
@@ -81,7 +98,7 @@ class DrawHelper {
     this.context.strokeStyle = strokeColor;
     this.context.lineWidth = lineWidth;
     this.context.stroke();
-    this.setDrawStartPos(toPos);
+    this.setDrawStartPos(toPos, socketID);
   }
 }
 
@@ -110,7 +127,9 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   const canvasHeight = 2000;
 
   useEffect(() => {
-    if (videoRef.current) videoRef.current.srcObject = props.stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = props.stream;
+    }
   }, []);
 
   useEffect(() => {
@@ -131,7 +150,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 
   const clearClickHandler = () => {
     props.drawHelper.clear();
-    props.setOtherSideClear(props.socketID);
+    props.setOtherSideClear(props.mySocketID, props.sharedSocketID);
   };
 
   const canvasMouseEventHandler: React.MouseEventHandler<HTMLCanvasElement> =
@@ -147,8 +166,13 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             event.clientX,
             event.clientY,
           );
-          props.drawHelper.setDrawStartPos(startPos);
-          props.setOtherSideDrawStartPos(props.socketID, startPos);
+          props.drawHelper.setDrawStartPos(startPos, props.mySocketID);
+          props.setOtherSideDrawStartPos(
+            props.mySocketID,
+            props.sharedSocketID,
+            startPos,
+          );
+
           break;
         }
         case 'mousemove': {
@@ -164,9 +188,11 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
               vec,
               props.strokeColor,
               props.lineWidth,
+              props.mySocketID,
             );
             props.setOtherSideDraw(
-              props.socketID,
+              props.mySocketID,
+              props.sharedSocketID,
               vec,
               props.strokeColor,
               props.lineWidth,
@@ -231,7 +257,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             justifyContent: 'space-between',
           }}
         >
-          <div>Shared Screen</div>
+          <div>{`${props.nickname}`}</div>
           <div
             style={{
               margin: 0,
@@ -305,14 +331,20 @@ interface ScreenShareProps {
     // eslint-disable-next-line
     dataChannelEventHandler: (arg0: any, peer: Peer) => void,
   ) => void;
-  setOtherSideDrawStartPos: (socketID: string, startPos: Vec2) => void;
+  setOtherSideDrawStartPos: (
+    fromSocketID: string,
+    toSocketID: string,
+    startPos: Vec2,
+  ) => void;
   setOtherSideDraw: (
-    socketID: string,
+    fromSocketID: string,
+    toSocketID: string,
     toPos: Vec2,
     strokeColor: string,
     lineWidth: number,
   ) => void;
-  setOtherSideClear: (socketID: string) => void;
+  setOtherSideClear: (fromSocketID: string, toSocketID: string) => void;
+  getNickNameFromSocketID: (socketID: string) => string;
 }
 
 function ScreenShare(props: ScreenShareProps): JSX.Element {
@@ -321,28 +353,36 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   );
   const [isDisplayColorPicker, setIsDisplayColorPicker] = useState(false);
   const [color, setColor] = useState('#000000');
-  const [lineWidth, setLineWidth] = useState(1);
+  const [lineWidth, setLineWidth] = useState(5);
+  const [isVisible, setIsVisible] = useState(false);
   const screenShareOnClick = async () => {
+    setIsVisible(false);
     if (
       screenShareDatas.find(data => {
-        return data.peerId === '';
+        return data.peerId === props.socketID;
       })
     ) {
       message.info(
-        '이미 공유중인 화면이 존재합니다. 중지 후 다시 선택해주세요!',
+        '이미 공유중인 화면이 존재합니다. 정지 후 다시 선택해주세요!',
       );
       return;
     }
-    // eslint-disable-next-line
-    const stream = await (navigator.mediaDevices as any).getDisplayMedia({
-      audio: true,
-      video: true,
-    }); // 핸드폰일 경우 사용 불가.
-    props.addVideoTrack(stream);
-    setScreenShareDatas([
-      {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
-      ...screenShareDatas,
-    ]);
+    try {
+      // eslint-disable-next-line
+      const stream = await (navigator.mediaDevices as any).getDisplayMedia({
+        audio: true,
+        video: true,
+      }); // 핸드폰일 경우 사용 불가.
+      props.addVideoTrack(stream);
+      setScreenShareDatas([
+        ...screenShareDatas,
+        {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
+      ]);
+    } catch (error) {
+      message.error(
+        '스크린을 선택하지 않으셨거나, 스크린 공유 권한이 없습니다.',
+      );
+    }
   };
 
   const screenShareStopOnClick = () => {
@@ -363,13 +403,22 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         if (alreadyExist) return before;
         else
           return [
+            ...before,
             {
               peerId: peerId,
               stream: event.streams[0],
               drawHelper: new DrawHelper(),
             },
-            ...before,
           ];
+      });
+    } else if (event.track.kind === 'video') {
+      setScreenShareDatas(before => {
+        const stream = new MediaStream();
+        stream.addTrack(event.track);
+        return [
+          ...before,
+          {peerId: peerId, stream: stream, drawHelper: new DrawHelper()},
+        ];
       });
     }
   };
@@ -391,10 +440,13 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       data => {
         setScreenShareDatas(screenDatas => {
           const screenShareData = screenDatas.find(ssd => {
-            return ssd.peerId === data.socketID;
+            return ssd.peerId === data.toSocketID;
           });
           if (screenShareData) {
-            screenShareData.drawHelper.setDrawStartPos(data.startPos);
+            screenShareData.drawHelper.setDrawStartPos(
+              data.startPos,
+              data.fromSocketID,
+            );
           }
           return screenDatas;
         });
@@ -405,13 +457,14 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       data => {
         setScreenShareDatas(screenDatas => {
           const screenShareData = screenDatas.find(ssd => {
-            return ssd.peerId === data.socketID;
+            return ssd.peerId === data.toSocketID;
           });
           if (screenShareData) {
             screenShareData.drawHelper.drawLineAndSaveStartPos(
               data.toPos,
               data.strokeColor,
               data.lineWidth,
+              data.fromSocketID,
             );
           }
           return screenDatas;
@@ -421,7 +474,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     props.setDataChannelEventHandler(DataDtoType.SHARED_SCREEN_CLEAR, data => {
       setScreenShareDatas(screenDatas => {
         const screenShareData = screenDatas.find(ssd => {
-          return ssd.peerId === data.socketID;
+          return ssd.peerId === data.toSocketID;
         });
         if (screenShareData) {
           screenShareData.drawHelper.clear();
@@ -467,7 +520,10 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
               trigger={['click']}
             >
               <a
-                onClick={e => e.preventDefault()}
+                onClick={e => {
+                  e.preventDefault();
+                  setIsVisible(false);
+                }}
                 className="ant_dropdown_link"
               >
                 그리기 색상,굵기 선택
@@ -484,7 +540,9 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         return (
           <ScreenViewer
             key={screenShareData.peerId}
-            socketID={screenShareData.peerId}
+            nickname={props.getNickNameFromSocketID(screenShareData.peerId)}
+            mySocketID={props.socketID}
+            sharedSocketID={screenShareData.peerId}
             stream={screenShareData.stream}
             strokeColor={color}
             lineWidth={lineWidth}
@@ -495,7 +553,12 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
           ></ScreenViewer>
         );
       })}
-      <Dropdown overlay={screenshare} trigger={['click']}>
+      <Dropdown
+        overlay={screenshare}
+        trigger={['click']}
+        visible={isVisible}
+        onVisibleChange={setIsVisible}
+      >
         <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
           <DesktopOutlined className="navbar_button" />
         </a>
