@@ -19,8 +19,8 @@ interface SpaceQuery {
   roomId: string;
   nickname: string;
   avatarIdx: number;
-  isNew: boolean;
-  worldMapIdx: number;
+  speakerDeviceID: string;
+  micDeviceID: string;
 }
 
 export interface LoadingInfo {
@@ -37,7 +37,7 @@ function setNewPeerManager(
   failCallBack: () => void,
 ): void {
   navigator.mediaDevices
-    .getUserMedia({video: false, audio: true}) // 오디오 연결
+    .getUserMedia({video: false, audio: {deviceId: query.micDeviceID}}) // 오디오 연결
     .then((stream: MediaStream) => {
       const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
       if (!socket) {
@@ -73,6 +73,8 @@ function setNewPeerManager(
           iceConfig,
           query.roomId,
           me,
+          query.speakerDeviceID,
+          query.micDeviceID,
         );
         successCallBack(peerManager);
         console.log('socket connected');
@@ -95,6 +97,7 @@ function Space(props: RouteComponentProps): JSX.Element {
   }
   if (!query.nickname || query.nickname === '') query.nickname = '익명의 곰';
   if (!query.avatarIdx) query.avatarIdx = AvatarImageEnum.BROWN_BEAR;
+  query.avatarIdx = Number(query.avatarIdx);
 
   //ref
   const divContainerRef = useRef<HTMLDivElement>(null);
@@ -115,10 +118,6 @@ function Space(props: RouteComponentProps): JSX.Element {
       query,
       {...mapMakingInfo.respawnPosition},
       (peerManager: PeerManager) => {
-        if (query.isNew)
-          message.info(
-            '새로운 채팅방에 입장하셨습니다. 링크를 복사하여 친구들을 초대해보세요!',
-          );
         setPeerManager(peerManager);
       },
       () => {

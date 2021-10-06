@@ -10,6 +10,8 @@ interface OptionDropDownProps {
 interface OptionsProps {
   changeEachAudio: (deviceId: string) => void;
   changeInputStream: (stream: MediaStream) => void;
+  seletedOutputDevice: string;
+  seletedInputDevice: string;
 }
 
 // interface SettingDropDownProps {
@@ -41,8 +43,12 @@ function OptionDropDown(props: OptionDropDownProps) {
 function Options(props: OptionsProps): JSX.Element {
   const [depth, setDepth] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [seletedOutputDevice, setSelectOutputDevice] = useState('');
-  const [seletedInputDevice, setSelectInputDevice] = useState('');
+  const [seletedOutputDevice, setSelectOutputDevice] = useState(
+    props.seletedOutputDevice,
+  );
+  const [seletedInputDevice, setSelectInputDevice] = useState(
+    props.seletedInputDevice,
+  );
   const onClickSetting = () => {
     setVisible(true);
     setDepth(1);

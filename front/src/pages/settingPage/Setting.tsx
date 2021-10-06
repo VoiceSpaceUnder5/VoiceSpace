@@ -174,7 +174,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
         setSelectedMicDeviceID(deviceID);
         setAudioStream(audioStream);
       })
-      .catch(error => {
+      .catch(() => {
         message.error(
           '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
         );
@@ -191,6 +191,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
         throw 'testAudioRef is not found';
       }
       const audio = testAudioRef.current;
+      // eslint-disable-next-line
       (audio as any)
         .setSinkId(deviceID)
         .then(() => {
@@ -232,12 +233,8 @@ function Setting(props: RouteComponentProps): JSX.Element {
   };
 
   const enterClick = () => {
-    console.log(
-      query.roomId,
-      nickname,
-      avatarIdx,
-      selectedSpeakerDeviceID,
-      selectedMicDeviceID,
+    props.history.push(
+      `/space?roomId=${query.roomId}&avatarIdx=${avatarIdx}&nickname=${nickname}&speakerDeviceID=${selectedSpeakerDeviceID}&micDeviceID=${selectedMicDeviceID}`,
     );
   };
 
@@ -279,7 +276,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
         setDeviceInfos(deviceInfos);
         setIsLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         message.error(
           '음향 장치를 가져오는데 실패하였습니다. 장치 연결상태나 권한을 확인해 주세요.',
         );
@@ -295,6 +292,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   useEffect(() => {
     if (testAudioRef.current) {
       const audio = testAudioRef.current;
+      // eslint-disable-next-line
       (audio as any).setSinkId(selectedSpeakerDeviceID);
     }
   }, [selectedSpeakerDeviceID]);
