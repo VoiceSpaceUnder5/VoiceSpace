@@ -51,6 +51,7 @@ export interface PlayerDto extends AvatarFaceDto {
   avatar: AvatarImageEnum;
   centerPos: Vec2;
   rotateRadian: number;
+  lookLeft: boolean;
 }
 
 function getMonvingAverage(period: number) {
@@ -190,6 +191,7 @@ export class Me implements PlayerDto {
   avatarFaceScale: number;
   centerPos: Vec2;
   rotateRadian: number;
+  lookLeft: boolean;
 
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
@@ -232,6 +234,7 @@ export class Me implements PlayerDto {
     this.avatarFaceScale = 1;
     this.centerPos = {...centerPos};
     this.rotateRadian = 0;
+    this.lookLeft = false;
 
     // update avatar position values
     this.lastUpdateTimeStamp = Date.now();
@@ -271,6 +274,7 @@ export class Me implements PlayerDto {
       avatarFaceScale: this.avatarFaceScale,
       centerPos: {...this.centerPos},
       rotateRadian: this.rotateRadian,
+      lookLeft: this.lookLeft,
     };
   }
 
@@ -334,6 +338,7 @@ export class Me implements PlayerDto {
         this.normalizedDirectionVector.x,
         this.normalizedDirectionVector.y,
       );
+      this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
       //collision detection part
       if (this.isCollision(glHelper)) {
         // if isCollision -> rollback value
@@ -376,6 +381,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   avatarFaceScale: number;
   centerPos: Vec2;
   rotateRadian: number;
+  lookLeft: boolean;
 
   //nickname overlay div
   nicknameDiv: HTMLDivElement;
@@ -426,6 +432,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.avatarFaceScale = 1;
     this.centerPos = {x: -1000, y: -1000};
     this.rotateRadian = 0;
+    this.lookLeft = false;
 
     //nickname overlay div
     this.nicknameDiv = nicknameDiv;

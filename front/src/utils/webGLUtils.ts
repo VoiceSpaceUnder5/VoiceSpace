@@ -355,6 +355,7 @@ class GLHelper {
     this.cameraMatrix = m3.inverse(this.cameraMatrix);
   }
 
+  // 이미지를 이동, 회전 또는 스케일 하는 함수
   updateImageMatrixFromDrawInfo(drawImageInfo: DrawInfo): void {
     this.imageMatrix = m3.identity();
     this.imageMatrix = m3.translate(
@@ -411,7 +412,9 @@ class GLHelper {
   drawImage(drawImageInfo: DrawInfo): void {
     this.updateProjectionMatrix();
     this.updateCameraMatrix();
+    // line: 359 이미지를 이동, 회전 또는 스케일 하는 함수
     this.updateImageMatrixFromDrawInfo(drawImageInfo);
+    // 실제로 그리는 함수
     this.drawArray(drawImageInfo.tex);
   }
 
@@ -433,6 +436,8 @@ class GLHelper {
     }
 
     // 그리는 데에 필요한 info
+    // 팔 다리의 경우, scale은 몸통을 CenterPos로
+    // 회전은 관절부분을 CenterPos로
     const centerPos = player.centerPos;
     return {
       ...imageInfo,
