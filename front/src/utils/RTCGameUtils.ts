@@ -343,14 +343,16 @@ export class Me implements PlayerDto {
         this.velocity * this.normalizedDirectionVector.x * millisDiff;
       this.centerPos.y +=
         this.velocity * this.normalizedDirectionVector.y * millisDiff;
-      if (this.rotateCounterclockwise === false) this.partRotatedegree += 1.2;
-      else this.partRotatedegree -= 1.2;
-      if (this.partRotatedegree > 15) this.rotateCounterclockwise = true;
-      else if (this.partRotatedegree < -15) this.rotateCounterclockwise = false;
-      // this.partRotatedegree = Math.atan2(
-      //   this.normalizedDirectionVector.x,
-      //   this.normalizedDirectionVector.y,
-      // );
+      if (this.rotateCounterclockwise === false) {
+        this.partRotatedegree += 1.2;
+      } else {
+        this.partRotatedegree -= 1.2;
+      }
+      if (this.partRotatedegree > 15) {
+        this.rotateCounterclockwise = true;
+      } else if (this.partRotatedegree < -15) {
+        this.rotateCounterclockwise = false;
+      }
       this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
       //collision detection part
       if (this.isCollision(glHelper)) {
@@ -547,6 +549,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.partRotatedegree = data.partRotatedegree;
     this.nicknameDiv.innerText = data.nickname;
     this.textMessageDiv.innerText = data.textMessage;
+    this.lookLeft = data.lookLeft;
   }
 
   updateSoundFromVec2(pos: Vec2): void {

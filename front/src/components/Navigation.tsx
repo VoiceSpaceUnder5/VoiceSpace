@@ -264,7 +264,7 @@ function Navigation(props: NavigationProps): JSX.Element {
             changeEachAudio={changeEachAudio}
             changeInputStream={changeInputStream}
           />
-          <VowelDetectButton />
+          {/* <VowelDetectButton /> */}
           <div>
             <LogoutOutlined className="navbar_button" onClick={exit} />
           </div>
