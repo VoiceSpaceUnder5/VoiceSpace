@@ -9,6 +9,7 @@ import './space.css';
 import {message} from 'antd';
 import RTCSignalingHelper from '../../utils/RTCSignalingHelper';
 import {iceConfig} from '../../utils/IceServerList';
+import SpaceLoading from '../../components/SpaceLoading';
 
 const qs = require('query-string');
 
@@ -110,7 +111,6 @@ function Space(props: RouteComponentProps): JSX.Element {
     props.history.push('/');
   }
   if (!isQueryValid(query)) {
-    message.info('올바르지 않은 접근입니다. roomId를 확인해 주세요.');
     props.history.push(`/setting?roomId=${query.roomId}`);
   }
   const mapMakingInfo = seaAndMountainMap1MMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
@@ -159,7 +159,10 @@ function Space(props: RouteComponentProps): JSX.Element {
           <Navigation peerManager={peerManager} goToHome={goToHome} />
         </>
       ) : (
-        '오디오를 가져오고 서버와 소켓을 연결하는 중입니다. 조금만 기다려주세요. 이상태가 지속 될 경우 깃허브에 버그리폿 해주시면 감사하겠습니다.'
+        <SpaceLoading
+          loadingPercentage={0}
+          message="오디오를 가져오고 서버와 소켓을 연결하는 중입니다. 조금만 기다려주세요."
+        ></SpaceLoading>
       )}
       <div id="divContainer" ref={divContainerRef}></div>
       <div
