@@ -96,6 +96,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
 function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  console.log(props.audioStream.getTracks());
   useEffect(() => {
     if (canvasRef.current) {
       let aniNumber = 0;
