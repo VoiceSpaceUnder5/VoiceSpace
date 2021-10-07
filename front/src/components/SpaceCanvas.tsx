@@ -10,6 +10,7 @@ import PeerManager, {
 } from '../utils/RTCGameUtils';
 import GLHelper, {Camera} from '../utils/webGLUtils';
 import Joystick from './Joystick';
+import SpaceLoading from './SpaceLoading';
 
 interface SpaceCanvasProps {
   peerManager: PeerManager;
@@ -35,7 +36,7 @@ function isLoading(loadStatus: LoadingInfo): boolean {
 function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   //state
   const [loadStatus, setLoadStatus] = useState<LoadingInfo>({
-    needToLoad: 0,
+    needToLoad: 1,
     finishLoad: 0,
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
@@ -119,6 +120,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
     window.addEventListener('beforeunload', unLoadEventHandler);
     return () => {
+      props.peerManager.close();
       window.removeEventListener('resize', resizeEventHandler);
       window.removeEventListener('beforeunload', unLoadEventHandler);
     };
@@ -221,7 +223,11 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
         />
       ) : null}
       {!isLoading(loadStatus) ? (
-        <div id="divLoad">{getPercentageFromLoadStatus(loadStatus)}</div>
+        <div id="divLoad">
+          <SpaceLoading
+            loadingPercentage={getPercentageFromLoadStatus(loadStatus)}
+          ></SpaceLoading>
+        </div>
       ) : null}
       <canvas
         width={2400}
