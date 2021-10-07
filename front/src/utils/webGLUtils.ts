@@ -685,13 +685,6 @@ class GLHelper {
     this.AllDrawThings.sort((a, b) => {
       return a.zIndex - b.zIndex;
     });
-    if (this.imageInfoProvider.background) {
-      this.drawImage({
-        ...this.imageInfoProvider.background,
-        scale: 1,
-        partRotateRadian: 0,
-      });
-    }
     this.AllDrawThings.forEach(drawThing => {
       if (drawThing.type === 2) {
         this.drawAvatar(

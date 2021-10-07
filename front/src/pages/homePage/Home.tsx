@@ -10,11 +10,11 @@ import MoreInfo from '../../components/MoreInfo';
 
 function Home(props: RouteComponentProps): JSX.Element {
   const enterRoomClick = (roomId: string) => {
-    props.history.push(`/space?roomId=${roomId}`);
+    props.history.push(`/setting?roomId=${roomId}`);
   };
 
   const createRoomClick = () => {
-    props.history.push(`/space?roomId=${uuidV4()}&isNew=true`);
+    props.history.push(`/setting?roomId=${uuidV4()}&isNew=true`);
   };
 
   const aOnClick = () => {

@@ -1,5 +1,5 @@
 import ImageInfoProvider from '../ImageInfoProvider';
-import {avatarImageMDs, brownBearMD, MapMakingInfo} from '../ImageMetaData';
+import {avatarImageMDs, MapMakingInfo, whiteRabbitMD} from '../ImageMetaData';
 
 const saveImage = window.Image;
 let gl: any;
@@ -74,7 +74,7 @@ describe('ImageInfoProvider test', () => {
     expect(imageInfoProvider.avatars.size).toBe(avatarImageMDs.length); // 모든 아바타가 로딩되어야 함.
     imageInfoProvider.avatars.forEach(value => {
       // 각각의 아바타의 모든 부위가 로딩되어야 함.
-      expect(value.size).toBe(brownBearMD.avatarMDInfos.length);
+      expect(value.size).toBe(whiteRabbitMD.avatarMDInfos.length);
     });
   });
 
@@ -87,7 +87,7 @@ describe('ImageInfoProvider test', () => {
 
     const imageInfoProvider = new ImageInfoProvider(gl, setStatus, mockedMMI);
     expect(setStatus).toBeCalledTimes(
-      avatarImageMDs.length * brownBearMD.avatarMDInfos.length * 2,
+      avatarImageMDs.length * whiteRabbitMD.avatarMDInfos.length * 2,
     );
   });
 

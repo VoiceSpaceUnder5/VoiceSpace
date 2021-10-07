@@ -1,0 +1,54 @@
+.loadingInnerImg {
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+}
+
+.loadingMessageContainerDiv {
+  position: absolute;
+  top: 44.5%;
+  left: 50%;
+  width: 140px;
+  height: auto;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  line-break: normal;
+  word-break: break-all;
+}
+
+@keyframes rotateImage {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+
+.loadingImg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotateImage 0.15s linear infinite;
+  transform-origin: 50% 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.loadingProgressBar {
+  position: absolute;
+  top: 57%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 230px;
+}
+
+.ant-progress-inner {
+  border: 2px solid white;
+}

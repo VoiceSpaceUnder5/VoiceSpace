@@ -222,7 +222,7 @@ export class Me implements PlayerDto {
     centerPos: Vec2, // original centerPos
     nickname = '익명의 곰', // 추후 .env 로 이동해야 될듯 (하드코딩 제거)
     textMessage: string,
-    avatar = AvatarImageEnum.BROWN_BEAR,
+    avatar = AvatarImageEnum.WHITE_RABBIT,
     velocity = 0.2,
   ) {
     //nickname overlay div
@@ -443,7 +443,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     // PlayerDto
     this.nickname = 'Loading...';
     this.textMessage = '';
-    this.avatar = AvatarImageEnum.BROWN_BEAR;
+    this.avatar = AvatarImageEnum.WHITE_RABBIT;
     this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {x: -1000, y: -1000};
@@ -613,6 +613,12 @@ export default class PeerManager {
 
   // my socket ID
   readonly socketID: string;
+
+  // speakerDeviceID (for sink)
+  speakerDeviceID: string;
+
+  // micDeviceID (stream)
+  readonly micDeviceID: string;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -621,6 +627,8 @@ export default class PeerManager {
     pcConfig: RTCConfiguration,
     roomID: string,
     me: Me,
+    speakerDeviceID = 'default',
+    micDeviceID = 'default',
   ) {
     // create new Peer params
     this.signalingHelper = signalingHelper;
@@ -663,6 +671,12 @@ export default class PeerManager {
     // my socket ID
     this.socketID = signalingHelper.getSocketID();
 
+    // speaker Device ID
+    this.speakerDeviceID = speakerDeviceID;
+
+    // micDeviceID
+    this.micDeviceID = micDeviceID;
+
     // setEvent
     this.setSignalingEvent();
 
@@ -671,6 +685,7 @@ export default class PeerManager {
   }
 
   changeEachAudio(deviceId: string): void {
+    this.speakerDeviceID = deviceId;
     this.forEachPeer((peer: Peer) => {
       // eslint-disable-next-line
       const audio = peer.audio as any;
@@ -697,6 +712,12 @@ export default class PeerManager {
 
     const audio = document.createElement('audio') as HTMLAudioElement;
     audio.autoplay = true;
+    try {
+      // eslint-disable-next-line
+      (audio as any).setSinkId(this.speakerDeviceID);
+    } catch {
+      console.error('speaker deviceID is not valid');
+    }
     this.audioContainer.appendChild(audio);
 
     const nicknameDiv = document.createElement('div') as HTMLDivElement;

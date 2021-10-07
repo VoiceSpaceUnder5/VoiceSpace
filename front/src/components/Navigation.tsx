@@ -280,6 +280,8 @@ function Navigation(props: NavigationProps): JSX.Element {
         <Options
           changeEachAudio={changeEachAudio}
           changeInputStream={changeInputStream}
+          seletedInputDevice={props.peerManager.micDeviceID}
+          seletedOutputDevice={props.peerManager.speakerDeviceID}
         />
         {/* <VowelDetectButton /> */}
         <div>
