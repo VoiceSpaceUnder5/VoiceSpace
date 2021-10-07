@@ -27,6 +27,7 @@ interface SoundControllProps {
   selectedSpeakerDeviceID: string;
   setSelectedMicDeviceAndSetAudioStream: (deviceID: string) => void;
   setSelectedSpeakerDeviceWithTest: (deviceID: string) => void;
+  isSpeakerDeviceChange: boolean;
 }
 
 function SoundControll(props: SoundControllProps): JSX.Element {
@@ -46,6 +47,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           src="./assets/navigation/speaker.png"
         ></img>
         <Select
+          disabled={!props.isSpeakerDeviceChange}
           className="soundControllSelect"
           onChange={onSpeakerChange}
           value={props.selectedSpeakerDeviceID}
@@ -96,8 +98,13 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
 
   useEffect(() => {
     if (canvasRef.current) {
+      let aniNumber = 0;
+
       const context = canvasRef.current.getContext('2d');
-      if (!context) return;
+      if (!context) {
+        message.error('can not create 2d canvas context');
+        return;
+      }
       context.fillStyle = '#325932';
       // make analyser with stream
       const audioContext = new AudioContext();
@@ -122,9 +129,12 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
             -value / 2,
           );
         });
-        requestAnimationFrame(animationLoop);
+        aniNumber = requestAnimationFrame(animationLoop);
       };
-      requestAnimationFrame(animationLoop);
+      aniNumber = requestAnimationFrame(animationLoop);
+      return () => {
+        cancelAnimationFrame(aniNumber);
+      };
     }
   }, [props.audioStream]);
 
@@ -151,6 +161,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
     AvatarImageEnum.WHITE_RABBIT,
   );
+  const [isSpeakerChangeable, setIsSpeakerChangeable] = useState(true);
 
   //ref
   const testAudioRef = useRef<HTMLAudioElement>(null);
@@ -218,9 +229,11 @@ function Setting(props: RouteComponentProps): JSX.Element {
       .then(deviceInfos => {
         setDeviceInfos(deviceInfos);
         setSelectedMicDeviceID('default');
-        setSelectedSpeakerDeviceID('default');
         setSelectedMicDeviceAndSetAudioStream('default');
-        setSelectedSpeakerDeviceWithTest('default');
+        if (isSpeakerChangeable) {
+          setSelectedSpeakerDeviceID('default');
+          setSelectedSpeakerDeviceWithTest('default');
+        }
       })
       .catch(() => {
         message.error(
@@ -291,9 +304,13 @@ function Setting(props: RouteComponentProps): JSX.Element {
 
   useEffect(() => {
     if (testAudioRef.current) {
-      const audio = testAudioRef.current;
       // eslint-disable-next-line
-      (audio as any).setSinkId(selectedSpeakerDeviceID);
+      const audio = testAudioRef.current as any;
+      if (audio.setSinkId) {
+        audio.setSinkId(selectedSpeakerDeviceID);
+      } else {
+        setIsSpeakerChangeable(false);
+      }
     }
   }, [selectedSpeakerDeviceID]);
 
@@ -351,6 +368,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 setSelectedSpeakerDeviceWithTest={
                   setSelectedSpeakerDeviceWithTest
                 }
+                isSpeakerDeviceChange={isSpeakerChangeable}
               ></SoundControll>
               <Button
                 className="soundControllReloadButton"

@@ -160,6 +160,9 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   };
 
   useEffect(() => {
+    // animation number
+    let aniNumber = 0;
+
     // background savedGroundCanvas에 따로 저장.
     const backgroundImage = new Image();
     backgroundImage.src =
@@ -196,9 +199,12 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
         peerManager.me.textMessageDiv,
       );
       gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
-      requestAnimationFrame(requestAnimation);
+      aniNumber = requestAnimationFrame(requestAnimation);
     };
-    requestAnimationFrame(requestAnimation);
+    aniNumber = requestAnimationFrame(requestAnimation);
+    return () => {
+      cancelAnimationFrame(aniNumber);
+    };
   }, [loadStatus]);
 
   return (
