@@ -136,11 +136,12 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
 
     // console.log(`width: ${cameraWidth}, height: ${cameraHeight}`);
     if (gl && savedGroundCanvas) {
+      if (!groundCanvasRef.current) return;
       gl.clearRect(
         0,
         0,
-        groundCanvasRef.current!.clientWidth,
-        groundCanvasRef.current!.clientHeight,
+        groundCanvasRef.current.clientWidth,
+        groundCanvasRef.current.clientHeight,
       );
       gl.drawImage(
         savedGroundCanvas,
