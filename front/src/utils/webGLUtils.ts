@@ -1,6 +1,6 @@
 import ImageInfoProvider from './ImageInfoProvider';
 import {Size, ImageInfo, AvatarPartImageEnum} from './ImageMetaData';
-import {PlayerDto} from './RTCGameUtils';
+import {PlayerDto, Peer, Me} from './RTCGameUtils';
 import {Vec2} from './RTCGameUtils';
 const m3 = require('m3.js');
 
@@ -219,6 +219,18 @@ export class Camera {
   }
 }
 
+export enum drawDataType {
+  object = 1,
+  avatar = 2,
+}
+
+interface DrawThing {
+  type: number;
+  zIndex: number;
+  // eslint-disable-next-line
+  data: any;
+}
+
 class GLHelper {
   gl: WebGLRenderingContext;
   applyShapeMatrixLocation: WebGLUniformLocation | null;
@@ -234,6 +246,9 @@ class GLHelper {
   cameraMatrix: number[];
   imageMatrix: number[];
   transparency: number;
+
+  //All thing to draw include Avatar, Background, Tree and etc
+  AllDrawThings: DrawThing[];
 
   constructor(
     gl: WebGLRenderingContext,
@@ -252,6 +267,10 @@ class GLHelper {
     this.cameraMatrix = [];
     this.imageMatrix = [];
     this.transparency = 1.0;
+    //All Object include Avatar, Background, Tree and etc
+    this.AllDrawThings = [
+      {type: 0, zIndex: 0, data: this.imageInfoProvider.background},
+    ];
 
     const program = createProgramFromSource(this.gl, vs, fs);
     if (!program) {
@@ -650,7 +669,22 @@ class GLHelper {
     this.gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
   }
 
-  drawObjectsBeforeAvatar(): void {
+  drawObject(imageInfo: ImageInfo, meCenterPos: Vec2): void {
+    if (isInRect(imageInfo.centerPos, imageInfo.size, meCenterPos)) {
+      this.transparency = 0.3;
+    }
+    this.drawImage({
+      ...imageInfo,
+      scale: 1,
+      partRotateRadian: 0,
+    });
+    this.transparency = 1.0;
+  }
+
+  drawAll(meCenterPos: Vec2): void {
+    this.AllDrawThings.sort((a, b) => {
+      return a.zIndex - b.zIndex;
+    });
     if (this.imageInfoProvider.background) {
       this.drawImage({
         ...this.imageInfoProvider.background,
@@ -658,33 +692,35 @@ class GLHelper {
         partRotateRadian: 0,
       });
     }
+    this.AllDrawThings.forEach(drawThing => {
+      if (drawThing.type === 2) {
+        this.drawAvatar(
+          drawThing.data,
+          drawThing.data.nicknameDiv,
+          drawThing.data.textMessageDiv,
+        );
+      } else if (drawThing.type === 1) {
+        this.drawObject(drawThing.data, meCenterPos);
+      }
+    });
+    return;
+  }
 
-    const temp = [0, 1, 2, 3];
-    temp.forEach(key => {
-      this.imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
-        this.drawImage({
-          ...imageInfo,
-          scale: 1,
-          partRotateRadian: 0,
-        });
-      });
+  pushToDrawThings(
+    type: number,
+    zIndex: number,
+    data: ImageInfo | Peer | Me,
+  ): void {
+    this.AllDrawThings.push({
+      type: type,
+      zIndex: zIndex,
+      data: data,
     });
   }
 
-  drawObjectsAfterAvatar(meCenterPos: Vec2): void {
-    const temp = [8, 9];
-    temp.forEach(key => {
-      this.imageInfoProvider.objects.get(key)?.forEach(imageInfo => {
-        if (isInRect(imageInfo.centerPos, imageInfo.size, meCenterPos)) {
-          this.transparency = 0.3;
-        }
-        this.drawImage({
-          ...imageInfo,
-          scale: 1,
-          partRotateRadian: 0,
-        });
-        this.transparency = 1.0;
-      });
+  resetAllDrawThings(): void {
+    this.AllDrawThings.forEach((drawThing, idx) => {
+      if (drawThing.type === 2) this.AllDrawThings.splice(idx, 1);
     });
   }
 }

@@ -119,12 +119,19 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     }
     const peerManager = props.peerManager;
 
+    gLHelper.imageInfoProvider.objects.forEach(object => {
+      gLHelper.pushToDrawThings(
+        1,
+        object.centerPos.y + object.size.height / 2,
+        object,
+      );
+    });
     //계속해서 화면에 장면을 그려줌
     const requestAnimation = () => {
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
       peerManager.me.update(gLHelper);
 
-      gLHelper.drawObjectsBeforeAvatar();
+      gLHelper.resetAllDrawThings();
       const data: DataDto = {
         type: DataDtoType.PLAYER_INFO,
         data: peerManager.me.getPlayerDto(),
@@ -132,15 +139,11 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       const transData = JSON.stringify(data);
       peerManager.forEachPeer(peer => {
         peer.transmitUsingDataChannel(transData);
-        gLHelper.drawAvatar(peer, peer.nicknameDiv, peer.textMessageDiv);
+        gLHelper.pushToDrawThings(2, peer.centerPos.y, peer);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });
-      gLHelper.drawAvatar(
-        peerManager.me,
-        peerManager.me.nicknameDiv,
-        peerManager.me.textMessageDiv,
-      );
-      gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
+      gLHelper.pushToDrawThings(2, peerManager.me.centerPos.y, peerManager.me);
+      gLHelper.drawAll(peerManager.me.centerPos);
       requestAnimationFrame(requestAnimation);
     };
     requestAnimationFrame(requestAnimation);

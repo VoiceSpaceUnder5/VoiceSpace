@@ -176,11 +176,11 @@ export const bigTreeMD: ObjectImageMD = {
       centerPosPixelOffset: {x: 0, y: -(440 / 2 - 324 / 2)},
       layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
-    {
-      src: './assets/spaceMain/object/bigTreeBottom.png',
-      centerPosPixelOffset: {x: 0, y: +(440 / 2 - 240 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
-    },
+    // {
+    //   src: './assets/spaceMain/object/bigTreeBottom.png',
+    //   centerPosPixelOffset: {x: 0, y: +(440 / 2 - 240 / 2)},
+    //   layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
+    // },
   ],
   collisionMDInfos: [
     {
@@ -201,11 +201,11 @@ export const smallTreeMD: ObjectImageMD = {
       centerPosPixelOffset: {x: 0, y: -(300 / 2 - 210 / 2)},
       layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
-    {
-      src: './assets/spaceMain/object/smallTreeBottom.png',
-      centerPosPixelOffset: {x: 0, y: +(300 / 2 - 180 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
-    },
+    // {
+    //   src: './assets/spaceMain/object/smallTreeBottom.png',
+    //   centerPosPixelOffset: {x: 0, y: +(300 / 2 - 180 / 2)},
+    //   layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
+    // },
   ],
   collisionMDInfos: [
     {

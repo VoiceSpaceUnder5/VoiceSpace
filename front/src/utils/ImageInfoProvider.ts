@@ -3,7 +3,6 @@ import IdProvider from './IdProvider';
 import {
   ImageInfo,
   AvatarImageEnum,
-  LayerLevelEnum,
   AvatarPartImageEnum,
   PixelData,
   ImageMDInfo,
@@ -27,7 +26,8 @@ interface ReadyToLoadValue {
 
 class ImageInfoProvider {
   background: ImageInfo | null;
-  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
+  // objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
+  objects: ImageInfo[];
   pixelInfos: PixelData[][];
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
   mapMakingInfo: MapMakingInfo;
@@ -42,7 +42,8 @@ class ImageInfoProvider {
     mapMakingInfo: MapMakingInfo,
   ) {
     this.gl = gl;
-    this.objects = new Map();
+    // this.objects = new Map();
+    this.objects = [];
     this.avatars = new Map();
     this.readyToLoad = new Map();
     this.setLoadStatus = setLoadStatus;
@@ -236,17 +237,18 @@ class ImageInfoProvider {
               centerPosPixelOffset: baseImageInfo.centerPosPixelOffset,
               size: baseImageInfo.size,
             };
-            if (!this.objects.has(imageMdInfo.layerLev))
-              this.objects.set(
-                imageMdInfo.layerLev,
-                new Map<number, ImageInfo>(),
-              );
+            // if (!this.objects.has(imageMdInfo.layerLev))
+            //   this.objects.set(
+            //     imageMdInfo.layerLev,
+            //     new Map<number, ImageInfo>(),
+            //   );
 
-            const layerLevel = this.objects.get(imageMdInfo.layerLev);
+            // const layerLevel = this.objects.get(imageMdInfo.layerLev);
 
-            if (layerLevel !== undefined) {
-              layerLevel.set(readyToLoadValue.id, imageInfo);
-            }
+            // if (layerLevel !== undefined) {
+            //   layerLevel.set(readyToLoadValue.id, imageInfo);
+            // }
+            this.objects.push(imageInfo);
 
             const x_init = imageInfo.centerPos.x - imageInfo.size.width / 2;
             const x_limit = imageInfo.centerPos.x + imageInfo.size.width / 2;
