@@ -39,7 +39,10 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     finishLoad: 0,
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const spaceCanvasRef = useRef<HTMLCanvasElement>(null);
+  const savedGroundCanvasRef = useRef<HTMLCanvasElement>(null);
+  const groundCanvasRef = useRef<HTMLCanvasElement>(null);
   // function
   const setIsMoving = (isMoving: boolean) => {
     props.peerManager.me.isMoving = isMoving;
@@ -71,16 +74,22 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       },
     );
 
-    if (!canvasRef.current) {
+    if (
+      !spaceCanvasRef.current ||
+      !savedGroundCanvasRef.current ||
+      !groundCanvasRef.current
+    ) {
       console.error('canvas is not rendered error');
       return;
     }
-    const canvas = canvasRef.current;
-    const gl = canvas.getContext('webgl');
+    const spaceCanvas = spaceCanvasRef.current;
+    const groundCanvas = groundCanvasRef.current;
+    const gl = spaceCanvas.getContext('webgl');
     if (!gl) {
       console.error('getContext webgl error');
       return;
     }
+    //test
     const imageInfoProvider = new ImageInfoProvider(
       gl,
       setLoadStatus,
@@ -89,16 +98,18 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     const glHelper = new GLHelper(
       gl,
       new Camera(
-        {width: canvas.clientWidth, height: canvas.clientHeight},
+        {width: spaceCanvas.clientWidth, height: spaceCanvas.clientHeight},
         {...props.mapMakingInfo.respawnPosition},
         {...props.mapMakingInfo.backgroundSize},
       ),
       imageInfoProvider,
     );
-    setGLHelper(glHelper);
 
+    setGLHelper(glHelper);
     const resizeEventHandler = () => {
-      glHelper.updateFromCavnas(canvas);
+      glHelper.updateFromCavnas(spaceCanvas);
+      groundCanvas.width = groundCanvas.clientWidth;
+      groundCanvas.height = groundCanvas.clientHeight;
     };
     resizeEventHandler();
     window.addEventListener('resize', resizeEventHandler);
@@ -113,17 +124,59 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
   }, []);
 
+  const drawBackgroundFromBuffer = (savedGroundCanvas: HTMLCanvasElement) => {
+    if (!gLHelper) return;
+    const centerX = gLHelper.camera.centerPos.x;
+    const centerY = gLHelper.camera.centerPos.y;
+    const cameraWidth = gLHelper.camera.originSize.width;
+    const cameraHeight = gLHelper.camera.originSize.height;
+    const leftTopX = centerX - cameraWidth / 2;
+    const leftTopY = centerY - cameraHeight / 2;
+    const gl = groundCanvasRef.current?.getContext('2d');
+
+    // console.log(`width: ${cameraWidth}, height: ${cameraHeight}`);
+    if (gl && savedGroundCanvas) {
+      if (!groundCanvasRef.current) return;
+      gl.clearRect(
+        0,
+        0,
+        groundCanvasRef.current.clientWidth,
+        groundCanvasRef.current.clientHeight,
+      );
+      gl.drawImage(
+        savedGroundCanvas,
+        leftTopX,
+        leftTopY,
+        cameraWidth,
+        cameraHeight,
+        0,
+        0,
+        cameraWidth,
+        cameraHeight,
+      );
+    }
+  };
+
   useEffect(() => {
+    // background savedGroundCanvas에 따로 저장.
+    const backgroundImage = new Image();
+    backgroundImage.src =
+      './assets/spaceMain/background/seaAndMountainVer1.png';
+    const savedGroundCanvas = savedGroundCanvasRef.current;
+    if (!savedGroundCanvas) return;
+    const gl2 = savedGroundCanvas.getContext('2d');
+    if (!gl2) return;
+    gl2.drawImage(backgroundImage, 0, 0);
     if (!isLoading(loadStatus) || !gLHelper) {
       return;
     }
     const peerManager = props.peerManager;
-
-    //계속해서 화면에 장면을 그려줌
+    //화면에 장면을 그려줌
     const requestAnimation = () => {
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
       peerManager.me.update(gLHelper);
 
+      drawBackgroundFromBuffer(savedGroundCanvas);
       gLHelper.drawObjectsBeforeAvatar();
       const data: DataDto = {
         type: DataDtoType.PLAYER_INFO,
@@ -148,7 +201,16 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
 
   return (
     <>
-      <canvas className="space-canvas" ref={canvasRef} />
+      <canvas
+        className="spaceCanvas"
+        ref={groundCanvasRef}
+        style={{position: 'absolute', left: '0px', top: '0px', zIndex: -10}}
+      ></canvas>
+      <canvas
+        className="spaceCanvas"
+        ref={spaceCanvasRef}
+        // style={{position: 'absolute', left: '0px', top: '0px'}}
+      />
       {gLHelper ? (
         <Joystick
           setIsMoving={setIsMoving}
@@ -161,6 +223,20 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       {!isLoading(loadStatus) ? (
         <div id="divLoad">{getPercentageFromLoadStatus(loadStatus)}</div>
       ) : null}
+      <canvas
+        width={2400}
+        height={2400}
+        ref={savedGroundCanvasRef}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: 0,
+          height: 0,
+          visibility: 'hidden',
+          // display: 'none',
+        }}
+      ></canvas>
     </>
   );
 }
