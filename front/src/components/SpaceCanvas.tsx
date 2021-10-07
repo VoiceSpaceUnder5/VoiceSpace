@@ -176,6 +176,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       peerManager.me.update(gLHelper);
 
       drawBackgroundFromBuffer(savedGroundCanvas);
+      gLHelper.drawObjectsBeforeAvatar();
       const data: DataDto = {
         type: DataDtoType.PLAYER_INFO,
         data: peerManager.me.getPlayerDto(),
