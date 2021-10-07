@@ -24,7 +24,7 @@ export interface LoadingInfo {
 
 function getPercentageFromLoadStatus(loadStatus: LoadingInfo): number {
   if (!loadStatus.needToLoad) return 0;
-  return 100 * Math.round(loadStatus.finishLoad / loadStatus.needToLoad);
+  return Math.floor((loadStatus.finishLoad / loadStatus.needToLoad) * 100);
 }
 
 function isLoading(loadStatus: LoadingInfo): boolean {
@@ -36,7 +36,7 @@ function isLoading(loadStatus: LoadingInfo): boolean {
 function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   //state
   const [loadStatus, setLoadStatus] = useState<LoadingInfo>({
-    needToLoad: 1,
+    needToLoad: 0,
     finishLoad: 0,
   });
   const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);

@@ -132,7 +132,6 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
 }
 
 function Setting(props: RouteComponentProps): JSX.Element {
-  console.log('setting');
   // values
   const query = qs.parse(props.location.search) as SettingQuery;
   const settingWindowWidth = 400;
