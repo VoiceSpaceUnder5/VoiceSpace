@@ -1,5 +1,5 @@
 import ImageInfoProvider from './ImageInfoProvider';
-import {Size, ImageInfo, AvatarPartImageEnum} from './ImageMetaData';
+import {Size, ImageInfo, AvatarPartImageEnum, BodySize} from './ImageMetaData';
 import {PlayerDto, Peer, Me} from './RTCGameUtils';
 import {Vec2} from './RTCGameUtils';
 const m3 = require('m3.js');
@@ -137,10 +137,10 @@ export const isInRect = (
   pointPos: Vec2,
 ): boolean => {
   if (
-    pointPos.x >= rectCenterPos.x - rectSize.width / 2 &&
-    pointPos.x <= rectCenterPos.x + rectSize.width / 2 &&
-    pointPos.y >= rectCenterPos.y - rectSize.height / 2 &&
-    pointPos.y <= rectCenterPos.y + rectSize.height / 2
+    pointPos.x >= rectCenterPos.x - rectSize.width / 2 - 10 &&
+    pointPos.x <= rectCenterPos.x + rectSize.width / 2 + 10 &&
+    pointPos.y >= rectCenterPos.y - rectSize.height / 2 - 10 &&
+    pointPos.y <= rectCenterPos.y + rectSize.height / 2 + 10
   )
     return true;
   return false;
@@ -323,7 +323,7 @@ class GLHelper {
     ];
     const imageinfo = this.imageInfoProvider.getAvatarImageInfo(
       me.avatar,
-      AvatarPartImageEnum.BODY,
+      AvatarPartImageEnum.LEFT_LEG,
     );
     if (!imageinfo) {
       return [];
@@ -670,7 +670,11 @@ class GLHelper {
   }
 
   drawObject(imageInfo: ImageInfo, meCenterPos: Vec2): void {
-    if (isInRect(imageInfo.centerPos, imageInfo.size, meCenterPos)) {
+    const meBottomPos = {
+      ...meCenterPos,
+      y: meCenterPos.y + BodySize.armLegSize.y + BodySize.armOffsetY,
+    };
+    if (isInRect(imageInfo.centerPos, imageInfo.size, meBottomPos)) {
       this.transparency = 0.3;
     }
     this.drawImage({

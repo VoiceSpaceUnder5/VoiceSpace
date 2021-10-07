@@ -237,17 +237,6 @@ class ImageInfoProvider {
               centerPosPixelOffset: baseImageInfo.centerPosPixelOffset,
               size: baseImageInfo.size,
             };
-            // if (!this.objects.has(imageMdInfo.layerLev))
-            //   this.objects.set(
-            //     imageMdInfo.layerLev,
-            //     new Map<number, ImageInfo>(),
-            //   );
-
-            // const layerLevel = this.objects.get(imageMdInfo.layerLev);
-
-            // if (layerLevel !== undefined) {
-            //   layerLevel.set(readyToLoadValue.id, imageInfo);
-            // }
             this.objects.push(imageInfo);
 
             const x_init = imageInfo.centerPos.x - imageInfo.size.width / 2;
@@ -310,20 +299,20 @@ class ImageInfoProvider {
     this.insertLoadingQueue(smallTreeMD, {x: 1600, y: 800});
     for (let i = 0; i < 15; i++) {
       this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + i * grayBlockMD.collisionMDInfos[0].size.width,
+        x: 800 + i * 72, // grayBlockMD.collisionMDInfos[0].size.width,
         y: 500,
       });
     }
     for (let i = 0; i < 15; i++) {
       this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + i * grayBlockMD.collisionMDInfos[0].size.width,
+        x: 800 + i * 72, // grayBlockMD.collisionMDInfos[0].size.width,
         y: 1450,
       });
     }
     for (let i = 0; i < 11; i++) {
       this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + 14 * grayBlockMD.collisionMDInfos[0].size.width,
-        y: 500 + i * grayBlockMD.collisionMDInfos[0].size.height,
+        x: 800 + 14 * 72, // grayBlockMD.collisionMDInfos[0].size.width,
+        y: 500 + i * 72, // grayBlockMD.collisionMDInfos[0].size.height,
       });
     }
     this.insertLoadingQueue(greenGrassMD, {x: 900, y: 900});

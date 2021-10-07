@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import ImageInfoProvider from '../utils/ImageInfoProvider';
-import {MapMakingInfo} from '../utils/ImageMetaData';
+import {MapMakingInfo, BodySize} from '../utils/ImageMetaData';
 import PeerManager, {
   DataDto,
   DataDtoType,
@@ -184,6 +184,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     //계속해서 화면에 장면을 그려줌
     //화면에 장면을 그려줌
     const requestAnimation = () => {
+      const LegSize = BodySize.armLegSize.y / 2 + BodySize.armOffsetY;
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
       peerManager.me.update(gLHelper);
 
@@ -196,10 +197,14 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       const transData = JSON.stringify(data);
       peerManager.forEachPeer(peer => {
         peer.transmitUsingDataChannel(transData);
-        gLHelper.pushToDrawThings(2, peer.centerPos.y, peer);
+        gLHelper.pushToDrawThings(2, peer.centerPos.y + LegSize, peer);
         peer.updateSoundFromVec2(peerManager.me.centerPos);
       });
-      gLHelper.pushToDrawThings(2, peerManager.me.centerPos.y, peerManager.me);
+      gLHelper.pushToDrawThings(
+        2,
+        peerManager.me.centerPos.y + LegSize,
+        peerManager.me,
+      );
       gLHelper.drawAll(peerManager.me.centerPos);
       requestAnimationFrame(requestAnimation);
     };
