@@ -156,12 +156,12 @@ function Space(props: RouteComponentProps): JSX.Element {
             peerManager={peerManager}
             mapMakingInfo={mapMakingInfo}
           />
-          {/* <Navigation peerManager={peerManager} goToHome={goToHome} /> */}
+          <Navigation peerManager={peerManager} goToHome={goToHome} />
         </>
       ) : (
         <SpaceLoading
           loadingPercentage={0}
-          message="오디오를 가져오고 서버와 소켓을 연결하는 중입니다. 조금만 기다려주세요."
+          message="오디오를 가져오고 서버와 연결 중"
         ></SpaceLoading>
       )}
       <div id="divContainer" ref={divContainerRef}></div>
