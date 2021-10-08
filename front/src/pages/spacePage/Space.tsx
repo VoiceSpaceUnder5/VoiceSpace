@@ -156,7 +156,7 @@ function Space(props: RouteComponentProps): JSX.Element {
             peerManager={peerManager}
             mapMakingInfo={mapMakingInfo}
           />
-          <Navigation peerManager={peerManager} goToHome={goToHome} />
+          {/* <Navigation peerManager={peerManager} goToHome={goToHome} /> */}
         </>
       ) : (
         <SpaceLoading

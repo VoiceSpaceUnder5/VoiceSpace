@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import {Button, Select, message, Switch} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
@@ -93,14 +93,48 @@ function SoundControll(props: SoundControllProps): JSX.Element {
   );
 }
 
+class AudioVisualizerHelper {
+  private audioContext: AudioContext;
+  private analyser: AnalyserNode;
+  private source: MediaStreamAudioSourceNode;
+  constructor(audioStream: MediaStream) {
+    this.audioContext = new AudioContext();
+    this.analyser = this.createAnalserAndSetting();
+
+    this.source = this.audioContext.createMediaStreamSource(audioStream);
+    this.source.connect(this.analyser);
+  }
+  private createAnalserAndSetting() {
+    this.analyser = this.audioContext.createAnalyser();
+    this.analyser.smoothingTimeConstant = 0.85;
+    this.analyser.fftSize = 32;
+    return this.analyser;
+  }
+  setStream(audioStream: MediaStream): void {
+    this.source.disconnect();
+    this.createAnalserAndSetting();
+    this.source = this.audioContext.createMediaStreamSource(audioStream);
+    this.source.connect(this.analyser);
+  }
+  getByteFreqData(byteArray: Uint8Array): void {
+    this.analyser.getByteFrequencyData(byteArray);
+  }
+}
+
 function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  console.log(props.audioStream.getTracks());
-  useEffect(() => {
-    if (canvasRef.current) {
-      let aniNumber = 0;
+  const avHelper = useMemo(() => {
+    return new AudioVisualizerHelper(props.audioStream);
+  }, []);
+  const byteFrequencyDataArray = useMemo(() => {
+    return new Uint8Array(16);
+  }, []);
 
+  let aniNumber = 0;
+  useEffect(() => {
+    avHelper.setStream(props.audioStream);
+    if (canvasRef.current) {
       const context = canvasRef.current.getContext('2d');
       if (!context) {
         message.error('can not create 2d canvas context');
@@ -108,19 +142,10 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
       }
       context.fillStyle = '#325932';
       // make analyser with stream
-      const audioContext = new AudioContext();
-      const source = audioContext.createMediaStreamSource(props.audioStream);
-      const analyser = audioContext.createAnalyser();
-      analyser.smoothingTimeConstant = 0.85;
-      analyser.fftSize = 32;
-      source.connect(analyser);
-      // for audio Analysis
-      const byteFrequencyDataArray = new Uint8Array(analyser.frequencyBinCount);
-
       const canvas = canvasRef.current;
-      const widthStep = canvasRef.current.width / analyser.frequencyBinCount;
+      const widthStep = canvasRef.current.width / 16;
       const animationLoop = () => {
-        analyser.getByteFrequencyData(byteFrequencyDataArray);
+        avHelper.getByteFreqData(byteFrequencyDataArray);
         context.clearRect(0, 0, canvas.width, canvas.height);
         byteFrequencyDataArray.forEach((value, idx) => {
           context.fillRect(
@@ -301,6 +326,11 @@ function Setting(props: RouteComponentProps): JSX.Element {
     if (testAudioRef.current) {
       testAudioRef.current.srcObject = audioStream;
     }
+    return () => {
+      if (testAudioRef.current) {
+        testAudioRef.current.srcObject = null;
+      }
+    };
   }, [audioStream]);
 
   useEffect(() => {

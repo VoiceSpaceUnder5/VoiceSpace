@@ -34,17 +34,19 @@ function isLoading(loadStatus: LoadingInfo): boolean {
 }
 
 function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
-  //state
+  // state
   const [loadStatus, setLoadStatus] = useState<LoadingInfo>({
     needToLoad: 0,
     finishLoad: 0,
   });
-  const [gLHelper, setGLHelper] = useState<GLHelper | null>(null);
-
+  const [aniNumber, setAniNumber] = useState(0);
+  // ref
   const spaceCanvasRef = useRef<HTMLCanvasElement>(null);
   const savedGroundCanvasRef = useRef<HTMLCanvasElement>(null);
   const groundCanvasRef = useRef<HTMLCanvasElement>(null);
+  const gLHelperRef = useRef<GLHelper | null>(null);
   // function
+
   const setIsMoving = (isMoving: boolean) => {
     props.peerManager.me.isMoving = isMoving;
   };
@@ -54,16 +56,61 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   };
 
   const setCameraScaleByPinch = (value: number) => {
-    if (gLHelper) {
-      gLHelper.camera.upScaleByPinch(value);
+    if (gLHelperRef.current) {
+      gLHelperRef.current.camera.upScaleByPinch(value);
     }
   };
 
   const getCameraScale = (): number => {
-    if (gLHelper) {
-      return gLHelper.camera.scale;
+    if (gLHelperRef.current) {
+      return gLHelperRef.current.camera.scale;
     }
     return 0;
+  };
+
+  const resizeEventHandler = () => {
+    if (
+      gLHelperRef.current &&
+      spaceCanvasRef.current &&
+      groundCanvasRef.current
+    ) {
+      gLHelperRef.current.updateFromCavnas(spaceCanvasRef.current);
+      groundCanvasRef.current.width = groundCanvasRef.current.clientWidth;
+      groundCanvasRef.current.height = groundCanvasRef.current.clientHeight;
+    }
+  };
+
+  const unLoadEventHandler = () => {
+    props.peerManager.close();
+  };
+
+  const requestAnimation = () => {
+    if (gLHelperRef.current) {
+      const gLHelper = gLHelperRef.current;
+      const peerManager = props.peerManager;
+      gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
+      peerManager.me.update(gLHelper);
+
+      drawBackgroundFromBuffer();
+      gLHelper.drawObjectsBeforeAvatar();
+      const data: DataDto = {
+        type: DataDtoType.PLAYER_INFO,
+        data: peerManager.me.getPlayerDto(),
+      };
+      const transData = JSON.stringify(data);
+      peerManager.forEachPeer(peer => {
+        peer.transmitUsingDataChannel(transData);
+        gLHelper.drawAvatar(peer, peer.nicknameDiv, peer.textMessageDiv);
+        peer.updateSoundFromVec2(peerManager.me.centerPos);
+      });
+      gLHelper.drawAvatar(
+        peerManager.me,
+        peerManager.me.nicknameDiv,
+        peerManager.me.textMessageDiv,
+      );
+      gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
+      setAniNumber(requestAnimationFrame(requestAnimation));
+    }
   };
   // called only once
   useEffect(() => {
@@ -75,16 +122,11 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       },
     );
 
-    if (
-      !spaceCanvasRef.current ||
-      !savedGroundCanvasRef.current ||
-      !groundCanvasRef.current
-    ) {
+    if (!spaceCanvasRef.current || !savedGroundCanvasRef.current) {
       console.error('canvas is not rendered error');
       return;
     }
     const spaceCanvas = spaceCanvasRef.current;
-    const groundCanvas = groundCanvasRef.current;
     const gl = spaceCanvas.getContext('webgl');
     if (!gl) {
       console.error('getContext webgl error');
@@ -96,7 +138,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       setLoadStatus,
       props.mapMakingInfo,
     );
-    const glHelper = new GLHelper(
+    gLHelperRef.current = new GLHelper(
       gl,
       new Camera(
         {width: spaceCanvas.clientWidth, height: spaceCanvas.clientHeight},
@@ -105,19 +147,8 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       ),
       imageInfoProvider,
     );
-
-    setGLHelper(glHelper);
-    const resizeEventHandler = () => {
-      glHelper.updateFromCavnas(spaceCanvas);
-      groundCanvas.width = groundCanvas.clientWidth;
-      groundCanvas.height = groundCanvas.clientHeight;
-    };
     resizeEventHandler();
     window.addEventListener('resize', resizeEventHandler);
-
-    const unLoadEventHandler = () => {
-      props.peerManager.close();
-    };
     window.addEventListener('beforeunload', unLoadEventHandler);
     return () => {
       props.peerManager.close();
@@ -126,15 +157,16 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
   }, []);
 
-  const drawBackgroundFromBuffer = (savedGroundCanvas: HTMLCanvasElement) => {
-    if (!gLHelper) return;
-    const centerX = gLHelper.camera.centerPos.x;
-    const centerY = gLHelper.camera.centerPos.y;
-    const cameraWidth = gLHelper.camera.originSize.width;
-    const cameraHeight = gLHelper.camera.originSize.height;
+  const drawBackgroundFromBuffer = () => {
+    if (!gLHelperRef.current) return;
+    const centerX = gLHelperRef.current.camera.centerPos.x;
+    const centerY = gLHelperRef.current.camera.centerPos.y;
+    const cameraWidth = gLHelperRef.current.camera.originSize.width;
+    const cameraHeight = gLHelperRef.current.camera.originSize.height;
     const leftTopX = centerX - cameraWidth / 2;
     const leftTopY = centerY - cameraHeight / 2;
     const gl = groundCanvasRef.current?.getContext('2d');
+    const savedGroundCanvas = savedGroundCanvasRef.current;
 
     // console.log(`width: ${cameraWidth}, height: ${cameraHeight}`);
     if (gl && savedGroundCanvas) {
@@ -160,9 +192,6 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   };
 
   useEffect(() => {
-    // animation number
-    let aniNumber = 0;
-
     // background savedGroundCanvas에 따로 저장.
     const backgroundImage = new Image();
     backgroundImage.src =
@@ -172,38 +201,15 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     const gl2 = savedGroundCanvas.getContext('2d');
     if (!gl2) return;
     gl2.drawImage(backgroundImage, 0, 0);
-    if (!isLoading(loadStatus) || !gLHelper) {
+    if (!isLoading(loadStatus) || !gLHelperRef.current) {
       return;
     }
-    const peerManager = props.peerManager;
     //화면에 장면을 그려줌
-    const requestAnimation = () => {
-      gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
-      peerManager.me.update(gLHelper);
 
-      drawBackgroundFromBuffer(savedGroundCanvas);
-      gLHelper.drawObjectsBeforeAvatar();
-      const data: DataDto = {
-        type: DataDtoType.PLAYER_INFO,
-        data: peerManager.me.getPlayerDto(),
-      };
-      const transData = JSON.stringify(data);
-      peerManager.forEachPeer(peer => {
-        peer.transmitUsingDataChannel(transData);
-        gLHelper.drawAvatar(peer, peer.nicknameDiv, peer.textMessageDiv);
-        peer.updateSoundFromVec2(peerManager.me.centerPos);
-      });
-      gLHelper.drawAvatar(
-        peerManager.me,
-        peerManager.me.nicknameDiv,
-        peerManager.me.textMessageDiv,
-      );
-      gLHelper.drawObjectsAfterAvatar(peerManager.me.centerPos);
-      aniNumber = requestAnimationFrame(requestAnimation);
-    };
-    aniNumber = requestAnimationFrame(requestAnimation);
+    setAniNumber(requestAnimationFrame(requestAnimation));
     return () => {
       cancelAnimationFrame(aniNumber);
+      gLHelperRef.current = null;
     };
   }, [loadStatus]);
 
@@ -219,7 +225,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
         ref={spaceCanvasRef}
         // style={{position: 'absolute', left: '0px', top: '0px'}}
       />
-      {gLHelper ? (
+      {gLHelperRef.current ? (
         <Joystick
           setIsMoving={setIsMoving}
           setNextNormalizedDirectionVector={setNextNormalizedDirectionVector}

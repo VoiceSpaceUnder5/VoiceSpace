@@ -60,22 +60,29 @@ function Navigation(props: NavigationProps): JSX.Element {
       peer.transmitUsingDataChannel(stringifiedMessageData);
     });
   };
-  useEffect(() => {
-    setInterval(() => {
-      if (textMessageDivInnerTextArray.length === 1) {
-        if (Date.now() - textMessageDivInnerTextArray[0].time < 3000) {
-          props.peerManager.me.textMessage =
-            textMessageDivInnerTextArray[0].textMessage;
-        } else {
-          props.peerManager.me.textMessage = '';
-          textMessageDivInnerTextArray.shift();
-        }
-      } else if (textMessageDivInnerTextArray.length > 1) {
-        textMessageDivInnerTextArray.shift();
+
+  const textMessageIntervalHanlder = () => {
+    if (textMessageDivInnerTextArray.length === 1) {
+      if (Date.now() - textMessageDivInnerTextArray[0].time < 3000) {
         props.peerManager.me.textMessage =
           textMessageDivInnerTextArray[0].textMessage;
+      } else {
+        props.peerManager.me.textMessage = '';
+        textMessageDivInnerTextArray.shift();
       }
-    }, 50);
+    } else if (textMessageDivInnerTextArray.length > 1) {
+      textMessageDivInnerTextArray.shift();
+      props.peerManager.me.textMessage =
+        textMessageDivInnerTextArray[0].textMessage;
+    }
+  };
+
+  useEffect(() => {
+    const setIntervalReturnValue = setInterval(textMessageIntervalHanlder, 50);
+    return () => {
+      console.log('interval clear');
+      clearInterval(setIntervalReturnValue);
+    };
   }, []);
 
   const setDataChannelEventHandler = (
