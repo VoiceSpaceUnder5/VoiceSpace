@@ -54,7 +54,7 @@ function SpaceLoading(props: SpaceLoadingProps): JSX.Element {
       <img
         ref={loadingImgRef}
         className="loadingImg"
-        src="./assets/spaceMain/loading/forestbird.png"
+        src="./assets/spaceMain/loading/forestBird.png"
       ></img>
       <Progress
         showInfo={false}
