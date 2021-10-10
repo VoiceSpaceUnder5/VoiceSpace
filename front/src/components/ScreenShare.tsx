@@ -102,6 +102,7 @@ class DrawHelper {
   }
 }
 
+let ScreenViewerMaxZIndex = 999;
 function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   // state
   const [isDragging, setIsDragging] = useState(true);
@@ -112,6 +113,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
         props.stream.getTracks()[0].getSettings().aspectRatio!
       : 16 / 9,
   );
+  const [rndZIndex, setRndZIndex] = useState(999);
 
   // canvasRef
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -222,6 +224,11 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
       // eslint-disable-next-line
       setAspectRatio(props.stream.getTracks()[0].getSettings().aspectRatio!);
     }
+    setRndZIndex(++ScreenViewerMaxZIndex);
+  };
+
+  const onMouseDown = () => {
+    setRndZIndex(++ScreenViewerMaxZIndex);
   };
 
   const height = originVideoHeight + headerHeight;
@@ -229,8 +236,10 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   return (
     <div className="rndContainer">
       <Rnd
+        style={{zIndex: rndZIndex}}
         bounds={'body'}
         onResize={onResize}
+        onMouseDown={onMouseDown}
         disableDragging={!isDragging}
         className="rnd"
         minWidth={width}
