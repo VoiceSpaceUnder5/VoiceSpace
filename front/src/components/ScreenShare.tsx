@@ -347,6 +347,15 @@ interface ScreenShareProps {
   getNickNameFromSocketID: (socketID: string) => string;
 }
 
+function addVideoTrackEndedEventIfExist(
+  stream: MediaStream,
+  onended: (this: MediaStreamTrack, ev: Event) => void,
+) {
+  if (stream.getVideoTracks() && stream.getVideoTracks()[0]) {
+    stream.getVideoTracks()[0].onended = onended;
+  }
+}
+
 function ScreenShare(props: ScreenShareProps): JSX.Element {
   const [screenShareDatas, setScreenShareDatas] = useState<ScreenShareData[]>(
     [],
@@ -373,6 +382,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         audio: true,
         video: true,
       }); // 핸드폰일 경우 사용 불가.
+      addVideoTrackEndedEventIfExist(stream, screenShareStopOnClick);
       props.addVideoTrack(stream);
       setScreenShareDatas([
         ...screenShareDatas,
