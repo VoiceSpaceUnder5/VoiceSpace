@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Menu, Dropdown, message, Switch, Slider} from 'antd';
-import {DesktopOutlined} from '@ant-design/icons';
+import {DesktopOutlined, EditOutlined, ClearOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
 import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
@@ -277,6 +277,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             height: `${headerHeight}px`,
             margin: 0,
             padding: 0,
+            paddingBottom: 1,
             background: 'white',
             fontSize: `${headerHeight / 2}px`,
             display: 'flex',
@@ -301,14 +302,18 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
                 left: 0,
                 top: -headerHeight / 10,
                 height: `${headerHeight - 1}px`,
-                padding: 0,
               }}
             ></Switch>
+            <button
+              style={{margin: 0, padding: 0, height: `${headerHeight - 1}px`}}
+            >
+              <EditOutlined />
+            </button>
             <button
               style={{height: `${headerHeight - 1}px`}}
               onClick={clearClickHandler}
             >
-              Clear
+              <ClearOutlined></ClearOutlined>
             </button>
           </div>
         </div>

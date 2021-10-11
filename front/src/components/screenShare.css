@@ -10,6 +10,15 @@
   border: 2px solid white;
 }
 /* 하드코딩 추후 수정 가능하면 수정할 것. */
+.ant-switch-inner {
+  line-height: 2px;
+}
+
+.ant-popover-inner {
+  background: white;
+  border-radius: 10px;
+}
+
 .ant-switch-handle {
-  height: 16px;
+  height: 12px;
 }
