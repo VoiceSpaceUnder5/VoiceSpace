@@ -15,6 +15,9 @@ interface ScreenViewerProps {
   strokeColor: string;
   lineWidth: number;
   drawHelper: DrawHelper;
+  posX: number;
+  posY: number;
+  forceUpdateCnt: number;
   setOtherSideDrawStartPos: (
     fromSocketID: string,
     toSocketID: string,
@@ -34,6 +37,9 @@ interface ScreenShareData {
   peerId: string;
   stream: MediaStream;
   drawHelper: DrawHelper;
+  posX: number;
+  posY: number;
+  forceUpdateCnt: number;
 }
 
 function getXYClampOneZero(
@@ -128,6 +134,9 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   const canvasWidth = 2000;
   const canvasHeight = 2000;
 
+  const height = originVideoHeight + headerHeight;
+  const width = originVideoHeight * aspectRatio;
+
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.srcObject = props.stream;
@@ -138,6 +147,14 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
     if (!canvasRef.current) return;
     props.drawHelper.setUp(canvasRef.current);
   }, [canvasRef]);
+
+  useEffect(() => {
+    rndRef.current?.updatePosition({x: props.posX, y: props.posY});
+    rndRef.current?.updateSize({
+      width: width,
+      height: height,
+    });
+  }, [props.forceUpdateCnt]);
 
   const drawToogleChagne: SwitchChangeEventHandler = (checked: boolean) => {
     if (canvasRef.current) {
@@ -230,13 +247,13 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   const onMouseDown = () => {
     setRndZIndex(++ScreenViewerMaxZIndex);
   };
-
-  const height = originVideoHeight + headerHeight;
-  const width = originVideoHeight * aspectRatio;
   return (
     <div className="rndContainer">
       <Rnd
-        style={{zIndex: rndZIndex}}
+        style={{
+          zIndex: rndZIndex,
+          height: height,
+        }}
         bounds={'body'}
         onResize={onResize}
         onMouseDown={onMouseDown}
@@ -373,6 +390,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const [color, setColor] = useState('#000000');
   const [lineWidth, setLineWidth] = useState(5);
   const [isVisible, setIsVisible] = useState(false);
+
   const screenShareOnClick = async () => {
     setIsVisible(false);
     if (
@@ -395,7 +413,14 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       props.addVideoTrack(stream);
       setScreenShareDatas([
         ...screenShareDatas,
-        {peerId: props.socketID, stream: stream, drawHelper: new DrawHelper()},
+        {
+          peerId: props.socketID,
+          stream: stream,
+          drawHelper: new DrawHelper(),
+          posX: 0,
+          posY: 0,
+          forceUpdateCnt: 0,
+        },
       ]);
     } catch (error) {
       message.error(
@@ -427,6 +452,9 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
               peerId: peerId,
               stream: event.streams[0],
               drawHelper: new DrawHelper(),
+              posX: 0,
+              posY: 0,
+              forceUpdateCnt: 0,
             },
           ];
       });
@@ -436,7 +464,14 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         stream.addTrack(event.track);
         return [
           ...before,
-          {peerId: peerId, stream: stream, drawHelper: new DrawHelper()},
+          {
+            peerId: peerId,
+            stream: stream,
+            drawHelper: new DrawHelper(),
+            posX: 0,
+            posY: 0,
+            forceUpdateCnt: 0,
+          },
         ];
       });
     }
@@ -502,6 +537,23 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       });
     });
   }, []);
+  const sortSharedScreenOnClick = () => {
+    const bodyWidth = document.body.clientWidth;
+    const offsetX = 250;
+    const offsetY = 150;
+    const columnsPerRow = Math.floor(bodyWidth / offsetX);
+    setScreenShareDatas(before => {
+      const newScreenSharedData = [...before];
+      newScreenSharedData.forEach((data, idx) => {
+        const rowCnt = Math.floor(idx / columnsPerRow);
+        const colCnt = idx % columnsPerRow;
+        data.posX = colCnt * offsetX;
+        data.posY = rowCnt * offsetY;
+        data.forceUpdateCnt = data.forceUpdateCnt + 1;
+      });
+      return newScreenSharedData;
+    });
+  };
   const screenshare = () => {
     return (
       <>
@@ -517,6 +569,11 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
             </a>
           </Menu.Item>
           <Menu.Item key="2">
+            <a role="button" onClick={sortSharedScreenOnClick}>
+              공유화면 정렬
+            </a>
+          </Menu.Item>
+          <Menu.Item key="3">
             <Dropdown
               visible={isDisplayColorPicker}
               onVisibleChange={() => {
@@ -566,6 +623,9 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
             strokeColor={color}
             lineWidth={lineWidth}
             drawHelper={screenShareData.drawHelper}
+            posX={screenShareData.posX}
+            posY={screenShareData.posY}
+            forceUpdateCnt={screenShareData.forceUpdateCnt}
             setOtherSideDraw={props.setOtherSideDraw}
             setOtherSideDrawStartPos={props.setOtherSideDrawStartPos}
             setOtherSideClear={props.setOtherSideClear}
