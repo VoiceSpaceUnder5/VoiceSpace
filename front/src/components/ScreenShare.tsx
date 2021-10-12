@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Menu, Dropdown, message, Switch, Slider} from 'antd';
-import {DesktopOutlined} from '@ant-design/icons';
+import {Menu, Dropdown, message, Switch, Slider, Popover} from 'antd';
+import {DesktopOutlined, EditOutlined, ClearOutlined} from '@ant-design/icons';
 import {Rnd} from 'react-rnd';
 import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
@@ -12,8 +12,6 @@ interface ScreenViewerProps {
   mySocketID: string;
   sharedSocketID: string;
   stream: MediaStream;
-  strokeColor: string;
-  lineWidth: number;
   drawHelper: DrawHelper;
   posX: number;
   posY: number;
@@ -40,6 +38,13 @@ interface ScreenShareData {
   posX: number;
   posY: number;
   forceUpdateCnt: number;
+}
+
+interface ColorAndThicknessPickerProps {
+  color: string;
+  setColor: (newColor: string) => void;
+  thickness: number;
+  setThickness: (value: number) => void;
 }
 
 function getXYClampOneZero(
@@ -108,10 +113,28 @@ class DrawHelper {
   }
 }
 
+function ColorAndThicknessPicker(
+  props: ColorAndThicknessPickerProps,
+): JSX.Element {
+  return (
+    <div style={{background: 'white', borderRadius: '4%'}}>
+      <HexColorPicker
+        color={props.color}
+        onChange={props.setColor}
+      ></HexColorPicker>
+      <Slider
+        min={1}
+        max={10}
+        value={props.thickness}
+        onChange={props.setThickness}
+      ></Slider>
+    </div>
+  );
+}
+
 let ScreenViewerMaxZIndex = 999;
 function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   // state
-  const [isDragging, setIsDragging] = useState(true);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [aspectRatio, setAspectRatio] = useState(
     props.stream.getTracks()[0].getSettings().aspectRatio
@@ -119,7 +142,12 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
         props.stream.getTracks()[0].getSettings().aspectRatio!
       : 16 / 9,
   );
-  const setRndZIndex = useState(999)[1];
+  const [rndZIndex, setRndZIndex] = useState(ScreenViewerMaxZIndex);
+  const [color, setColor] = useState('#000000');
+  const [lineWidth, setLineWidth] = useState(5);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isDrawMode, setIsDrawMode] = useState(false);
+  const [isDrawOn, setIsDrawOn] = useState(false);
 
   // canvasRef
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -156,6 +184,14 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
     });
   }, [props.forceUpdateCnt]);
 
+  useEffect(() => {
+    if (isDrawOn && !isPopupVisible) {
+      setIsDrawMode(true);
+    } else {
+      setIsDrawMode(false);
+    }
+  }, [isDrawOn, isPopupVisible]);
+
   const drawToogleChagne: SwitchChangeEventHandler = (checked: boolean) => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -163,8 +199,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
         canvas.style.cursor = 'url(./assets/navigation/pencil.png) 4 20, auto';
       else canvas.style.cursor = 'move';
     }
-
-    setIsDragging(!checked);
+    setIsDrawOn(checked);
   };
 
   const clearClickHandler = () => {
@@ -174,7 +209,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 
   const canvasMouseEventHandler: React.MouseEventHandler<HTMLCanvasElement> =
     event => {
-      if (isDragging) return;
+      if (!isDrawMode) return;
       if (!canvasRef.current) return;
       const canvas = canvasRef.current;
       switch (event.type) {
@@ -205,16 +240,16 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             );
             props.drawHelper.drawLineAndSaveStartPos(
               vec,
-              props.strokeColor,
-              props.lineWidth,
+              color,
+              lineWidth,
               props.mySocketID,
             );
             props.setOtherSideDraw(
               props.mySocketID,
               props.sharedSocketID,
               vec,
-              props.strokeColor,
-              props.lineWidth,
+              color,
+              lineWidth,
             );
           }
           break;
@@ -248,100 +283,119 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
     setRndZIndex(++ScreenViewerMaxZIndex);
   };
   return (
-    <div className="rndContainer">
-      <Rnd
+    <Rnd
+      style={{
+        zIndex: rndZIndex,
+        height: height,
+      }}
+      bounds={'body'}
+      onResize={onResize}
+      onMouseDown={onMouseDown}
+      disableDragging={isDrawOn || isPopupVisible}
+      className="rnd"
+      minWidth={width}
+      minHeight={height}
+      ref={rndRef}
+      lockAspectRatio={aspectRatio}
+      lockAspectRatioExtraHeight={headerHeight + 1}
+      default={{
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+      }}
+    >
+      <div
         style={{
-          zIndex: ScreenViewerMaxZIndex,
-          height: height,
-        }}
-        bounds={'body'}
-        onResize={onResize}
-        onMouseDown={onMouseDown}
-        disableDragging={!isDragging}
-        className="rnd"
-        minWidth={width}
-        minHeight={height}
-        ref={rndRef}
-        lockAspectRatio={aspectRatio}
-        lockAspectRatioExtraHeight={headerHeight + 1}
-        default={{
-          x: 0,
-          y: 0,
-          width: width,
-          height: height,
+          width: '100%',
+          height: `${headerHeight}px`,
+          margin: 0,
+          padding: 0,
+          paddingBottom: 1,
+          paddingRight: 10,
+          background: 'white',
+          fontSize: `${headerHeight / 2}px`,
+          display: 'flex',
+          justifyContent: 'space-between',
         }}
       >
+        <div>{`${props.nickname}`}</div>
         <div
           style={{
-            width: '100%',
-            height: `${headerHeight}px`,
             margin: 0,
-            padding: 0,
-            background: 'white',
-            fontSize: `${headerHeight / 2}px`,
-            display: 'flex',
-            justifyContent: 'space-between',
+            paddingRight: `${2}px`,
+            paddingLeft: `${headerHeight / 2}px`,
+            paddingTop: 0,
+            paddingBottom: 0,
           }}
         >
-          <div>{`${props.nickname}`}</div>
-          <div
+          <Switch
+            checkedChildren={'Stop'}
+            unCheckedChildren={'Draw'}
+            onChange={drawToogleChagne}
             style={{
-              margin: 0,
-              paddingRight: `${2}px`,
-              paddingLeft: `${headerHeight / 2}px`,
-              paddingTop: 0,
-              paddingBottom: 0,
+              left: 0,
+              top: -headerHeight / 10,
+              height: `${headerHeight - 5}px`,
             }}
+          ></Switch>
+          <button
+            className="screenShareHeaderButton"
+            style={{height: `${headerHeight - 3}px`}}
           >
-            <Switch
-              checkedChildren={'Stop'}
-              unCheckedChildren={'Draw'}
-              onChange={drawToogleChagne}
-              style={{
-                left: 0,
-                top: -headerHeight / 10,
-                height: `${headerHeight - 1}px`,
-                padding: 0,
-              }}
-            ></Switch>
-            <button
-              style={{height: `${headerHeight - 1}px`}}
-              onClick={clearClickHandler}
+            <Popover
+              trigger={['click']}
+              onVisibleChange={setIsPopupVisible}
+              content={
+                <ColorAndThicknessPicker
+                  color={color}
+                  setColor={setColor}
+                  thickness={lineWidth}
+                  setThickness={setLineWidth}
+                ></ColorAndThicknessPicker>
+              }
             >
-              Clear
-            </button>
-          </div>
+              <EditOutlined />
+            </Popover>
+          </button>
+          <button
+            className="screenShareHeaderButton"
+            style={{height: `${headerHeight - 3}px`}}
+            onClick={clearClickHandler}
+          >
+            <ClearOutlined></ClearOutlined>
+          </button>
         </div>
-        <video
-          style={{
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: `calc(100% - ${headerHeight}px)`,
-          }}
-          muted={false}
-          autoPlay={true}
-          ref={videoRef}
-          controls={false}
-        ></video>
-        <canvas
-          ref={canvasRef}
-          width={canvasWidth}
-          height={canvasHeight}
-          onMouseDown={canvasMouseEventHandler}
-          onMouseMove={canvasMouseEventHandler}
-          onMouseUp={canvasMouseEventHandler}
-          onMouseLeave={canvasMouseEventHandler}
-          style={{
-            top: '20px',
-            left: 0,
-            width: '100%',
-            height: `calc(100% - ${headerHeight}px)`,
-            position: 'absolute',
-          }}
-        ></canvas>
-      </Rnd>
-    </div>
+      </div>
+      <video
+        style={{
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: `calc(100% - ${headerHeight}px)`,
+        }}
+        muted={false}
+        autoPlay={true}
+        ref={videoRef}
+        controls={false}
+      ></video>
+      <canvas
+        ref={canvasRef}
+        width={canvasWidth}
+        height={canvasHeight}
+        onMouseDown={canvasMouseEventHandler}
+        onMouseMove={canvasMouseEventHandler}
+        onMouseUp={canvasMouseEventHandler}
+        onMouseLeave={canvasMouseEventHandler}
+        style={{
+          top: '20px',
+          left: 0,
+          width: '100%',
+          height: `calc(100% - ${headerHeight}px)`,
+          position: 'absolute',
+        }}
+      ></canvas>
+    </Rnd>
   );
 }
 
@@ -386,9 +440,6 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   const [screenShareDatas, setScreenShareDatas] = useState<ScreenShareData[]>(
     [],
   );
-  const [isDisplayColorPicker, setIsDisplayColorPicker] = useState(false);
-  const [color, setColor] = useState('#000000');
-  const [lineWidth, setLineWidth] = useState(5);
   const [isVisible, setIsVisible] = useState(false);
 
   const screenShareOnClick = async () => {
@@ -430,6 +481,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
 
   const screenShareStopOnClick = () => {
+    setIsVisible(false);
     props.removeVideoTrack();
     setScreenShareDatas(before => {
       return before.filter(data => {
@@ -538,6 +590,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     });
   }, []);
   const sortSharedScreenOnClick = () => {
+    setIsVisible(false);
     const bodyWidth = document.body.clientWidth;
     const offsetX = 250;
     const offsetY = 150;
@@ -573,65 +626,32 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
               공유화면 정렬
             </a>
           </Menu.Item>
-          <Menu.Item key="3">
-            <Dropdown
-              visible={isDisplayColorPicker}
-              onVisibleChange={() => {
-                setIsDisplayColorPicker(!isDisplayColorPicker);
-              }}
-              overlay={
-                <div style={{background: 'white', borderRadius: '4%'}}>
-                  <HexColorPicker
-                    color={color}
-                    onChange={setColor}
-                  ></HexColorPicker>
-                  <Slider
-                    min={1}
-                    max={10}
-                    value={lineWidth}
-                    onChange={setLineWidth}
-                  ></Slider>
-                </div>
-              }
-              trigger={['click']}
-            >
-              <a
-                onClick={e => {
-                  e.preventDefault();
-                  setIsVisible(false);
-                }}
-                className="ant_dropdown_link"
-              >
-                그리기 색상,굵기 선택
-              </a>
-            </Dropdown>
-          </Menu.Item>
         </Menu>
       </>
     );
   };
   return (
     <>
-      {screenShareDatas.map(screenShareData => {
-        return (
-          <ScreenViewer
-            key={screenShareData.peerId}
-            nickname={props.getNickNameFromSocketID(screenShareData.peerId)}
-            mySocketID={props.socketID}
-            sharedSocketID={screenShareData.peerId}
-            stream={screenShareData.stream}
-            strokeColor={color}
-            lineWidth={lineWidth}
-            drawHelper={screenShareData.drawHelper}
-            posX={screenShareData.posX}
-            posY={screenShareData.posY}
-            forceUpdateCnt={screenShareData.forceUpdateCnt}
-            setOtherSideDraw={props.setOtherSideDraw}
-            setOtherSideDrawStartPos={props.setOtherSideDrawStartPos}
-            setOtherSideClear={props.setOtherSideClear}
-          ></ScreenViewer>
-        );
-      })}
+      <div className="rndContainer">
+        {screenShareDatas.map(screenShareData => {
+          return (
+            <ScreenViewer
+              key={screenShareData.peerId}
+              nickname={props.getNickNameFromSocketID(screenShareData.peerId)}
+              mySocketID={props.socketID}
+              sharedSocketID={screenShareData.peerId}
+              stream={screenShareData.stream}
+              drawHelper={screenShareData.drawHelper}
+              posX={screenShareData.posX}
+              posY={screenShareData.posY}
+              forceUpdateCnt={screenShareData.forceUpdateCnt}
+              setOtherSideDraw={props.setOtherSideDraw}
+              setOtherSideDrawStartPos={props.setOtherSideDrawStartPos}
+              setOtherSideClear={props.setOtherSideClear}
+            ></ScreenViewer>
+          );
+        })}
+      </div>
       <Dropdown
         overlay={screenshare}
         trigger={['click']}
