@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'react-router-dom';
 import io from 'socket.io-client';
 import PeerManager, {AudioAnalyser, Me, Vec2} from '../../utils/RTCGameUtils';
 import Navigation from '../../components/Navigation';
-import {seaAndMountainMap1MMI} from '../../utils/ImageMetaData';
+import {forestMapMMI} from '../../utils/ImageMetaData';
 import SpaceCanvas from '../../components/SpaceCanvas';
 import './space.css';
 import {message} from 'antd';
@@ -115,7 +115,7 @@ function Space(props: RouteComponentProps): JSX.Element {
   if (!isQueryValid(query)) {
     props.history.push(`/setting?roomId=${query.roomId}`);
   }
-  const mapMakingInfo = seaAndMountainMap1MMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
+  const mapMakingInfo = forestMapMMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
   //ref
   const divContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
