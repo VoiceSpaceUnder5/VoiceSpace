@@ -60,22 +60,29 @@ function Navigation(props: NavigationProps): JSX.Element {
       peer.transmitUsingDataChannel(stringifiedMessageData);
     });
   };
-  useEffect(() => {
-    setInterval(() => {
-      if (textMessageDivInnerTextArray.length === 1) {
-        if (Date.now() - textMessageDivInnerTextArray[0].time < 3000) {
-          props.peerManager.me.textMessage =
-            textMessageDivInnerTextArray[0].textMessage;
-        } else {
-          props.peerManager.me.textMessage = '';
-          textMessageDivInnerTextArray.shift();
-        }
-      } else if (textMessageDivInnerTextArray.length > 1) {
-        textMessageDivInnerTextArray.shift();
+
+  const textMessageIntervalHanlder = () => {
+    if (textMessageDivInnerTextArray.length === 1) {
+      if (Date.now() - textMessageDivInnerTextArray[0].time < 3000) {
         props.peerManager.me.textMessage =
           textMessageDivInnerTextArray[0].textMessage;
+      } else {
+        props.peerManager.me.textMessage = '';
+        textMessageDivInnerTextArray.shift();
       }
-    }, 50);
+    } else if (textMessageDivInnerTextArray.length > 1) {
+      textMessageDivInnerTextArray.shift();
+      props.peerManager.me.textMessage =
+        textMessageDivInnerTextArray[0].textMessage;
+    }
+  };
+
+  useEffect(() => {
+    const setIntervalReturnValue = setInterval(textMessageIntervalHanlder, 50);
+    return () => {
+      console.log('interval clear');
+      clearInterval(setIntervalReturnValue);
+    };
   }, []);
 
   const setDataChannelEventHandler = (
@@ -222,6 +229,10 @@ function Navigation(props: NavigationProps): JSX.Element {
   const changeEachAudio = (deviceId: string): void => {
     props.peerManager.changeEachAudio(deviceId);
   };
+  // 아래 두 함수가 서로를 참조하고 있고, 그 내부에서 peerManager 를 참조하고 있기 때문에,
+  // 두 함수 모두 GC 의 타겟이 되지 않습니다. 따라서 두 함수에서 사용하고 있는 peerManager 도
+  // GC 의 타겟이 되지 않기 때문에 지속적으로 쌓이게 됩니다. 메모리 문제도 있지만,
+  // webGL context 와 audioContext 의 개수 한계가 금방 오게 됩니다.
   const changeInputStream = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
       peer.getSenders().forEach(sender => {
@@ -236,24 +247,24 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
     props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
     props.peerManager.localStream = stream;
-    catchAudioTrackEnended(stream);
+    //catchAudioTrackEnended(stream);
   };
-  const catchAudioTrackEnended = (catchedStream: MediaStream) => {
-    catchedStream.getAudioTracks()[0].onended = () => {
-      console.log('!!!!change localStream!!!!');
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((deviceInfos: MediaDeviceInfo[]) => {
-          const deviceId = deviceInfos[1].deviceId;
-          navigator.mediaDevices
-            .getUserMedia({video: false, audio: {deviceId: deviceId}})
-            .then(stream => {
-              changeInputStream(stream);
-            });
-        });
-    };
-  };
-  catchAudioTrackEnended(props.peerManager.localStream);
+  //   const catchAudioTrackEnended = (catchedStream: MediaStream) => {
+  //     catchedStream.getAudioTracks()[0].onended = () => {
+  //       console.log('!!!!change localStream!!!!');
+  //       navigator.mediaDevices
+  //         .enumerateDevices()
+  //         .then((deviceInfos: MediaDeviceInfo[]) => {
+  //           const deviceId = deviceInfos[1].deviceId;
+  //           navigator.mediaDevices
+  //             .getUserMedia({video: false, audio: {deviceId: deviceId}})
+  //             .then(stream => {
+  //               changeInputStream(stream);
+  //             });
+  //         });
+  //     };
+  //   };
+  //   catchAudioTrackEnended(props.peerManager.localStream);
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -283,7 +294,6 @@ function Navigation(props: NavigationProps): JSX.Element {
           seletedInputDevice={props.peerManager.micDeviceID}
           seletedOutputDevice={props.peerManager.speakerDeviceID}
         />
-        {/* <VowelDetectButton /> */}
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>

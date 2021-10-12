@@ -1,16 +1,33 @@
 .rndContainer {
-  position: absolute;
+  position: fixed;
   left: 0px;
   top: 0px;
 }
 
 .rnd {
-  z-index: 999;
   padding: 0;
   margin: 0;
   border: 2px solid white;
 }
 /* 하드코딩 추후 수정 가능하면 수정할 것. */
+.ant-switch-inner {
+  line-height: 2px;
+}
+
+.ant-popover-inner {
+  background: white;
+  border-radius: 10px;
+}
+
 .ant-switch-handle {
-  height: 16px;
+  height: 12px;
+}
+
+.screenShareHeaderButton {
+  border-radius: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
 }

@@ -1,10 +1,10 @@
 /* canvas */
 .spaceCanvas {
   width: 100vw;
-  height: 92vh;
+  height: 100vh;
   /* for Iphone */
-  height: calc(var(--vh) * 92);
-  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px);
+  /* height: calc(var(--vh) * 92);
+  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
   display: block;
 }
 
@@ -15,10 +15,10 @@
   left: 0px;
   top: 0px;
   width: 100vw;
-  height: 92vh;
+  height: 100vh;
   /* for Iphone */
-  height: calc(var(--vh) * 92);
-  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px);
+  /* height: calc(var(--vh) * 92);
+  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
   z-index: 10;
   overflow: hidden;
 }
@@ -50,7 +50,7 @@
   bottom: -20px;
 }
 /* top */
-.canvasOverlay-textMessage-top {
+/* .canvasOverlay-textMessage-top {
   position: absolute;
   cursor: default;
   max-width: 150px;
@@ -69,9 +69,9 @@
   position: absolute;
   left: 42%;
   top: -20px;
-}
+} */
 /* left */
-.canvasOverlay-textMessage-left {
+/* .canvasOverlay-textMessage-left {
   position: absolute;
   cursor: default;
   max-width: 150px;
@@ -90,7 +90,7 @@
   position: absolute;
   top: 42%;
   right: 100%;
-}
+} */
 /* right */
 .canvasOverlay-textMessage-right {
   position: absolute;
@@ -116,12 +116,20 @@
 /* navbar 전체 */
 .navbar {
   height: 8vh;
+  width: 100vw;
+  position: absolute;
+  display: flexbox;
+  justify-content: space-between;
+
+  top: 90%;
+  z-index: 11;
+
+  /* visibility: hidden; */
   /* for Iphone */
   height: calc(var(--vh) * 8 + env(safe-area-inset-bottom) + 12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: gainsboro;
   padding: 8px 12px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
   font-size: 3vh;
@@ -131,12 +139,26 @@
   flex-direction: row;
 }
 
+/* navbar text */
+
+/* navbar background color */
+.navbar_left,
+.navbar_center,
+.navbar_right {
+  /* background-color: #689f38; */
+  background-color: white;
+}
+
 /* navbar 왼쪽 부분 */
 .navbar_left {
-  flex: 1 1 0;
+  /* flex: 0.8 1 0; */
   overflow: hidden;
+  height: 65%;
+  text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-radius: 17px;
+  /* background-color: white; */
 }
 .navbar_setting {
   padding: 0 0.5vw 0 0.5vw;
@@ -219,13 +241,16 @@
 
 /* navbar 중간부분 */
 .navbar_center {
-  flex: 2 1 0;
+  /* flex: 1.2 1 0; */
   justify-content: center;
   display: flex;
   align-items: center;
-  height: 100%;
+  height: 70%;
   list-style: none;
   font-size: 3vh;
+  border-radius: 17px;
+  /* background-color: white; */
+
   /* for Iphone */
   font-size: calc(var(--vh) * 3);
   padding-left: 0;
@@ -236,9 +261,18 @@
 
 /* navbar 오른쪽 부분 */
 .navbar_right {
-  flex: 1 1 0;
+  /* flex: 1 1 0; */
+  border-radius: 17px;
+  /* background-color: rgb(255, 255, 255); */
   list-style: none;
   text-align: right;
+}
+.navbar_right :hover {
+  animation-duration: ;
+  /* background-color: rgb(255, 255, 255); */
+  transition: opacity 0.25s ease-in-out;
+  /* -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition */
 }
 .panel_button,
 .panel_button > * {
@@ -267,15 +301,17 @@
 
 .navbar_button {
   color: black;
+  margin-left: 5px;
+  margin-right: 5px;
 }
-.navbar_button:hover {
+/* .navbar_button:hover {
   color: gainsboro;
   border: 1px solid #2598f1;
   background-color: #2598f1;
   border-radius: 5px;
   box-shadow: 1px 1px 1px 0 gray;
   transition: 0.1s;
-}
+} */
 .users_title,
 .message_title {
   min-width: 15vw;
@@ -354,17 +390,17 @@
   }
   .navbar_button {
     color: black;
-    border: 1px solid gainsboro;
-    background-color: gainsboro;
+    /* border: 1px solid gainsboro;
+    background-color: gainsboro; */
     border-radius: 5px;
-    box-shadow: 1px 1px 1px 0 gray;
+    /* box-shadow: 1px 1px 1px 0 gray; */
   }
   .navbar_button:hover {
     color: gainsboro;
-    border: 1px solid #2598f1;
-    background-color: #2598f1;
+    /* border: 1px solid #2598f1;
+    background-color: #2598f1; */
     border-radius: 5px;
-    box-shadow: 1px 1px 1px 0 gray;
+    /* box-shadow: 1px 1px 1px 0 gray; */
   }
   .change_button {
     margin: auto;

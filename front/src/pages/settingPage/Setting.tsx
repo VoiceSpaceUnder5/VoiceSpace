@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import {Button, Select, message, Switch} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
@@ -27,6 +27,7 @@ interface SoundControllProps {
   selectedSpeakerDeviceID: string;
   setSelectedMicDeviceAndSetAudioStream: (deviceID: string) => void;
   setSelectedSpeakerDeviceWithTest: (deviceID: string) => void;
+  isSpeakerDeviceChange: boolean;
 }
 
 function SoundControll(props: SoundControllProps): JSX.Element {
@@ -46,6 +47,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           src="./assets/navigation/speaker.png"
         ></img>
         <Select
+          disabled={!props.isSpeakerDeviceChange}
           className="soundControllSelect"
           onChange={onSpeakerChange}
           value={props.selectedSpeakerDeviceID}
@@ -91,28 +93,59 @@ function SoundControll(props: SoundControllProps): JSX.Element {
   );
 }
 
+class AudioVisualizerHelper {
+  private audioContext: AudioContext;
+  private analyser: AnalyserNode;
+  private source: MediaStreamAudioSourceNode;
+  constructor(audioStream: MediaStream) {
+    this.audioContext = new AudioContext();
+    this.analyser = this.createAnalserAndSetting();
+
+    this.source = this.audioContext.createMediaStreamSource(audioStream);
+    this.source.connect(this.analyser);
+  }
+  private createAnalserAndSetting() {
+    this.analyser = this.audioContext.createAnalyser();
+    this.analyser.smoothingTimeConstant = 0.85;
+    this.analyser.fftSize = 32;
+    return this.analyser;
+  }
+  setStream(audioStream: MediaStream): void {
+    this.source.disconnect();
+    this.createAnalserAndSetting();
+    this.source = this.audioContext.createMediaStreamSource(audioStream);
+    this.source.connect(this.analyser);
+  }
+  getByteFreqData(byteArray: Uint8Array): void {
+    this.analyser.getByteFrequencyData(byteArray);
+  }
+}
+
 function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const avHelper = useMemo(() => {
+    return new AudioVisualizerHelper(props.audioStream);
+  }, []);
+  const byteFrequencyDataArray = useMemo(() => {
+    return new Uint8Array(16);
+  }, []);
+
+  let aniNumber = 0;
   useEffect(() => {
+    avHelper.setStream(props.audioStream);
     if (canvasRef.current) {
       const context = canvasRef.current.getContext('2d');
-      if (!context) return;
+      if (!context) {
+        message.error('can not create 2d canvas context');
+        return;
+      }
       context.fillStyle = '#325932';
       // make analyser with stream
-      const audioContext = new AudioContext();
-      const source = audioContext.createMediaStreamSource(props.audioStream);
-      const analyser = audioContext.createAnalyser();
-      analyser.smoothingTimeConstant = 0.85;
-      analyser.fftSize = 32;
-      source.connect(analyser);
-      // for audio Analysis
-      const byteFrequencyDataArray = new Uint8Array(analyser.frequencyBinCount);
-
       const canvas = canvasRef.current;
-      const widthStep = canvasRef.current.width / analyser.frequencyBinCount;
+      const widthStep = canvasRef.current.width / 16;
       const animationLoop = () => {
-        analyser.getByteFrequencyData(byteFrequencyDataArray);
+        avHelper.getByteFreqData(byteFrequencyDataArray);
         context.clearRect(0, 0, canvas.width, canvas.height);
         byteFrequencyDataArray.forEach((value, idx) => {
           context.fillRect(
@@ -122,9 +155,12 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
             -value / 2,
           );
         });
-        requestAnimationFrame(animationLoop);
+        aniNumber = requestAnimationFrame(animationLoop);
       };
-      requestAnimationFrame(animationLoop);
+      aniNumber = requestAnimationFrame(animationLoop);
+      return () => {
+        cancelAnimationFrame(aniNumber);
+      };
     }
   }, [props.audioStream]);
 
@@ -151,6 +187,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
     AvatarImageEnum.WHITE_RABBIT,
   );
+  const [isSpeakerChangeable, setIsSpeakerChangeable] = useState(true);
 
   //ref
   const testAudioRef = useRef<HTMLAudioElement>(null);
@@ -218,9 +255,11 @@ function Setting(props: RouteComponentProps): JSX.Element {
       .then(deviceInfos => {
         setDeviceInfos(deviceInfos);
         setSelectedMicDeviceID('default');
-        setSelectedSpeakerDeviceID('default');
         setSelectedMicDeviceAndSetAudioStream('default');
-        setSelectedSpeakerDeviceWithTest('default');
+        if (isSpeakerChangeable) {
+          setSelectedSpeakerDeviceID('default');
+          setSelectedSpeakerDeviceWithTest('default');
+        }
       })
       .catch(() => {
         message.error(
@@ -287,13 +326,22 @@ function Setting(props: RouteComponentProps): JSX.Element {
     if (testAudioRef.current) {
       testAudioRef.current.srcObject = audioStream;
     }
+    return () => {
+      if (testAudioRef.current) {
+        testAudioRef.current.srcObject = null;
+      }
+    };
   }, [audioStream]);
 
   useEffect(() => {
     if (testAudioRef.current) {
-      const audio = testAudioRef.current;
       // eslint-disable-next-line
-      (audio as any).setSinkId(selectedSpeakerDeviceID);
+      const audio = testAudioRef.current as any;
+      if (audio.setSinkId) {
+        audio.setSinkId(selectedSpeakerDeviceID);
+      } else {
+        setIsSpeakerChangeable(false);
+      }
     }
   }, [selectedSpeakerDeviceID]);
 
@@ -351,6 +399,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 setSelectedSpeakerDeviceWithTest={
                   setSelectedSpeakerDeviceWithTest
                 }
+                isSpeakerDeviceChange={isSpeakerChangeable}
               ></SoundControll>
               <Button
                 className="soundControllReloadButton"
