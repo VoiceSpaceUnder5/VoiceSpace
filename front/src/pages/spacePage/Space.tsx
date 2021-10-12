@@ -37,7 +37,9 @@ function setNewPeerManager(
   navigator.mediaDevices
     .getUserMedia({video: false, audio: {deviceId: query.micDeviceID}}) // 오디오 연결
     .then((stream: MediaStream) => {
-      const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
+      const socket = io(`${process.env.REACT_APP_SOCKET_URL}`, {
+        reconnection: false,
+      });
       if (!socket) {
         failCallBack();
         return;
