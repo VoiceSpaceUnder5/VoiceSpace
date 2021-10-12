@@ -31,21 +31,6 @@ export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세�
   FACE_U = 12,
 }
 
-// 낮은 layer 부터 먼저 그려진다.
-// BACKGROUND_XX -> OBSTACLE_BEFORE_AVATAR_XX -> AVATAR_XX -> OBSTACLE_AFTER_AVATAR_XX 순으로 진행.
-export enum LayerLevelEnum {
-  BACKGROUND_ZERO = 0,
-  BACKGROUND_ONE = 1,
-  OBSTACLE_BEFORE_AVATAR_ZERO = 2,
-  OBSTACLE_BEFORE_AVATAR_ONE = 3,
-  AVATAR_ZERO = 4,
-  AVATAR_ONE = 5,
-  AVATAR_TWO = 6,
-  AVATAR_THREE = 7,
-  OBSTACLE_AFTER_AVATAR_ZERO = 8,
-  OBSTACLE_AFTER_AVATAR_ONE = 9,
-}
-
 export interface PixelData {
   imageInfoKey: number;
   collisionInfoKey: number;
@@ -60,7 +45,6 @@ export interface ImageMDInfo {
   // MD: MedaData
   src: string; // image file 이 저장되어있는 상대주소. 상대주소의 시작은 public 폴더.
   centerPosPixelOffset: Vec2; // 이미지 정보가 로드되어 그림이 그려질때, 그리려고 하는 위치의 centerPosition 에서 얼만큼 떨어져야 하는지
-  layerLev: LayerLevelEnum; // 몇번째 층에 그려져야 하는지 (0 ~ 9) // 낮은 레벨일수록 먼저 그려짐
 }
 
 export interface AvatarMDInfo extends ImageMDInfo {
@@ -119,9 +103,9 @@ export interface MapMakingInfo {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 // MapMakerInfo
-export const seaAndMountainMap1MMI: MapMakingInfo = {
-  backgroundSize: {width: 2400, height: 2400},
-  respawnPosition: {x: 1200, y: 1200},
+export const forestMapMMI: MapMakingInfo = {
+  backgroundSize: {width: 3072, height: 3072},
+  respawnPosition: {x: 1536, y: 1536},
   makingFunc: (imageInfoProvider: ImageInfoProvider) => {
     // 이런식으론 안해도 될것 같은데... 그냥 makeFunc: ImageInfoProvider.prototype.makeWorldMap1 이런식으로 입력하면 테스트가 안돌아감 ㅠㅠ 망할 jest
     const func =
@@ -132,18 +116,17 @@ export const seaAndMountainMap1MMI: MapMakingInfo = {
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// ImageMetaData Part Start ////////////////////////////
-export const seaAndMountainVer1MD: ObjectImageMD = {
+export const forestVer1MD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/background/seaAndMountainVer1.png',
+      src: './assets/spaceMain/background/forestVer1.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.BACKGROUND_ZERO,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
-      size: {width: 2400, height: 2400},
+      size: {width: 3072, height: 3072},
       centerPosPixelOffset: {x: 0, y: 0},
     },
   ],
@@ -154,7 +137,6 @@ export const seaAndMountainVer2MD: ObjectImageMD = {
     {
       src: './assets/spaceMain/background/seaAndMountainVer2.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.BACKGROUND_ZERO,
     },
   ],
   collisionMDInfos: [
@@ -166,47 +148,49 @@ export const seaAndMountainVer2MD: ObjectImageMD = {
   ],
 };
 
-// bigTree unionSize = 352 x 440 (x4 ratio)
-// Top: 258 * 324
-// Leaf: 258 * 264
-// Stem: 62.5 * 168
-export const bigTreeMD: ObjectImageMD = {
+// evergreenTree unionSize = 532 x 540 (x1 ratio)
+export const evergreenTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/object/bigTreeTop.png',
-      // centerPosPixelOffset: {x: 0, y: -(440 / 2 - 324 / 2)},
+      src: './assets/spaceMain/object/evergreenTree.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
-      centerPosPixelOffset: {x: 0, y: 162 - 22},
-      size: {width: 90, height: 8},
+      centerPosPixelOffset: {x: 0, y: 270 - 22},
+      size: {width: 160, height: 8},
     },
   ],
 };
 
-// smallTree unionSize = 264 * 300 (x3 ratio)
-// top : 146 * 210
-// leaf: 144 * 144
-// bottom: 10 * 44
-export const smallTreeMD: ObjectImageMD = {
+// mapleTree unionSize = 496 x 480 (x1 ratio)
+export const mapleTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/object/smallTreeTop.png',
+      src: './assets/spaceMain/object/mapleTree.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
-      centerPosPixelOffset: {x: 0, y: 105 - 22},
-      size: {width: 40, height: 8},
+      centerPosPixelOffset: {x: 0, y: 240 - 22},
+      size: {width: 140, height: 8},
     },
   ],
+};
+
+// fallenLeave = 356 * 104
+export const fallenLeavesMD: ObjectImageMD = {
+  imageMDInfos: [
+    {
+      src: './assets/spaceMain/object/fallenLeaves.png',
+      centerPosPixelOffset: {x: 0, y: 0},
+    },
+  ],
+  collisionMDInfos: [],
 };
 
 export const greenGrassMD: ObjectImageMD = {
@@ -214,26 +198,46 @@ export const greenGrassMD: ObjectImageMD = {
     {
       src: './assets/spaceMain/object/greenGrass.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ZERO,
     },
   ],
   collisionMDInfos: [],
 };
 
-// 72 * 72
-export const grayBlockMD: ObjectImageMD = {
+// 100 * 56
+export const grassVer1MD: ObjectImageMD = {
   imageMDInfos: [
     {
-      src: './assets/spaceMain/object/grayBlock.png',
+      src: './assets/spaceMain/object/grassVer1.png',
       centerPosPixelOffset: {x: 0, y: 0},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ZERO,
+    },
+  ],
+  collisionMDInfos: [],
+};
+
+// 92 * 64
+export const grassVer2MD: ObjectImageMD = {
+  imageMDInfos: [
+    {
+      src: './assets/spaceMain/object/grassVer2.png',
+      centerPosPixelOffset: {x: 0, y: 0},
+    },
+  ],
+  collisionMDInfos: [],
+};
+
+// 160 * 120
+export const rockMD: ObjectImageMD = {
+  imageMDInfos: [
+    {
+      src: './assets/spaceMain/object/rock.png',
+      centerPosPixelOffset: {x: 0, y: 0},
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      centerPosPixelOffset: {x: 0, y: 36 - 22},
-      size: {width: 92, height: 4},
+      centerPosPixelOffset: {x: 0, y: 60 - 22},
+      size: {width: 180, height: 10},
     },
   ],
 };
@@ -252,7 +256,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 11.5,
         y: 14,
       },
-      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.RIGHT_ARM,
     },
     {
@@ -261,7 +264,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 9,
         y: 47,
       },
-      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.RIGHT_LEG,
     },
     {
@@ -270,7 +272,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: 17,
       },
-      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.BODY,
     },
     {
@@ -279,7 +280,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: -11.5,
         y: 14,
       },
-      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.LEFT_ARM,
     },
     {
@@ -288,7 +288,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: -9,
         y: 47,
       },
-      layerLev: LayerLevelEnum.AVATAR_ZERO,
       partType: AvatarPartImageEnum.LEFT_LEG,
     },
     {
@@ -297,7 +296,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -53,
       },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_MUTE,
     },
     {
@@ -306,7 +304,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -53,
       },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_A,
     },
     {
@@ -315,7 +312,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -53,
       },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_E,
     },
     {
@@ -324,7 +320,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -53,
       },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_I,
     },
     {
@@ -333,7 +328,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -53,
       },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_O,
     },
     {
@@ -342,7 +336,6 @@ export const whiteRabbitMD: AvatarImageMD = {
         x: 0,
         y: -53,
       },
-      layerLev: LayerLevelEnum.AVATAR_ONE,
       partType: AvatarPartImageEnum.FACE_U,
     },
   ],
