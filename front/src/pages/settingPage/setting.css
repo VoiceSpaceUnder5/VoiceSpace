@@ -118,6 +118,10 @@
   padding: 3%;
 }
 
+.soundControllContainerDiv .ant-btn.ant-btn-loading {
+  position: absolute;
+}
+
 .soundControllReloadButton {
   position: absolute;
   width: 75%;

@@ -5,12 +5,13 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  margin: auto;
+  margin: 0;
+  padding: 0;
 }
 
 .loadingMessageContainerDiv {
   position: absolute;
-  top: 44.5%;
+  top: calc(50% - 50px);
   left: 50%;
   width: 140px;
   height: auto;
@@ -43,7 +44,7 @@
 
 .loadingProgressBar {
   position: absolute;
-  top: 57%;
+  top: calc(50% + 55px);
   left: 50%;
   transform: translate(-50%, -50%);
   width: 230px;
