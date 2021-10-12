@@ -425,7 +425,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     audio: HTMLAudioElement,
     nicknameDiv: HTMLDivElement,
     textMessageDiv: HTMLDivElement,
-    connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
     pcConfig: RTCConfiguration,
     // eslint-disable-next-line
     dataChannelEventHandlers: Map<DataDtoType, (data: any, peer: Peer) => void>,
@@ -476,7 +475,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     // event setting
-    this.setEvent(signalingHelper, connectionClosedDisconnectedFailedCallBack);
+    this.setEvent(signalingHelper);
   }
 
   private getDataChannelEventHandler(
@@ -486,10 +485,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     return this.dataChannelEventHandlers.get(type);
   }
 
-  private setEvent(
-    signalingHelper: RTCSignalingHelper,
-    connectionClosedDisconnectedFailedCallBack: (peer: Peer) => void,
-  ): void {
+  private setEvent(signalingHelper: RTCSignalingHelper): void {
     // negotitateneeded
     this.onnegotiationneeded = () => {
       console.log('onnegotiationneeded!!');
@@ -532,16 +528,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
         this.audio.srcObject = stream;
       } else {
         this.trackEventHandler(this.connectedClientSocketID, event);
-      }
-    });
-
-    this.addEventListener('connectionstatechange', () => {
-      if (
-        this.connectionState === 'closed' ||
-        this.connectionState === 'disconnected' ||
-        this.connectionState === 'failed'
-      ) {
-        connectionClosedDisconnectedFailedCallBack(this);
       }
     });
   }
@@ -594,9 +580,6 @@ export default class PeerManager {
   localStream: MediaStream;
   private readonly audioContainer: HTMLDivElement;
   readonly nicknameContainer: HTMLDivElement;
-  private readonly connectionClosedDisconnectedFailedCallBack: (
-    peer: Peer,
-  ) => void;
   private readonly pcConfig: RTCConfiguration;
 
   // peer container
@@ -640,19 +623,9 @@ export default class PeerManager {
     // create new Peer params
     this.signalingHelper = signalingHelper;
     this.localStream = localStream;
-    // this.localStream.getAudioTracks()[0].onended = () => {
-    //   console.log('RTCGameUtils에서 오디오 트랙 종료를 잡아보자.');
-    // };
+
     this.audioContainer = audioContainer;
     this.nicknameContainer = nicknameContainer;
-    this.connectionClosedDisconnectedFailedCallBack = (peer: Peer): void => {
-      if (this.peers.get(peer.connectedClientSocketID)) {
-        this.peers.delete(peer.connectedClientSocketID);
-        this.audioContainer.removeChild(peer.audio);
-        this.nicknameContainer.removeChild(peer.nicknameDiv);
-        this.nicknameContainer.removeChild(peer.textMessageDiv);
-      }
-    };
     this.pcConfig = pcConfig;
 
     // peer container
@@ -741,7 +714,6 @@ export default class PeerManager {
       audio,
       nicknameDiv,
       textMessageDiv,
-      this.connectionClosedDisconnectedFailedCallBack,
       this.pcConfig,
       this.dataChannelEventHandlers,
       this.trackEventHandler,
@@ -843,17 +815,26 @@ export default class PeerManager {
         });
       }
     };
+
+    this.signalingHelper.onPeerExitRoom = (exitedSocketID: string): void => {
+      const exitedPeer = this.peers.get(exitedSocketID);
+      if (exitedPeer) {
+        this.peers.delete(exitedSocketID);
+        this.audioContainer.removeChild(exitedPeer.audio);
+        this.nicknameContainer.removeChild(exitedPeer.nicknameDiv);
+        this.nicknameContainer.removeChild(exitedPeer.textMessageDiv);
+        // delete shared screen
+        const data: DataDto = {
+          type: DataDtoType.SHARED_SCREEN_CLOSE,
+          data: exitedSocketID,
+        };
+        const cb = this.dataChannelEventHandlers.get(data.type);
+        if (cb) cb(exitedSocketID, exitedPeer);
+      }
+    };
   }
 
   close(): void {
-    this.peers.forEach(peer => {
-      const data: DataDto = {
-        type: DataDtoType.SHARED_SCREEN_CLOSE,
-        data: peer.socketID,
-      };
-      peer.transmitUsingDataChannel(JSON.stringify(data));
-      peer.close();
-    });
     this.signalingHelper.close();
   }
 }
