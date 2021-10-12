@@ -119,9 +119,10 @@
   width: 100vw;
   position: absolute;
   display: flexbox;
+  min-height: 50px;
+  bottom: 2vh;
   justify-content: space-between;
 
-  top: 90%;
   z-index: 11;
 
   /* visibility: hidden; */
@@ -151,14 +152,19 @@
 
 /* navbar 왼쪽 부분 */
 .navbar_left {
-  /* flex: 0.8 1 0; */
-  overflow: hidden;
-  height: 65%;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* flex: 1.2 1 0; */
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: 70%;
+  list-style: none;
+  font-size: 3vh;
   border-radius: 17px;
   /* background-color: white; */
+
+  /* for Iphone */
+  font-size: calc(var(--vh) * 3);
+  padding-left: 0;
 }
 .navbar_setting {
   padding: 0 0.5vw 0 0.5vw;
