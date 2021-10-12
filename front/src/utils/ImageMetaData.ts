@@ -101,7 +101,6 @@ export interface MapMakingInfo {
 
 ///////////////////////////// Enum And Interface Part End /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
-
 // MapMakerInfo
 export const forestMapMMI: MapMakingInfo = {
   backgroundSize: {width: 3072, height: 3072},
@@ -127,22 +126,6 @@ export const forestVer1MD: ObjectImageMD = {
     {
       collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
       size: {width: 3072, height: 3072},
-      centerPosPixelOffset: {x: 0, y: 0},
-    },
-  ],
-};
-
-export const seaAndMountainVer2MD: ObjectImageMD = {
-  imageMDInfos: [
-    {
-      src: './assets/spaceMain/background/seaAndMountainVer2.png',
-      centerPosPixelOffset: {x: 0, y: 0},
-    },
-  ],
-  collisionMDInfos: [
-    {
-      collisionType: ObjectCollisionFigureEnum.NOT_FILLED_SQUARE,
-      size: {width: 2400, height: 2400},
       centerPosPixelOffset: {x: 0, y: 0},
     },
   ],
@@ -193,16 +176,6 @@ export const fallenLeavesMD: ObjectImageMD = {
   collisionMDInfos: [],
 };
 
-export const greenGrassMD: ObjectImageMD = {
-  imageMDInfos: [
-    {
-      src: './assets/spaceMain/object/greenGrass.png',
-      centerPosPixelOffset: {x: 0, y: 0},
-    },
-  ],
-  collisionMDInfos: [],
-};
-
 // 100 * 56
 export const grassVer1MD: ObjectImageMD = {
   imageMDInfos: [
@@ -243,7 +216,6 @@ export const rockMD: ObjectImageMD = {
 };
 
 //////////////////////////////// AvatarSizeInfo /////////////////////////////////
-
 ///////////////////////////////////////////////////////////////////////////////
 // 말하는 토끼
 export const whiteRabbitMD: AvatarImageMD = {
