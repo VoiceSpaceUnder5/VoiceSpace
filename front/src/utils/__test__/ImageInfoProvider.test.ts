@@ -37,8 +37,8 @@ class mockedImage {
 }
 
 const mockedMMI: MapMakingInfo = {
-  backgroundSize: {width: 2000, height: 2400},
-  respawnPosition: {x: 1200, y: 1200},
+  backgroundSize: {width: 3072, height: 3072},
+  respawnPosition: {x: 1536, y: 1536},
   makingFunc: jest.fn(),
 };
 

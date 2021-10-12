@@ -195,8 +195,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
   useEffect(() => {
     // background savedGroundCanvas에 따로 저장.
     const backgroundImage = new Image();
-    backgroundImage.src =
-      './assets/spaceMain/background/seaAndMountainVer1.png';
+    backgroundImage.src = './assets/spaceMain/background/forestVer1.png';
     const savedGroundCanvas = savedGroundCanvasRef.current;
     if (!savedGroundCanvas) return;
     const gl2 = savedGroundCanvas.getContext('2d');
@@ -250,8 +249,8 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
         </div>
       ) : null}
       <canvas
-        width={2400}
-        height={2400}
+        width={3072}
+        height={3072}
         ref={savedGroundCanvasRef}
         style={{
           position: 'absolute',

@@ -9,11 +9,13 @@ import {
   CollisionMDInfo,
   ObjectCollisionFigureEnum,
   ObjectImageMD,
-  seaAndMountainVer1MD,
-  bigTreeMD,
-  grayBlockMD,
-  greenGrassMD,
-  smallTreeMD,
+  forestVer1MD,
+  mapleTreeMD,
+  evergreenTreeMD,
+  fallenLeavesMD,
+  grassVer1MD,
+  grassVer2MD,
+  rockMD,
   MapMakingInfo,
   avatarImageMDs,
 } from './ImageMetaData';
@@ -239,10 +241,14 @@ class ImageInfoProvider {
             };
             this.objects.push(imageInfo);
 
-            const x_init = imageInfo.centerPos.x - imageInfo.size.width / 2;
-            const x_limit = imageInfo.centerPos.x + imageInfo.size.width / 2;
-            const y_init = imageInfo.centerPos.y - imageInfo.size.height / 2;
-            const y_limit = imageInfo.centerPos.y + imageInfo.size.height / 2;
+            const x_init =
+              imageInfo.centerPos.x - Math.floor(imageInfo.size.width / 2);
+            const x_limit =
+              imageInfo.centerPos.x + Math.floor(imageInfo.size.width / 2);
+            const y_init =
+              imageInfo.centerPos.y - Math.floor(imageInfo.size.height / 2);
+            const y_limit =
+              imageInfo.centerPos.y + Math.floor(imageInfo.size.height / 2);
             for (let x = x_init; x < x_limit; x++) {
               for (let y = y_init; y < y_limit; y++) {
                 this.pixelInfos[x][y] = {
@@ -293,34 +299,35 @@ class ImageInfoProvider {
 
   // 첫번째 월드맵을 만드는 함수입니다.
   makeWorldMap1(): void {
-    this.loadingBackGround(seaAndMountainVer1MD);
+    this.loadingBackGround(forestVer1MD);
     // insertloadQueue 를 통해서 로드되어야 할 것들을 로드큐에 넣어줍니다.
-    this.insertLoadingQueue(bigTreeMD, {x: 900, y: 900});
-    this.insertLoadingQueue(smallTreeMD, {x: 1600, y: 800});
-    for (let i = 0; i < 15; i++) {
-      this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + i * 72, // grayBlockMD.collisionMDInfos[0].size.width,
-        y: 500,
-      });
+    this.insertLoadingQueue(evergreenTreeMD, {x: 280, y: 900});
+    this.insertLoadingQueue(evergreenTreeMD, {x: 380, y: 2040});
+    this.insertLoadingQueue(mapleTreeMD, {x: 2800, y: 300});
+    this.insertLoadingQueue(fallenLeavesMD, {x: 2800, y: 540});
+    this.insertLoadingQueue(mapleTreeMD, {x: 2800, y: 720});
+    this.insertLoadingQueue(fallenLeavesMD, {x: 2800, y: 960});
+    this.insertLoadingQueue(mapleTreeMD, {x: 2000, y: 300});
+    this.insertLoadingQueue(fallenLeavesMD, {x: 2000, y: 540});
+    this.insertLoadingQueue(mapleTreeMD, {x: 1920, y: 720});
+    this.insertLoadingQueue(fallenLeavesMD, {x: 1920, y: 960});
+    for (let i = 0; i < 20; ++i) {
+      const x = Math.floor(Math.random() * (3000 - 1560) + 1560);
+      const y = Math.floor(Math.random() * (1200 - 60) + 60);
+      this.insertLoadingQueue(grassVer1MD, {x: x, y: y});
     }
-    for (let i = 0; i < 15; i++) {
-      this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + i * 72, // grayBlockMD.collisionMDInfos[0].size.width,
-        y: 1450,
-      });
+    for (let i = 0; i < 30; ++i) {
+      const x = Math.floor(Math.random() * (350 - 50)) + 50;
+      const y = Math.floor(Math.random() * (2900 - 400)) + 400;
+      this.insertLoadingQueue(grassVer2MD, {x: x, y: y});
     }
-    for (let i = 0; i < 11; i++) {
-      this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + 14 * 72, // grayBlockMD.collisionMDInfos[0].size.width,
-        y: 500 + i * 72, // grayBlockMD.collisionMDInfos[0].size.height,
-      });
+    for (let i = 0; i < 10; ++i) {
+      const x = Math.floor(Math.random() * (800 - 400)) + 400;
+      const y = Math.floor(Math.random() * (2900 - 2600)) + 2600;
+      this.insertLoadingQueue(grassVer2MD, {x: x, y: y});
     }
-    this.insertLoadingQueue(greenGrassMD, {x: 900, y: 900});
-    this.insertLoadingQueue(greenGrassMD, {x: 1100, y: 1100});
-    this.insertLoadingQueue(greenGrassMD, {x: 1200, y: 1200});
-    this.insertLoadingQueue(greenGrassMD, {x: 1300, y: 1100});
-    this.insertLoadingQueue(greenGrassMD, {x: 1300, y: 1000});
-    this.insertLoadingQueue(greenGrassMD, {x: 1500, y: 1000});
+    this.insertLoadingQueue(rockMD, {x: 120, y: 1520});
+    this.insertLoadingQueue(rockMD, {x: 800, y: 2600});
     this.startLoading();
   }
 
@@ -339,10 +346,6 @@ class ImageInfoProvider {
     });
     return;
   };
-
-  //   test() {
-  //     console.log('hello');
-  //   }
 }
 
 export default ImageInfoProvider;
