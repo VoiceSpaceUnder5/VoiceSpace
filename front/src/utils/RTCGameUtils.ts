@@ -15,6 +15,12 @@ export enum DataDtoType {
   SHARED_SCREEN_DRAW_START,
 }
 
+enum CollisionDirection {
+  NO_COLLISION,
+  HORIZONTAL,
+  VERTICAL,
+}
+
 /**
  * peerConnection 의 dataChannel 을 통해서 Data 를 전송할때 규약
  */
@@ -287,9 +293,9 @@ export class Me implements PlayerDto {
     };
   }
 
-  private isCollision(glHelper: GLHelper): boolean {
-    const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 0.8);
-    if (!glHelper.imageInfoProvider.pixelInfos) return false;
+  private isCollision(glHelper: GLHelper): number {
+    const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 1);
+    if (!glHelper.imageInfoProvider.pixelInfos) return 0;
     for (let i = 0; i < vertex4.length; i++) {
       let left = vertex4[i];
       let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
@@ -302,19 +308,19 @@ export class Me implements PlayerDto {
       for (let i = 0; i < right.x - left.x; i++) {
         const posX = Math.round(left.x + i);
         const posY = Math.round(left.y + a * i);
-        if (
-          posX < 0 ||
-          posX >= glHelper.imageInfoProvider.pixelInfos.length ||
+        if (posX < 0 || posX >= glHelper.imageInfoProvider.pixelInfos.length) {
+          return CollisionDirection.HORIZONTAL;
+        } else if (
           posY < 0 ||
           posY >= glHelper.imageInfoProvider.pixelInfos[0].length ||
           glHelper.imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !==
             0
         ) {
-          return true;
+          return CollisionDirection.VERTICAL;
         }
       }
     }
-    return false;
+    return 0;
   }
 
   setAnalyser(analyser: AudioAnalyser): void {
@@ -335,7 +341,6 @@ export class Me implements PlayerDto {
       const oldCenterPosY = this.centerPos.y;
       const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
       const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
-      const oldpartRotatedegree = this.partRotatedegree;
 
       // position value update
       this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
@@ -354,14 +359,16 @@ export class Me implements PlayerDto {
         this.rotateCounterclockwise = false;
       }
       this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
+
       //collision detection part
-      if (this.isCollision(glHelper)) {
-        // if isCollision -> rollback value
+      // if isCollision -> rollback value
+      const isCollisionDetected = this.isCollision(glHelper);
+      if (isCollisionDetected === CollisionDirection.HORIZONTAL) {
         this.centerPos.x = oldCenterPosX;
-        this.centerPos.y = oldCenterPosY;
         this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
+      } else if (isCollisionDetected === CollisionDirection.VERTICAL) {
+        this.centerPos.y = oldCenterPosY;
         this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
-        this.partRotatedegree = oldpartRotatedegree;
       }
     }
   }

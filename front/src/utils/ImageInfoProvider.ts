@@ -3,7 +3,6 @@ import IdProvider from './IdProvider';
 import {
   ImageInfo,
   AvatarImageEnum,
-  LayerLevelEnum,
   AvatarPartImageEnum,
   PixelData,
   ImageMDInfo,
@@ -27,7 +26,8 @@ interface ReadyToLoadValue {
 
 class ImageInfoProvider {
   background: ImageInfo | null;
-  objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
+  // objects: Map<LayerLevelEnum, Map<number, ImageInfo>>; // objects[LayerLevelEnum][ImageInfoID]
+  objects: ImageInfo[];
   pixelInfos: PixelData[][];
   avatars: Map<AvatarImageEnum, Map<AvatarPartImageEnum, ImageInfo>>;
   mapMakingInfo: MapMakingInfo;
@@ -42,7 +42,8 @@ class ImageInfoProvider {
     mapMakingInfo: MapMakingInfo,
   ) {
     this.gl = gl;
-    this.objects = new Map();
+    // this.objects = new Map();
+    this.objects = [];
     this.avatars = new Map();
     this.readyToLoad = new Map();
     this.setLoadStatus = setLoadStatus;
@@ -236,17 +237,7 @@ class ImageInfoProvider {
               centerPosPixelOffset: baseImageInfo.centerPosPixelOffset,
               size: baseImageInfo.size,
             };
-            if (!this.objects.has(imageMdInfo.layerLev))
-              this.objects.set(
-                imageMdInfo.layerLev,
-                new Map<number, ImageInfo>(),
-              );
-
-            const layerLevel = this.objects.get(imageMdInfo.layerLev);
-
-            if (layerLevel !== undefined) {
-              layerLevel.set(readyToLoadValue.id, imageInfo);
-            }
+            this.objects.push(imageInfo);
 
             const x_init = imageInfo.centerPos.x - imageInfo.size.width / 2;
             const x_limit = imageInfo.centerPos.x + imageInfo.size.width / 2;
@@ -308,20 +299,20 @@ class ImageInfoProvider {
     this.insertLoadingQueue(smallTreeMD, {x: 1600, y: 800});
     for (let i = 0; i < 15; i++) {
       this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + i * grayBlockMD.collisionMDInfos[0].size.width,
+        x: 800 + i * 72, // grayBlockMD.collisionMDInfos[0].size.width,
         y: 500,
       });
     }
     for (let i = 0; i < 15; i++) {
       this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + i * grayBlockMD.collisionMDInfos[0].size.width,
+        x: 800 + i * 72, // grayBlockMD.collisionMDInfos[0].size.width,
         y: 1450,
       });
     }
     for (let i = 0; i < 11; i++) {
       this.insertLoadingQueue(grayBlockMD, {
-        x: 800 + 14 * grayBlockMD.collisionMDInfos[0].size.width,
-        y: 500 + i * grayBlockMD.collisionMDInfos[0].size.height,
+        x: 800 + 14 * 72, // grayBlockMD.collisionMDInfos[0].size.width,
+        y: 500 + i * 72, // grayBlockMD.collisionMDInfos[0].size.height,
       });
     }
     this.insertLoadingQueue(greenGrassMD, {x: 900, y: 900});

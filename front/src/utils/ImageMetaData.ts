@@ -87,6 +87,11 @@ export interface ObjectImageMD {
   collisionMDInfos: CollisionMDInfo[];
 }
 
+export const BodySize = {
+  armLegSize: {x: 11, y: 28},
+  armOffsetY: 47,
+};
+
 /**
  * ## 몸통, 얼굴 Y축 offset 계산법
  * 피그마 디자인 길이 참조
@@ -162,49 +167,44 @@ export const seaAndMountainVer2MD: ObjectImageMD = {
 };
 
 // bigTree unionSize = 352 x 440 (x4 ratio)
+// Top: 258 * 324
+// Leaf: 258 * 264
+// Stem: 62.5 * 168
 export const bigTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/bigTreeTop.png',
-      centerPosPixelOffset: {x: 0, y: -(440 / 2 - 324 / 2)},
+      // centerPosPixelOffset: {x: 0, y: -(440 / 2 - 324 / 2)},
+      centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
-    },
-    {
-      src: './assets/spaceMain/object/bigTreeBottom.png',
-      centerPosPixelOffset: {x: 0, y: +(440 / 2 - 240 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
-      centerPosPixelOffset: {x: 0, y: 100},
-      size: {width: 160, height: 128},
+      centerPosPixelOffset: {x: 0, y: 162 - 22},
+      size: {width: 90, height: 8},
     },
   ],
 };
 
 // smallTree unionSize = 264 * 300 (x3 ratio)
-// top :146 * 210
-// bottom:264 * 180
+// top : 146 * 210
+// leaf: 144 * 144
+// bottom: 10 * 44
 export const smallTreeMD: ObjectImageMD = {
   imageMDInfos: [
     {
       src: './assets/spaceMain/object/smallTreeTop.png',
-      centerPosPixelOffset: {x: 0, y: -(300 / 2 - 210 / 2)},
+      centerPosPixelOffset: {x: 0, y: 0},
       layerLev: LayerLevelEnum.OBSTACLE_AFTER_AVATAR_ZERO, // 동물 친구들 이후로 그려지는 것들중 가장 먼저 그려짐.
-    },
-    {
-      src: './assets/spaceMain/object/smallTreeBottom.png',
-      centerPosPixelOffset: {x: 0, y: +(300 / 2 - 180 / 2)},
-      layerLev: LayerLevelEnum.OBSTACLE_BEFORE_AVATAR_ONE,
     },
   ],
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_ELLIPSE,
-      centerPosPixelOffset: {x: 0, y: 60},
-      size: {width: 120, height: 84},
+      centerPosPixelOffset: {x: 0, y: 105 - 22},
+      size: {width: 40, height: 8},
     },
   ],
 };
@@ -220,6 +220,7 @@ export const greenGrassMD: ObjectImageMD = {
   collisionMDInfos: [],
 };
 
+// 72 * 72
 export const grayBlockMD: ObjectImageMD = {
   imageMDInfos: [
     {
@@ -231,8 +232,8 @@ export const grayBlockMD: ObjectImageMD = {
   collisionMDInfos: [
     {
       collisionType: ObjectCollisionFigureEnum.FILLED_SQUARE,
-      centerPosPixelOffset: {x: 0, y: 0},
-      size: {width: 72, height: 72},
+      centerPosPixelOffset: {x: 0, y: 36 - 22},
+      size: {width: 92, height: 4},
     },
   ],
 };
