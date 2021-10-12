@@ -1,5 +1,5 @@
 import {Socket} from 'socket.io-client';
-
+import {Modal} from 'antd';
 /**
  * signaling 의 offer 와 answer 에서 교환되는 데이터 전송객체
  * @param fromClientId offer 나 answer 를 보내는 socketID
@@ -83,6 +83,20 @@ class RTCSignalingHelper {
       this.print(`you need to offer to ${socketIDs.length - 1} clients`); // 자신이 먼저 조인되고 socketIDs 를 보내기 떄문에 자신이 포함되어있다.
       this.onNeedToOffer(socketIDs);
     });
+
+    //default // 추후 밖으로 빼는 것도 나쁘지 않은듯.
+    socket.on('disconnect', () => {
+      Modal.confirm({
+        title: '서버와의 연결이 끊겼습니다.',
+        content: '다시 연결 하시겠습니까?',
+        onOk: () => {
+          window.location.reload();
+        },
+        onCancel: () => {
+          window.location.href = 'https://giggleforest.com/';
+        },
+      });
+    });
   }
   emitOffer(offerDto: OfferAnswerDto): void {
     if (offerDto.fromClientId !== this.socket.id) {
@@ -117,6 +131,14 @@ class RTCSignalingHelper {
     this.socket.emit('joinRoom', roomID);
   }
   close(): void {
+    const dummyHandler = () => {
+      return;
+    };
+    this.onAnswer = dummyHandler;
+    this.onIce = dummyHandler;
+    this.onNeedToOffer = dummyHandler;
+    this.onOffer = dummyHandler;
+    this.socket.off('disconnect');
     this.socket.close();
   }
   getSocketID(): string {
