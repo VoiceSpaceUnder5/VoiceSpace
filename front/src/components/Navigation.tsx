@@ -236,7 +236,7 @@ function Navigation(props: NavigationProps): JSX.Element {
   const changeInputStreamEndCatchAudioTrackEnded = (stream: MediaStream) => {
     console.log('합친거');
     changeInputStream(stream);
-    catchAudioTrackEnded(stream);
+    // catchAudioTrackEnded(stream);
   };
   const changeInputStream = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {

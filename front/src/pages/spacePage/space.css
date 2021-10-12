@@ -274,7 +274,6 @@
   text-align: right;
 }
 .navbar_right :hover {
-  animation-duration: ;
   /* background-color: rgb(255, 255, 255); */
   transition: opacity 0.25s ease-in-out;
   /* -moz-transition: opacity .25s ease-in-out;
