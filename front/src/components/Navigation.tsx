@@ -51,7 +51,6 @@ function Navigation(props: NavigationProps): JSX.Element {
   const sendMessage = (stringifiedMessageData: string) => {
     const parsedMessageData = JSON.parse(stringifiedMessageData);
     const textMessage = `${parsedMessageData.data.nickname}: ${parsedMessageData.data.data}`;
-    // props.peerManager.me.textMessage = textMessage;
     textMessageDivInnerTextArray.push({
       time: Date.now(),
       textMessage: textMessage,
@@ -235,11 +234,6 @@ function Navigation(props: NavigationProps): JSX.Element {
   // 두 함수 모두 GC 의 타겟이 되지 않습니다. 따라서 두 함수에서 사용하고 있는 peerManager 도
   // GC 의 타겟이 되지 않기 때문에 지속적으로 쌓이게 됩니다. 메모리 문제도 있지만,
   // webGL context 와 audioContext 의 개수 한계가 금방 오게 됩니다.
-  // const changeInputStreamEndCatchAudioTrackEnded = (stream: MediaStream) => {
-  //   console.log('합친거');
-  //   changeInputStream(stream);
-  //   // catchAudioTrackEnded(stream);
-  // };
   const changeInputStream = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
       peer.getSenders().forEach(sender => {
