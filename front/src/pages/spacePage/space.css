@@ -117,8 +117,8 @@
 .navbar {
   height: 8vh;
   width: 100vw;
-  position: absolute;
-  display: flexbox;
+  position: fixed;
+  display: flex;
   min-height: 50px;
   bottom: 2vh;
   justify-content: space-between;
@@ -268,6 +268,12 @@
 /* navbar 오른쪽 부분 */
 .navbar_right {
   /* flex: 1 1 0; */
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: 70%;
+  list-style: none;
+  font-size: 3vh;
   border-radius: 17px;
   /* background-color: rgb(255, 255, 255); */
   list-style: none;

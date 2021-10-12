@@ -1,0 +1,35 @@
+#vowel-detect {
+  padding: 10px;
+  border: 3px solid #53150d;
+  border-radius: 10px;
+  background-color: #7d965e;
+  text-align: center;
+}
+
+.vowel-button-set {
+  border: 2px solid #53150d;
+  border-radius: 15px;
+  display: inline;
+  width: 50%;
+}
+
+.vowel-button-and-detect {
+  display: flex;
+}
+
+.vowel-button {
+  display: inline;
+  width: 50%;
+  border-radius: 15px;
+  background-color: #325932;
+  color: whitesmoke;
+}
+
+.save-button {
+  border-radius: 15px;
+}
+
+.vowel-wave-canvas {
+  border: 2px solid #53150d;
+  border-radius: 15px;
+}
