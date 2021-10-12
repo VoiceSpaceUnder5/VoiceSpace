@@ -27,6 +27,7 @@ beforeEach(() => {
   socket = new MockedSocket();
   socket.close = jest.fn();
   socket.id = 'testID';
+  socket.off = jest.fn();
   rtcSignalingHelper = new RTCSignalingHelper(socket, false);
   rtcSignalingHelper.onOffer = jest.fn();
   rtcSignalingHelper.onAnswer = jest.fn();
