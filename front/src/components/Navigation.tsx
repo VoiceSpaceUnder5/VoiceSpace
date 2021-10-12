@@ -51,7 +51,6 @@ function Navigation(props: NavigationProps): JSX.Element {
   const sendMessage = (stringifiedMessageData: string) => {
     const parsedMessageData = JSON.parse(stringifiedMessageData);
     const textMessage = `${parsedMessageData.data.nickname}: ${parsedMessageData.data.data}`;
-    // props.peerManager.me.textMessage = textMessage;
     textMessageDivInnerTextArray.push({
       time: Date.now(),
       textMessage: textMessage,
@@ -79,9 +78,11 @@ function Navigation(props: NavigationProps): JSX.Element {
 
   useEffect(() => {
     const setIntervalReturnValue = setInterval(textMessageIntervalHanlder, 50);
+    catchAudioTrackEnded(props.peerManager.localStream);
     return () => {
       console.log('interval clear');
       clearInterval(setIntervalReturnValue);
+      props.peerManager.localStream.getAudioTracks()[0].onended = null;
     };
   }, []);
 
@@ -233,11 +234,6 @@ function Navigation(props: NavigationProps): JSX.Element {
   // 두 함수 모두 GC 의 타겟이 되지 않습니다. 따라서 두 함수에서 사용하고 있는 peerManager 도
   // GC 의 타겟이 되지 않기 때문에 지속적으로 쌓이게 됩니다. 메모리 문제도 있지만,
   // webGL context 와 audioContext 의 개수 한계가 금방 오게 됩니다.
-  const changeInputStreamEndCatchAudioTrackEnded = (stream: MediaStream) => {
-    console.log('합친거');
-    changeInputStream(stream);
-    // catchAudioTrackEnded(stream);
-  };
   const changeInputStream = (stream: MediaStream): void => {
     props.peerManager.forEachPeer(peer => {
       peer.getSenders().forEach(sender => {
@@ -252,12 +248,10 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
     props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
     props.peerManager.localStream = stream;
-    console.log('1번!');
+    catchAudioTrackEnded(stream);
   };
   const catchAudioTrackEnded = (catchedStream: MediaStream) => {
-    console.log('2번 시작');
     catchedStream.getAudioTracks()[0].onended = () => {
-      console.log('!!!!change localStream!!!!');
       navigator.mediaDevices
         .enumerateDevices()
         .then((deviceInfos: MediaDeviceInfo[]) => {
@@ -265,14 +259,12 @@ function Navigation(props: NavigationProps): JSX.Element {
           navigator.mediaDevices
             .getUserMedia({video: false, audio: {deviceId: deviceId}})
             .then(stream => {
-              console.log('change 다음엔 릐얼 바뀌어야즤');
+              console.log('onended');
               changeInputStream(stream);
             });
         });
     };
-    console.log('2번!');
   };
-  catchAudioTrackEnded(props.peerManager.localStream);
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -298,7 +290,7 @@ function Navigation(props: NavigationProps): JSX.Element {
         />
         <Options
           changeEachAudio={changeEachAudio}
-          changeInputStream={changeInputStreamEndCatchAudioTrackEnded}
+          changeInputStream={changeInputStream}
           seletedInputDevice={props.peerManager.micDeviceID}
           seletedOutputDevice={props.peerManager.speakerDeviceID}
         />
