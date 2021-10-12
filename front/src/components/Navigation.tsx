@@ -17,7 +17,7 @@ import PeerManager, {
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
-// import VowelDetectButton from './VowelDetectButton';
+import VowelDetectButton from '../pages/vowelDetectPage/VowelDetectButton';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -294,6 +294,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           seletedInputDevice={props.peerManager.micDeviceID}
           seletedOutputDevice={props.peerManager.speakerDeviceID}
         />
+        <VowelDetectButton />
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>

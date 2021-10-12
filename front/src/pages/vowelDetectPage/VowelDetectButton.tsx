@@ -1,5 +1,8 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Formant} from '../utils/ImageMetaData';
+import {Popover} from 'antd';
+import React, {useEffect, useRef} from 'react';
+import {Formant} from '../../utils/ImageMetaData';
+import './vowelDetect.css';
+import {SmileOutlined} from '@ant-design/icons';
 
 function getMonvingAverage(period: number) {
   const arr: number[] = [];
@@ -51,95 +54,48 @@ interface VowelInputProps {
 }
 
 function VowelInput(props: VowelInputProps) {
-  const [isShow, setIsShow] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const resetClick = () => {
-    props.setVowels([]);
-  };
   const doneClick = () => {
     console.log(props.smad);
     props.setVowels([...props.smad]);
   };
-  const showClick = () => {
-    setIsShow(!isShow);
-  };
-  // useEffect(() => {
-  //   if (canvasRef.current && isShow) {
-  //     const canvas = canvasRef.current;
-  //     const ctx = canvas.getContext('2d');
-  //     if (!ctx) return;
-  //     const animationCb = () => {
-  //       formants.forEach(value => {
-  //         if (value.label === props.vowel) {
-  //           value.array.forEach((val, idx) => {
-  //             ctx.beginPath();
-  //             ctx.moveTo(idx, canvas.clientHeight);
-  //             ctx.lineTo(idx, canvas.clientHeight - val);
-  //             ctx.stroke();
-  //           });
-  //         }
-  //       });
-  //       requestAnimationFrame(animationCb);
-  //     };
-  //     requestAnimationFrame(animationCb);
-  //   }
-  // });
 
   return (
     <>
-      {isShow ? (
-        <canvas
-          style={{border: '1px solid black', zIndex: 20}}
-          width={500}
-          height={190}
-          ref={canvasRef}
-        ></canvas>
-      ) : null}
-      <div>
-        {props.vowel}
-        <button onClick={resetClick}>reset</button>
-        <button onClick={doneClick}>done</button>
-        <button onClick={showClick}>show</button>
-      </div>
+      <pre>
+        {props.vowel + ' '}
+        <button className="save-button" onClick={doneClick}>
+          저장
+        </button>
+      </pre>
     </>
   );
 }
-let lastImage: HTMLImageElement | null = null;
 
-interface VowelDetectProps {
-  onClick: () => void;
-}
-
-function VowelDetect(props: VowelDetectProps): JSX.Element {
+function VowelDetect(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const smad: number[] = [];
 
-  const onClick = () => {
-    console.log(formants);
-    if (localStorage.getItem('formants') === null) {
-      // 세팅 창을 띄운다.
-      // const frequencyDomains: any[] = [];
-      // formants.forEach(formant => {
-      //   frequencyDomains.push(formants);
-      // });
-      localStorage.setItem('formants', JSON.stringify(formants));
-      console.log('no localStorage data!!');
-    } else {
-      const tmp = localStorage.getItem('formants');
-      if (tmp === null) return;
-      const parsedFormants = JSON.parse(tmp);
-      formants.forEach((content, index) => {
-        content = parsedFormants[index];
-      });
-    }
-    props.onClick();
+  const saveVowelDataToBrowser = () => {
+    localStorage.setItem('formants', JSON.stringify(formants));
+  };
+
+  const loadVowelDataFromBrowserIfExist = () => {
+    const tmp = localStorage.getItem('formants');
+    if (tmp === null) return;
+    const parsedFormants = JSON.parse(tmp);
+    formants.forEach((content, index) => {
+      content = parsedFormants[index];
+    });
   };
 
   formants.forEach(value => {
     value.Image = new Image();
     value.Image.src = `./assets/spaceMain/vowel_avatar/${value.label}.png`;
   });
+
+  useEffect(() => {
+    loadVowelDataFromBrowserIfExist();
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -212,12 +168,8 @@ function VowelDetect(props: VowelDetectProps): JSX.Element {
               550,
               50,
             );
-            lastImage = candidates[0].image;
           } else {
             ctx.fillText('None', 550, 50);
-          }
-          if (lastImage && candidates[0].distPercent > 0.3) {
-            ctx.drawImage(lastImage, 300, 0);
           }
           requestAnimationFrame(callback);
         };
@@ -227,45 +179,44 @@ function VowelDetect(props: VowelDetectProps): JSX.Element {
   }, []);
 
   return (
-    <div className="vowel-detect">
-      {formants.map((value, idx) => {
-        const setVowels = (arg0: number[]) => {
-          formants[idx].array = arg0;
-        };
-        return (
-          <VowelInput
-            key={idx}
-            vowel={value.label}
-            setVowels={setVowels}
-            smad={smad}
-          ></VowelInput>
-        );
-      })}
-      <canvas
-        style={{border: '1px solid black', zIndex: 20}}
-        width={400}
-        height={300}
-        ref={canvasRef}
-      ></canvas>
-      <button onClick={onClick}>확인</button>
+    <div id="vowel-detect">
+      <div className="vowel-explain">
+        다음 모음을 발음하며 저장 버튼을 누르세요.
+      </div>
+      <div className="vowel-button-and-detect">
+        <div className="vowel-button-set">
+          {formants.map((value, idx) => {
+            const setVowels = (arg0: number[]) => {
+              formants[idx].array = arg0;
+              saveVowelDataToBrowser();
+            };
+            return (
+              <VowelInput
+                key={idx}
+                vowel={value.label}
+                setVowels={setVowels}
+                smad={smad}
+              ></VowelInput>
+            );
+          })}
+        </div>
+        <canvas
+          width="310px"
+          height="160px"
+          className="vowel-wave-canvas"
+          ref={canvasRef}
+        ></canvas>
+      </div>
     </div>
   );
 }
 
 function VowelDetectButton(): JSX.Element {
-  const [voiceDetectSettingOn, setVoiceSettingOn] = useState(false);
-  useEffect(() => {
-    if (localStorage.getItem('formants') === null) setVoiceSettingOn(true);
-  }, []);
-  const onVowelDetectClick = () => {
-    setVoiceSettingOn(!voiceDetectSettingOn);
-  };
   return (
     <>
-      <button onClick={onVowelDetectClick}>x</button>
-      {voiceDetectSettingOn === true ? (
-        <VowelDetect onClick={onVowelDetectClick} />
-      ) : null}
+      <Popover trigger={['click']} content={<VowelDetect></VowelDetect>}>
+        <SmileOutlined className="navbar_button" />
+      </Popover>
     </>
   );
 }

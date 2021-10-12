@@ -15,8 +15,12 @@
 }
 
 .ant-popover-inner {
-  background: white;
+  padding: 0;
   border-radius: 10px;
+}
+
+.ant-popover-inner-content {
+  padding: 0;
 }
 
 .rndContainer .ant-switch-handle {
