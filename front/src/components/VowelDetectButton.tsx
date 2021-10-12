@@ -64,27 +64,6 @@ function VowelInput(props: VowelInputProps) {
   const showClick = () => {
     setIsShow(!isShow);
   };
-  // useEffect(() => {
-  //   if (canvasRef.current && isShow) {
-  //     const canvas = canvasRef.current;
-  //     const ctx = canvas.getContext('2d');
-  //     if (!ctx) return;
-  //     const animationCb = () => {
-  //       formants.forEach(value => {
-  //         if (value.label === props.vowel) {
-  //           value.array.forEach((val, idx) => {
-  //             ctx.beginPath();
-  //             ctx.moveTo(idx, canvas.clientHeight);
-  //             ctx.lineTo(idx, canvas.clientHeight - val);
-  //             ctx.stroke();
-  //           });
-  //         }
-  //       });
-  //       requestAnimationFrame(animationCb);
-  //     };
-  //     requestAnimationFrame(animationCb);
-  //   }
-  // });
 
   return (
     <>
