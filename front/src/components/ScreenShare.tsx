@@ -119,7 +119,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
         props.stream.getTracks()[0].getSettings().aspectRatio!
       : 16 / 9,
   );
-  const setRndZIndex = useState(999)[1];
+  const [rndZIndex, setRndZIndex] = useState(ScreenViewerMaxZIndex);
 
   // canvasRef
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -246,107 +246,106 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
 
   const onMouseDown = () => {
     setRndZIndex(++ScreenViewerMaxZIndex);
+    console.log('onMouseDown');
   };
   return (
-    <div className="rndContainer">
-      <Rnd
+    <Rnd
+      style={{
+        zIndex: rndZIndex,
+        height: height,
+      }}
+      bounds={'body'}
+      onResize={onResize}
+      onMouseDown={onMouseDown}
+      disableDragging={!isDragging}
+      className="rnd"
+      minWidth={width}
+      minHeight={height}
+      ref={rndRef}
+      lockAspectRatio={aspectRatio}
+      lockAspectRatioExtraHeight={headerHeight + 1}
+      default={{
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+      }}
+    >
+      <div
         style={{
-          zIndex: ScreenViewerMaxZIndex,
-          height: height,
-        }}
-        bounds={'body'}
-        onResize={onResize}
-        onMouseDown={onMouseDown}
-        disableDragging={!isDragging}
-        className="rnd"
-        minWidth={width}
-        minHeight={height}
-        ref={rndRef}
-        lockAspectRatio={aspectRatio}
-        lockAspectRatioExtraHeight={headerHeight + 1}
-        default={{
-          x: 0,
-          y: 0,
-          width: width,
-          height: height,
+          width: '100%',
+          height: `${headerHeight}px`,
+          margin: 0,
+          padding: 0,
+          paddingBottom: 1,
+          background: 'white',
+          fontSize: `${headerHeight / 2}px`,
+          display: 'flex',
+          justifyContent: 'space-between',
         }}
       >
+        <div>{`${props.nickname}`}</div>
         <div
           style={{
-            width: '100%',
-            height: `${headerHeight}px`,
             margin: 0,
-            padding: 0,
-            paddingBottom: 1,
-            background: 'white',
-            fontSize: `${headerHeight / 2}px`,
-            display: 'flex',
-            justifyContent: 'space-between',
+            paddingRight: `${2}px`,
+            paddingLeft: `${headerHeight / 2}px`,
+            paddingTop: 0,
+            paddingBottom: 0,
           }}
         >
-          <div>{`${props.nickname}`}</div>
-          <div
+          <Switch
+            checkedChildren={'Stop'}
+            unCheckedChildren={'Draw'}
+            onChange={drawToogleChagne}
             style={{
-              margin: 0,
-              paddingRight: `${2}px`,
-              paddingLeft: `${headerHeight / 2}px`,
-              paddingTop: 0,
-              paddingBottom: 0,
+              left: 0,
+              top: -headerHeight / 10,
+              height: `${headerHeight - 1}px`,
             }}
+          ></Switch>
+          <button
+            style={{margin: 0, padding: 0, height: `${headerHeight - 1}px`}}
           >
-            <Switch
-              checkedChildren={'Stop'}
-              unCheckedChildren={'Draw'}
-              onChange={drawToogleChagne}
-              style={{
-                left: 0,
-                top: -headerHeight / 10,
-                height: `${headerHeight - 1}px`,
-              }}
-            ></Switch>
-            <button
-              style={{margin: 0, padding: 0, height: `${headerHeight - 1}px`}}
-            >
-              <EditOutlined />
-            </button>
-            <button
-              style={{height: `${headerHeight - 1}px`}}
-              onClick={clearClickHandler}
-            >
-              <ClearOutlined></ClearOutlined>
-            </button>
-          </div>
+            <EditOutlined />
+          </button>
+          <button
+            style={{height: `${headerHeight - 1}px`}}
+            onClick={clearClickHandler}
+          >
+            <ClearOutlined></ClearOutlined>
+          </button>
         </div>
-        <video
-          style={{
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: `calc(100% - ${headerHeight}px)`,
-          }}
-          muted={false}
-          autoPlay={true}
-          ref={videoRef}
-          controls={false}
-        ></video>
-        <canvas
-          ref={canvasRef}
-          width={canvasWidth}
-          height={canvasHeight}
-          onMouseDown={canvasMouseEventHandler}
-          onMouseMove={canvasMouseEventHandler}
-          onMouseUp={canvasMouseEventHandler}
-          onMouseLeave={canvasMouseEventHandler}
-          style={{
-            top: '20px',
-            left: 0,
-            width: '100%',
-            height: `calc(100% - ${headerHeight}px)`,
-            position: 'absolute',
-          }}
-        ></canvas>
-      </Rnd>
-    </div>
+      </div>
+      <video
+        style={{
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: `calc(100% - ${headerHeight}px)`,
+        }}
+        muted={false}
+        autoPlay={true}
+        ref={videoRef}
+        controls={false}
+      ></video>
+      <canvas
+        ref={canvasRef}
+        width={canvasWidth}
+        height={canvasHeight}
+        onMouseDown={canvasMouseEventHandler}
+        onMouseMove={canvasMouseEventHandler}
+        onMouseUp={canvasMouseEventHandler}
+        onMouseLeave={canvasMouseEventHandler}
+        style={{
+          top: '20px',
+          left: 0,
+          width: '100%',
+          height: `calc(100% - ${headerHeight}px)`,
+          position: 'absolute',
+        }}
+      ></canvas>
+    </Rnd>
   );
 }
 
@@ -617,26 +616,28 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
   return (
     <>
-      {screenShareDatas.map(screenShareData => {
-        return (
-          <ScreenViewer
-            key={screenShareData.peerId}
-            nickname={props.getNickNameFromSocketID(screenShareData.peerId)}
-            mySocketID={props.socketID}
-            sharedSocketID={screenShareData.peerId}
-            stream={screenShareData.stream}
-            strokeColor={color}
-            lineWidth={lineWidth}
-            drawHelper={screenShareData.drawHelper}
-            posX={screenShareData.posX}
-            posY={screenShareData.posY}
-            forceUpdateCnt={screenShareData.forceUpdateCnt}
-            setOtherSideDraw={props.setOtherSideDraw}
-            setOtherSideDrawStartPos={props.setOtherSideDrawStartPos}
-            setOtherSideClear={props.setOtherSideClear}
-          ></ScreenViewer>
-        );
-      })}
+      <div className="rndContainer">
+        {screenShareDatas.map(screenShareData => {
+          return (
+            <ScreenViewer
+              key={screenShareData.peerId}
+              nickname={props.getNickNameFromSocketID(screenShareData.peerId)}
+              mySocketID={props.socketID}
+              sharedSocketID={screenShareData.peerId}
+              stream={screenShareData.stream}
+              strokeColor={color}
+              lineWidth={lineWidth}
+              drawHelper={screenShareData.drawHelper}
+              posX={screenShareData.posX}
+              posY={screenShareData.posY}
+              forceUpdateCnt={screenShareData.forceUpdateCnt}
+              setOtherSideDraw={props.setOtherSideDraw}
+              setOtherSideDrawStartPos={props.setOtherSideDrawStartPos}
+              setOtherSideClear={props.setOtherSideClear}
+            ></ScreenViewer>
+          );
+        })}
+      </div>
       <Dropdown
         overlay={screenshare}
         trigger={['click']}
