@@ -1,4 +1,4 @@
-import React, {FormEvent} from 'react';
+import React, {FormEvent, MutableRefObject} from 'react';
 import {Menu} from 'antd';
 import {LeftCircleFilled, CloseCircleFilled} from '@ant-design/icons';
 
@@ -9,6 +9,7 @@ export interface Message {
 }
 
 export interface MessengerProps {
+  inputRef: MutableRefObject<HTMLInputElement | null>;
   messageArray: string[] | undefined;
   onClickPrevious: () => void;
   message: string;
@@ -47,6 +48,7 @@ export function Messenger(props: MessengerProps): JSX.Element {
       <Menu.Item key="2">
         <form onSubmit={props.onSendMessage}>
           <input
+            ref={props.inputRef}
             className="message_input"
             type="text"
             placeholder="메시지를 입력하세요"

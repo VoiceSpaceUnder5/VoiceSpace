@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
@@ -6,8 +6,10 @@ import '../pages/spacePage/space.css';
 import {UserInfo, UserList} from './UserList';
 import {Message, Messenger} from './Messenger';
 import {DataDto, DataDtoType} from '../utils/RTCGameUtils';
+import {ProfileDropdownOnOffCheck} from './Navigation';
 
 export interface PanelProps {
+  profileDropdownOnOffCheck: ProfileDropdownOnOffCheck;
   getMyNickname: () => string;
   getUsers: () => UserInfo[];
   roomId: string;
@@ -57,6 +59,7 @@ function Panel(props: PanelProps): JSX.Element {
   const [volume, setVolume] = useState(0);
   const [message, setMessage] = useState('');
   const [messageArray, setMessageArray] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -116,6 +119,15 @@ function Panel(props: PanelProps): JSX.Element {
       DataDtoType.CHAT_MESSAGE,
       onMessageCallback,
     );
+    window.onkeypress = (e: KeyboardEvent) => {
+      if (props.profileDropdownOnOffCheck.on === false) {
+        if (e.keyCode === 13) {
+          setSubMenu(2);
+          setVisible(true);
+          inputRef.current?.focus();
+        }
+      }
+    };
   }, []);
 
   return (
@@ -132,6 +144,7 @@ function Panel(props: PanelProps): JSX.Element {
               onChangeVolume: onChangeVolume,
             })
           : Messenger({
+              inputRef: inputRef,
               messageArray: messageArray,
               onClickPrevious: onClickPrevious,
               message: message,

@@ -7,8 +7,10 @@ import {
   avatarImageMDs,
   AvatarPartImageEnum,
 } from '../utils/ImageMetaData';
+import {ProfileDropdownOnOffCheck} from './Navigation';
 
 export interface ProfileProps {
+  profileDropdownOnOffCheck: ProfileDropdownOnOffCheck;
   nickname: string;
   setNickname: (nickname: string) => void;
   avatar: AvatarImageEnum;
@@ -44,6 +46,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
     }
     props.setAvatar(newAvatar);
     props.setNickname(nextNickname);
+    props.profileDropdownOnOffCheck.on = false;
   };
   return (
     <Menu className="navbar_profile">
@@ -57,6 +60,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
           onSubmit={e => {
             e.preventDefault();
             onProfileChangeClick();
+            props.profileDropdownOnOffCheck.on = false;
           }}
         >
           <div className="profile_input">
@@ -122,15 +126,21 @@ function Profile(props: ProfileProps): JSX.Element {
     setAvatar(avatar);
   };
   const profileDropDownProps: ProfileProps = {
+    profileDropdownOnOffCheck: props.profileDropdownOnOffCheck,
     nickname: nickname,
     setNickname: newSetNickname,
     avatar: avatar,
     setAvatar: newSetAvatar,
   };
+  const onVisibleChange = () => {
+    props.profileDropdownOnOffCheck.on = !props.profileDropdownOnOffCheck.on;
+    console.log(props.profileDropdownOnOffCheck);
+  };
 
   return (
     <Dropdown
       data-testid="dropDownTestId"
+      onVisibleChange={onVisibleChange}
       overlay={ProfileDropDown(profileDropDownProps)}
       trigger={['click']}
     >
