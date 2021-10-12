@@ -29,9 +29,17 @@ interface IceDto {
   },
 })
 export class SignalingGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
+
+  // key : socket.id  value : roomID
+  roomMap: Map<string, string>;
+
+  constructor() {
+    this.roomMap = new Map();
+  }
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(
@@ -40,6 +48,7 @@ export class SignalingGateway
   ) {
     client.join(roomId);
     console.log(`${client.id} join room : ${roomId}`);
+    this.roomMap.set(client.id, roomId);
     const clientIdsInRoom = this.server.sockets.adapter.rooms.get(roomId);
     if (clientIdsInRoom.size > 1) {
       client.emit('needToOffer', Array.from(clientIdsInRoom));
@@ -89,5 +98,9 @@ export class SignalingGateway
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log(`client disconnected ${client.id}`);
+    client.broadcast
+      .to(this.roomMap.get(client.id))
+      .emit('exitRoom', client.id);
+    this.roomMap.delete(client.id);
   }
 }

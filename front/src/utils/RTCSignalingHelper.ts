@@ -39,6 +39,7 @@ class RTCSignalingHelper {
   onAnswer: (answerDto: OfferAnswerDto) => void;
   onIce: (iceDto: IceDto) => void;
   onNeedToOffer: (socketIDs: string[]) => void;
+  onPeerExitRoom: (exitedSocketID: string) => void;
 
   private print(log: string, isError = false): void {
     if (this.isVerbose) {
@@ -65,6 +66,9 @@ class RTCSignalingHelper {
     this.onNeedToOffer = () => {
       this.print('default onNeedToOffer called');
     };
+    this.onPeerExitRoom = () => {
+      this.print('default onPeerExitRoom called');
+    };
 
     // connect event
     socket.on('offer', (offerDto: OfferAnswerDto) => {
@@ -82,6 +86,10 @@ class RTCSignalingHelper {
     socket.on('needToOffer', (socketIDs: string[]) => {
       this.print(`you need to offer to ${socketIDs.length - 1} clients`); // 자신이 먼저 조인되고 socketIDs 를 보내기 떄문에 자신이 포함되어있다.
       this.onNeedToOffer(socketIDs);
+    });
+    socket.on('exitRoom', (exitedSocketID: string) => {
+      this.print(`${exitedSocketID} exit room`);
+      this.onPeerExitRoom(exitedSocketID);
     });
 
     //default // 추후 밖으로 빼는 것도 나쁘지 않은듯.
@@ -138,6 +146,7 @@ class RTCSignalingHelper {
     this.onIce = dummyHandler;
     this.onNeedToOffer = dummyHandler;
     this.onOffer = dummyHandler;
+    this.onPeerExitRoom = dummyHandler;
     this.socket.off('disconnect');
     this.socket.close();
   }
