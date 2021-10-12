@@ -312,6 +312,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
           margin: 0,
           padding: 0,
           paddingBottom: 1,
+          paddingRight: 10,
           background: 'white',
           fontSize: `${headerHeight / 2}px`,
           display: 'flex',
@@ -480,6 +481,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
 
   const screenShareStopOnClick = () => {
+    setIsVisible(false);
     props.removeVideoTrack();
     setScreenShareDatas(before => {
       return before.filter(data => {
@@ -588,6 +590,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     });
   }, []);
   const sortSharedScreenOnClick = () => {
+    setIsVisible(false);
     const bodyWidth = document.body.clientWidth;
     const offsetX = 250;
     const offsetY = 150;
