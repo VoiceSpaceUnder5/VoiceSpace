@@ -1,26 +1,22 @@
-import { Bounds, Container } from "@pixi/display";
-import { Sprite } from "@pixi/sprite";
-import { Viewport } from "pixi-viewport";
-import { Scene } from "./Scene";
-import { Player } from "./Player";
-import { Manager } from "./SceneManager";
-import { IWorld } from "./IWorld";
-import { Loader } from "@pixi/loaders";
-import { keyboard } from "./Keyboard";
-import { Ticker } from "@pixi/ticker";
-import { Stuff } from "./Stuff";
-import { checkCollision } from "./CheckCollision";
-import { Rectangle } from "@pixi/math";
+import {Container} from '@pixi/display';
+import {Viewport} from 'pixi-viewport';
+import {Scene} from './Scene';
+import {Player} from './Player';
+import {Manager} from './SceneManager';
+import {World} from './World';
+import {Loader} from '@pixi/loaders';
+import {Ticker} from '@pixi/ticker';
+import {Stuff} from './Stuff';
 
 const resources = Loader.shared.resources;
 export class GameScene extends Container implements Scene {
   private viewport: Viewport;
   private player: Player;
-  private world: IWorld;
+  private world: World;
 
   constructor() {
     super();
-    const world = new IWorld(resources["background"].texture);
+    const world = new World(resources['background'].texture!);
     world.sortableChildren = true;
     this.world = world;
 
@@ -39,8 +35,8 @@ export class GameScene extends Container implements Scene {
       right: false, // whether to clamp to the right and at what value
       top: false, // whether to clamp to the top and at what value
       bottom: false, // whether to clamp to the bottom and at what value
-      direction: "all", // (all, x, or y) using clamps of [0, viewport.worldWidth / viewport.worldHeight]; replaces left / right / top / bottom if set
-      underflow: "center", // where to place world if too small for screen (e.g., top - right, center, none, bottomleft)
+      direction: 'all', // (all, x, or y) using clamps of [0, viewport.worldWidth / viewport.worldHeight]; replaces left / right / top / bottom if set
+      underflow: 'center', // where to place world if too small for screen (e.g., top - right, center, none, bottomleft)
     });
     viewport.clampZoom({
       maxScale: 1.2,
@@ -50,7 +46,7 @@ export class GameScene extends Container implements Scene {
     });
     this.addChild(viewport);
 
-    const player = new Player("bunny", viewport);
+    const player = new Player(world, 'bunny', viewport);
     this.player = player;
 
     viewport.moveCenter(world.width / 2, world.height / 2);
@@ -63,19 +59,19 @@ export class GameScene extends Container implements Scene {
       radius: null,
     });
 
-    const collideStuff = new Stuff("tree1", 500, 500);
+    const collideStuff = new Stuff(this.world, 'tree1', 500, 500);
     collideStuff.addCollisionBox(-70, -50, 100, 50);
     world.addChild(collideStuff);
   }
 
-  public update(framesPassed: number) {
+  public update(framesPassed: number): void {
     // this.player.update(framesPassed, this.world);
     this.world.update(framesPassed);
     // console.log(this.player.children[6]._bounds);
     // console.log(this.world.getChildAt(2));
   }
 
-  public resize(screenWidth: number, screenHeight: number) {
+  public resize(screenWidth: number, screenHeight: number): void {
     this.viewport.screenWidth = screenWidth;
     this.viewport.screenHeight = screenHeight;
     //if scrrenWidth가 작을 때 scale을 줄이도록 하면 모바일 반응형도 될듯

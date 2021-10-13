@@ -1,6 +1,6 @@
-import { Container, Graphics, Loader } from "pixi.js";
-import { assets } from "../static/assets";
-import { Scene } from "./Scene";
+import {Container, Graphics, Loader} from 'pixi.js';
+import {assets} from './assets_meta';
+import {Scene} from './Scene';
 
 export class LoaderScene extends Container implements Scene {
   // for making our loader graphics...
@@ -13,11 +13,11 @@ export class LoaderScene extends Container implements Scene {
 
     const screenWidth: number = Math.max(
       document.documentElement.clientWidth,
-      window.innerWidth || 0
+      window.innerWidth || 0,
     );
     const screenHeight: number = Math.max(
       document.documentElement.clientWidth,
-      window.innerWidth || 0
+      window.innerWidth || 0,
     );
     // lets make a loader graphic:
     const loaderBarWidth = screenWidth * 0.8; // just an auxiliar variable
@@ -45,11 +45,12 @@ export class LoaderScene extends Container implements Scene {
     // Now the actual asset loader:
 
     // we add the asset manifest
+    console.log(assets);
     Loader.shared.add(assets);
 
     // connect the events
     Loader.shared.onProgress.add(this.downloadProgress, this);
-    Loader.shared.onComplete.add(this.gameLoaded, this);
+    // Loader.shared.onComplete.add(this.gameLoaded, this);
 
     // Start loading!
     Loader.shared.load(afterLoad);
@@ -71,9 +72,13 @@ export class LoaderScene extends Container implements Scene {
     // all your assets are ready! I would probably change to another scene
     // ...but you could build your entire game here if you want
     // (pls don't)
-    console.log("Loaded finished!");
+    console.log('Loaded finished!');
   }
 
-  public update() {}
-  public resize() {}
+  public update(framesPassed: number): void {
+    return;
+  }
+  public resize(screenWidth: number, screenHeight: number): void {
+    return;
+  }
 }

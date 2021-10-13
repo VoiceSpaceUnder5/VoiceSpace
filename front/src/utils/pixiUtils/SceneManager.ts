@@ -1,9 +1,7 @@
-import { Application } from "pixi.js";
-import { DisplayObject } from "@pixi/display";
-import { Scene } from "./Scene";
+import {Application} from 'pixi.js';
+import {Scene} from './Scene';
 
 export class Manager {
-  private constructor() {}
   private static application: Application;
   private static currentScene: Scene;
 
@@ -12,13 +10,13 @@ export class Manager {
   public static get width(): number {
     return Math.max(
       document.documentElement.clientWidth,
-      window.innerWidth || 0
+      window.innerWidth || 0,
     );
   }
   public static get height(): number {
     return Math.max(
       document.documentElement.clientHeight,
-      window.innerHeight || 0
+      window.innerHeight || 0,
     );
   }
   public static get app(): Application {
@@ -26,7 +24,7 @@ export class Manager {
   }
   public static initialize(background: number): void {
     Manager.application = new Application({
-      view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
+      view: document.getElementById('game-canvas') as HTMLCanvasElement,
       resizeTo: window, // This line here handles the actual resize!
       resolution: 1,
       backgroundColor: background,
@@ -36,21 +34,21 @@ export class Manager {
     Manager.application.ticker.add(Manager.update);
 
     // listen for the browser telling us that the screen size changed
-    window.addEventListener("resize", Manager.resize);
+    window.addEventListener('resize', Manager.resize);
 
-    console.log("Scene Manager Initialized! ");
+    console.log('Scene Manager Initialized! ');
   }
 
   public static changeScene(newScene: Scene): void {
     // Remove and destroy old scene... if we had one..
     if (Manager.currentScene) {
-      console.log("Destroy current Scene!! ");
+      console.log('Destroy current Scene!! ');
       Manager.application.stage.removeChild(Manager.currentScene);
       Manager.currentScene.destroy();
     }
 
     // Add the new one
-    console.log("Add new Scene to SceneManager! ");
+    console.log('Add new Scene to SceneManager! ');
     Manager.currentScene = newScene;
     Manager.application.stage.addChild(Manager.currentScene);
   }

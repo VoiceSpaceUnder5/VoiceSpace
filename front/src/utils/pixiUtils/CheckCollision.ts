@@ -1,8 +1,11 @@
-import { DisplayObject } from "pixi.js";
-import { Stuff } from "./Stuff";
-// 훌륭
+import {DisplayContainer} from './DisplayContainer';
 
-export function checkCollision(objA, objB): boolean {
+export function checkCollision(
+  objA: DisplayContainer,
+  objB: DisplayContainer,
+): boolean {
+  if (!objA.collisionBox || !objB.collisionBox) return false;
+
   objA.collisionBox.getBounds();
   objB.collisionBox.getBounds();
 
@@ -19,6 +22,5 @@ export function checkCollision(objA, objB): boolean {
   const bottommostTop = a.minY < b.minY ? b.minY : a.minY;
   const topmostBottom = a.maxY > b.maxY ? b.maxY : a.maxY;
   // console.log(Math.floor(bottommostTop), Math.floor(topmostBottom));
-
   return topmostBottom > bottommostTop;
 }

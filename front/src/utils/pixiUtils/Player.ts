@@ -1,18 +1,12 @@
-import { Container, DisplayObject } from "@pixi/display";
-import { Avatar } from "./Avatar";
-import { Loader } from "@pixi/loaders";
-import { Sprite } from "@pixi/sprite";
-import { Ticker } from "@pixi/ticker";
-import { PlayerKeyboard } from "./PlayerKeyboard";
-import { Viewport } from "pixi-viewport";
-import { Texture } from "@pixi/core";
-import { Rectangle } from "@pixi/math";
-import { CollisionBox } from "./CollisionBox";
-import { World } from "./World";
-import { IWorld } from "./IWorld";
-import { checkCollision } from "./CheckCollision";
-
-const resources = Loader.shared.resources;
+import {DisplayObject} from '@pixi/display';
+import {Avatar} from './Avatar';
+import {Loader} from '@pixi/loaders';
+import {PlayerKeyboard} from './PlayerKeyboard';
+import {Viewport} from 'pixi-viewport';
+import {CollisionBox} from './CollisionBox';
+import {World} from './World';
+import {checkCollision} from './CheckCollision';
+import {DisplayContainer} from './DisplayContainer';
 
 enum AvatarParts {
   LEFT_ARM,
@@ -23,20 +17,16 @@ enum AvatarParts {
   HEAD,
 }
 
-export class Player extends Container implements Avatar {
+export class Player extends DisplayContainer implements Avatar {
   public name: string;
   public vx: number;
   public vy: number;
   private keyboard: PlayerKeyboard;
-  private state: Function;
+  private state: (framesPassed: number) => void;
   private elapsed: number;
-  private parts: Sprite[];
   private viewport: Viewport;
-  public collidable: boolean = true;
-  public collisionBox: CollisionBox;
-
-  constructor(name: string, viewport: Viewport) {
-    super();
+  constructor(world: World, name: string, viewport: Viewport) {
+    super(world);
 
     this.name = name;
     this.vx = 0;
@@ -49,31 +39,32 @@ export class Player extends Container implements Avatar {
     this.position.set(viewport.worldWidth / 2, viewport.worldHeight / 2);
     this.viewport = viewport;
 
-    this.parts[AvatarParts.LEFT_ARM] = Sprite.from(
-      resources[name + "Arm"].texture
-    );
-    this.parts[AvatarParts.LEFT_LEG] = Sprite.from(
-      resources[name + "Arm"].texture
-    );
-    this.parts[AvatarParts.RIGHT_ARM] = Sprite.from(
-      resources[name + "Arm"].texture
-    );
-    this.parts[AvatarParts.RIGHT_LEG] = Sprite.from(
-      resources[name + "Arm"].texture
-    );
-    this.parts[AvatarParts.BODY] = Sprite.from(
-      resources[name + "Body"].texture
-    );
-    this.parts[AvatarParts.HEAD] = Sprite.from(
-      resources[name + "Head"].texture
-    );
+    const partsTextureNames = [
+      'bunnyArm',
+      'bunnyArm',
+      'bunnyBody',
+      'bunnyArm',
+      'bunnyArm',
+      'bunnyHead',
+    ];
+    this.addParts(partsTextureNames);
 
-    this.parts.forEach((value) => {
+    this.parts.forEach(value => {
       this.addChild(value);
     });
 
-    this.parts[AvatarParts.HEAD].anchor.set(0.45, 0.95);
+    this.setPartsPosition();
 
+    const collisionBox = new CollisionBox(-10, this.height / 2 - 40, 20, 20);
+    this.collisionBox = collisionBox;
+    this.addChild(collisionBox);
+
+    this.setUpdate(this.updatePlayer);
+  }
+
+  //setter
+  private setPartsPosition() {
+    this.parts[AvatarParts.HEAD].anchor.set(0.45, 0.95);
     this.parts[AvatarParts.BODY].anchor.set(0.5, 0);
 
     this.parts[AvatarParts.LEFT_ARM].anchor.set(0.5, 0.2);
@@ -87,13 +78,9 @@ export class Player extends Container implements Avatar {
 
     this.parts[AvatarParts.RIGHT_LEG].anchor.set(0.5, 0.2);
     this.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
-
-    const collisionBox = new CollisionBox(-10, this.height / 2 - 40, 20, 20);
-    this.collisionBox = collisionBox;
-    this.addChild(collisionBox);
   }
 
-  public update(framesPassed: number, world: IWorld) {
+  public updatePlayer(framesPassed: number): void {
     //Update the current game state:
     // console.log(this.keyboard.down.isDown);
     if (this.isMoving()) {
@@ -103,7 +90,7 @@ export class Player extends Container implements Avatar {
       this.state = this.stand;
       this.initArmAndLegsAngle();
     }
-    this.state(framesPassed, world);
+    this.state(framesPassed);
   }
 
   private isMoving() {
@@ -124,14 +111,13 @@ export class Player extends Container implements Avatar {
   }
 
   // private changeVx() {}
-
-  private move(delta: number, world: IWorld) {
+  private move(delta: number): void {
     const oldX = this.x;
     const oldY = this.y;
 
     this.x += this.vx * delta;
     this.y += this.vy * delta;
-    if (this.isCollided(world)) {
+    if (this.isCollided(this.world)) {
       this.x = oldX;
       this.y = oldY;
     }
@@ -140,7 +126,7 @@ export class Player extends Container implements Avatar {
     this.moveGesture(delta);
   }
 
-  private stand(delta: number, world: IWorld) {
+  private stand(delta: number): void {
     this.standGesture(delta);
   }
 
@@ -167,20 +153,20 @@ export class Player extends Container implements Avatar {
     this.parts[AvatarParts.HEAD].angle += Math.cos(this.elapsed / 15) * delta;
   }
 
-  private isCollided(world: IWorld): boolean {
-    const stuffs: DisplayObject[] = world.children;
+  private isCollided(world: World): boolean {
+    const stuffs = world.children as DisplayContainer[];
     if (isOutOfWorld(this, this.viewport, 50)) return true;
     for (let i = 1; i < stuffs.length; ++i) {
       if (!(this === stuffs[i]) && checkCollision(this, stuffs[i])) return true;
     }
-    if (this.x > world.width) return false;
+    return false;
   }
 }
 
-function isOutOfWorld(
+export function isOutOfWorld(
   target: DisplayObject,
   viewport: Viewport,
-  padding: number
+  padding: number,
 ): boolean {
   if (
     target.x > viewport.worldWidth - padding ||

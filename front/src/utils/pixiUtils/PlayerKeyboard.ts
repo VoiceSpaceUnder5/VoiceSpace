@@ -1,8 +1,8 @@
-import { Player } from "./Player";
-import { keyboard } from "./keyboard";
-import { Key } from "./Key";
+import {Player} from './Player';
+import {keyboard} from './keyboard';
+import {Key} from './Key';
 
-const SPEED = 5;
+const SPEED = 20;
 
 export class PlayerKeyboard {
   public left: Key;
@@ -11,10 +11,10 @@ export class PlayerKeyboard {
   public down: Key;
 
   constructor(player: Player) {
-    this.left = keyboard("KeyA");
-    this.right = keyboard("KeyD");
-    this.up = keyboard("KeyW");
-    this.down = keyboard("KeyS");
+    this.left = keyboard('KeyA');
+    this.right = keyboard('KeyD');
+    this.up = keyboard('KeyW');
+    this.down = keyboard('KeyS');
 
     this.initialize(player);
   }

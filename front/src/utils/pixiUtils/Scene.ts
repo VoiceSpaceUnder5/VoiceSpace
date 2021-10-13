@@ -1,4 +1,4 @@
-import { DisplayObject } from "@pixi/display";
+import {DisplayObject} from '@pixi/display';
 
 export interface Scene extends DisplayObject {
   update(framesPassed: number): void;
