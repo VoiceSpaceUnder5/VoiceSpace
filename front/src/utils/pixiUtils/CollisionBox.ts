@@ -5,7 +5,7 @@ export class CollisionBox extends Graphics {
   constructor(x: number, y: number, width: number, height: number) {
     super();
 
-    this.beginFill(0x0000ff, 1);
+    this.beginFill(0x0000ff, 0);
     this.drawRect(x, y, width, height);
   }
 }

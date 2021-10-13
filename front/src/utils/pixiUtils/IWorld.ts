@@ -1,5 +1,5 @@
 export interface IWorld {
   startPosition: {x: number; y: number};
   // stuffs: Stuff[];
-  // player: Player;
+  // player: MyAvatar;
 }

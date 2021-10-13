@@ -220,8 +220,11 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
   }, [loadStatus]);
 
+
+
   return (
     <>
+      <canvas id="game-canvas"></canvas>
       <canvas
         className="spaceCanvas"
         ref={groundCanvasRef}

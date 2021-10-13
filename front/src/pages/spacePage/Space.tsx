@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import PeerManager, {AudioAnalyser, Me, Vec2} from '../../utils/RTCGameUtils';
 import Navigation from '../../components/Navigation';
 import {forestMapMMI} from '../../utils/ImageMetaData';
-import SpaceCanvas from '../../components/SpaceCanvas';
+import SpaceCanvas2 from '../../components/SpaceCanvas2';
 import './space.css';
 import {message} from 'antd';
 import RTCSignalingHelper from '../../utils/RTCSignalingHelper';
@@ -152,10 +152,7 @@ function Space(props: RouteComponentProps): JSX.Element {
     <>
       {peerManager ? (
         <>
-          <SpaceCanvas
-            peerManager={peerManager}
-            mapMakingInfo={mapMakingInfo}
-          />
+          <SpaceCanvas2 peerManager={peerManager} />
           <Navigation peerManager={peerManager} goToHome={goToHome} />
         </>
       ) : (

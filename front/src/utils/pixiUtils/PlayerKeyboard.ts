@@ -1,16 +1,16 @@
-import {Player} from './Player';
+import {MyAvatar} from './MyAvatar';
 import {keyboard} from './keyboard';
 import {Key} from './Key';
 
 const SPEED = 20;
 
-export class PlayerKeyboard {
+export class MyAvatarKeyboard {
   public left: Key;
   public right: Key;
   public up: Key;
   public down: Key;
 
-  constructor(player: Player) {
+  constructor(player: MyAvatar) {
     this.left = keyboard('KeyA');
     this.right = keyboard('KeyD');
     this.up = keyboard('KeyW');
@@ -19,7 +19,7 @@ export class PlayerKeyboard {
     this.initialize(player);
   }
 
-  private initialize(player: Player) {
+  private initialize(player: MyAvatar) {
     this.left.press = () => {
       player.vx -= SPEED;
       player.scale.x = -1;

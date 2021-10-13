@@ -1,17 +1,18 @@
 import {Container} from '@pixi/display';
 import {Viewport} from 'pixi-viewport';
 import {Scene} from './Scene';
-import {Player} from './Player';
+import {MyAvatar} from './MyAvatar';
 import {Manager} from './SceneManager';
 import {World} from './World';
 import {Loader} from '@pixi/loaders';
 import {Ticker} from '@pixi/ticker';
 import {Stuff} from './Stuff';
+import {GameData} from './GameData';
 
 const resources = Loader.shared.resources;
 export class GameScene extends Container implements Scene {
   private viewport: Viewport;
-  private player: Player;
+  private player: MyAvatar;
   private world: World;
 
   constructor() {
@@ -46,7 +47,7 @@ export class GameScene extends Container implements Scene {
     });
     this.addChild(viewport);
 
-    const player = new Player(world, 'bunny', viewport);
+    const player = new MyAvatar(world, GameData.getMyAvatar(), viewport);
     this.player = player;
 
     viewport.moveCenter(world.width / 2, world.height / 2);

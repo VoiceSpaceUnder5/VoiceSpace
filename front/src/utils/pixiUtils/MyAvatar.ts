@@ -1,51 +1,48 @@
 import {DisplayObject} from '@pixi/display';
-import {Avatar} from './Avatar';
+import {Avatar, AvatarParts, PARTS_ROTATE_SPEED} from './Avatar';
 import {Loader} from '@pixi/loaders';
-import {PlayerKeyboard} from './PlayerKeyboard';
+import {MyAvatarKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {CollisionBox} from './CollisionBox';
 import {World} from './World';
 import {checkCollision} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
+import {GameData} from './GameData';
 
-enum AvatarParts {
-  LEFT_ARM,
-  LEFT_LEG,
-  BODY,
-  RIGHT_ARM,
-  RIGHT_LEG,
-  HEAD,
-}
+const avatarName = ['bunny'];
 
-export class Player extends DisplayContainer implements Avatar {
-  public name: string;
+export class MyAvatar extends DisplayContainer implements Avatar {
+  public avatar: number;
+  public partRotateDegree: number;
+  public rotateClockWise: boolean;
   public vx: number;
   public vy: number;
-  private keyboard: PlayerKeyboard;
+  private keyboard: MyAvatarKeyboard;
   private state: (framesPassed: number) => void;
-  private elapsed: number;
   private viewport: Viewport;
-  constructor(world: World, name: string, viewport: Viewport) {
+
+  constructor(world: World, avatar: number, viewport: Viewport) {
     super(world);
 
-    this.name = name;
+    this.avatar = avatar;
+    this.partRotateDegree = 0;
+    this.rotateClockWise = true;
     this.vx = 0;
     this.vy = 0;
     this.state = this.stand;
-    this.elapsed = 0.0;
     this.parts = [];
     this.pivot.set(0.5, 0.5);
-    this.keyboard = new PlayerKeyboard(this);
+    this.keyboard = new MyAvatarKeyboard(this);
     this.position.set(viewport.worldWidth / 2, viewport.worldHeight / 2);
     this.viewport = viewport;
 
     const partsTextureNames = [
-      'bunnyArm',
-      'bunnyArm',
-      'bunnyBody',
-      'bunnyArm',
-      'bunnyArm',
-      'bunnyHead',
+      avatarName[avatar] + 'Arm',
+      avatarName[avatar] + 'Arm',
+      avatarName[avatar] + 'Body',
+      avatarName[avatar] + 'Arm',
+      avatarName[avatar] + 'Arm',
+      avatarName[avatar] + 'Head',
     ];
     this.addParts(partsTextureNames);
 
@@ -59,7 +56,7 @@ export class Player extends DisplayContainer implements Avatar {
     this.collisionBox = collisionBox;
     this.addChild(collisionBox);
 
-    this.setUpdate(this.updatePlayer);
+    this.setUpdate(this.updateMyAvatar);
   }
 
   //setter
@@ -80,17 +77,16 @@ export class Player extends DisplayContainer implements Avatar {
     this.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
   }
 
-  public updatePlayer(framesPassed: number): void {
-    //Update the current game state:
-    // console.log(this.keyboard.down.isDown);
+  public updateMyAvatar(framesPassed: number): void {
     if (this.isMoving()) {
       this.state = this.move;
-      this.initArmAndLegsAngle();
     } else {
       this.state = this.stand;
       this.initArmAndLegsAngle();
     }
     this.state(framesPassed);
+    GameData.updatePlayerDto(this);
+    GameData.sendMyDto();
   }
 
   private isMoving() {
@@ -122,35 +118,36 @@ export class Player extends DisplayContainer implements Avatar {
       this.y = oldY;
     }
     this.zIndex = this.y + this.height / 2;
-
-    this.moveGesture(delta);
+    this.moveGesture();
+    // GameData.testPrint();
   }
 
   private stand(delta: number): void {
-    this.standGesture(delta);
+    this.standGesture();
   }
 
-  private moveGesture(delta: number) {
-    this.elapsed += delta;
-    this.parts[AvatarParts.RIGHT_LEG].angle +=
-      Math.cos(this.elapsed / 5.0) * 20 * delta;
-    this.parts[AvatarParts.RIGHT_ARM].angle -=
-      Math.cos(this.elapsed / 5.0) * 30 * delta;
-    this.parts[AvatarParts.LEFT_LEG].angle -=
-      Math.cos(this.elapsed / 5.0) * 20 * delta;
-    this.parts[AvatarParts.LEFT_ARM].angle +=
-      Math.cos(this.elapsed / 5.0) * 30 * delta;
-    this.parts[AvatarParts.HEAD].angle +=
-      Math.cos(this.elapsed / 5.0) * 4 * delta;
+  private moveGesture() {
+    this.updatePartRotateDegree();
+    this.parts[AvatarParts.RIGHT_LEG].angle = -this.partRotateDegree * 1;
+    this.parts[AvatarParts.RIGHT_ARM].angle = this.partRotateDegree * 2;
+    this.parts[AvatarParts.LEFT_LEG].angle = this.partRotateDegree * 1;
+    this.parts[AvatarParts.LEFT_ARM].angle = -this.partRotateDegree * 2;
+    this.parts[AvatarParts.HEAD].angle = this.partRotateDegree * 0.3;
   }
 
-  private standGesture(delta: number) {
-    this.elapsed += delta;
-    this.parts[AvatarParts.RIGHT_ARM].angle -=
-      Math.cos(this.elapsed / 15.0) * 20 * delta;
-    this.parts[AvatarParts.LEFT_ARM].angle +=
-      Math.cos(this.elapsed / 15.0) * 20 * delta;
-    this.parts[AvatarParts.HEAD].angle += Math.cos(this.elapsed / 15) * delta;
+  private standGesture() {
+    this.updatePartRotateDegree();
+    this.parts[AvatarParts.RIGHT_ARM].angle = this.partRotateDegree * 1;
+    this.parts[AvatarParts.LEFT_ARM].angle = -this.partRotateDegree * 1;
+    this.parts[AvatarParts.HEAD].angle = this.partRotateDegree * 0.1;
+  }
+
+  private updatePartRotateDegree() {
+    if (this.partRotateDegree > 15 || this.partRotateDegree < -15)
+      this.rotateClockWise = !this.rotateClockWise;
+    if (this.rotateClockWise === true)
+      this.partRotateDegree -= PARTS_ROTATE_SPEED;
+    else this.partRotateDegree += PARTS_ROTATE_SPEED;
   }
 
   private isCollided(world: World): boolean {

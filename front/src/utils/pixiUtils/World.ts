@@ -3,6 +3,7 @@ import {Container} from '@pixi/display';
 import {IPointData} from '@pixi/math';
 import {Sprite} from '@pixi/sprite';
 import {DisplayContainer} from './DisplayContainer';
+import {GameData} from './GameData';
 import {IWorld} from './IWorld';
 
 export class World extends Container implements IWorld {

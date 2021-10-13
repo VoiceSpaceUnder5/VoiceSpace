@@ -1,6 +1,7 @@
 import {LoaderScene} from './LoaderScene';
 import {Manager} from './SceneManager';
 import {GameScene} from './GameScene';
+import {GameData} from './GameData';
 
 export function pixiCanvasStart(): void {
   Manager.initialize(0x55ff77);
