@@ -1,5 +1,5 @@
 import {DisplayObject} from '@pixi/display';
-import {Avatar, AvatarParts, PARTS_ROTATE_SPEED} from './Avatar';
+import {Avatar, AvatarParts, PARTS_ROTATE_SPEED, avatarName} from './Avatar';
 import {Loader} from '@pixi/loaders';
 import {MyAvatarKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
@@ -8,8 +8,6 @@ import {World} from './World';
 import {checkCollision} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
-
-const avatarName = ['bunny'];
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;

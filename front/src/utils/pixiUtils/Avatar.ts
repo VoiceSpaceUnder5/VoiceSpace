@@ -1,7 +1,6 @@
 export interface Avatar {
   avatar: number;
   partRotateDegree: number;
-  rotateClockWise: boolean;
 }
 
 export enum AvatarParts {
@@ -14,3 +13,5 @@ export enum AvatarParts {
 }
 
 export const PARTS_ROTATE_SPEED = 2;
+
+export const avatarName = ['bunny'];
