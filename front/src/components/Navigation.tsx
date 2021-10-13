@@ -29,7 +29,17 @@ interface textMessageDivInnerTextArray {
   textMessage: string;
 }
 
+export interface ProfileDropdownOnOff {
+  on: boolean;
+}
+
 function Navigation(props: NavigationProps): JSX.Element {
+  const profileDropdownOnOff: ProfileDropdownOnOff = {
+    on: false,
+  };
+  const profileDropdownSwitch = () => {
+    profileDropdownOnOff.on = !profileDropdownOnOff.on;
+  };
   const exit = () => {
     props.peerManager.close();
     props.goToHome();
@@ -269,6 +279,8 @@ function Navigation(props: NavigationProps): JSX.Element {
     <nav className="navbar">
       <div className="navbar_left">
         <Profile
+          profileDropdownOnOff={profileDropdownOnOff}
+          profileDropdownSwitch={profileDropdownSwitch}
           nickname={props.peerManager.me.nickname}
           avatar={props.peerManager.me.avatar}
           setNickname={setNickName}
@@ -301,6 +313,7 @@ function Navigation(props: NavigationProps): JSX.Element {
       </div>
       <div className="navbar_right">
         <Panel
+          profileDropdownOnOff={profileDropdownOnOff}
           getMyNickname={getMyNickname}
           getUsers={getUsers}
           roomId={props.peerManager.roomID}
