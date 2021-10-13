@@ -293,6 +293,7 @@
 }
 .user_list {
   width: 15vw;
+  min-width: 200px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -326,6 +327,7 @@
 .users_title,
 .message_title {
   min-width: 15vw;
+  min-width: 200px;
   display: flex;
   justify-content: space-between;
   overflow: hidden;
