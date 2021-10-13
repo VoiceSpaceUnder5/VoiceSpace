@@ -15,6 +15,8 @@ const mockedProfileDropDownProps: ProfileProps = {
   setNickname: jest.fn(),
   avatar: AvatarImageEnum.WHITE_RABBIT,
   setAvatar: jest.fn(),
+  profileDropdownOnOff: {on: false},
+  profileDropdownSwitch: jest.fn(),
 };
 
 const mockedProfileProps: ProfileProps = {
@@ -22,6 +24,8 @@ const mockedProfileProps: ProfileProps = {
   setNickname: jest.fn(),
   avatar: AvatarImageEnum.WHITE_RABBIT,
   setAvatar: jest.fn(),
+  profileDropdownOnOff: {on: false},
+  profileDropdownSwitch: jest.fn(),
 };
 
 function isImageSrcSame(

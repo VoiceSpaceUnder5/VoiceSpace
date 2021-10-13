@@ -7,10 +7,11 @@ import {
   avatarImageMDs,
   AvatarPartImageEnum,
 } from '../utils/ImageMetaData';
-import {ProfileDropdownOnOffCheck} from './Navigation';
+import {ProfileDropdownOnOff} from './Navigation';
 
 export interface ProfileProps {
-  profileDropdownOnOffCheck: ProfileDropdownOnOffCheck;
+  profileDropdownOnOff: ProfileDropdownOnOff;
+  profileDropdownSwitch: () => void;
   nickname: string;
   setNickname: (nickname: string) => void;
   avatar: AvatarImageEnum;
@@ -46,7 +47,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
     }
     props.setAvatar(newAvatar);
     props.setNickname(nextNickname);
-    props.profileDropdownOnOffCheck.on = false;
+    props.profileDropdownSwitch();
   };
   return (
     <Menu className="navbar_profile">
@@ -60,7 +61,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
           onSubmit={e => {
             e.preventDefault();
             onProfileChangeClick();
-            props.profileDropdownOnOffCheck.on = false;
+            props.profileDropdownSwitch();
           }}
         >
           <div className="profile_input">
@@ -126,15 +127,16 @@ function Profile(props: ProfileProps): JSX.Element {
     setAvatar(avatar);
   };
   const profileDropDownProps: ProfileProps = {
-    profileDropdownOnOffCheck: props.profileDropdownOnOffCheck,
+    profileDropdownOnOff: props.profileDropdownOnOff,
+    profileDropdownSwitch: props.profileDropdownSwitch,
     nickname: nickname,
     setNickname: newSetNickname,
     avatar: avatar,
     setAvatar: newSetAvatar,
   };
   const onVisibleChange = () => {
-    props.profileDropdownOnOffCheck.on = !props.profileDropdownOnOffCheck.on;
-    console.log(props.profileDropdownOnOffCheck);
+    props.profileDropdownOnOff.on = !props.profileDropdownOnOff.on;
+    console.log(props.profileDropdownOnOff);
   };
 
   return (

@@ -6,10 +6,10 @@ import '../pages/spacePage/space.css';
 import {UserInfo, UserList} from './UserList';
 import {Message, Messenger} from './Messenger';
 import {DataDto, DataDtoType} from '../utils/RTCGameUtils';
-import {ProfileDropdownOnOffCheck} from './Navigation';
+import {ProfileDropdownOnOff} from './Navigation';
 
 export interface PanelProps {
-  profileDropdownOnOffCheck: ProfileDropdownOnOffCheck;
+  profileDropdownOnOff: ProfileDropdownOnOff;
   getMyNickname: () => string;
   getUsers: () => UserInfo[];
   roomId: string;
@@ -120,7 +120,7 @@ function Panel(props: PanelProps): JSX.Element {
       onMessageCallback,
     );
     window.onkeypress = (e: KeyboardEvent) => {
-      if (props.profileDropdownOnOffCheck.on === false) {
+      if (props.profileDropdownOnOff.on === false) {
         if (e.keyCode === 13) {
           setSubMenu(2);
           setVisible(true);
