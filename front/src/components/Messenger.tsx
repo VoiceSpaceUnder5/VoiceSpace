@@ -66,9 +66,10 @@ export function Messenger(props: MessengerProps): JSX.Element {
             onChange={props.onMessageInput}
             value={props.message}
           />
-          <button className="message_input_button">전송</button>
+          <button onClick={scrollToBottom} className="message_input_button">
+            전송
+          </button>
         </form>
-        <button onClick={scrollToBottom}>스크롤다운!</button>
       </Menu.Item>
     </Menu>
   );
