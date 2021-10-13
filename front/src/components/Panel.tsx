@@ -60,6 +60,7 @@ function Panel(props: PanelProps): JSX.Element {
   const [message, setMessage] = useState('');
   const [messageArray, setMessageArray] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -144,6 +145,7 @@ function Panel(props: PanelProps): JSX.Element {
               onChangeVolume: onChangeVolume,
             })
           : Messenger({
+              scrollRef: scrollRef,
               inputRef: inputRef,
               messageArray: messageArray,
               onClickPrevious: onClickPrevious,

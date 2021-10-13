@@ -9,6 +9,7 @@ export interface Message {
 }
 
 export interface MessengerProps {
+  scrollRef: React.RefObject<HTMLDivElement>;
   inputRef: MutableRefObject<HTMLInputElement | null>;
   messageArray: string[] | undefined;
   onClickPrevious: () => void;
@@ -19,6 +20,15 @@ export interface MessengerProps {
 }
 
 export function Messenger(props: MessengerProps): JSX.Element {
+  const scrollToBottom = () => {
+    if (!props || !props.scrollRef || !props.scrollRef.current) {
+      return;
+    }
+    const scroll =
+      props.scrollRef.current.scrollHeight -
+      props.scrollRef.current.clientHeight;
+    props.scrollRef.current.scrollTo(0, scroll);
+  };
   return (
     <Menu className="message_drop_down">
       <Menu.Item key="0">
@@ -35,7 +45,7 @@ export function Messenger(props: MessengerProps): JSX.Element {
       </Menu.Item>
       <Menu.Divider></Menu.Divider>
       <Menu.Item key="1">
-        <div className="message_array">
+        <div className="message_array" ref={props.scrollRef}>
           {props.messageArray?.map((message, index) => {
             return (
               <div className="message" key={index}>
@@ -58,6 +68,7 @@ export function Messenger(props: MessengerProps): JSX.Element {
           />
           <button className="message_input_button">전송</button>
         </form>
+        <button onClick={scrollToBottom}>스크롤다운!</button>
       </Menu.Item>
     </Menu>
   );
