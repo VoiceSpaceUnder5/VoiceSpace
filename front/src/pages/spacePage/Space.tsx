@@ -62,7 +62,7 @@ function setNewPeerManager(
           initialCenterPos,
           query.nickname,
           '',
-          query.avatarIdx,
+          Number(query.avatarIdx),
         );
 
         const peerManager = new PeerManager(
@@ -93,8 +93,6 @@ function isQueryValid(query: SpaceQuery) {
   }
   if (!query.avatarIdx) {
     return false;
-  } else {
-    query.avatarIdx = Number(query.avatarIdx);
   }
   if (!query.micDeviceID) {
     query.micDeviceID = 'default';
@@ -106,6 +104,8 @@ function isQueryValid(query: SpaceQuery) {
 }
 
 function Space(props: RouteComponentProps): JSX.Element {
+  //state
+  const [peerManager, setPeerManager] = useState<PeerManager | null>(null);
   //query validate part
   const query = qs.parse(props.location.search) as SpaceQuery; // URL에서 쿼리 부분 파싱하여 roomId, nickname, avatarIdx 를 가진 SpaceMainQuery 객체에 저장
   if (!query.roomId || query.roomId === '') {
@@ -120,11 +120,9 @@ function Space(props: RouteComponentProps): JSX.Element {
   const divContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
 
-  //state
-  const [peerManager, setPeerManager] = useState<PeerManager | null>(null);
-
   //useEffect onMounted
   useEffect(() => {
+    if (!isQueryValid(query)) return;
     if (!divContainerRef.current || !audioContainerRef.current) {
       console.error('can not find div,audio Container error');
       return;
