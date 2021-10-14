@@ -27,6 +27,7 @@ export class GameData {
     me.centerPos.x = player.x;
     me.centerPos.y = player.y;
     me.partRotatedegree = player.partRotateDegree;
+    me.lookLeft = player.scale.x < 0;
   }
 
   public static sendMyDto(): void {
@@ -55,7 +56,9 @@ export class GameData {
     return this.peerManager.peers.get(socketID)?.centerPos;
   }
 
-  public static getPeerPartRotateDegree(socketID: string): number | undefined {
+  public static getPeerPartRotateDegree(
+    socketID: string,
+  ): number[] | undefined {
     if (this.peerManager.peers.get(socketID) === undefined) {
       console.error("Error: There's No matching Peer ID");
       return undefined;
@@ -87,6 +90,14 @@ export class GameData {
       return undefined;
     }
     return this.peerManager.peers.get(socketID)?.avatarFaceScale;
+  }
+
+  public static getPeerAvatarLookLeft(socketID: string): boolean | undefined {
+    if (!this.peerManager.peers.has(socketID)) {
+      console.error("Error: There's No matching Peer ID");
+      return undefined;
+    }
+    return this.peerManager.peers.get(socketID)?.lookLeft;
   }
 
   public static isConnectionAlive(socketID: string): boolean {

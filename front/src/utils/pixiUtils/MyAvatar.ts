@@ -11,8 +11,9 @@ import {GameData} from './GameData';
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
-  public partRotateDegree: number;
-  public rotateClockWise: boolean;
+  public partRotateDegree: number[];
+  private referenceDegree: number;
+  private rotateClockWise: boolean;
   public vx: number;
   public vy: number;
   private keyboard: PlayerKeyboard;
@@ -23,7 +24,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     super(world);
 
     this.avatar = avatar;
-    this.partRotateDegree = 0;
+    this.partRotateDegree = Array.from({length: 6}, () => 0);
+    this.referenceDegree = 0;
     this.rotateClockWise = true;
     this.vx = 0;
     this.vy = 0;
@@ -122,30 +124,37 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.standGesture();
   }
 
-  private updatePartRotateDegree() {
-    if (this.partRotateDegree > 15 || this.partRotateDegree < -15)
-      this.rotateClockWise = !this.rotateClockWise;
-    if (this.rotateClockWise === true)
-      this.partRotateDegree -= PARTS_ROTATE_SPEED;
-    else this.partRotateDegree += PARTS_ROTATE_SPEED;
-  }
-
   private moveGesture() {
-    this.updatePartRotateDegree();
-    this.parts[AvatarParts.RIGHT_LEG].angle = -this.partRotateDegree * 1;
-    this.parts[AvatarParts.RIGHT_ARM].angle = this.partRotateDegree * 2;
-    this.parts[AvatarParts.LEFT_LEG].angle = this.partRotateDegree * 1;
-    this.parts[AvatarParts.LEFT_ARM].angle = -this.partRotateDegree * 2;
-    this.parts[AvatarParts.HEAD].angle = this.partRotateDegree * 0.3;
+    this.updateReferenceAngle();
+    this.parts[AvatarParts.RIGHT_LEG].angle = -this.referenceDegree * 1;
+    this.parts[AvatarParts.RIGHT_ARM].angle = this.referenceDegree * 2;
+    this.parts[AvatarParts.LEFT_LEG].angle = this.referenceDegree * 1;
+    this.parts[AvatarParts.LEFT_ARM].angle = -this.referenceDegree * 2;
+    this.parts[AvatarParts.HEAD].angle = this.referenceDegree * 0.3;
+    this.updatePartRotateAngle();
   }
 
   private standGesture() {
-    this.updatePartRotateDegree();
-    this.parts[AvatarParts.RIGHT_ARM].angle = this.partRotateDegree * 1;
-    this.parts[AvatarParts.LEFT_ARM].angle = -this.partRotateDegree * 1;
-    this.parts[AvatarParts.HEAD].angle = this.partRotateDegree * 0.1;
+    this.updateReferenceAngle();
+    this.parts[AvatarParts.RIGHT_ARM].angle = this.referenceDegree * 1;
+    this.parts[AvatarParts.LEFT_ARM].angle = -this.referenceDegree * 1;
+    this.parts[AvatarParts.HEAD].angle = this.referenceDegree * 0.1;
+    this.updatePartRotateAngle();
   }
 
+  private updateReferenceAngle() {
+    if (this.referenceDegree > 15 || this.referenceDegree < -15)
+      this.rotateClockWise = !this.rotateClockWise;
+    if (this.rotateClockWise === true)
+      this.referenceDegree -= PARTS_ROTATE_SPEED;
+    else this.referenceDegree += PARTS_ROTATE_SPEED;
+  }
+
+  private updatePartRotateAngle() {
+    for (let i = 0; i < 6; ++i) {
+      this.partRotateDegree[i] = this.parts[i].angle;
+    }
+  }
   private isCollided(world: World): boolean {
     const stuffs = world.children as DisplayContainer[];
     if (isOutOfWorld(this, this.viewport, 50)) return true;

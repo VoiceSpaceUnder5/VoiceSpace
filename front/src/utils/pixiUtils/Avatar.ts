@@ -1,6 +1,6 @@
 export interface Avatar {
   avatar: number;
-  partRotateDegree: number;
+  partRotateDegree: number[];
 }
 
 export enum AvatarParts {
