@@ -4,7 +4,7 @@ import {Key} from './Key';
 
 const SPEED = 20;
 
-export class MyAvatarKeyboard {
+export class PlayerKeyboard {
   public left: Key;
   public right: Key;
   public up: Key;

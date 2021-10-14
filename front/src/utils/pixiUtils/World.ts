@@ -4,21 +4,27 @@ import {IPointData} from '@pixi/math';
 import {Sprite} from '@pixi/sprite';
 import {DisplayContainer} from './DisplayContainer';
 import {IWorld} from './IWorld';
+import {MyAvatar} from './MyAvatar';
+import {PeerAvatar} from './PeerAvatar';
 
 export class World extends Container implements IWorld {
   public startPosition: IPointData;
   public background: DisplayContainer;
+  public player: MyAvatar | null;
+  public peers: Map<string, PeerAvatar>;
+
   //생성자 인자는 나중에 World를 구성하는 요소들을 묶어서 받아야 한다.(수정 필요)
   constructor(backgroundTexture: Texture) {
     super();
-
-    this.startPosition = {x: 0, y: 0};
+    this.startPosition = {x: 300, y: 300};
     const background = new DisplayContainer(this);
     const backgroundSprite = Sprite.from(backgroundTexture);
     backgroundSprite.zIndex = -Infinity;
     background.addChild(backgroundSprite);
     this.background = background;
     this.addChild(background);
+    this.player = null;
+    this.peers = new Map();
   }
 
   setStartPosition(x: number, y: number): void {
@@ -31,5 +37,23 @@ export class World extends Container implements IWorld {
     children.forEach(child => {
       child.update(framesPassed);
     });
+  }
+
+  addMyAvatar(myAvatar: MyAvatar): void {
+    this.addChild(myAvatar);
+    this.player = myAvatar;
+  }
+
+  addPeerAvatar(socketID: string): void {
+    if (this.peers.has(socketID)) return;
+
+    const newPeer = new PeerAvatar(this, socketID);
+    console.log(this.addChild);
+    this.addChild(newPeer);
+    this.peers.set(socketID, newPeer);
+  }
+
+  deletePeerAvatar(socketID: string): void {
+    if (this.peers.has(socketID)) this.peers.get(socketID)?.destroy();
   }
 }

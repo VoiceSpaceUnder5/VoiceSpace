@@ -1,7 +1,7 @@
 import {DisplayObject} from '@pixi/display';
 import {Avatar, AvatarParts, PARTS_ROTATE_SPEED, avatarName} from './Avatar';
 
-import {MyAvatarKeyboard} from './PlayerKeyboard';
+import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {CollisionBox} from './CollisionBox';
 import {World} from './World';
@@ -15,7 +15,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
   public rotateClockWise: boolean;
   public vx: number;
   public vy: number;
-  private keyboard: MyAvatarKeyboard;
+  private keyboard: PlayerKeyboard;
   private state: (framesPassed: number) => void;
   private viewport: Viewport;
 
@@ -30,8 +30,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.state = this.stand;
     this.parts = [];
     this.pivot.set(0.5, 0.5);
-    this.keyboard = new MyAvatarKeyboard(this);
-    this.position.set(viewport.worldWidth / 2, viewport.worldHeight / 2);
+    this.keyboard = new PlayerKeyboard(this);
+    this.position.copyFrom(world.startPosition);
     this.viewport = viewport;
 
     const partsTextureNames = [
@@ -44,8 +44,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     ];
     this.addParts(partsTextureNames);
 
-    this.parts.forEach(value => {
-      this.addChild(value);
+    this.parts.forEach(part => {
+      this.addChild(part);
     });
 
     this.setPartsPosition();
@@ -122,6 +122,14 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.standGesture();
   }
 
+  private updatePartRotateDegree() {
+    if (this.partRotateDegree > 15 || this.partRotateDegree < -15)
+      this.rotateClockWise = !this.rotateClockWise;
+    if (this.rotateClockWise === true)
+      this.partRotateDegree -= PARTS_ROTATE_SPEED;
+    else this.partRotateDegree += PARTS_ROTATE_SPEED;
+  }
+
   private moveGesture() {
     this.updatePartRotateDegree();
     this.parts[AvatarParts.RIGHT_LEG].angle = -this.partRotateDegree * 1;
@@ -136,14 +144,6 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.parts[AvatarParts.RIGHT_ARM].angle = this.partRotateDegree * 1;
     this.parts[AvatarParts.LEFT_ARM].angle = -this.partRotateDegree * 1;
     this.parts[AvatarParts.HEAD].angle = this.partRotateDegree * 0.1;
-  }
-
-  private updatePartRotateDegree() {
-    if (this.partRotateDegree > 15 || this.partRotateDegree < -15)
-      this.rotateClockWise = !this.rotateClockWise;
-    if (this.rotateClockWise === true)
-      this.partRotateDegree -= PARTS_ROTATE_SPEED;
-    else this.partRotateDegree += PARTS_ROTATE_SPEED;
   }
 
   private isCollided(world: World): boolean {

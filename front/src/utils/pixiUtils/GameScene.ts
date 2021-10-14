@@ -52,8 +52,7 @@ export class GameScene extends Container implements Scene {
 
     viewport.moveCenter(world.width / 2, world.height / 2);
     viewport.addChild(world);
-    world.addChild(player);
-
+    world.addMyAvatar(player);
     viewport.follow(player, {
       speed: 0,
       acceleration: null,
@@ -63,13 +62,18 @@ export class GameScene extends Container implements Scene {
     const collideStuff = new Stuff(this.world, 'tree1', 500, 500);
     collideStuff.addCollisionBox(-70, -50, 100, 50);
     world.addChild(collideStuff);
+
+    GameData.addExistingPeers(world);
+    GameData.addOnPeerCreatedHandler(world.addPeerAvatar.bind(world));
+    GameData.addOnPeerDeletedHandler(world.deletePeerAvatar.bind(world));
+    setInterval(() => {
+      console.log(GameData.testPrint());
+    }, 2000);
   }
 
   public update(framesPassed: number): void {
-    // this.player.update(framesPassed, this.world);
     this.world.update(framesPassed);
-    // console.log(this.player.children[6]._bounds);
-    // console.log(this.world.getChildAt(2));
+    //새로운 피어 등장을 파악해서, 월드에 추가해준다.
   }
 
   public resize(screenWidth: number, screenHeight: number): void {

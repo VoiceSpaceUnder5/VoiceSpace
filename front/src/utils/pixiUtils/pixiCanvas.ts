@@ -1,7 +1,6 @@
 import {LoaderScene} from './LoaderScene';
 import {Manager} from './SceneManager';
 import {GameScene} from './GameScene';
-import {GameData} from './GameData';
 
 export function pixiCanvasStart(): void {
   Manager.initialize(0x55ff77);
@@ -16,4 +15,8 @@ export function pixiCanvasStart(): void {
     // add the viewport to the stage
     Manager.changeScene(gameScene);
   }
+}
+
+export function pixiCanvasDestroy(): void {
+  Manager.app.loader.destroy();
 }
