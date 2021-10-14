@@ -72,6 +72,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
   private changePosition(): void {
     const centerPos = GameData.getPeerCenterPos(this.socketID);
     this.position.set(centerPos?.x, centerPos?.y);
+    this.zIndex = this.y + this.height / 2;
   }
 
   private changePartRotationDegree(): void {
