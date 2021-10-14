@@ -2,17 +2,28 @@ import React from 'react';
 import {render} from 'react-dom';
 import {screen} from '@testing-library/react';
 import Panel, {PanelDropDown, PanelDropDownProps, PanelProps} from '../Panel';
+import {ProfileDropdownOnOff} from '../Navigation';
 import userEvent from '@testing-library/user-event';
 import {act} from 'react-dom/test-utils';
 
+// profileDropdownOnOff: ProfileDropdownOnOff;
 // getMyNickname: () => string;
 // getUsers: () => UserInfo[];
 // roomId: string;
 // onCopy: () => void;
 // sendMessage: (message: string) => void;
-// setOnMessageCallback: (arg0: (message: Message) => void) => void;
+// setDataChannelEventHandler: (
+//   arg0: DataDtoType,
+//   // eslint-disable-next-line
+//   arg1: (data: any) => void,
+// ) => void;
+
+const profileDropdownOnOff: ProfileDropdownOnOff = {
+  on: false,
+};
 
 const mockedPanelProps: PanelProps = {
+  profileDropdownOnOff: profileDropdownOnOff,
   getMyNickname: jest.fn(),
   getUsers: jest.fn(),
   roomId: 'testRoomID',
