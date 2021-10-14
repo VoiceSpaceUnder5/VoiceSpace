@@ -475,7 +475,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     // event setting
-    this.setEvent(signalingHelper);
+    this.setSignalingEvent(signalingHelper);
   }
 
   private getDataChannelEventHandler(
@@ -485,7 +485,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     return this.dataChannelEventHandlers.get(type);
   }
 
-  private setEvent(signalingHelper: RTCSignalingHelper): void {
+  private setSignalingEvent(signalingHelper: RTCSignalingHelper): void {
     // negotitateneeded
     this.onnegotiationneeded = () => {
       console.log('onnegotiationneeded!!');
