@@ -609,6 +609,10 @@ export default class PeerManager {
 
   // micDeviceID (stream)
   readonly micDeviceID: string;
+
+  // events for Pixi
+  onPeerCreated: (createdPeerSocketID: string) => void;
+  onPeerDeleted: (deletedPeerSocketID: string) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
     localStream: MediaStream,
@@ -662,6 +666,14 @@ export default class PeerManager {
 
     // JoinRoom
     this.signalingHelper.joinRoom(roomID);
+
+    // events for Pixi
+    this.onPeerCreated = () => {
+      return;
+    };
+    this.onPeerDeleted = () => {
+      return;
+    };
   }
 
   changeEachAudio(deviceId: string): void {
@@ -735,6 +747,7 @@ export default class PeerManager {
       });
     }
     this.peers.set(connectedClientSocketID, peer);
+    this.onPeerCreated(connectedClientSocketID);
     return peer;
   }
 
@@ -823,6 +836,7 @@ export default class PeerManager {
         this.audioContainer.removeChild(exitedPeer.audio);
         this.nicknameContainer.removeChild(exitedPeer.nicknameDiv);
         this.nicknameContainer.removeChild(exitedPeer.textMessageDiv);
+        this.onPeerDeleted(exitedSocketID);
         // delete shared screen
         const data: DataDto = {
           type: DataDtoType.SHARED_SCREEN_CLOSE,
