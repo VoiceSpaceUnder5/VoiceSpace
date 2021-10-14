@@ -18,5 +18,5 @@ export function pixiCanvasStart(): void {
 }
 
 export function pixiCanvasDestroy(): void {
-  Manager.app.loader.destroy();
+  Manager.app.destroy();
 }

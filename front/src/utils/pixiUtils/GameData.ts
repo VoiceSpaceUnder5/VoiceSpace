@@ -108,7 +108,7 @@ export class GameData {
 
   public static addExistingPeers(world: World): void {
     this.peerManager.peers.forEach(peer => {
-      world.addPeerAvatar(peer.socketID);
+      world.addPeerAvatar(peer.connectedClientSocketID);
     });
   }
 }
