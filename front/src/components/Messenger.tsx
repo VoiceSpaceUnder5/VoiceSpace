@@ -1,6 +1,8 @@
-import React, {FormEvent, MutableRefObject} from 'react';
-import {Menu} from 'antd';
-import {LeftCircleFilled, CloseCircleFilled} from '@ant-design/icons';
+import React, {useState, useRef, useEffect} from 'react';
+import {Popover} from 'antd';
+import {CloseCircleFilled, MessageOutlined} from '@ant-design/icons';
+import {DataDto, DataDtoType} from '../utils/RTCGameUtils';
+import {ProfileDropdownOnOff} from './Navigation';
 
 export interface Message {
   type: string;
@@ -9,34 +11,117 @@ export interface Message {
 }
 
 export interface MessengerProps {
-  inputRef: MutableRefObject<HTMLInputElement | null>;
-  messageArray: string[] | undefined;
-  onClickPrevious: () => void;
-  message: string;
-  onMessageInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSendMessage: (e: FormEvent) => void;
-  onClickClose: () => void;
+  getMyNickname: () => string;
+  sendMessage: (message: string) => void;
+  setDataChannelEventHandler: (
+    arg0: DataDtoType,
+    // eslint-disable-next-line
+    arg1: (data: any) => void,
+  ) => void;
+  profileDropdownOnOff: ProfileDropdownOnOff;
 }
 
-export function Messenger(props: MessengerProps): JSX.Element {
-  return (
-    <Menu className="message_drop_down">
-      <Menu.Item key="0">
-        <div className="message_title">
-          <div>메시지</div>
-          <div>
-            <LeftCircleFilled onClick={props.onClickPrevious} />
-            <CloseCircleFilled
-              style={{marginLeft: '10px'}}
-              onClick={props.onClickClose}
-            />
-          </div>
+export default function Messenger(props: MessengerProps): JSX.Element {
+  const [isScrollBottom, setIsScrollBottom] = useState(true);
+  const [isTalkerIsMe, setIsTalkerIsMe] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageArray, setMessageArray] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    if (!props || !scrollRef || !scrollRef.current) {
+      return;
+    }
+    const scroll =
+      scrollRef.current.scrollHeight - scrollRef.current.clientHeight;
+    scrollRef.current.scrollTo(0, scroll);
+  };
+  useEffect(() => {
+    if (isScrollBottom) {
+      scrollToBottom();
+    } else if (isTalkerIsMe) {
+      scrollToBottom();
+    }
+    setIsTalkerIsMe(false);
+  }, [messageArray]);
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onMessageInput(e);
+  };
+  const handleScroll: React.UIEventHandler<HTMLDivElement> = e => {
+    const target = e.target as HTMLDivElement;
+    if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+      setIsScrollBottom(true);
+    } else {
+      setIsScrollBottom(false);
+    }
+  };
+
+  const onClickClose = () => {
+    setVisible(false);
+  };
+  const onMessageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    setIsTalkerIsMe(true);
+    onSendMessage(e);
+  };
+  const onSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data: DataDto = {
+      type: DataDtoType.CHAT_MESSAGE,
+      data: {
+        nickname: props.getMyNickname(),
+        data: message,
+      },
+    };
+    props.sendMessage(JSON.stringify(data));
+    setMessage('');
+    if (messageArray === undefined) {
+      setMessageArray([`나: ${message}`]);
+    } else {
+      setMessageArray(messageArray.concat(`나: ${message}`));
+    }
+  };
+
+  const onMessageCallback = (message: Message): void => {
+    const newMessage = `${message.nickname}: ${message.data}`;
+    setMessageArray(before => {
+      return [...before, newMessage];
+    });
+  };
+
+  useEffect(() => {
+    props.setDataChannelEventHandler(
+      DataDtoType.CHAT_MESSAGE,
+      onMessageCallback,
+    );
+    window.onkeypress = (e: KeyboardEvent) => {
+      if (props.profileDropdownOnOff.on === false) {
+        if (e.keyCode === 13) {
+          setVisible(true);
+          inputRef.current?.focus();
+        }
+      }
+    };
+  }, []);
+  const result = (
+    <div className="message_popup">
+      <div className="message_title">
+        <div style={{fontSize: '15px'}}>메시지</div>
+        <div>
+          <CloseCircleFilled
+            style={{marginLeft: '10px'}}
+            onClick={onClickClose}
+          />
         </div>
-      </Menu.Item>
-      <Menu.Divider></Menu.Divider>
-      <Menu.Item key="1">
-        <div className="message_array">
-          {props.messageArray?.map((message, index) => {
+      </div>
+      <div>
+        <div className="message_array" ref={scrollRef} onScroll={handleScroll}>
+          {messageArray?.map((message, index) => {
             return (
               <div className="message" key={index}>
                 {message}
@@ -44,21 +129,30 @@ export function Messenger(props: MessengerProps): JSX.Element {
             );
           })}
         </div>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <form onSubmit={props.onSendMessage}>
+      </div>
+      <div>
+        <form onSubmit={onSubmit}>
           <input
-            ref={props.inputRef}
+            ref={inputRef}
             className="message_input"
             type="text"
             placeholder="메시지를 입력하세요"
             required
-            onChange={props.onMessageInput}
-            value={props.message}
+            onChange={onChange}
+            value={message}
           />
           <button className="message_input_button">전송</button>
         </form>
-      </Menu.Item>
-    </Menu>
+      </div>
+    </div>
+  );
+  return (
+    <Popover visible={visible} content={result} trigger={'click'}>
+      <MessageOutlined
+        onClick={() => {
+          setVisible(true);
+        }}
+      />
+    </Popover>
   );
 }

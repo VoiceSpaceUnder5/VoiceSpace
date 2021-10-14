@@ -7,6 +7,7 @@ import Profile from './Profile';
 import ScreenShare from './ScreenShare';
 import Options from './Options';
 import Panel from './Panel';
+import Messenger from './Messenger';
 import PeerManager, {
   AudioAnalyser,
   DataDto,
@@ -275,6 +276,7 @@ function Navigation(props: NavigationProps): JSX.Element {
         });
     };
   };
+
   return (
     <nav className="navbar">
       <div className="navbar_left">
@@ -307,6 +309,12 @@ function Navigation(props: NavigationProps): JSX.Element {
           seletedOutputDevice={props.peerManager.speakerDeviceID}
         />
         <VowelDetectButton />
+        <Messenger
+          getMyNickname={getMyNickname}
+          sendMessage={sendMessage}
+          setDataChannelEventHandler={setDataChannelEventHandler}
+          profileDropdownOnOff={profileDropdownOnOff}
+        />
         <div>
           <LogoutOutlined className="navbar_button" onClick={exit} />
         </div>
