@@ -22,5 +22,5 @@ export function checkCollision(
   const bottommostTop = a.minY < b.minY ? b.minY : a.minY;
   const topmostBottom = a.maxY > b.maxY ? b.maxY : a.maxY;
   // console.log(Math.floor(bottommostTop), Math.floor(topmostBottom));
-  return topmostBottom > bottommostTop;
+  return topmostBottom >= bottommostTop;
 }

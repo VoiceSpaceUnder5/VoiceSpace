@@ -1,4 +1,5 @@
 import {Avatar, AvatarParts, avatarName} from './Avatar';
+import {CollisionBox} from './CollisionBox';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {World} from './World';
@@ -40,6 +41,9 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     });
 
     this.setPartsPosition();
+    const collisionBox = new CollisionBox(-15, this.height / 2 - 40, 30, 20);
+    this.collisionBox = collisionBox;
+    this.addChild(collisionBox);
   }
 
   //setter

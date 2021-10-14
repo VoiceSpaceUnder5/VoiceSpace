@@ -50,7 +50,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
 
     this.setPartsPosition();
 
-    const collisionBox = new CollisionBox(-10, this.height / 2 - 40, 20, 20);
+    const collisionBox = new CollisionBox(-15, this.height / 2 - 40, 30, 20);
     this.collisionBox = collisionBox;
     this.addChild(collisionBox);
   }
