@@ -52,6 +52,7 @@ export function UserList(props: UsersListProps): JSX.Element {
               {idx !== 0 ? (
                 <div className="panel_volume">
                   <input
+                    role="button"
                     className="panel_volume_bar"
                     type="range"
                     min="0"
