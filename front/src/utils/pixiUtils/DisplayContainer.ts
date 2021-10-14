@@ -7,14 +7,11 @@ import {World} from './World';
 const resources = Loader.shared.resources;
 
 export class DisplayContainer extends Container {
-  //members
   world: World;
   collidable: boolean;
   collisionBox: CollisionBox | null;
   parts: Sprite[];
-  update: ((framesPassed: number) => void) | null;
 
-  //constructor
   constructor(world: World) {
     super();
 
@@ -22,10 +19,13 @@ export class DisplayContainer extends Container {
     this.collidable = false;
     this.collisionBox = null;
     this.parts = [];
-    this.update = null;
   }
 
-  //methods
+  update(framesPassed: number): void {
+    framesPassed;
+    return;
+  }
+
   addCollisionBox(
     offsetX: number,
     offsetY: number,
@@ -46,9 +46,5 @@ export class DisplayContainer extends Container {
       }
       this.parts.push(Sprite.from(resources[part].texture!));
     });
-  }
-
-  setUpdate(update: (framesPassed: number) => void): void {
-    this.update = update;
   }
 }

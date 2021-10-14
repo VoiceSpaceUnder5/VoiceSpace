@@ -1,6 +1,6 @@
 import {DisplayObject} from '@pixi/display';
 import {Avatar, AvatarParts, PARTS_ROTATE_SPEED, avatarName} from './Avatar';
-import {Loader} from '@pixi/loaders';
+
 import {MyAvatarKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {CollisionBox} from './CollisionBox';
@@ -53,8 +53,6 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     const collisionBox = new CollisionBox(-10, this.height / 2 - 40, 20, 20);
     this.collisionBox = collisionBox;
     this.addChild(collisionBox);
-
-    this.setUpdate(this.updateMyAvatar);
   }
 
   //setter
@@ -75,7 +73,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
   }
 
-  public updateMyAvatar(framesPassed: number): void {
+  update(framesPassed: number): void {
     if (this.isMoving()) {
       this.state = this.move;
     } else {

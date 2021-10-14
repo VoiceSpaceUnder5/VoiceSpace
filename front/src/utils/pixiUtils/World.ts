@@ -3,20 +3,22 @@ import {Container} from '@pixi/display';
 import {IPointData} from '@pixi/math';
 import {Sprite} from '@pixi/sprite';
 import {DisplayContainer} from './DisplayContainer';
-import {GameData} from './GameData';
 import {IWorld} from './IWorld';
 
 export class World extends Container implements IWorld {
   public startPosition: IPointData;
-
+  public background: DisplayContainer;
   //생성자 인자는 나중에 World를 구성하는 요소들을 묶어서 받아야 한다.(수정 필요)
-  constructor(background: Texture) {
+  constructor(backgroundTexture: Texture) {
     super();
 
     this.startPosition = {x: 0, y: 0};
-    const backgroundSprite = Sprite.from(background);
+    const background = new DisplayContainer(this);
+    const backgroundSprite = Sprite.from(backgroundTexture);
     backgroundSprite.zIndex = -Infinity;
-    this.addChild(backgroundSprite);
+    background.addChild(backgroundSprite);
+    this.background = background;
+    this.addChild(background);
   }
 
   setStartPosition(x: number, y: number): void {
@@ -27,10 +29,7 @@ export class World extends Container implements IWorld {
   update(framesPassed: number): void {
     const children = this.children as DisplayContainer[];
     children.forEach(child => {
-      if (child.update) {
-        child.update(framesPassed);
-        // console.log(child.update);
-      }
+      child.update(framesPassed);
     });
   }
 }
