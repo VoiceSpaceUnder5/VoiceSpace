@@ -1,11 +1,10 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../pages/spacePage/space.css';
 import {UserInfo, UserList} from './UserList';
-import {Message, Messenger} from './Messenger';
-import {DataDto, DataDtoType} from '../utils/RTCGameUtils';
+import {DataDtoType} from '../utils/RTCGameUtils';
 import {ProfileDropdownOnOff} from './Navigation';
 
 export interface PanelProps {
@@ -46,9 +45,6 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
       <Menu.Item key="1" onClick={props.onClickSubMenu}>
         사용자
       </Menu.Item>
-      <Menu.Item key="2" onClick={props.onClickSubMenu}>
-        메시지
-      </Menu.Item>
     </Menu>
   );
 }
@@ -57,10 +53,6 @@ function Panel(props: PanelProps): JSX.Element {
   const [subMenu, setSubMenu] = useState(0);
   const [visible, setVisible] = useState(false);
   const [volume, setVolume] = useState(0);
-  const [message, setMessage] = useState('');
-  const [messageArray, setMessageArray] = useState<string[]>([]);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   const onClickSubMenu = (e: MenuItemProps) => {
     setVisible(true);
@@ -78,58 +70,10 @@ function Panel(props: PanelProps): JSX.Element {
       }, 500);
     }
   };
-  const onClickClose = () => {
-    setVisible(false);
-    setTimeout(() => {
-      setSubMenu(0);
-    }, 500);
-  };
   const onChangeVolume = (changedVolume: number) => {
     volume;
     setVolume(changedVolume);
   };
-  const onMessageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
-  const onSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    const data: DataDto = {
-      type: DataDtoType.CHAT_MESSAGE,
-      data: {
-        nickname: props.getMyNickname(),
-        data: message,
-      },
-    };
-    props.sendMessage(JSON.stringify(data));
-    setMessage('');
-    if (messageArray === undefined) {
-      setMessageArray([`나: ${message}`]);
-    } else {
-      setMessageArray(messageArray.concat(`나: ${message}`));
-    }
-  };
-  const onMessageCallback = (message: Message): void => {
-    const newMessage = `${message.nickname}: ${message.data}`;
-    setMessageArray(before => {
-      return [...before, newMessage];
-    });
-  };
-
-  useEffect(() => {
-    props.setDataChannelEventHandler(
-      DataDtoType.CHAT_MESSAGE,
-      onMessageCallback,
-    );
-    window.onkeypress = (e: KeyboardEvent) => {
-      if (props.profileDropdownOnOff.on === false) {
-        if (e.keyCode === 13) {
-          setSubMenu(2);
-          setVisible(true);
-          inputRef.current?.focus();
-        }
-      }
-    };
-  }, []);
 
   return (
     <Dropdown
@@ -138,21 +82,10 @@ function Panel(props: PanelProps): JSX.Element {
       overlay={
         subMenu === 0
           ? PanelDropDown({...props, onClickSubMenu: onClickSubMenu})
-          : subMenu === 1
-          ? UserList({
+          : UserList({
               getUsers: props.getUsers,
               onClickPrevious: onClickPrevious,
               onChangeVolume: onChangeVolume,
-            })
-          : Messenger({
-              scrollRef: scrollRef,
-              inputRef: inputRef,
-              messageArray: messageArray,
-              onClickPrevious: onClickPrevious,
-              message: message,
-              onMessageInput: onMessageInput,
-              onSendMessage: onSendMessage,
-              onClickClose: onClickClose,
             })
       }
       trigger={['click']}
