@@ -331,7 +331,7 @@ class GLHelper {
     this.updateImageMatrixFromDrawInfo({
       ...imageinfo,
       scale: scale,
-      partRotateRadian: me.partRotatedegree,
+      partRotateRadian: me.partRotatedegree[0],
       centerPos: me.centerPos,
     });
 
@@ -515,11 +515,11 @@ class GLHelper {
     // 회전은 관절부분을 CenterPos로
     let partRotatedegree = 0;
     if (avatarPart === part.LEFT_ARM || avatarPart === part.RIGHT_LEG) {
-      partRotatedegree = player.partRotatedegree;
+      partRotatedegree = player.partRotatedegree[0];
     } else if (avatarPart === part.RIGHT_ARM || avatarPart === part.LEFT_LEG) {
       partRotatedegree = -player.partRotatedegree;
     } else if (avatarPart !== part.BODY)
-      partRotatedegree = player.partRotatedegree / 7.5;
+      partRotatedegree = player.partRotatedegree[0] / 7.5;
     let scale = 1;
     if (isFace) scale = player.avatarFaceScale;
     if (player.lookLeft) scale *= -1;
