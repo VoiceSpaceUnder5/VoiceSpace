@@ -23,13 +23,12 @@ export interface MessengerProps {
 
 export default function Messenger(props: MessengerProps): JSX.Element {
   const [isScrollBottom, setIsScrollBottom] = useState(true);
+  const [isTalkerIsMe, setIsTalkerIsMe] = useState(false);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
   const [messageArray, setMessageArray] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  console.log('messenger rendering!!');
 
   const scrollToBottom = () => {
     if (!props || !scrollRef || !scrollRef.current) {
@@ -42,7 +41,10 @@ export default function Messenger(props: MessengerProps): JSX.Element {
   useEffect(() => {
     if (isScrollBottom) {
       scrollToBottom();
+    } else if (isTalkerIsMe) {
+      scrollToBottom();
     }
+    setIsTalkerIsMe(false);
   }, [messageArray]);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onMessageInput(e);
@@ -61,6 +63,11 @@ export default function Messenger(props: MessengerProps): JSX.Element {
   };
   const onMessageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    setIsTalkerIsMe(true);
+    onSendMessage(e);
   };
   const onSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +107,6 @@ export default function Messenger(props: MessengerProps): JSX.Element {
         }
       }
     };
-    scrollToBottom();
   }, []);
   const result = (
     <div>
@@ -125,7 +131,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
         </div>
       </div>
       <div>
-        <form onSubmit={onSendMessage}>
+        <form onSubmit={onSubmit}>
           <input
             ref={inputRef}
             className="message_input"
