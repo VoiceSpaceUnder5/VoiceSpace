@@ -94,18 +94,32 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     });
   };
 
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (props.profileDropdownOnOff.on === false) {
+      if (e.key === 'Enter') {
+        setVisible(true);
+      } else if (e.key === 'Escape') {
+        onClickClose();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 10);
+    }
+  }, [visible]);
+
   useEffect(() => {
     props.setDataChannelEventHandler(
       DataDtoType.CHAT_MESSAGE,
       onMessageCallback,
     );
-    window.onkeypress = (e: KeyboardEvent) => {
-      if (props.profileDropdownOnOff.on === false) {
-        if (e.keyCode === 13) {
-          setVisible(true);
-          inputRef.current?.focus();
-        }
-      }
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
     };
   }, []);
   const result = (
