@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-interface YoutubeEmbedProps {
+export interface YoutubeEmbedProps {
   left: number;
   top: number;
   videoID: string;
@@ -26,6 +26,9 @@ class YoutubeEmbedRenderer {
   static delete(componentContainer: HTMLDivElement): void {
     ReactDOM.unmountComponentAtNode(componentContainer);
     document.body.removeChild(componentContainer);
+    if (componentContainer === this.lastComponentContainer) {
+      this.lastComponentContainer = null;
+    }
   }
 
   static deleteLastRenderedComponent(): void {
@@ -39,6 +42,7 @@ class YoutubeEmbedRenderer {
 function YoutubeEmbed(props: YoutubeEmbedProps) {
   return (
     <iframe
+      role="presentation"
       style={{...props, position: 'absolute', zIndex: 50}}
       frameBorder={0}
       allowFullScreen
