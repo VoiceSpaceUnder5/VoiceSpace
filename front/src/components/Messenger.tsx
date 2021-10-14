@@ -109,9 +109,9 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     };
   }, []);
   const result = (
-    <div>
+    <div className="message_popup">
       <div className="message_title">
-        <div>메시지</div>
+        <div style={{fontSize: '15px'}}>메시지</div>
         <div>
           <CloseCircleFilled
             style={{marginLeft: '10px'}}

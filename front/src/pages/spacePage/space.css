@@ -327,8 +327,7 @@
 } */
 .users_title,
 .message_title {
-  min-width: 15vw;
-  min-width: 200px;
+  min-width: 100%;
   display: flex;
   justify-content: space-between;
   overflow: hidden;
@@ -357,25 +356,31 @@
   padding-left: 5px;
 }
 .message_array {
-  font-size: 1.8vh;
+  font-size: 15px;
   width: 100%;
   height: 30vh;
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+.message_popup {
+  width: 15vw;
+  padding: 10px;
+  max-width: 400px;
+  min-width: 200px;
+}
 .message {
   width: 100%;
-  max-width: 40vw;
   word-break: break-all;
   word-wrap: break-word;
   line-break: normal;
   white-space: normal;
 }
 .message_input {
-  width: 80%;
+  width: calc(100% - 50px);
 }
 .message_input_button {
-  width: 20%;
+  width: 50px;
 }
 
 .vowel-detect {
