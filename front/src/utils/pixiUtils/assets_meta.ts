@@ -1,5 +1,10 @@
 export const assets = [
-  {name: 'bunnyHead', url: './assets/bunnyHead.png'},
+  {name: 'bunnyFaceMute', url: './assets/bunnyFace_Mute.png'},
+  {name: 'bunnyFaceA', url: './assets/bunnyFace_A.png'},
+  {name: 'bunnyFaceE', url: './assets/bunnyFace_E.png'},
+  {name: 'bunnyFaceI', url: './assets/bunnyFace_I.png'},
+  {name: 'bunnyFaceO', url: './assets/bunnyFace_O.png'},
+  {name: 'bunnyFaceU', url: './assets/bunnyFace_U.png'},
   {name: 'bunnyArm', url: './assets/bunnyArm.png'},
   {name: 'bunnyBody', url: './assets/bunnyBody.png'},
   {name: 'bubble99', url: './assets/Bubbles99px.png'},

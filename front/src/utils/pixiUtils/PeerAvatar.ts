@@ -1,4 +1,4 @@
-import {Avatar, AvatarParts, avatarName} from './Avatar';
+import {Avatar, AvatarParts, avatarName, newAvatar} from './Avatar';
 import {CollisionBox} from './CollisionBox';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
@@ -27,41 +27,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.position.set(centerPos?.x, centerPos?.y);
 
     //this.addChild(part)
-    const partsTextureNames = [
-      avatarName[this.avatar] + 'Arm',
-      avatarName[this.avatar] + 'Arm',
-      avatarName[this.avatar] + 'Body',
-      avatarName[this.avatar] + 'Arm',
-      avatarName[this.avatar] + 'Arm',
-      avatarName[this.avatar] + 'Head',
-    ];
-    this.addParts(partsTextureNames);
-    this.parts.forEach(value => {
-      this.addChild(value);
-    });
-
-    this.setPartsPosition();
-    const collisionBox = new CollisionBox(-15, this.height / 2 - 40, 30, 20);
-    this.collisionBox = collisionBox;
-    this.addChild(collisionBox);
-  }
-
-  //setter
-  private setPartsPosition() {
-    this.parts[AvatarParts.HEAD].anchor.set(0.45, 0.95);
-    this.parts[AvatarParts.BODY].anchor.set(0.5, 0);
-
-    this.parts[AvatarParts.LEFT_ARM].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.LEFT_ARM].position.set(8, 5);
-
-    this.parts[AvatarParts.LEFT_LEG].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.LEFT_LEG].position.set(9, 42);
-
-    this.parts[AvatarParts.RIGHT_ARM].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.RIGHT_ARM].position.set(-8, 5);
-
-    this.parts[AvatarParts.RIGHT_LEG].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
+    newAvatar(this, this.avatar);
   }
 
   update(framesPassed: number): void {

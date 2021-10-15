@@ -1,9 +1,7 @@
 import {DisplayObject} from '@pixi/display';
-import {Avatar, AvatarParts, PARTS_ROTATE_SPEED, avatarName} from './Avatar';
-
+import {Avatar, AvatarParts, PARTS_ROTATE_SPEED, newAvatar} from './Avatar';
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
-import {CollisionBox} from './CollisionBox';
 import {World} from './World';
 import {checkCollision} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
@@ -35,45 +33,10 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.keyboard = new PlayerKeyboard(this);
     this.position.copyFrom(world.startPosition);
     this.viewport = viewport;
-
-    const partsTextureNames = [
-      avatarName[avatar] + 'Arm',
-      avatarName[avatar] + 'Arm',
-      avatarName[avatar] + 'Body',
-      avatarName[avatar] + 'Arm',
-      avatarName[avatar] + 'Arm',
-      avatarName[avatar] + 'Head',
-    ];
-    this.addParts(partsTextureNames);
-
-    this.parts.forEach(part => {
-      this.addChild(part);
-    });
-
-    this.setPartsPosition();
-
-    const collisionBox = new CollisionBox(-15, this.height / 2 - 40, 30, 20);
-    this.collisionBox = collisionBox;
-    this.addChild(collisionBox);
+    newAvatar(this, avatar);
   }
 
   //setter
-  private setPartsPosition() {
-    this.parts[AvatarParts.HEAD].anchor.set(0.45, 0.95);
-    this.parts[AvatarParts.BODY].anchor.set(0.5, 0);
-
-    this.parts[AvatarParts.LEFT_ARM].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.LEFT_ARM].position.set(8, 5);
-
-    this.parts[AvatarParts.LEFT_LEG].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.LEFT_LEG].position.set(9, 42);
-
-    this.parts[AvatarParts.RIGHT_ARM].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.RIGHT_ARM].position.set(-8, 5);
-
-    this.parts[AvatarParts.RIGHT_LEG].anchor.set(0.5, 0.2);
-    this.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
-  }
 
   update(framesPassed: number): void {
     if (this.isMoving()) {
@@ -97,7 +60,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
   }
 
   private initArmAndLegsAngle() {
-    this.parts[AvatarParts.HEAD].angle = 0;
+    // this.parts[AvatarParts.FACE].angle = 0;
     this.parts[AvatarParts.LEFT_ARM].angle = 0;
     this.parts[AvatarParts.LEFT_LEG].angle = 0;
     this.parts[AvatarParts.RIGHT_ARM].angle = 0;
@@ -130,7 +93,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.parts[AvatarParts.RIGHT_ARM].angle = this.referenceDegree * 2;
     this.parts[AvatarParts.LEFT_LEG].angle = this.referenceDegree * 1;
     this.parts[AvatarParts.LEFT_ARM].angle = -this.referenceDegree * 2;
-    this.parts[AvatarParts.HEAD].angle = this.referenceDegree * 0.3;
+    this.parts[AvatarParts.FACE].angle = this.referenceDegree * 0.3;
     this.updatePartRotateAngle();
   }
 
@@ -138,7 +101,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.updateReferenceAngle();
     this.parts[AvatarParts.RIGHT_ARM].angle = this.referenceDegree * 1;
     this.parts[AvatarParts.LEFT_ARM].angle = -this.referenceDegree * 1;
-    this.parts[AvatarParts.HEAD].angle = this.referenceDegree * 0.1;
+    this.parts[AvatarParts.FACE].angle = this.referenceDegree * 0.1;
     this.updatePartRotateAngle();
   }
 
