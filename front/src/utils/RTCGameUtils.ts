@@ -169,6 +169,7 @@ export class AudioAnalyser {
       candidates.sort((a, b) => b.similarity - a.similarity);
 
       if (candidates[0].similarity > 0.9 && candidates[0].distPercent > 0.5) {
+        // console.log(candidates[0].vowel);
         if (candidates[0].vowel === 'A')
           avatarFace = AvatarPartImageEnum.FACE_A;
         else if (candidates[0].vowel === 'E')
@@ -218,7 +219,7 @@ export class Me implements PlayerDto {
   isMoving: boolean;
 
   // AudioAnalyser
-  private audioAnalyser: AudioAnalyser;
+  public audioAnalyser: AudioAnalyser;
   constructor(
     nicknameDiv: HTMLDivElement,
     textMessageDiv: HTMLDivElement,

@@ -1,11 +1,14 @@
-import {Avatar, AvatarParts, avatarName, newAvatar} from './Avatar';
-import {CollisionBox} from './CollisionBox';
+import {Sprite} from '@pixi/sprite';
+import {AvatarPartImageEnum} from '../ImageMetaData';
+import {Avatar, AvatarParts, newAvatar, swapFace} from './Avatar';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {World} from './World';
 
 export class PeerAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
+  public avatarFace: AvatarPartImageEnum;
+  public avatarFaceScale: number;
   public partRotateDegree: number[];
   public socketID: string;
 
@@ -17,6 +20,8 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
       console.error("Error: This Peer's Avatar undefined");
     }
     this.avatar = avatar || 0;
+    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatarFaceScale = 1.0;
     this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.socketID = socketID;
 
@@ -36,6 +41,8 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.changeZIndex();
     this.changePartRotationDegree();
     this.changeLookDirection();
+    this.changeAvatarFace();
+    this.changeAvatarFaceScale();
     //Peer의 Avatar번호가 바뀌었으면 바꾸어준다. 아바타를
     // Peer의 scale을 받아서 얼굴에 적용한다.
     // Peer의 AvatarFace를 받아서 얼굴에 적용한다.
@@ -64,5 +71,23 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     const lookLeft = GameData.getPeerAvatarLookLeft(this.socketID);
     if (lookLeft === undefined) return;
     this.scale.x = lookLeft ? -1 : 1;
+  }
+
+  private changeAvatarFace(): void {
+    const avatarFace = GameData.getPeerAvatarFace(this.socketID);
+    if (avatarFace === undefined) return;
+    this.avatarFace = avatarFace;
+    swapFace(
+      this.avatar,
+      this.children[AvatarParts.FACE] as Sprite,
+      this.avatarFace,
+    );
+  }
+
+  private changeAvatarFaceScale(): void {
+    const avatarFaceScale = GameData.getPeerAvatarFaceScale(this.socketID);
+    if (avatarFaceScale === undefined) return;
+    this.avatarFaceScale = avatarFaceScale;
+    this.parts[AvatarParts.FACE].scale.set(this.avatarFaceScale);
   }
 }

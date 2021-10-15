@@ -20,6 +20,15 @@ export class GameData {
   public static getMyAvatar(): number {
     return this.peerManager.me.avatar;
   }
+  public static getMyAvatarFace(): AvatarPartImageEnum {
+    return this.peerManager.me.audioAnalyser.getAvatarFaceDtoByAudioAnalysis()
+      .avatarFace;
+  }
+
+  public static getMyAvatarFaceScale(): number {
+    return this.peerManager.me.audioAnalyser.getAvatarFaceDtoByAudioAnalysis()
+      .avatarFaceScale;
+  }
 
   public static updatePlayerDto(player: MyAvatar): void {
     const me = this.peerManager.me;
@@ -28,6 +37,8 @@ export class GameData {
     me.centerPos.y = player.y;
     me.partRotatedegree = player.partRotateDegree;
     me.lookLeft = player.scale.x < 0;
+    me.avatarFace = player.avatarFace;
+    me.avatarFaceScale = player.avatarFaceScale;
   }
 
   public static sendMyDto(): void {

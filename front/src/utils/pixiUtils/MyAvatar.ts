@@ -1,14 +1,24 @@
 import {DisplayObject} from '@pixi/display';
-import {Avatar, AvatarParts, PARTS_ROTATE_SPEED, newAvatar} from './Avatar';
+import {
+  Avatar,
+  AvatarParts,
+  PARTS_ROTATE_SPEED,
+  newAvatar,
+  swapFace,
+} from './Avatar';
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {World} from './World';
 import {checkCollision} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
+import {AvatarPartImageEnum} from '../ImageMetaData';
+import {Sprite} from '@pixi/sprite';
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
+  public avatarFace: AvatarPartImageEnum;
+  public avatarFaceScale: number;
   public partRotateDegree: number[];
   private referenceDegree: number;
   private rotateClockWise: boolean;
@@ -22,6 +32,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     super(world);
 
     this.avatar = avatar;
+    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatarFaceScale = 1.0;
     this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.referenceDegree = 0;
     this.rotateClockWise = true;
@@ -37,8 +49,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
   }
 
   //setter
-
   update(framesPassed: number): void {
+    this.updateFace();
     if (this.isMoving()) {
       this.state = this.move;
     } else {
@@ -48,6 +60,17 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.state(framesPassed);
     GameData.updatePlayerDto(this);
     GameData.sendMyDto();
+  }
+
+  updateFace(): void {
+    this.avatarFace = GameData.getMyAvatarFace();
+    this.avatarFaceScale = GameData.getMyAvatarFaceScale();
+    this.parts[AvatarParts.FACE].scale.set(this.avatarFaceScale);
+    swapFace(
+      this.avatar,
+      this.children[AvatarParts.FACE] as Sprite,
+      this.avatarFace,
+    );
   }
 
   private isMoving() {

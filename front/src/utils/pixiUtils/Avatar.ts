@@ -1,11 +1,14 @@
 import {Texture} from '@pixi/core';
+import {Loader} from '@pixi/loaders';
 import {Sprite} from '@pixi/sprite';
-import {AvatarImageEnum} from '../ImageMetaData';
+import {AvatarImageEnum, AvatarPartImageEnum} from '../ImageMetaData';
 import {CollisionBox} from './CollisionBox';
 import {DisplayContainer} from './DisplayContainer';
 
 export interface Avatar {
   avatar: number;
+  avatarFace: AvatarPartImageEnum;
+  avatarFaceScale: number;
   partRotateDegree: number[];
 }
 
@@ -21,7 +24,6 @@ export enum AvatarParts {
 export const PARTS_ROTATE_SPEED = 2;
 
 export const avatarName = ['bunny'];
-
 export function newAvatar(
   avatar: DisplayContainer,
   avatarEnum: AvatarImageEnum,
@@ -43,6 +45,19 @@ export function newAvatar(
 
   setPartsPosition(avatar);
   addCollisionBox(avatar, -15, avatar.height / 2 - 40, 30, 20);
+}
+
+export function swapFace(
+  avatar: AvatarImageEnum,
+  face: Sprite,
+  vowel: AvatarPartImageEnum,
+): void {
+  const faceState = ['FaceMute', 'FaceA', 'FaceE', 'FaceI', 'FaceO', 'FaceU'];
+  let index = vowel - 7;
+  if (index < 0) index = 0;
+  const name = avatarName[avatar];
+  const texture = Loader.shared.resources[name + faceState[index]].texture;
+  if (texture) face.texture = texture;
 }
 
 export function swapSpriteTexture(sprite: Sprite, texture: Texture): void {
