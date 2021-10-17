@@ -42,7 +42,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.state = this.stand;
     this.parts = [];
     this.pivot.set(0.5, 0.5);
-    this.keyboard = new PlayerKeyboard(this);
+    this.keyboard = new PlayerKeyboard(this, 'KeyA', 'KeyD', 'KeyW', 'KeyS');
     this.position.copyFrom(world.startPosition);
     this.viewport = viewport;
     newAvatar(this, avatar);

@@ -10,11 +10,17 @@ export class PlayerKeyboard {
   public up: Key;
   public down: Key;
 
-  constructor(player: MyAvatar) {
-    this.left = keyboard('KeyA');
-    this.right = keyboard('KeyD');
-    this.up = keyboard('KeyW');
-    this.down = keyboard('KeyS');
+  constructor(
+    player: MyAvatar,
+    leftKeyCode: string,
+    rightKeyCode: string,
+    upKeyCode: string,
+    downKeyCode: string,
+  ) {
+    this.left = keyboard(leftKeyCode);
+    this.right = keyboard(rightKeyCode);
+    this.up = keyboard(upKeyCode);
+    this.down = keyboard(downKeyCode);
 
     this.initialize(player);
   }
