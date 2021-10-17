@@ -1,0 +1,215 @@
+{
+	"frames": {
+		"background.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 3072,
+				"h": 3072
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 3072,
+				"h": 3072
+			},
+			"sourceSize": {
+				"w": 3072,
+				"h": 3072
+			}
+		},
+		"bunnyArm.png": {
+			"frame": {
+				"x": 3075,
+				"y": 1,
+				"w": 11,
+				"h": 28
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 11,
+				"h": 28
+			},
+			"sourceSize": {
+				"w": 11,
+				"h": 28
+			}
+		},
+		"bunnyBody.png": {
+			"frame": {
+				"x": 3088,
+				"y": 1,
+				"w": 32,
+				"h": 47
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 47
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 47
+			}
+		},
+		"bunnyFace_A.png": {
+			"frame": {
+				"x": 3122,
+				"y": 1,
+				"w": 102,
+				"h": 110
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 102,
+				"h": 110
+			},
+			"sourceSize": {
+				"w": 102,
+				"h": 110
+			}
+		},
+		"bunnyFace_E.png": {
+			"frame": {
+				"x": 3075,
+				"y": 113,
+				"w": 102,
+				"h": 110
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 102,
+				"h": 110
+			},
+			"sourceSize": {
+				"w": 102,
+				"h": 110
+			}
+		},
+		"bunnyFace_I.png": {
+			"frame": {
+				"x": 3075,
+				"y": 225,
+				"w": 102,
+				"h": 110
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 102,
+				"h": 110
+			},
+			"sourceSize": {
+				"w": 102,
+				"h": 110
+			}
+		},
+		"bunnyFace_Mute.png": {
+			"frame": {
+				"x": 3075,
+				"y": 337,
+				"w": 102,
+				"h": 110
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 102,
+				"h": 110
+			},
+			"sourceSize": {
+				"w": 102,
+				"h": 110
+			}
+		},
+		"bunnyFace_O.png": {
+			"frame": {
+				"x": 3075,
+				"y": 449,
+				"w": 102,
+				"h": 110
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 102,
+				"h": 110
+			},
+			"sourceSize": {
+				"w": 102,
+				"h": 110
+			}
+		},
+		"bunnyFace_U.png": {
+			"frame": {
+				"x": 3075,
+				"y": 561,
+				"w": 102,
+				"h": 110
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 102,
+				"h": 110
+			},
+			"sourceSize": {
+				"w": 102,
+				"h": 110
+			}
+		},
+		"tree1.png": {
+			"frame": {
+				"x": 3226,
+				"y": 1,
+				"w": 491,
+				"h": 493
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 491,
+				"h": 493
+			},
+			"sourceSize": {
+				"w": 491,
+				"h": 493
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 3718,
+			"h": 3074
+		},
+		"scale": "1"
+	}
+}
