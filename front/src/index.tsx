@@ -19,11 +19,11 @@ window.addEventListener('resize', () => {
 
 function Router() {
   return (
-    <div>
+    <>
       <Route path="/" exact component={Home} />
       <Route path="/space" component={Space} />
       <Route path="/setting" component={Setting} />
-    </div>
+    </>
   );
 }
 

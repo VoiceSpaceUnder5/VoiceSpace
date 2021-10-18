@@ -27,7 +27,7 @@ export interface LoadingInfo {
 }
 
 function setNewPeerManager(
-  nicknameContainer: HTMLDivElement,
+  spaceMainContainer: HTMLDivElement,
   audioContainer: HTMLDivElement,
   query: SpaceQuery,
   initialCenterPos: Vec2,
@@ -49,11 +49,11 @@ function setNewPeerManager(
         const audioAnalyser = new AudioAnalyser(stream);
         const nicknameDiv = document.createElement('div') as HTMLDivElement;
         nicknameDiv.className = 'canvasOverlay';
-        nicknameContainer.appendChild(nicknameDiv);
+        spaceMainContainer.appendChild(nicknameDiv);
 
         const textMessageDiv = document.createElement('div') as HTMLDivElement;
         textMessageDiv.className = 'canvasOverlay';
-        nicknameContainer.appendChild(textMessageDiv);
+        spaceMainContainer.appendChild(textMessageDiv);
 
         const me = new Me(
           nicknameDiv,
@@ -69,7 +69,7 @@ function setNewPeerManager(
           signalingHelper,
           stream,
           audioContainer,
-          nicknameContainer,
+          spaceMainContainer,
           iceConfig,
           query.roomId,
           me,
@@ -117,18 +117,18 @@ function Space(props: RouteComponentProps): JSX.Element {
   }
   const mapMakingInfo = forestMapMMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
   //ref
-  const divContainerRef = useRef<HTMLDivElement>(null);
+  const spaceMainContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
 
   //useEffect onMounted
   useEffect(() => {
     if (!isQueryValid(query)) return;
-    if (!divContainerRef.current || !audioContainerRef.current) {
+    if (!spaceMainContainerRef.current || !audioContainerRef.current) {
       console.error('can not find div,audio Container error');
       return;
     }
     setNewPeerManager(
-      divContainerRef.current,
+      spaceMainContainerRef.current,
       audioContainerRef.current,
       query,
       {...mapMakingInfo.respawnPosition},
@@ -149,7 +149,7 @@ function Space(props: RouteComponentProps): JSX.Element {
   };
 
   return (
-    <>
+    <div id="spaceMainContainer" ref={spaceMainContainerRef}>
       {peerManager ? (
         <>
           <SpaceCanvas2 peerManager={peerManager} />
@@ -161,13 +161,12 @@ function Space(props: RouteComponentProps): JSX.Element {
           message="오디오를 가져오고 서버와 연결 중"
         ></SpaceLoading>
       )}
-      <div id="divContainer" ref={divContainerRef}></div>
       <div
         id="audioContainer"
         ref={audioContainerRef}
         style={{width: '0', height: '0'}}
       ></div>
-    </>
+    </div>
   );
 }
 

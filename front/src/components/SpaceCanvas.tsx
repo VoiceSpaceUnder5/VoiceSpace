@@ -220,8 +220,6 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
     };
   }, [loadStatus]);
 
-
-
   return (
     <>
       <canvas id="game-canvas"></canvas>
