@@ -66,6 +66,10 @@ export class GameScene extends Container implements Scene {
     GameData.addExistingPeers(world);
     GameData.addOnPeerCreatedHandler(world.addPeerAvatar.bind(world));
     GameData.addOnPeerDeletedHandler(world.deletePeerAvatar.bind(world));
+    // window.addEventListener('compositionupdate', handler, false);
+    // function handler(e: Event) {
+    //   console.log(e);
+    // }
   }
 
   public update(framesPassed: number): void {
