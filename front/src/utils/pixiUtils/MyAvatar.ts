@@ -149,7 +149,10 @@ export class MyAvatar extends DisplayContainer implements Avatar {
       if (
         !(this === stuffs[i]) &&
         stuffs[i].collisionBox &&
-        checkIntersect(this.collisionBox!, stuffs[i].collisionBox!)
+        checkIntersect(
+          this.collisionBox as DisplayObject,
+          stuffs[i].collisionBox as DisplayObject,
+        )
       )
         return true;
     }

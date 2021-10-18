@@ -3,6 +3,7 @@ import {Loader} from '@pixi/loaders';
 import {Sprite} from '@pixi/sprite';
 import {CollisionBox} from './CollisionBox';
 import {World} from './World';
+import {Resource, Texture} from 'pixi.js';
 
 const resources = Loader.shared.resources;
 
@@ -44,7 +45,8 @@ export class DisplayContainer extends Container {
         console.error('Error: Resource parts undefined');
         return;
       }
-      this.parts.push(Sprite.from(resources[part].texture!));
+      const partTexture = resources[part].texture as Texture<Resource>;
+      this.parts.push(Sprite.from(partTexture));
     });
   }
 }

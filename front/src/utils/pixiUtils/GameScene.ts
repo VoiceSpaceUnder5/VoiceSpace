@@ -8,6 +8,7 @@ import {Stuff} from './Stuff';
 import {GameData} from './GameData';
 import world1Json from './world1.json';
 import {createViewport} from './viewportUtils';
+import {Texture, Resource} from 'pixi.js';
 
 const resources = Loader.shared.resources;
 export class GameScene extends Container implements Scene {
@@ -18,7 +19,9 @@ export class GameScene extends Container implements Scene {
   constructor() {
     super();
 
-    const world = new World(resources['background'].texture!);
+    const backgroundTexture = resources['background']
+      .texture as Texture<Resource>;
+    const world = new World(backgroundTexture);
     this.world = world;
 
     const viewport = createViewport(world.width, world.height);
