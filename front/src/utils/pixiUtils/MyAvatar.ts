@@ -60,8 +60,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.state(framesPassed);
     GameData.updatePlayerDto(this);
     GameData.sendMyDto();
-    GameData.setMyNickNameDivPos(this, 130);
-    GameData.setTextMessageDivPos(this, 130);
+    GameData.setDivPos(this);
   }
 
   updateFace(): void {

@@ -111,6 +111,26 @@ export class GameData {
     return this.peerManager.peers.get(socketID)?.lookLeft;
   }
 
+  public static getPeerAvatarNicknameDiv(
+    socketID: string,
+  ): HTMLDivElement | undefined {
+    if (!this.peerManager.peers.has(socketID)) {
+      console.error("Error: There's No matching Peer ID");
+      return undefined;
+    }
+    return this.peerManager.peers.get(socketID)?.nicknameDiv;
+  }
+
+  public static getPeerAvatarTextMessageDiv(
+    socketID: string,
+  ): HTMLDivElement | undefined {
+    if (!this.peerManager.peers.has(socketID)) {
+      console.error("Error: There's No matching Peer ID");
+      return undefined;
+    }
+    return this.peerManager.peers.get(socketID)?.textMessageDiv;
+  }
+
   public static isConnectionAlive(socketID: string): boolean {
     if (this.peerManager.peers.get(socketID) === undefined) return false;
     else return true;
@@ -134,37 +154,48 @@ export class GameData {
     });
   }
 
-  public static setMyNickNameDivPos(player: MyAvatar, offsetY: number): void {
+  public static setMeNicknameDivPos(player: MyAvatar, offsetY: number): void {
     const nickNameDiv = this.peerManager.me.nicknameDiv;
     const offsetX = nickNameDiv.clientWidth / 2;
     nickNameDiv.style.left = `${
       player.x * player.viewport.scale.x + player.viewport.x - offsetX
     }px`;
-    // console.log('Player pos ', player.x, player.viewport.x);
     nickNameDiv.style.top = `${
-      player.y * player.viewport.scale.y +
-      player.viewport.y -
-      offsetY * player.viewport.scale.y
+      (player.y - offsetY) * player.viewport.scale.y + player.viewport.y
     }px`;
   }
 
-  public static setTextMessageDivPos(player: MyAvatar, offsetY: number): void {
+  public static setMeTextMessageDivPos(
+    player: MyAvatar,
+    offsetY: number,
+  ): void {
+    console.log('test');
     const textMessageDiv = this.peerManager.me.textMessageDiv;
-    textMessageDiv.className = 'canvasOverlay-textMessage-top';
+    textMessageDiv.className = 'canvasOverlay-textMessage-bottom';
     const offsetX = textMessageDiv.clientWidth / 2;
     textMessageDiv.style.left = `${
       player.x * player.viewport.scale.x + player.viewport.x - offsetX
     }px`;
-    // console.log('Player pos ', player.x, player.viewport.x);
     textMessageDiv.style.top = `${
-      player.y * player.viewport.scale.y +
-      player.viewport.y -
-      offsetY * player.viewport.scale.y
+      (player.y - textMessageDiv.clientHeight - offsetY) *
+        player.viewport.scale.y +
+      player.viewport.y
     }px`;
   }
 
   public static isTextMessageExist(): boolean {
-    const textMessageDiv = this.peerManager.me.textMessageDiv;
-    return textMessageDiv.innerText !== '';
+    return this.peerManager.me.textMessage !== '';
+  }
+
+  public static setDivPos(player: MyAvatar): void {
+    if (this.isTextMessageExist()) {
+      this.peerManager.me.nicknameDiv.style.visibility = 'hidden';
+      this.peerManager.me.textMessageDiv.style.visibility = 'visible';
+      this.setMeTextMessageDivPos(player, 130);
+    } else {
+      this.peerManager.me.nicknameDiv.style.visibility = 'visible';
+      this.peerManager.me.textMessageDiv.style.visibility = 'hidden';
+      this.setMeNicknameDivPos(player, 130);
+    }
   }
 }
