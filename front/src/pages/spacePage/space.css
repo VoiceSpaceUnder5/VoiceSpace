@@ -12,8 +12,8 @@
   display: block;
 }
 
-/* 이름표, 마우스 클릭좌표 받아오기 등 기능 */
-#divContainer {
+/* 이름표, 말풍선, 캔버스 모두를 담는 컨테이너 기능 */
+#spaceMainContainer {
   /* flex: 1; */
   position: absolute;
   left: 0px;
@@ -27,6 +27,12 @@
   /* height: calc(var(--vh) * 92);
   height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
   overflow: hidden;
+}
+
+#audioContainer {
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }
 
 .canvasOverlay {
