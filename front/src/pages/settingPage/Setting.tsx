@@ -5,6 +5,8 @@ import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import './setting.css';
 import {
   AvatarImageEnum,
+  AvatarImageEnumMax,
+  AvatarImageEnumMin,
   avatarImageMDs,
   AvatarPartImageEnum,
 } from '../../utils/ImageMetaData';
@@ -167,13 +169,15 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
   return <canvas className="settingAudioVisualizer" ref={canvasRef}></canvas>;
 }
 
+export const nicknameDefaultValue = '익명의 토끼';
+
 function Setting(props: RouteComponentProps): JSX.Element {
   // values
   const query = qs.parse(props.location.search) as SettingQuery;
   const settingWindowWidth = 400;
   const settingWindowHeight = 400;
-  const avatarIdxMax = AvatarImageEnum.WHITE_RABBIT;
-  const avatarIdxMin = AvatarImageEnum.WHITE_RABBIT;
+  const avatarIdxMax = AvatarImageEnumMax;
+  const avatarIdxMin = AvatarImageEnumMin;
 
   //states
   const [deviceInfos, setDeviceInfos] = useState<MediaDeviceInfo[]>([]);
@@ -183,7 +187,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isListenMyMic, setIsListenMyMic] = useState(false);
-  const [nickname, setNickname] = useState('익명의 토끼');
+  const [nickname, setNickname] = useState(nicknameDefaultValue);
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
     AvatarImageEnum.WHITE_RABBIT,
   );
@@ -240,7 +244,6 @@ function Setting(props: RouteComponentProps): JSX.Element {
           );
         });
     } catch (error) {
-      console.error(error);
       message.error(
         '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
       );
