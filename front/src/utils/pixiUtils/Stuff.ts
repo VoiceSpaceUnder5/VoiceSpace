@@ -1,5 +1,6 @@
 import {Loader} from '@pixi/loaders';
 import {Sprite} from '@pixi/sprite';
+import {checkCollision, checkIntersect} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {World} from './World';
 
@@ -14,5 +15,17 @@ export class Stuff extends DisplayContainer {
     sprite.anchor.set(0.5, 1);
     this.zIndex = this.y;
     this.addChild(sprite);
+  }
+
+  update(framesPassed: number): void {
+    this.changeAlpha();
+  }
+
+  private changeAlpha(): void {
+    if (this.world.player === null) return;
+    if (this.world.player.collisionBox === null) return;
+    if (checkIntersect(this.world.player.collisionBox, this)) {
+      this.alpha = 0.5;
+    } else this.alpha = 1;
   }
 }

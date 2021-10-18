@@ -9,7 +9,7 @@ import {
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {World} from './World';
-import {checkCollision} from './CheckCollision';
+import {checkCollision, checkIntersect} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {AvatarPartImageEnum} from '../ImageMetaData';
@@ -147,7 +147,11 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     const stuffs = world.children as DisplayContainer[];
     if (isOutOfWorld(this, this.viewport, 50)) return true;
     for (let i = 1; i < stuffs.length; ++i) {
-      if (!(this === stuffs[i]) && checkCollision(this, stuffs[i])) return true;
+      if (
+        !(this === stuffs[i]) &&
+        checkIntersect(this.collisionBox!, stuffs[i].collisionBox!)
+      )
+        return true;
     }
     return false;
   }
