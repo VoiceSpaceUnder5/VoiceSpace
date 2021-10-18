@@ -609,25 +609,17 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   };
   const screenshare = () => {
     return (
-      <>
-        <Menu>
-          <Menu.Item key="0">
-            <a role="button" onClick={screenShareOnClick}>
-              화면 공유
-            </a>
-          </Menu.Item>
-          <Menu.Item key="1">
-            <a role="button" onClick={screenShareStopOnClick}>
-              정지
-            </a>
-          </Menu.Item>
-          <Menu.Item key="2">
-            <a role="button" onClick={sortSharedScreenOnClick}>
-              공유화면 정렬
-            </a>
-          </Menu.Item>
-        </Menu>
-      </>
+      <Menu className="dropdown_menu">
+        <Menu.Item key="0" onClick={screenShareOnClick}>
+          <a role="button">화면 공유</a>
+        </Menu.Item>
+        <Menu.Item key="1" onClick={screenShareStopOnClick}>
+          <a role="button">정지</a>
+        </Menu.Item>
+        <Menu.Item key="2" onClick={sortSharedScreenOnClick}>
+          <a role="button">공유화면 정렬</a>
+        </Menu.Item>
+      </Menu>
     );
   };
   return (

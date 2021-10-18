@@ -53,16 +53,16 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
   const [optionVisible, setOptionVisible] = useState(false);
 
   const onClickUserList = () => {
-    props.hidePanel();
+    // props.hidePanel();
     setUserListVisible(true);
   };
 
   const onClickOption = () => {
-    props.hidePanel();
+    // props.hidePanel();
     setOptionVisible(true);
   };
   return (
-    <Menu>
+    <Menu className="dropdown_menu">
       <Menu.Item key="0">
         <CopyToClipboard
           text={`https://giggleforest.com/space?roomId=${props.roomId}`}

@@ -16,7 +16,7 @@ interface OptionsProps {
 
 function OptionDropDown(props: OptionDropDownProps) {
   return (
-    <Menu>
+    <Menu className="dropdown_option_menu">
       <Menu.Item key="0" disabled={false}>
         <a className="setting-button" onClick={props.onClickSetting}>
           설정
@@ -63,7 +63,7 @@ function Options(props: OptionsProps): JSX.Element {
   };
   return (
     <Dropdown
-      placement={'topRight'}
+      placement={'topCenter'}
       visible={visible}
       onVisibleChange={onClickPrevious}
       overlay={
