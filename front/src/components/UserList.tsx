@@ -1,5 +1,5 @@
 import React from 'react';
-import {Menu} from 'antd';
+import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled} from '@ant-design/icons';
 import {
   AvatarImageEnum,
@@ -23,6 +23,7 @@ export interface UsersListProps {
 
 export function UserList(props: UsersListProps): JSX.Element {
   const users = props.getUsers();
+
   return (
     <Menu className="user_drop_down">
       <Menu.Item key="10">
