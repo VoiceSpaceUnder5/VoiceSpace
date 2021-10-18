@@ -19,6 +19,7 @@ class mockAnalyserNode {
 
 class mockMediaStreamAudioSourceNode {
   connect = jest.fn();
+  disconnect = jest.fn();
 }
 
 class mockAudioContext {
