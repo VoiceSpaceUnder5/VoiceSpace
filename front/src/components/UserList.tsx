@@ -34,46 +34,51 @@ export function UserList(props: UsersListProps): JSX.Element {
         </div>
       </Menu.Item>
       <Menu.Divider></Menu.Divider>
-      {users.map((user, idx) => {
-        return (
-          <Menu.Item key={idx.toString()}>
-            <div className="user_list" key={idx + 1} style={{color: '#606060'}}>
-              <div>
-                <img
-                  className="user_list_avatar"
-                  src={
-                    avatarImageMDs[user.avatar].avatarMDInfos[
-                      AvatarPartImageEnum.FACE_MUTE
-                    ].src
-                  }
-                ></img>{' '}
-                {user.nickname}
-              </div>
-              {idx !== 0 ? (
-                <div className="panel_volume">
-                  <input
-                    role="button"
-                    className="panel_volume_bar"
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={user.volume * 100}
-                    onChange={e => {
-                      user.setVolume(Number(e.target.value) * 0.01);
-                      props.onChangeVolume(user.volume);
-                    }}
-                  />
-                  <output className="panel_volume_value">
-                    {Math.round(user.volume * 100)}
-                  </output>
+      {users &&
+        users.map((user, idx) => {
+          return (
+            <Menu.Item key={idx.toString()}>
+              <div
+                className="user_list"
+                key={idx + 1}
+                style={{color: '#606060'}}
+              >
+                <div>
+                  <img
+                    className="user_list_avatar"
+                    src={
+                      avatarImageMDs[user.avatar].avatarMDInfos[
+                        AvatarPartImageEnum.FACE_MUTE
+                      ].src
+                    }
+                  ></img>{' '}
+                  {user.nickname}
                 </div>
-              ) : (
-                <></>
-              )}
-            </div>
-          </Menu.Item>
-        );
-      })}
+                {idx !== 0 ? (
+                  <div className="panel_volume">
+                    <input
+                      role="button"
+                      className="panel_volume_bar"
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={user.volume * 100}
+                      onChange={e => {
+                        user.setVolume(Number(e.target.value) * 0.01);
+                        props.onChangeVolume(user.volume);
+                      }}
+                    />
+                    <output className="panel_volume_value">
+                      {Math.round(user.volume * 100)}
+                    </output>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </Menu.Item>
+          );
+        })}
     </Menu>
   );
 }

@@ -1,3 +1,7 @@
+/* * {
+  animation-duration: 0s !important;
+} */
+
 /* canvas */
 .spaceCanvas {
   width: 100vw;
@@ -289,12 +293,27 @@
   /* -moz-transition: opacity .25s ease-in-out;
   -webkit-transition */
 }
-.panel_button,
-.panel_button > * {
-  color: black;
-  border: 0px;
-  background-color: white;
+
+.dropdown_option_menu {
+  border-radius: 15px;
+  border: 4px solid #53150d;
+  background-color: #ac9693;
 }
+
+.dropdown_menu {
+  border-radius: 15px;
+  border: 4px solid #53150d;
+  background-color: #ac9693ca;
+}
+.dropdown_menu > *:hover {
+  border-radius: 15px;
+  background-color: #764b45;
+}
+.dropdown_option_menu > *:hover {
+  border-radius: 15px;
+  background-color: #764b45;
+}
+
 .user_list {
   width: 15vw;
   min-width: 200px;
@@ -420,7 +439,6 @@
     /* box-shadow: 1px 1px 1px 0 gray; */
   }
   .navbar_button:hover {
-    color: gainsboro;
     /* border: 1px solid #2598f1;
     background-color: #2598f1; */
     border-radius: 5px;

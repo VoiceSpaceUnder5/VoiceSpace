@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Menu, Dropdown} from 'antd';
-import {EllipsisOutlined} from '@ant-design/icons';
 import SettingDropDown from './Setting';
 
 interface OptionDropDownProps {
@@ -12,15 +11,12 @@ interface OptionsProps {
   changeInputStream: (stream: MediaStream) => void;
   seletedOutputDevice: string;
   seletedInputDevice: string;
+  onClickOption: () => void;
 }
-
-// interface SettingDropDownProps {
-//   onClickPrevious: () => void;
-// }
 
 function OptionDropDown(props: OptionDropDownProps) {
   return (
-    <Menu>
+    <Menu className="dropdown_option_menu">
       <Menu.Item key="0" disabled={false}>
         <a className="setting-button" onClick={props.onClickSetting}>
           설정
@@ -52,6 +48,7 @@ function Options(props: OptionsProps): JSX.Element {
   const onClickSetting = () => {
     setVisible(true);
     setDepth(1);
+    props.onClickOption();
   };
   const onClickPrevious = () => {
     setVisible(!visible);
@@ -66,6 +63,7 @@ function Options(props: OptionsProps): JSX.Element {
   };
   return (
     <Dropdown
+      placement={'topCenter'}
       visible={visible}
       onVisibleChange={onClickPrevious}
       overlay={
@@ -84,7 +82,7 @@ function Options(props: OptionsProps): JSX.Element {
       trigger={['click']}
     >
       <a className="ant_dropdown_link" onClick={e => e.preventDefault()}>
-        <EllipsisOutlined className="navbar_button" />
+        옵션
       </a>
     </Dropdown>
   );

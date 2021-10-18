@@ -1,11 +1,9 @@
 import React, {useEffect} from 'react';
 import 'antd/dist/antd.css';
 import '../pages/spacePage/space.css';
-import {LogoutOutlined} from '@ant-design/icons';
 import MicOnOff from './MicOnOff';
 import Profile from './Profile';
 import ScreenShare from './ScreenShare';
-import Options from './Options';
 import Panel from './Panel';
 import Messenger from './Messenger';
 import PeerManager, {
@@ -302,12 +300,6 @@ function Navigation(props: NavigationProps): JSX.Element {
           setOtherSideClear={setOtherSideClear}
           getNickNameFromSocketID={getNickNameFromSocketID}
         />
-        <Options
-          changeEachAudio={changeEachAudio}
-          changeInputStream={changeInputStream}
-          seletedInputDevice={props.peerManager.micDeviceID}
-          seletedOutputDevice={props.peerManager.speakerDeviceID}
-        />
         <VowelDetectButton />
         <Messenger
           getMyNickname={getMyNickname}
@@ -315,12 +307,13 @@ function Navigation(props: NavigationProps): JSX.Element {
           setDataChannelEventHandler={setDataChannelEventHandler}
           profileDropdownOnOff={profileDropdownOnOff}
         />
-        <div>
-          <LogoutOutlined className="navbar_button" onClick={exit} />
-        </div>
       </div>
       <div className="navbar_right">
         <Panel
+          changeEachAudio={changeEachAudio}
+          changeInputStream={changeInputStream}
+          seletedInputDevice={props.peerManager.micDeviceID}
+          seletedOutputDevice={props.peerManager.speakerDeviceID}
           profileDropdownOnOff={profileDropdownOnOff}
           getMyNickname={getMyNickname}
           getUsers={getUsers}
@@ -328,6 +321,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           onCopy={onCopy}
           sendMessage={sendMessage}
           setDataChannelEventHandler={setDataChannelEventHandler}
+          exit={exit}
         />
       </div>
     </nav>
