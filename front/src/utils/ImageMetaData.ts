@@ -17,6 +17,9 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   WHITE_RABBIT = 0,
 }
 
+export const AvatarImageEnumMin = AvatarImageEnum.WHITE_RABBIT;
+export const AvatarImageEnumMax = AvatarImageEnum.WHITE_RABBIT;
+
 export enum AvatarPartImageEnum { // 무조건 이 순서대로 입력해주세요
   RIGHT_ARM = 0,
   RIGHT_LEG = 1,

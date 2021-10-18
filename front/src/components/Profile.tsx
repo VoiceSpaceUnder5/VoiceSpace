@@ -136,7 +136,6 @@ function Profile(props: ProfileProps): JSX.Element {
   };
   const onVisibleChange = () => {
     props.profileDropdownOnOff.on = !props.profileDropdownOnOff.on;
-    console.log(props.profileDropdownOnOff);
   };
 
   return (
