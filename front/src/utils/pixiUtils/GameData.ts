@@ -1,5 +1,5 @@
 import {AvatarPartImageEnum} from '../ImageMetaData';
-import PeerManager, {Vec2} from '../RTCGameUtils';
+import PeerManager, {Vec2, Peer} from '../RTCGameUtils';
 import {Avatar} from './Avatar';
 import {MyAvatar} from './MyAvatar';
 import {World} from './World';
@@ -154,22 +154,21 @@ export class GameData {
     });
   }
 
-  public static setMeNicknameDivPos(player: MyAvatar, offsetY: number): void {
-    const nickNameDiv = this.peerManager.me.nicknameDiv;
-    const offsetX = nickNameDiv.clientWidth / 2;
-    nickNameDiv.style.left = `${
+  public static setMyNicknameDivPos(player: MyAvatar, offsetY: number): void {
+    const nicknameDiv = this.peerManager.me.nicknameDiv;
+    const offsetX = nicknameDiv.clientWidth / 2;
+    nicknameDiv.style.left = `${
       player.x * player.viewport.scale.x + player.viewport.x - offsetX
     }px`;
-    nickNameDiv.style.top = `${
+    nicknameDiv.style.top = `${
       (player.y - offsetY) * player.viewport.scale.y + player.viewport.y
     }px`;
   }
 
-  public static setMeTextMessageDivPos(
+  public static setMyTextMessageDivPos(
     player: MyAvatar,
     offsetY: number,
   ): void {
-    console.log('test');
     const textMessageDiv = this.peerManager.me.textMessageDiv;
     textMessageDiv.className = 'canvasOverlay-textMessage-bottom';
     const offsetX = textMessageDiv.clientWidth / 2;
@@ -191,11 +190,62 @@ export class GameData {
     if (this.isTextMessageExist()) {
       this.peerManager.me.nicknameDiv.style.visibility = 'hidden';
       this.peerManager.me.textMessageDiv.style.visibility = 'visible';
-      this.setMeTextMessageDivPos(player, 130);
+      this.setMyTextMessageDivPos(player, 130);
     } else {
       this.peerManager.me.nicknameDiv.style.visibility = 'visible';
       this.peerManager.me.textMessageDiv.style.visibility = 'hidden';
-      this.setMeNicknameDivPos(player, 130);
+      this.setMyNicknameDivPos(player, 130);
     }
+  }
+
+  public static setPeersDivPos(player: MyAvatar): void {
+    const peers = this.peerManager.peers;
+    peers.forEach(peer => {
+      if (peer.textMessage !== '') {
+        this.divVisibleOnOff(peer.textMessageDiv, peer.nicknameDiv);
+        this.setPeerTextMessageDivPos(player, peer, 130);
+      } else {
+        this.divVisibleOnOff(peer.nicknameDiv, peer.textMessageDiv);
+        this.setPeerNicknameDivPos(player, peer, 130);
+      }
+    });
+  }
+
+  public static setPeerTextMessageDivPos(
+    player: MyAvatar,
+    peer: Peer,
+    offsetY: number,
+  ) {
+    peer.textMessageDiv.className = 'canvasOverlay-textMessage-bottom';
+    peer.textMessageDiv.style.left = `${
+      (peer.centerPos.x - peer.textMessageDiv.clientWidth / 2) *
+        player.viewport.scale.x +
+      player.viewport.x
+    }px`;
+    peer.textMessageDiv.style.top = `${
+      (peer.centerPos.y - peer.textMessageDiv.clientHeight - offsetY) *
+        player.viewport.scale.y +
+      player.viewport.y
+    }px`;
+  }
+  public static setPeerNicknameDivPos(
+    player: MyAvatar,
+    peer: Peer,
+    offsetY: number,
+  ): void {
+    const nicknameDiv = peer.nicknameDiv;
+    nicknameDiv.style.left = `${
+      (peer.centerPos.x - nicknameDiv.clientWidth / 2) *
+        player.viewport.scale.x +
+      player.viewport.x
+    }px`;
+    nicknameDiv.style.top = `${
+      (peer.centerPos.y - offsetY) * player.viewport.scale.y + player.viewport.y
+    }px`;
+  }
+
+  public static divVisibleOnOff(toOn: HTMLDivElement, toOff: HTMLDivElement) {
+    toOn.style.visibility = 'visible';
+    toOff.style.visibility = 'hidden';
   }
 }
