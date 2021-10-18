@@ -133,4 +133,38 @@ export class GameData {
       world.addPeerAvatar(peer.connectedClientSocketID);
     });
   }
+
+  public static setMyNickNameDivPos(player: MyAvatar, offsetY: number): void {
+    const nickNameDiv = this.peerManager.me.nicknameDiv;
+    const offsetX = nickNameDiv.clientWidth / 2;
+    nickNameDiv.style.left = `${
+      player.x * player.viewport.scale.x + player.viewport.x - offsetX
+    }px`;
+    // console.log('Player pos ', player.x, player.viewport.x);
+    nickNameDiv.style.top = `${
+      player.y * player.viewport.scale.y +
+      player.viewport.y -
+      offsetY * player.viewport.scale.y
+    }px`;
+  }
+
+  public static setTextMessageDivPos(player: MyAvatar, offsetY: number): void {
+    const textMessageDiv = this.peerManager.me.textMessageDiv;
+    textMessageDiv.className = 'canvasOverlay-textMessage-top';
+    const offsetX = textMessageDiv.clientWidth / 2;
+    textMessageDiv.style.left = `${
+      player.x * player.viewport.scale.x + player.viewport.x - offsetX
+    }px`;
+    // console.log('Player pos ', player.x, player.viewport.x);
+    textMessageDiv.style.top = `${
+      player.y * player.viewport.scale.y +
+      player.viewport.y -
+      offsetY * player.viewport.scale.y
+    }px`;
+  }
+
+  public static isTextMessageExist(): boolean {
+    const textMessageDiv = this.peerManager.me.textMessageDiv;
+    return textMessageDiv.innerText !== '';
+  }
 }

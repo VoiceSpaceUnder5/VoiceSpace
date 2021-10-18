@@ -57,7 +57,7 @@
   bottom: -20px;
 }
 /* top */
-/* .canvasOverlay-textMessage-top {
+.canvasOverlay-textMessage-top {
   position: absolute;
   cursor: default;
   max-width: 150px;
@@ -78,7 +78,7 @@
   top: -20px;
 } */
 /* left */
-/* .canvasOverlay-textMessage-left {
+.canvasOverlay-textMessage-left {
   position: absolute;
   cursor: default;
   max-width: 150px;
@@ -97,7 +97,7 @@
   position: absolute;
   top: 42%;
   right: 100%;
-} */
+}
 /* right */
 .canvasOverlay-textMessage-right {
   position: absolute;
@@ -418,8 +418,8 @@
   /* ios 사파리의 경우 좌우 safe area 고려가 되어있지 않음 */
   /* @media screen and (orientation: landscape) {
     .navbar_left {
-      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);  
-    } 
+      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);
+    }
   } */
   .navbar_left {
     overflow: hidden;

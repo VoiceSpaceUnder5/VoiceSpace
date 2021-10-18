@@ -26,7 +26,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
   public vy: number;
   private keyboard: PlayerKeyboard;
   private state: (framesPassed: number) => void;
-  private viewport: Viewport;
+  public viewport: Viewport;
 
   constructor(world: World, avatar: number, viewport: Viewport) {
     super(world);
@@ -60,6 +60,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.state(framesPassed);
     GameData.updatePlayerDto(this);
     GameData.sendMyDto();
+    GameData.setMyNickNameDivPos(this, 130);
+    GameData.setTextMessageDivPos(this, 130);
   }
 
   updateFace(): void {
