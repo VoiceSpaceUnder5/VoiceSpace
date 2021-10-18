@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import 'antd/dist/antd.css';
 import '../pages/spacePage/space.css';
 import MicOnOff from './MicOnOff';
@@ -16,7 +16,7 @@ import PeerManager, {
 import {AvatarImageEnum} from '../utils/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
-import VowelDetectButton from '../pages/vowelDetectPage/VowelDetectButton';
+import VowelDetectButton from './VowelDetectButton';
 
 interface NavigationProps {
   peerManager: PeerManager;
@@ -33,6 +33,10 @@ export interface ProfileDropdownOnOff {
 }
 
 function Navigation(props: NavigationProps): JSX.Element {
+  const [stream, setStream] = useState<MediaStream>(
+    props.peerManager.localStream,
+  );
+
   const profileDropdownOnOff: ProfileDropdownOnOff = {
     on: false,
   };
@@ -257,6 +261,7 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
     props.peerManager.me.setAnalyser(new AudioAnalyser(stream));
     props.peerManager.localStream = stream;
+    setStream(stream);
     catchAudioTrackEnded(stream);
   };
   const catchAudioTrackEnded = (catchedStream: MediaStream) => {
@@ -300,7 +305,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           setOtherSideClear={setOtherSideClear}
           getNickNameFromSocketID={getNickNameFromSocketID}
         />
-        <VowelDetectButton />
+        <VowelDetectButton stream={stream} />
         <Messenger
           getMyNickname={getMyNickname}
           sendMessage={sendMessage}
