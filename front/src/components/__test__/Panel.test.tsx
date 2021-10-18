@@ -5,6 +5,7 @@ import Panel, {PanelDropDown, PanelDropDownProps, PanelProps} from '../Panel';
 import {ProfileDropdownOnOff} from '../Navigation';
 import userEvent from '@testing-library/user-event';
 import {act} from 'react-dom/test-utils';
+import {UserInfo} from '../UserList';
 
 // profileDropdownOnOff: ProfileDropdownOnOff;
 // getMyNickname: () => string;
@@ -30,6 +31,11 @@ const mockedPanelProps: PanelProps = {
   onCopy: jest.fn(),
   sendMessage: jest.fn(),
   setDataChannelEventHandler: jest.fn(),
+  exit: jest.fn(),
+  changeEachAudio: jest.fn(),
+  changeInputStream: jest.fn(),
+  seletedOutputDevice: 'testOutputDevice',
+  seletedInputDevice: 'testInputDevice',
 };
 
 // roomId: string;
@@ -40,6 +46,16 @@ const mockedPanelDropDownProps: PanelDropDownProps = {
   roomId: 'testID',
   onCopy: jest.fn(),
   onClickSubMenu: jest.fn(),
+  onClickPrevious: jest.fn(),
+  onChangeVolume: jest.fn(),
+  getUsers: jest.fn(),
+  hidePanel: jest.fn(),
+  exit: jest.fn(),
+  // Options props
+  changeEachAudio: jest.fn(),
+  changeInputStream: jest.fn(),
+  seletedOutputDevice: 'testOutputDevice',
+  seletedInputDevice: 'testInputDevice',
 };
 
 // jest 의 render 함수가 사용하는 virtualDOM 은 거의 모든 window 함수들을 구현했지만
@@ -79,7 +95,6 @@ describe('PanelDropDown test', () => {
     expect(mockedPanelDropDownProps.onCopy).toBeCalled();
   });
 });
-
 describe('Panel test', () => {
   test('드롭다운 버튼 눌렀을 때 PanelDropDown 렌더링', async () => {
     if (!container) {
