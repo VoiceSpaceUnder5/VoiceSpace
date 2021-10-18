@@ -24,21 +24,6 @@ export class GameScene extends Container implements Scene {
     const viewport = createViewport(world.width, world.height);
     this.viewport = viewport;
     world.setViewport(viewport);
-    viewport.pinch().wheel().decelerate();
-    viewport.clamp({
-      left: false, // whether to clamp to the left and at what value
-      right: false, // whether to clamp to the right and at what value
-      top: false, // whether to clamp to the top and at what value
-      bottom: false, // whether to clamp to the bottom and at what value
-      direction: 'all', // (all, x, or y) using clamps of [0, viewport.worldWidth / viewport.worldHeight]; replaces left / right / top / bottom if set
-      underflow: 'center', // where to place world if too small for screen (e.g., top - right, center, none, bottomleft)
-    });
-    viewport.clampZoom({
-      maxScale: 1.2,
-      minScale: 0.2,
-      // maxWidth: viewport.worldWidth, // maxHeight: world.height,
-      // minWidth: viewport.worldWidth,
-    });
     this.addChild(viewport);
 
     const player = new MyAvatar(world, GameData.getMyAvatar(), viewport);

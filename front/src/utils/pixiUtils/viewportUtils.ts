@@ -26,7 +26,7 @@ export function createViewport(
   });
   viewport.clampZoom({
     maxScale: 1.2,
-    minScale: 0.2,
+    minScale: 0.8,
     // maxWidth: viewport.worldWidth, // maxHeight: world.height,
     // minWidth: viewport.worldWidth,
   });
