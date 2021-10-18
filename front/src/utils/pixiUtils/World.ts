@@ -6,12 +6,14 @@ import {DisplayContainer} from './DisplayContainer';
 import {IWorld} from './IWorld';
 import {MyAvatar} from './MyAvatar';
 import {PeerAvatar} from './PeerAvatar';
+import {Viewport} from 'pixi-viewport';
 
 export class World extends Container implements IWorld {
   public startPosition: IPointData;
   public background: DisplayContainer;
   public player: MyAvatar | null;
   public peers: Map<string, PeerAvatar>;
+  public viewport: Viewport | null;
 
   //생성자 인자는 나중에 World를 구성하는 요소들을 묶어서 받아야 한다.(수정 필요)
   constructor(backgroundTexture: Texture) {
@@ -25,6 +27,7 @@ export class World extends Container implements IWorld {
     this.addChild(background);
     this.player = null;
     this.peers = new Map();
+    this.viewport = null;
   }
 
   setStartPosition(x: number, y: number): void {
@@ -47,7 +50,8 @@ export class World extends Container implements IWorld {
   addPeerAvatar(socketID: string): void {
     if (this.peers.has(socketID)) return;
 
-    const newPeer = new PeerAvatar(this, socketID);
+    if (this.viewport === null) return;
+    const newPeer = new PeerAvatar(this, socketID, this.viewport);
     console.log(this.addChild);
     this.addChild(newPeer);
     this.peers.set(socketID, newPeer);
@@ -55,5 +59,9 @@ export class World extends Container implements IWorld {
 
   deletePeerAvatar(socketID: string): void {
     if (this.peers.has(socketID)) this.peers.get(socketID)?.destroy();
+  }
+
+  setViewport(viewport: Viewport): void {
+    this.viewport = viewport;
   }
 }

@@ -61,7 +61,6 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     GameData.updatePlayerDto(this);
     GameData.sendMyDto();
     GameData.setDivPos(this);
-    GameData.setPeersDivPos(this);
   }
 
   updateFace(): void {

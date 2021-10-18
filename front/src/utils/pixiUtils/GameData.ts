@@ -3,6 +3,8 @@ import PeerManager, {Vec2, Peer} from '../RTCGameUtils';
 import {Avatar} from './Avatar';
 import {MyAvatar} from './MyAvatar';
 import {World} from './World';
+import {Viewport} from 'pixi-viewport';
+import {PeerAvatar} from './PeerAvatar';
 
 export class GameData {
   private static peerManager: PeerManager;
@@ -121,6 +123,14 @@ export class GameData {
     return this.peerManager.peers.get(socketID)?.nicknameDiv;
   }
 
+  public static getPeerAvatarTextMessage(socketID: string): string | undefined {
+    if (!this.peerManager.peers.has(socketID)) {
+      console.error("Error: There's No matching Peer ID");
+      return undefined;
+    }
+    return this.peerManager.peers.get(socketID)?.textMessage;
+  }
+
   public static getPeerAvatarTextMessageDiv(
     socketID: string,
   ): HTMLDivElement | undefined {
@@ -150,35 +160,41 @@ export class GameData {
 
   public static addExistingPeers(world: World): void {
     this.peerManager.peers.forEach(peer => {
-      world.addPeerAvatar(peer.connectedClientSocketID);
+      if (world.viewport !== null)
+        world.addPeerAvatar(peer.connectedClientSocketID);
     });
   }
 
-  public static setMyNicknameDivPos(player: MyAvatar, offsetY: number): void {
+  public static setMyNicknameDivPos(
+    player: MyAvatar | PeerAvatar,
+    offsetY: number,
+  ): void {
     const nicknameDiv = this.peerManager.me.nicknameDiv;
     const offsetX = nicknameDiv.clientWidth / 2;
+    let vertical = player.y - offsetY;
+    if (vertical < 0) vertical = 0;
     nicknameDiv.style.left = `${
       player.x * player.viewport.scale.x + player.viewport.x - offsetX
     }px`;
     nicknameDiv.style.top = `${
-      (player.y - offsetY) * player.viewport.scale.y + player.viewport.y
+      vertical * player.viewport.scale.y + player.viewport.y
     }px`;
   }
 
   public static setMyTextMessageDivPos(
-    player: MyAvatar,
+    player: MyAvatar | PeerAvatar,
     offsetY: number,
   ): void {
     const textMessageDiv = this.peerManager.me.textMessageDiv;
     textMessageDiv.className = 'canvasOverlay-textMessage-bottom';
     const offsetX = textMessageDiv.clientWidth / 2;
+    let vertical = player.y - textMessageDiv.clientHeight - offsetY;
+    if (vertical < 0) vertical = 0;
     textMessageDiv.style.left = `${
       player.x * player.viewport.scale.x + player.viewport.x - offsetX
     }px`;
     textMessageDiv.style.top = `${
-      (player.y - textMessageDiv.clientHeight - offsetY) *
-        player.viewport.scale.y +
-      player.viewport.y
+      vertical * player.viewport.scale.y + player.viewport.y
     }px`;
   }
 
@@ -198,50 +214,60 @@ export class GameData {
     }
   }
 
-  public static setPeersDivPos(player: MyAvatar): void {
-    const peers = this.peerManager.peers;
-    peers.forEach(peer => {
-      if (peer.textMessage !== '') {
-        this.divVisibleOnOff(peer.textMessageDiv, peer.nicknameDiv);
-        this.setPeerTextMessageDivPos(player, peer, 130);
-      } else {
-        this.divVisibleOnOff(peer.nicknameDiv, peer.textMessageDiv);
-        this.setPeerNicknameDivPos(player, peer, 130);
-      }
-    });
-  }
-
   public static setPeerTextMessageDivPos(
-    player: MyAvatar,
-    peer: Peer,
+    player: PeerAvatar,
+    textMessageDiv: HTMLDivElement,
     offsetY: number,
   ) {
-    peer.textMessageDiv.className = 'canvasOverlay-textMessage-bottom';
-    peer.textMessageDiv.style.left = `${
-      (peer.centerPos.x - peer.textMessageDiv.clientWidth / 2) *
-        player.viewport.scale.x +
-      player.viewport.x
+    let tail = 'bottom';
+    const viewport = player.viewport;
+    let horizontal = player.x - textMessageDiv.clientWidth / 2;
+    let vertical = player.y - textMessageDiv.clientHeight - offsetY;
+    if (player.y > viewport.bottom) {
+      vertical = viewport.bottom - textMessageDiv.clientHeight - 10;
+    }
+    if (player.x < viewport.left) {
+      horizontal = viewport.left + 10;
+      tail = 'left';
+    }
+    if (player.y - offsetY - textMessageDiv.clientHeight < viewport.top) {
+      vertical = viewport.top + 10;
+      tail = 'top';
+    }
+    if (player.x > viewport.right) {
+      horizontal = viewport.right - textMessageDiv.clientWidth - 10;
+      tail = 'right';
+    }
+    textMessageDiv.style.left = `${
+      horizontal * viewport.scale.x + viewport.x
     }px`;
-    peer.textMessageDiv.style.top = `${
-      (peer.centerPos.y - peer.textMessageDiv.clientHeight - offsetY) *
-        player.viewport.scale.y +
-      player.viewport.y
-    }px`;
+    textMessageDiv.style.top = `${vertical * viewport.scale.y + viewport.y}px`;
+    textMessageDiv.className = `canvasOverlay-textMessage-${tail}`;
   }
+
   public static setPeerNicknameDivPos(
-    player: MyAvatar,
-    peer: Peer,
+    player: PeerAvatar,
+    nicknameDiv: HTMLDivElement,
     offsetY: number,
   ): void {
-    const nicknameDiv = peer.nicknameDiv;
-    nicknameDiv.style.left = `${
-      (peer.centerPos.x - nicknameDiv.clientWidth / 2) *
-        player.viewport.scale.x +
-      player.viewport.x
-    }px`;
-    nicknameDiv.style.top = `${
-      (peer.centerPos.y - offsetY) * player.viewport.scale.y + player.viewport.y
-    }px`;
+    const viewport = player.viewport;
+    let horizontal = player.x - nicknameDiv.clientWidth / 2;
+    let vertical = player.y - offsetY;
+    if (player.y > viewport.bottom) {
+      vertical = viewport.bottom - nicknameDiv.clientHeight;
+    }
+    if (player.x < viewport.left) {
+      horizontal = viewport.left;
+    }
+    if (player.y < viewport.top) {
+      vertical = viewport.top;
+    }
+    if (player.x > viewport.right) {
+      horizontal = viewport.right - nicknameDiv.clientWidth;
+    }
+    if (vertical < 0) vertical = 0;
+    nicknameDiv.style.left = `${horizontal * viewport.scale.x + viewport.x}px`;
+    nicknameDiv.style.top = `${vertical * viewport.scale.y + viewport.y}px`;
   }
 
   public static divVisibleOnOff(toOn: HTMLDivElement, toOff: HTMLDivElement) {

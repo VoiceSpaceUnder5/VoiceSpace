@@ -30,6 +30,7 @@ export class GameScene extends Container implements Scene {
       interaction: Manager.app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
     });
     this.viewport = viewport;
+    world.setViewport(viewport);
     viewport.pinch().wheel().decelerate();
     viewport.clamp({
       left: false, // whether to clamp to the left and at what value

@@ -4,6 +4,8 @@ import {Avatar, AvatarParts, newAvatar, swapFace} from './Avatar';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {World} from './World';
+import {Viewport} from 'pixi-viewport';
+import {Peer} from '../RTCGameUtils';
 
 export class PeerAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
@@ -11,8 +13,9 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
   public avatarFaceScale: number;
   public partRotateDegree: number[];
   public socketID: string;
+  public viewport: Viewport;
 
-  constructor(world: World, socketID: string) {
+  constructor(world: World, socketID: string, viewport: Viewport) {
     super(world);
 
     const avatar = GameData.getPeerAvatar(socketID);
@@ -24,6 +27,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.avatarFaceScale = 1.0;
     this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.socketID = socketID;
+    this.viewport = viewport;
 
     const centerPos = GameData.getPeerCenterPos(socketID);
     if (centerPos === undefined) {
@@ -43,6 +47,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.changeLookDirection();
     this.changeAvatarFace();
     this.changeAvatarFaceScale();
+    this.changeDivPos();
     //Peer의 Avatar번호가 바뀌었으면 바꾸어준다. 아바타를
     // Peer의 scale을 받아서 얼굴에 적용한다.
     // Peer의 AvatarFace를 받아서 얼굴에 적용한다.
@@ -89,5 +94,22 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     if (avatarFaceScale === undefined) return;
     this.avatarFaceScale = avatarFaceScale;
     this.parts[AvatarParts.FACE].scale.set(this.avatarFaceScale);
+  }
+
+  private changeDivPos(): void {
+    const position = GameData.getPeerCenterPos(this.socketID);
+    const nicknameDiv = GameData.getPeerAvatarNicknameDiv(this.socketID);
+    const textMessage = GameData.getPeerAvatarTextMessage(this.socketID);
+    const textMessageDiv = GameData.getPeerAvatarTextMessageDiv(this.socketID);
+
+    if (!position || !nicknameDiv || !textMessageDiv) return;
+    if (textMessage) {
+      GameData.divVisibleOnOff(textMessageDiv, nicknameDiv);
+      GameData.setPeerTextMessageDivPos(this, textMessageDiv, 130);
+    } else {
+      GameData.divVisibleOnOff(nicknameDiv, textMessageDiv);
+      GameData.setPeerNicknameDivPos(this, nicknameDiv, 130);
+    }
+    return;
   }
 }
