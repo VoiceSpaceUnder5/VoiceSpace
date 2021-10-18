@@ -5,7 +5,6 @@ import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {World} from './World';
 import {Viewport} from 'pixi-viewport';
-import {Peer} from '../RTCGameUtils';
 
 export class PeerAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
@@ -39,7 +38,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     newAvatar(this, this.avatar);
   }
 
-  update(framesPassed: number): void {
+  update(): void {
     this.changePosition();
     this.changeZIndex();
     this.changePartRotationDegree();

@@ -1,9 +1,7 @@
 import {AvatarPartImageEnum} from '../ImageMetaData';
-import PeerManager, {Vec2, Peer} from '../RTCGameUtils';
-import {Avatar} from './Avatar';
+import PeerManager, {Vec2} from '../RTCGameUtils';
 import {MyAvatar} from './MyAvatar';
 import {World} from './World';
-import {Viewport} from 'pixi-viewport';
 import {PeerAvatar} from './PeerAvatar';
 
 export class GameData {
@@ -218,7 +216,7 @@ export class GameData {
     player: PeerAvatar,
     textMessageDiv: HTMLDivElement,
     offsetY: number,
-  ) {
+  ): void {
     let tail = 'bottom';
     const viewport = player.viewport;
     let horizontal = player.x - textMessageDiv.clientWidth / 2;
@@ -270,7 +268,10 @@ export class GameData {
     nicknameDiv.style.top = `${vertical * viewport.scale.y + viewport.y}px`;
   }
 
-  public static divVisibleOnOff(toOn: HTMLDivElement, toOff: HTMLDivElement) {
+  public static divVisibleOnOff(
+    toOn: HTMLDivElement,
+    toOff: HTMLDivElement,
+  ): void {
     toOn.style.visibility = 'visible';
     toOff.style.visibility = 'hidden';
   }

@@ -33,10 +33,10 @@ export class LoaderScene extends Container implements Scene {
     console.log('Loaded finished!');
   }
 
-  public update(framesPassed: number): void {
+  public update(): void {
     return;
   }
-  public resize(screenWidth: number, screenHeight: number): void {
+  public resize(): void {
     return;
   }
 }

@@ -326,7 +326,7 @@ export class Me implements PlayerDto {
     this.audioAnalyser = analyser;
   }
 
-  update(glHelper: GLHelper): void {
+  update(): void {
     // const avatarFaceDto = this.audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
     // this.avatarFaceScale = avatarFaceDto.avatarFaceScale;
     // this.avatarFace = avatarFaceDto.avatarFace;

@@ -9,14 +9,11 @@ import {
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {World} from './World';
-import {checkCollision, checkIntersect} from './CheckCollision';
+import {checkIntersect} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {AvatarPartImageEnum} from '../ImageMetaData';
 import {Sprite} from '@pixi/sprite';
-import {Loader} from '@pixi/loaders';
-import {Texture} from '@pixi/core';
-import {ResourceManager} from './ResourceManager';
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
@@ -110,7 +107,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     // GameData.testPrint();
   }
 
-  private stand(delta: number): void {
+  private stand(): void {
     this.standGesture();
   }
 

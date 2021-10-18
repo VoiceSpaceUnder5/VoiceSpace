@@ -90,7 +90,7 @@ function SpaceCanvas(props: SpaceCanvasProps): JSX.Element {
       const gLHelper = gLHelperRef.current;
       const peerManager = props.peerManager;
       gLHelper.camera.updateCenterPosFromPlayer(peerManager.me);
-      peerManager.me.update(gLHelper);
+      peerManager.me.update();
 
       drawBackgroundFromBuffer();
       gLHelper.resetAllDrawThings();

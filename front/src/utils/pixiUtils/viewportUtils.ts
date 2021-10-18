@@ -1,4 +1,3 @@
-import {Renderer} from '@pixi/core';
 import {Ticker} from '@pixi/ticker';
 import {Viewport} from 'pixi-viewport';
 import {SceneManager} from './SceneManager';

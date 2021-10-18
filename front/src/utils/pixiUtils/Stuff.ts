@@ -41,7 +41,7 @@ export class Stuff extends DisplayContainer {
     this.zIndex = this.y;
   }
 
-  update(framesPassed: number): void {
+  update(): void {
     this.changeAlpha();
   }
 
