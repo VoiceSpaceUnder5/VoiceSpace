@@ -318,7 +318,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
         setDeviceInfos(deviceInfos);
         setIsLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         message.error(
           '음향 장치를 가져오는데 실패하였습니다. 장치 연결상태나 권한을 확인해 주세요.',
         );

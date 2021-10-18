@@ -339,7 +339,7 @@ describe('Setting test', () => {
           target: {value: mockEnumerateDevices[1].deviceId},
         });
       });
-      await new Promise((r: any) => setTimeout(r, 300));
+      await new Promise((r: any) => setTimeout(r, 100));
       await act(async () => {
         fireEvent.click(enterButton);
       });
@@ -370,7 +370,7 @@ describe('Setting test', () => {
           target: {value: mockEnumerateDevices[3].deviceId},
         });
       });
-      await new Promise((r: any) => setTimeout(r, 300));
+      await new Promise((r: any) => setTimeout(r, 100));
       await act(async () => {
         fireEvent.click(enterButton);
       });
