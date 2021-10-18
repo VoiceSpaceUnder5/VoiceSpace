@@ -321,5 +321,4 @@ export const avatarImageMDs = [whiteRabbitMD];
 export interface Formant {
   label: string;
   array: number[];
-  Image: HTMLImageElement | null;
 }

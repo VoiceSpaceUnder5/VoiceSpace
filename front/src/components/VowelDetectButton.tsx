@@ -1,6 +1,6 @@
 import {Popover} from 'antd';
 import React, {useEffect, useRef} from 'react';
-import {Formant} from '../../utils/ImageMetaData';
+import {Formant} from '../utils/ImageMetaData';
 import './vowelDetect.css';
 import {SmileOutlined} from '@ant-design/icons';
 
@@ -19,33 +19,32 @@ function getMonvingAverage(period: number) {
   };
 }
 
-const formants: Formant[] = [
+export const formants: Formant[] = [
   {
     label: 'A',
     array: [],
-    Image: null,
   },
   {
     label: 'I',
     array: [],
-    Image: null,
   },
   {
     label: 'U',
     array: [],
-    Image: null,
   },
   {
     label: 'E',
     array: [],
-    Image: null,
   },
   {
     label: 'O',
     array: [],
-    Image: null,
   },
 ];
+
+interface VowelDetectButtonProps {
+  stream: MediaStream;
+}
 
 interface VowelInputProps {
   vowel: string;
@@ -55,7 +54,6 @@ interface VowelInputProps {
 
 function VowelInput(props: VowelInputProps) {
   const doneClick = () => {
-    console.log(props.smad);
     props.setVowels([...props.smad]);
   };
 
@@ -71,7 +69,7 @@ function VowelInput(props: VowelInputProps) {
   );
 }
 
-function VowelDetect(): JSX.Element {
+function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const smad: number[] = [];
 
@@ -88,14 +86,9 @@ function VowelDetect(): JSX.Element {
     });
   };
 
-  formants.forEach(value => {
-    value.Image = new Image();
-    value.Image.src = `./assets/spaceMain/vowel_avatar/${value.label}.png`;
-  });
-
   useEffect(() => {
     loadVowelDataFromBrowserIfExist();
-  }, []);
+  }, [props.stream]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -104,79 +97,41 @@ function VowelDetect(): JSX.Element {
     const canvas = canvasRef.current;
     if (!ctx) return;
 
-    navigator.mediaDevices
-      .getUserMedia({audio: true, video: false})
-      .then(stream => {
-        const audioContext = new AudioContext();
-        const source = audioContext.createMediaStreamSource(stream);
-        const analyser = audioContext.createAnalyser();
-        source.connect(analyser);
-        console.log(audioContext.sampleRate);
-        analyser.smoothingTimeConstant = 0.6;
-        analyser.fftSize = 2048; //
-        const byteFrequencyDataArray = new Uint8Array(
-          analyser.frequencyBinCount / 3,
-        );
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(props.stream);
+    const analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.smoothingTimeConstant = 0.6;
+    analyser.fftSize = 2048; //
+    const byteFrequencyDataArray = new Uint8Array(
+      analyser.frequencyBinCount / 3,
+    );
 
-        const callback = () => {
-          ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    let aniNumber = 0;
+    const callback = () => {
+      ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
-          analyser.getByteFrequencyData(byteFrequencyDataArray);
+      analyser.getByteFrequencyData(byteFrequencyDataArray);
 
-          const sma = getMonvingAverage(16);
-          smad.length = 0;
-          byteFrequencyDataArray.forEach(value => {
-            smad.push(sma(value));
-          });
+      const sma = getMonvingAverage(16);
+      smad.length = 0;
+      byteFrequencyDataArray.forEach(value => {
+        smad.push(sma(value));
+      });
 
-          smad.forEach((value, idx) => {
-            ctx.beginPath();
-            ctx.moveTo(idx, canvas.clientHeight);
-            ctx.lineTo(idx, canvas.clientHeight - value);
-            ctx.stroke();
-          });
-
-          const candidates = formants.map(value => {
-            let vowelsSelfDist = 0;
-            const dot = value.array.reduce((acc, cur, idx) => {
-              vowelsSelfDist += cur * cur;
-              return acc + cur * smad[idx];
-            }, 0);
-            const smadSelfDist = smad.reduce((acc, cur) => {
-              return acc + cur * cur;
-            }, 0);
-            const similarity =
-              dot / (Math.sqrt(vowelsSelfDist) * Math.sqrt(smadSelfDist));
-            return {
-              vowel: value.label,
-              similarity: similarity,
-              image: value.Image,
-              distPercent: smadSelfDist / vowelsSelfDist,
-            };
-          });
-
-          candidates.sort((a, b) => b.similarity - a.similarity);
-          ctx.font = '24px selif';
-          if (
-            candidates[0].similarity > 0.9 &&
-            candidates[0].distPercent > 0.5
-          ) {
-            ctx.fillText(
-              `${(candidates[0].similarity * 100).toFixed(1)}% "${
-                candidates[0].vowel
-              }" p : ${candidates[0].distPercent.toFixed(1)}`,
-              550,
-              50,
-            );
-          } else {
-            ctx.fillText('None', 550, 50);
-          }
-          requestAnimationFrame(callback);
-        };
-        requestAnimationFrame(callback);
-      })
-      .catch(error => console.log(error));
-  }, []);
+      smad.forEach((value, idx) => {
+        ctx.beginPath();
+        ctx.moveTo(idx, canvas.clientHeight);
+        ctx.lineTo(idx, canvas.clientHeight - value);
+        ctx.stroke();
+      });
+      aniNumber = requestAnimationFrame(callback);
+    };
+    aniNumber = requestAnimationFrame(callback);
+    return () => {
+      cancelAnimationFrame(aniNumber);
+    };
+  }, [props.stream]);
 
   return (
     <div id="vowel-detect">
@@ -211,10 +166,13 @@ function VowelDetect(): JSX.Element {
   );
 }
 
-function VowelDetectButton(): JSX.Element {
+function VowelDetectButton(props: VowelDetectButtonProps): JSX.Element {
   return (
     <>
-      <Popover trigger={['click']} content={<VowelDetect></VowelDetect>}>
+      <Popover
+        trigger={['click']}
+        content={<VowelDetect {...props}></VowelDetect>}
+      >
         <SmileOutlined className="navbar_button" />
       </Popover>
     </>
