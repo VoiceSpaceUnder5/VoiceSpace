@@ -14,6 +14,9 @@ import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {AvatarPartImageEnum} from '../ImageMetaData';
 import {Sprite} from '@pixi/sprite';
+import {Loader} from '@pixi/loaders';
+import {Texture} from '@pixi/core';
+import {ResourceManager} from './ResourceManager';
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
@@ -148,6 +151,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     for (let i = 1; i < stuffs.length; ++i) {
       if (
         !(this === stuffs[i]) &&
+        stuffs[i].collisionBox &&
         checkIntersect(this.collisionBox!, stuffs[i].collisionBox!)
       )
         return true;

@@ -28,6 +28,7 @@ export class World extends Container implements IWorld {
     this.player = null;
     this.peers = new Map();
     this.viewport = null;
+    this.sortableChildren = true;
   }
 
   setStartPosition(x: number, y: number): void {

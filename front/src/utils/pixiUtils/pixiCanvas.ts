@@ -1,11 +1,11 @@
 import {LoaderScene} from './LoaderScene';
-import {Manager} from './SceneManager';
+import {SceneManager} from './SceneManager';
 import {GameScene} from './GameScene';
 
 export function pixiCanvasStart(): void {
-  Manager.initialize(0x55ff77);
+  SceneManager.initialize(0x55ff77);
   const loaderScene = new LoaderScene(start);
-  Manager.changeScene(loaderScene);
+  SceneManager.changeScene(loaderScene);
 
   function start() {
     // activate plugins
@@ -13,10 +13,10 @@ export function pixiCanvasStart(): void {
     const gameScene = new GameScene();
 
     // add the viewport to the stage
-    Manager.changeScene(gameScene);
+    SceneManager.changeScene(gameScene);
   }
 }
 
 export function pixiCanvasDestroy(): void {
-  Manager.app.destroy();
+  SceneManager.app.destroy();
 }

@@ -2,12 +2,14 @@ import {Container} from '@pixi/display';
 import {Viewport} from 'pixi-viewport';
 import {Scene} from './Scene';
 import {MyAvatar} from './MyAvatar';
-import {Manager} from './SceneManager';
+import {SceneManager} from './SceneManager';
 import {World} from './World';
 import {Loader} from '@pixi/loaders';
 import {Ticker} from '@pixi/ticker';
 import {Stuff} from './Stuff';
 import {GameData} from './GameData';
+import world1Json from './world1.json';
+import {createViewport} from './viewportUtils';
 
 const resources = Loader.shared.resources;
 export class GameScene extends Container implements Scene {
@@ -17,18 +19,11 @@ export class GameScene extends Container implements Scene {
 
   constructor() {
     super();
+
     const world = new World(resources['background'].texture!);
-    world.sortableChildren = true;
     this.world = world;
 
-    const viewport = new Viewport({
-      screenWidth: window.innerWidth,
-      screenHeight: window.innerHeight,
-      worldWidth: world.width,
-      worldHeight: world.height,
-      ticker: Ticker.shared,
-      interaction: Manager.app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
-    });
+    const viewport = createViewport(world.width, world.height);
     this.viewport = viewport;
     world.setViewport(viewport);
     viewport.pinch().wheel().decelerate();
@@ -50,27 +45,16 @@ export class GameScene extends Container implements Scene {
 
     const player = new MyAvatar(world, GameData.getMyAvatar(), viewport);
     this.player = player;
-
-    viewport.moveCenter(world.width / 2, world.height / 2);
     viewport.addChild(world);
     world.addMyAvatar(player);
-    viewport.follow(player, {
-      speed: 0,
-      acceleration: null,
-      radius: null,
-    });
+    viewport.follow(player);
 
-    const collideStuff = new Stuff(this.world, 'tree1', 500, 500);
-    collideStuff.addCollisionBox(-70, -50, 100, 50);
+    const collideStuff = new Stuff(this.world, world1Json.stuffs[0]);
     world.addChild(collideStuff);
 
     GameData.addExistingPeers(world);
     GameData.addOnPeerCreatedHandler(world.addPeerAvatar.bind(world));
     GameData.addOnPeerDeletedHandler(world.deletePeerAvatar.bind(world));
-    // window.addEventListener('compositionupdate', handler, false);
-    // function handler(e: Event) {
-    //   console.log(e);
-    // }
   }
 
   public update(framesPassed: number): void {

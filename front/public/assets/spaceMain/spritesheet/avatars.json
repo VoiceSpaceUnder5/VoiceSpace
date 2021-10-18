@@ -1,0 +1,93 @@
+{"frames": {
+
+"avatars.png":
+{
+	"frame": {"x":1,"y":1,"w":110,"h":645},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":110,"h":645},
+	"sourceSize": {"w":111,"h":646},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyArm.png":
+{
+	"frame": {"x":50,"y":1260,"w":11,"h":28},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":28},
+	"sourceSize": {"w":11,"h":28},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyBody.png":
+{
+	"frame": {"x":1,"y":1260,"w":32,"h":47},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":47},
+	"sourceSize": {"w":32,"h":47},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyFace_A.png":
+{
+	"frame": {"x":1,"y":648,"w":100,"h":109},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
+	"sourceSize": {"w":102,"h":110},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyFace_E.png":
+{
+	"frame": {"x":1,"y":750,"w":100,"h":109},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
+	"sourceSize": {"w":102,"h":110},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyFace_I.png":
+{
+	"frame": {"x":1,"y":852,"w":100,"h":109},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
+	"sourceSize": {"w":102,"h":110},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyFace_Mute.png":
+{
+	"frame": {"x":1,"y":954,"w":100,"h":109},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
+	"sourceSize": {"w":102,"h":110},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyFace_O.png":
+{
+	"frame": {"x":1,"y":1056,"w":100,"h":109},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
+	"sourceSize": {"w":102,"h":110},
+	"anchor": {"x":0,"y":0}
+},
+"bunnyFace_U.png":
+{
+	"frame": {"x":1,"y":1158,"w":100,"h":109},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
+	"sourceSize": {"w":102,"h":110},
+	"anchor": {"x":0,"y":0}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "avatars.png",
+	"format": "RGBA8888",
+	"size": {"w":112,"h":1293},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:8e73fcb1e2c80c033fddb3a4dc99bd79:54fb61eb57c913811753e2d639ded031:faac5bc2578b98332342aabac113e789$"
+}
+}

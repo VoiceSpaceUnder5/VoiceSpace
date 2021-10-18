@@ -40,7 +40,6 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
   }
 
   update(framesPassed: number): void {
-    //Peer의 centerPos, rotateDegree를 변경해준다
     this.changePosition();
     this.changeZIndex();
     this.changePartRotationDegree();

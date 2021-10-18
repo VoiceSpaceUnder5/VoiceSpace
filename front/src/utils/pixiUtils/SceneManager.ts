@@ -1,7 +1,7 @@
 import {Application} from 'pixi.js';
 import {Scene} from './Scene';
 
-export class Manager {
+export class SceneManager {
   private static application: Application;
   private static currentScene: Scene;
 
@@ -20,10 +20,10 @@ export class Manager {
     );
   }
   public static get app(): Application {
-    return Manager.application;
+    return SceneManager.application;
   }
   public static initialize(background: number): void {
-    Manager.application = new Application({
+    SceneManager.application = new Application({
       view: document.getElementById('game-canvas') as HTMLCanvasElement,
       resizeTo: window, // This line here handles the actual resize!
       resolution: 1,
@@ -31,39 +31,39 @@ export class Manager {
       antialias: true,
     });
 
-    Manager.application.ticker.add(Manager.update);
+    SceneManager.application.ticker.add(SceneManager.update);
 
     // listen for the browser telling us that the screen size changed
-    window.addEventListener('resize', Manager.resize);
+    window.addEventListener('resize', SceneManager.resize);
 
-    console.log('Scene Manager Initialized! ');
+    console.log('Scene SceneManager Initialized! ');
   }
 
   public static changeScene(newScene: Scene): void {
     // Remove and destroy old scene... if we had one..
-    if (Manager.currentScene) {
+    if (SceneManager.currentScene) {
       console.log('Destroy current Scene!! ');
-      Manager.application.stage.removeChild(Manager.currentScene);
-      Manager.currentScene.destroy();
+      SceneManager.application.stage.removeChild(SceneManager.currentScene);
+      SceneManager.currentScene.destroy();
     }
 
     // Add the new one
     console.log('Add new Scene to SceneManager! ');
-    Manager.currentScene = newScene;
-    Manager.application.stage.addChild(Manager.currentScene);
+    SceneManager.currentScene = newScene;
+    SceneManager.application.stage.addChild(SceneManager.currentScene);
   }
 
   public static resize(): void {
     // if we have a scene, we let it know that a resize happened!
-    if (Manager.currentScene) {
-      Manager.currentScene.resize(Manager.width, Manager.height);
+    if (SceneManager.currentScene) {
+      SceneManager.currentScene.resize(SceneManager.width, SceneManager.height);
     }
   }
 
-  /* More code of your Manager.ts like `changeScene` and `update`*/
+  /* More code of your SceneManager.ts like `changeScene` and `update`*/
   public static update(framesPassed: number): void {
-    if (Manager.currentScene) {
-      Manager.currentScene.update(framesPassed);
+    if (SceneManager.currentScene) {
+      SceneManager.currentScene.update(framesPassed);
     }
   }
 }
