@@ -50,7 +50,6 @@ export interface PanelDropDownProps {
 
 export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
   const [userListVisible, setUserListVisible] = useState(false);
-  const [optionVisible, setOptionVisible] = useState(false);
 
   const onClickUserList = () => {
     // props.hidePanel();
@@ -58,8 +57,7 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
   };
 
   const onClickOption = () => {
-    // props.hidePanel();
-    setOptionVisible(true);
+    // add
   };
   return (
     <Menu className="dropdown_menu">

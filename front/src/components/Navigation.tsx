@@ -4,7 +4,6 @@ import '../pages/spacePage/space.css';
 import MicOnOff from './MicOnOff';
 import Profile from './Profile';
 import ScreenShare from './ScreenShare';
-import Options from './Options';
 import Panel from './Panel';
 import Messenger from './Messenger';
 import PeerManager, {
