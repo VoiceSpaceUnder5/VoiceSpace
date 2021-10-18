@@ -63,6 +63,7 @@ function Options(props: OptionsProps): JSX.Element {
   };
   return (
     <Dropdown
+      placement={'topRight'}
       visible={visible}
       onVisibleChange={onClickPrevious}
       overlay={

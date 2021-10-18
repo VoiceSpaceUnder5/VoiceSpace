@@ -73,6 +73,7 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
       </Menu.Item>
       <Menu.Item key="1" onClick={onClickUserList}>
         <Dropdown
+          placement={'topCenter'}
           visible={userListVisible}
           onVisibleChange={setUserListVisible}
           overlay={UserList({
@@ -127,6 +128,7 @@ function Panel(props: PanelProps): JSX.Element {
 
   return (
     <Dropdown
+      placement={'topCenter'}
       visible={visible}
       onVisibleChange={setVisible}
       overlay={PanelDropDown({
