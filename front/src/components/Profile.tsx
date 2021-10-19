@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import '../pages/spacePage/space.css';
@@ -16,6 +16,7 @@ export interface ProfileProps {
   setNickname: (nickname: string) => void;
   avatar: AvatarImageEnum;
   setAvatar: (avatar: AvatarImageEnum) => void;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>> | null;
 }
 
 export function ProfileDropDown(props: ProfileProps): JSX.Element {
@@ -48,6 +49,10 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
     props.setAvatar(newAvatar);
     props.setNickname(nextNickname);
     props.profileDropdownSwitch();
+    if (!props.setVisible) {
+      return;
+    }
+    props.setVisible(false);
   };
   return (
     <Menu className="navbar_profile">
@@ -61,7 +66,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
           onSubmit={e => {
             e.preventDefault();
             onProfileChangeClick();
-            props.profileDropdownSwitch();
+            props.profileDropdownOnOff.on = false;
           }}
         >
           <div className="profile_input">
@@ -117,6 +122,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
 function Profile(props: ProfileProps): JSX.Element {
   const [nickname, setNickname] = useState(props.nickname);
   const [avatar, setAvatar] = useState(props.avatar);
+  const [visible, setVisible] = useState(props.profileDropdownOnOff.on);
 
   const newSetNickname = (nickname: string): void => {
     props.setNickname(nickname);
@@ -133,15 +139,26 @@ function Profile(props: ProfileProps): JSX.Element {
     setNickname: newSetNickname,
     avatar: avatar,
     setAvatar: newSetAvatar,
+    setVisible: setVisible,
   };
-  const onVisibleChange = () => {
-    props.profileDropdownOnOff.on = !props.profileDropdownOnOff.on;
+  const onEscKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      props.profileDropdownOnOff.on = false;
+      setVisible(false);
+    }
   };
+  useEffect(() => {
+    window.addEventListener('keydown', onEscKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onEscKeyDown);
+    };
+  }, []);
 
   return (
     <Dropdown
+      visible={visible}
       data-testid="dropDownTestId"
-      onVisibleChange={onVisibleChange}
+      onVisibleChange={setVisible}
       overlay={ProfileDropDown(profileDropDownProps)}
       trigger={['click']}
     >

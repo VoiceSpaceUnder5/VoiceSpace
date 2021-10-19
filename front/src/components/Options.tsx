@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Menu, Dropdown} from 'antd';
 import SettingDropDown from './Setting';
 
@@ -61,6 +61,17 @@ function Options(props: OptionsProps): JSX.Element {
     setVisible(true);
     setDepth(0);
   };
+  const onESCKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setVisible(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener('keydown', onESCKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onESCKeyDown);
+    };
+  }, []);
   return (
     <Dropdown
       placement={'topCenter'}

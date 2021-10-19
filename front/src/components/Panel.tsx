@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {UpOutlined} from '@ant-design/icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
@@ -59,6 +59,19 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
   const onClickOption = () => {
     // add
   };
+
+  const onESCKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setUserListVisible(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener('keydown', onESCKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onESCKeyDown);
+    };
+  }, []);
+
   return (
     <Menu className="dropdown_menu">
       <Menu.Item key="0">
@@ -123,6 +136,18 @@ function Panel(props: PanelProps): JSX.Element {
     volume;
     setVolume(changedVolume);
   };
+  const onESCKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', onESCKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onESCKeyDown);
+    };
+  }, []);
 
   return (
     <Dropdown
