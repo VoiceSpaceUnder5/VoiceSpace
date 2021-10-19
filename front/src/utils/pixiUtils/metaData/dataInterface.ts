@@ -1,4 +1,4 @@
-interface Vec2 {
+export interface Vec2 {
   x: number;
   y: number;
 }
@@ -23,4 +23,16 @@ export interface DisplayContainerData {
   parts: PartsData[];
   collisionBox?: collisionBoxData;
   faceTexture?: string[];
+}
+
+export interface BackgroundData {
+  textureName: string;
+  width: number;
+  height: number;
+}
+
+export interface WorldData {
+  startPosition: Vec2;
+  background: BackgroundData;
+  stuffs: DisplayContainerData[];
 }
