@@ -3,7 +3,7 @@ import {AvatarParts, PARTS_ROTATE_SPEED, Avatar} from './Avatar';
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {World} from './World';
-import {checkIntersect} from './CheckCollision';
+import {checkIntersect} from './CheckIntersect';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 

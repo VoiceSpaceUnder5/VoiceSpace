@@ -1,5 +1,5 @@
 import {Sprite} from '@pixi/sprite';
-import {checkIntersect} from './CheckCollision';
+import {checkIntersect} from './CheckIntersect';
 import {DisplayContainer} from './DisplayContainer';
 import {ResourceManager} from './ResourceManager';
 import {World} from './World';
