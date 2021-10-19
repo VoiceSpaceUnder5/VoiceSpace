@@ -59,7 +59,7 @@ function getXYClampOneZero(
   return {x: x / width, y: y / height};
 }
 
-class DrawHelper {
+export class DrawHelper {
   private canvas: HTMLCanvasElement | null;
   private context: CanvasRenderingContext2D | null;
   private drawStartPositions: Map<string, Vec2>;
@@ -226,7 +226,6 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
             props.sharedSocketID,
             startPos,
           );
-
           break;
         }
         case 'mousemove': {
@@ -380,6 +379,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
         controls={false}
       ></video>
       <canvas
+        role="presentation"
         ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
@@ -399,7 +399,7 @@ function ScreenViewer(props: ScreenViewerProps): JSX.Element {
   );
 }
 
-interface ScreenShareProps {
+export interface ScreenShareProps {
   socketID: string;
   addVideoTrack: (stream: MediaStream) => void;
   setTrackEventHandler: (
@@ -474,6 +474,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         },
       ]);
     } catch (error) {
+      console.error(error);
       message.error(
         '스크린을 선택하지 않으셨거나, 스크린 공유 권한이 없습니다.',
       );

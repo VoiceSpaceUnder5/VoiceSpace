@@ -17,6 +17,16 @@ class mockAnalyserNode {
   }
 }
 
+class mockMediaStream {
+  tracks = [];
+  addTrack = track => {
+    this.tracks.push(track);
+  };
+  getTracks = () => {
+    return this.tracks;
+  };
+}
+
 class mockMediaStreamAudioSourceNode {
   connect = jest.fn();
   disconnect = jest.fn();
@@ -31,3 +41,4 @@ class mockAudioContext {
 
 global.RTCPeerConnection = mockRTCPeerConnection;
 global.AudioContext = mockAudioContext;
+global.MediaStream = mockMediaStream;
