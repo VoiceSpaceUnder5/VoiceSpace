@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import '../pages/spacePage/space.css';
-import {AvatarImageEnum, avatarImageMDs} from '../utils/ImageMetaData';
+import {
+  AvatarImageEnum,
+  avatarImageMDs,
+} from '../utils/pixiUtils/metaData/ImageMetaData';
 import {ProfileDropdownOnOff} from './Navigation';
 
 export interface ProfileProps {

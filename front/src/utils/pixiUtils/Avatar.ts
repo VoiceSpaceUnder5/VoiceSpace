@@ -1,15 +1,24 @@
-import {Texture} from '@pixi/core';
 import {Sprite} from '@pixi/sprite';
-import {AvatarImageEnum, AvatarFaceEnum} from '../ImageMetaData';
+import {Viewport} from 'pixi-viewport';
+import {
+  AvatarImageEnum,
+  AvatarFaceEnum,
+  avatarImageMDs,
+} from './metaData/ImageMetaData';
 import {DisplayContainer} from './DisplayContainer';
-import {DisplayContainerData, PartsData} from './metaData/DataInterface';
+import {DisplayContainerData} from './metaData/DataInterface';
 import {ResourceManager} from './ResourceManager';
+import {World} from './World';
 
-export interface Avatar {
-  avatar: number;
+const avatarMDs = require('./metaData/avatars.json');
+
+export interface IAvatar {
+  avatarImageEnum: AvatarImageEnum;
   avatarFace: AvatarFaceEnum;
   avatarFaceScale: number;
+  faceTexture: string[];
   partRotateDegree: number[];
+  viewport: Viewport;
 }
 
 export enum AvatarParts {
@@ -23,70 +32,59 @@ export enum AvatarParts {
 
 export const PARTS_ROTATE_SPEED = 2;
 
-export const avatarName = ['bunny'];
+export class Avatar extends DisplayContainer implements IAvatar {
+  public avatarImageEnum: AvatarImageEnum;
+  public avatarFace: AvatarFaceEnum;
+  public avatarFaceScale: number;
+  public faceTexture: string[];
+  public partRotateDegree: number[];
+  public viewport: Viewport;
 
-export function newAvatar(
-  container: DisplayContainer,
-  data: DisplayContainerData,
-): void {
-  data.parts.forEach(part => {
-    const sprite = makeSpriteFromMD(part);
-    if (sprite) container.addPart(sprite);
-  });
-  container.addPartsToChild();
-  if (data.collisionBox) container.addCollisionBox(data.collisionBox);
-}
+  constructor(
+    world: World,
+    avatarImageEnum: AvatarImageEnum,
+    viewport: Viewport,
+  ) {
+    super(world);
 
-function makeSpriteFromMD(part: PartsData): Sprite | undefined {
-  const texture = ResourceManager.getTexture(
-    part.textureName,
-    part.spriteSheet,
-  );
-  if (!texture) return;
-  const sprite = Sprite.from(texture);
-  sprite.position.set(part.position.x, part.position.y);
-  sprite.anchor.set(part.anchor.x, part.anchor.y);
-  return sprite;
-}
+    this.avatarImageEnum = avatarImageEnum;
+    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
+    this.avatarFaceScale = 1.0;
+    this.partRotateDegree = Array.from({length: 6}, () => 0);
+    this.position.copyFrom(world.startPosition);
+    this.viewport = viewport;
+    this.faceTexture = [];
 
-export function swapFace(
-  avatar: AvatarImageEnum,
-  face: Sprite,
-  vowel: AvatarFaceEnum,
-): void {
-  const faceState = [
-    'Face_Mute.png',
-    'Face_A.png',
-    'Face_E.png',
-    'Face_I.png',
-    'Face_O.png',
-    'Face_U.png',
-  ];
-  const name = avatarName[avatar];
-  const texture = ResourceManager.getTexture(
-    name + faceState[vowel],
-    'avatars.json',
-  );
-  if (texture) face.texture = texture;
-}
+    this.changeAvatar(this.getAvatarMD());
+  }
 
-export function swapSpriteTexture(sprite: Sprite, texture: Texture): void {
-  sprite.texture = texture;
-}
+  protected getAvatarMD(): DisplayContainerData {
+    const avatarName = this.getAvatarInitialName();
+    return avatarMDs[avatarName];
+  }
 
-export function setPartsPosition(avatar: DisplayContainer): void {
-  avatar.parts[AvatarParts.FACE].anchor.set(0.45, 0.95);
-  avatar.parts[AvatarParts.BODY].anchor.set(0.5, 0);
+  private getAvatarInitialName(): string {
+    return avatarImageMDs[this.avatarImageEnum].avatarInitialName;
+  }
 
-  avatar.parts[AvatarParts.LEFT_ARM].anchor.set(0.5, 0.2);
-  avatar.parts[AvatarParts.LEFT_ARM].position.set(8, 5);
+  public changeAvatar(data: DisplayContainerData): void {
+    const newParts: Sprite[] = [];
+    data.parts.forEach(part => {
+      const sprite = this.makeSpriteFromPartsMD(part);
+      if (sprite) newParts.push(sprite);
+    });
+    const faceTexture = this.getAvatarMD().faceTexture;
+    if (faceTexture) this.faceTexture = faceTexture;
+    this.removeChildren();
+    this.parts = newParts;
+    this.addPartsToChild();
+    if (data.collisionBox) this.addCollisionBox(data.collisionBox);
+  }
 
-  avatar.parts[AvatarParts.LEFT_LEG].anchor.set(0.5, 0.2);
-  avatar.parts[AvatarParts.LEFT_LEG].position.set(9, 42);
-
-  avatar.parts[AvatarParts.RIGHT_ARM].anchor.set(0.5, 0.2);
-  avatar.parts[AvatarParts.RIGHT_ARM].position.set(-8, 5);
-
-  avatar.parts[AvatarParts.RIGHT_LEG].anchor.set(0.5, 0.2);
-  avatar.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
+  public swapFace(): void {
+    const textureName = this.faceTexture[this.avatarFace];
+    const face = this.children[AvatarParts.FACE] as Sprite;
+    const texture = ResourceManager.getTexture(textureName, 'avatars.json');
+    if (texture) face.texture = texture;
+  }
 }

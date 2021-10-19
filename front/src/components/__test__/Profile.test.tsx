@@ -7,7 +7,7 @@ import {
   AvatarImageEnum,
   avatarImageMDs,
   AvatarFaceEnum,
-} from '../../utils/ImageMetaData';
+} from '../../utils/pixiUtils/metaData/ImageMetaData';
 import {act} from 'react-dom/test-utils';
 
 const mockedProfileDropDownProps: ProfileProps = {

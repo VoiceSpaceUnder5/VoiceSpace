@@ -6,7 +6,7 @@ import {World} from './World';
 import {Loader} from '@pixi/loaders';
 import {Stuff} from './Stuff';
 import {GameData} from './GameData';
-import world1Json from './world1.json';
+import world1Json from './metaData/world1.json';
 import {createViewport} from './viewportUtils';
 import {Texture, Resource} from 'pixi.js';
 

@@ -8,7 +8,7 @@ import {
   AvatarImageEnumMax,
   AvatarImageEnumMin,
   avatarImageMDs,
-} from '../../utils/ImageMetaData';
+} from '../../utils/pixiUtils/metaData/ImageMetaData';
 
 const qs = require('query-string');
 const {Option} = Select;

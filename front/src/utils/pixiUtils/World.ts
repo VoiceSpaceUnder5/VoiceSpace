@@ -3,10 +3,13 @@ import {Container} from '@pixi/display';
 import {IPointData} from '@pixi/math';
 import {Sprite} from '@pixi/sprite';
 import {DisplayContainer} from './DisplayContainer';
-import {IWorld} from './IWorld';
 import {MyAvatar} from './MyAvatar';
 import {PeerAvatar} from './PeerAvatar';
 import {Viewport} from 'pixi-viewport';
+
+export interface IWorld {
+  startPosition: {x: number; y: number};
+}
 
 export class World extends Container implements IWorld {
   public startPosition: IPointData;

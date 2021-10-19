@@ -1,7 +1,10 @@
 import React from 'react';
 import {Menu} from 'antd';
 import {LeftCircleFilled} from '@ant-design/icons';
-import {AvatarImageEnum, avatarImageMDs} from '../utils/ImageMetaData';
+import {
+  AvatarImageEnum,
+  avatarImageMDs,
+} from '../utils/pixiUtils/metaData/ImageMetaData';
 import '../pages/spacePage/space.css';
 
 export interface UserInfo {

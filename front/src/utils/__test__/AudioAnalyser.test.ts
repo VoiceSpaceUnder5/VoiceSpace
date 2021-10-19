@@ -1,4 +1,4 @@
-import {AvatarFaceEnum} from '../ImageMetaData';
+import {AvatarFaceEnum} from '../pixiUtils/metaData/ImageMetaData';
 import {AudioAnalyser} from '../RTCGameUtils';
 
 const mockedStream: any = [];

@@ -1,6 +1,6 @@
 import {Popover} from 'antd';
 import React, {useEffect, useRef, useState} from 'react';
-import {Formant} from '../utils/ImageMetaData';
+import {Formant} from '../utils/pixiUtils/metaData/ImageMetaData';
 import './vowelDetect.css';
 import {SmileOutlined} from '@ant-design/icons';
 

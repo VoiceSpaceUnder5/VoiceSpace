@@ -1,57 +1,38 @@
 import {DisplayObject} from '@pixi/display';
-import {
-  Avatar,
-  AvatarParts,
-  PARTS_ROTATE_SPEED,
-  swapFace,
-  newAvatar,
-} from './Avatar';
+import {AvatarParts, PARTS_ROTATE_SPEED, Avatar} from './Avatar';
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
 import {World} from './World';
 import {checkIntersect} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
-import {AvatarFaceEnum} from '../ImageMetaData';
-import {Sprite} from '@pixi/sprite';
-import avatarMD from './metaData/avatars.json';
 
-export class MyAvatar extends DisplayContainer implements Avatar {
-  public avatar: number;
-  public avatarFace: AvatarFaceEnum;
-  public avatarFaceScale: number;
-  public partRotateDegree: number[];
+export class MyAvatar extends Avatar {
   private referenceDegree: number;
   private rotateClockWise: boolean;
   public vx: number;
   public vy: number;
   private keyboard: PlayerKeyboard;
   private state: (framesPassed: number) => void;
-  public viewport: Viewport;
 
-  constructor(world: World, avatar: number, viewport: Viewport) {
-    super(world);
+  constructor(world: World, avatarImageEnum: number, viewport: Viewport) {
+    super(world, avatarImageEnum, viewport);
 
-    this.avatar = avatar;
-    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
-    this.avatarFaceScale = 1.0;
-    this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.referenceDegree = 0;
     this.rotateClockWise = true;
     this.vx = 0;
     this.vy = 0;
     this.state = this.stand;
-    this.parts = [];
     this.pivot.set(0.5, 0.5);
     this.keyboard = new PlayerKeyboard(this, 'KeyA', 'KeyD', 'KeyW', 'KeyS');
-    this.position.copyFrom(world.startPosition);
-    this.viewport = viewport;
-    // newAvatar(this, avatar);
-    newAvatar(this, avatarMD.bunny);
   }
 
   //setter
   update(framesPassed: number): void {
+    if (this.isAvatarChanged()) {
+      this.avatarImageEnum = GameData.getMyAvatar();
+      this.changeAvatar(this.getAvatarMD());
+    }
     this.updateFace();
     if (this.isMoving()) {
       this.state = this.move;
@@ -69,11 +50,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.avatarFace = GameData.getMyAvatarFace();
     this.avatarFaceScale = GameData.getMyAvatarFaceScale();
     this.parts[AvatarParts.FACE].scale.set(this.avatarFaceScale);
-    swapFace(
-      this.avatar,
-      this.children[AvatarParts.FACE] as Sprite,
-      this.avatarFace,
-    );
+    this.swapFace();
   }
 
   private isMoving() {
@@ -86,14 +63,12 @@ export class MyAvatar extends DisplayContainer implements Avatar {
   }
 
   private initArmAndLegsAngle() {
-    // this.parts[AvatarParts.FACE].angle = 0;
     this.parts[AvatarParts.LEFT_ARM].angle = 0;
     this.parts[AvatarParts.LEFT_LEG].angle = 0;
     this.parts[AvatarParts.RIGHT_ARM].angle = 0;
     this.parts[AvatarParts.RIGHT_LEG].angle = 0;
   }
 
-  // private changeVx() {}
   private move(delta: number): void {
     const oldX = this.x;
     const oldY = this.y;
@@ -106,7 +81,6 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     }
     this.zIndex = this.y + this.height / 2;
     this.moveGesture();
-    // GameData.testPrint();
   }
 
   private stand(): void {
@@ -144,6 +118,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
       this.partRotateDegree[i] = this.parts[i].angle;
     }
   }
+
   private isCollided(world: World): boolean {
     const stuffs = world.children as DisplayContainer[];
     if (isOutOfWorld(this, this.viewport, 50)) return true;
@@ -159,6 +134,10 @@ export class MyAvatar extends DisplayContainer implements Avatar {
         return true;
     }
     return false;
+  }
+
+  private isAvatarChanged() {
+    return this.avatarImageEnum !== GameData.getMyAvatar();
   }
 }
 

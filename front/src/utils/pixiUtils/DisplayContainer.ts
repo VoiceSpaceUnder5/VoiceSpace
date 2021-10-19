@@ -4,7 +4,7 @@ import {CollisionBox} from './CollisionBox';
 import {World} from './World';
 import {ResourceManager} from './ResourceManager';
 import {collisionBoxData} from './metaData/DataInterface';
-
+import {PartsData} from './metaData/DataInterface';
 export class DisplayContainer extends Container {
   world: World;
   collidable: boolean;
@@ -56,5 +56,17 @@ export class DisplayContainer extends Container {
     this.parts.forEach(part => {
       this.addChild(part);
     });
+  }
+
+  makeSpriteFromPartsMD(part: PartsData): Sprite | undefined {
+    const texture = ResourceManager.getTexture(
+      part.textureName,
+      part.spriteSheet,
+    );
+    if (!texture) return;
+    const sprite = Sprite.from(texture);
+    sprite.position.set(part.position.x, part.position.y);
+    sprite.anchor.set(part.anchor.x, part.anchor.y);
+    return sprite;
   }
 }

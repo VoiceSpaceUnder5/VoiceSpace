@@ -7,7 +7,7 @@ import {message} from 'antd';
 import {
   AvatarImageEnumMax,
   AvatarImageEnumMin,
-} from '../../../utils/ImageMetaData';
+} from '../../../utils/pixiUtils/metaData/ImageMetaData';
 
 const settingProps: any = {
   location: {

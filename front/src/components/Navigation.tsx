@@ -13,7 +13,7 @@ import PeerManager, {
   Peer,
   Vec2,
 } from '../utils/RTCGameUtils';
-import {AvatarImageEnum} from '../utils/ImageMetaData';
+import {AvatarImageEnum} from '../utils/pixiUtils/metaData/ImageMetaData';
 import {message} from 'antd';
 import {UserInfo} from './UserList';
 import VowelDetectButton from './VowelDetectButton';

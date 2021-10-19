@@ -1,6 +1,9 @@
-import {AvatarImageEnum, AvatarFaceEnum} from './ImageMetaData';
+import {
+  AvatarImageEnum,
+  AvatarFaceEnum,
+} from './pixiUtils/metaData/ImageMetaData';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
-import {Formant} from './ImageMetaData';
+import {Formant} from './pixiUtils/metaData/ImageMetaData';
 
 /**
  * DataDto 의 type enum

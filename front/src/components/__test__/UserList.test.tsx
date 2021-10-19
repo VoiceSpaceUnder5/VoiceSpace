@@ -2,7 +2,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import {fireEvent, queryAllByRole, screen} from '@testing-library/react';
 import {UserInfo, UsersListProps, UserList} from '../UserList';
-import {AvatarImageEnum} from '../../utils/ImageMetaData';
+import {AvatarImageEnum} from '../../utils/pixiUtils/metaData/ImageMetaData';
 import {act} from 'react-dom/test-utils';
 const result: UserInfo[] = [
   {

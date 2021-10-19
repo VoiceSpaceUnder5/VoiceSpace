@@ -1,45 +1,27 @@
-import {Sprite} from '@pixi/sprite';
-import {AvatarFaceEnum} from '../ImageMetaData';
-import {Avatar, AvatarParts, newAvatar, swapFace} from './Avatar';
-import {DisplayContainer} from './DisplayContainer';
+import {AvatarParts, Avatar} from './Avatar';
 import {GameData} from './GameData';
 import {World} from './World';
 import {Viewport} from 'pixi-viewport';
-import avatarMD from './metaData/avatars.json';
 
-export class PeerAvatar extends DisplayContainer implements Avatar {
-  public avatar: number;
-  public avatarFace: AvatarFaceEnum;
-  public avatarFaceScale: number;
-  public partRotateDegree: number[];
+export class PeerAvatar extends Avatar {
   public socketID: string;
-  public viewport: Viewport;
 
   constructor(world: World, socketID: string, viewport: Viewport) {
-    super(world);
-
-    const avatar = GameData.getPeerAvatar(socketID);
-    if (avatar === undefined) {
-      console.error("Error: This Peer's Avatar undefined");
-    }
-    this.avatar = avatar || 0;
-    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
-    this.avatarFaceScale = 1.0;
-    this.partRotateDegree = Array.from({length: 6}, () => 0);
+    super(world, GameData.getPeerAvatar(socketID)!, viewport);
     this.socketID = socketID;
-    this.viewport = viewport;
 
     const centerPos = GameData.getPeerCenterPos(socketID);
     if (centerPos === undefined) {
       console.error("Error: This Peer's CenterPos undefined");
     }
     this.position.set(centerPos?.x, centerPos?.y);
-
-    //this.addChild(part)
-    newAvatar(this, avatarMD.bunny);
   }
 
   update(): void {
+    if (this.isAvatarChanged()) {
+      this.avatarImageEnum = GameData.getPeerAvatar(this.socketID)!;
+      this.changeAvatar(this.getAvatarMD());
+    }
     this.changePosition();
     this.changeZIndex();
     this.changePartRotationDegree();
@@ -48,8 +30,6 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.changeAvatarFaceScale();
     this.changeDivPos();
     //Peer의 Avatar번호가 바뀌었으면 바꾸어준다. 아바타를
-    // Peer의 scale을 받아서 얼굴에 적용한다.
-    // Peer의 AvatarFace를 받아서 얼굴에 적용한다.
   }
 
   private changePosition(): void {
@@ -77,15 +57,15 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.scale.x = lookLeft ? -1 : 1;
   }
 
+  private isAvatarChanged(): boolean {
+    return this.avatarImageEnum !== GameData.getPeerAvatar(this.socketID);
+  }
+
   private changeAvatarFace(): void {
     const avatarFace = GameData.getPeerAvatarFace(this.socketID);
     if (avatarFace === undefined) return;
     this.avatarFace = avatarFace;
-    swapFace(
-      this.avatar,
-      this.children[AvatarParts.FACE] as Sprite,
-      this.avatarFace,
-    );
+    this.swapFace();
   }
 
   private changeAvatarFaceScale(): void {

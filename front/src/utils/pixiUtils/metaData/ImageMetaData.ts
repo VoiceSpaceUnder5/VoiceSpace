@@ -1,5 +1,7 @@
 export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세요.
-  BUNNY = 0,
+  BUNNY,
+  COW,
+  PIG,
 }
 
 export const AvatarImageEnumMin = AvatarImageEnum.BUNNY;
@@ -26,7 +28,19 @@ export const bunnyMD: AvatarImageMD = {
   avatarProfileSrc: './assets/spaceMain/avatars/bunnyFace_Mute.png',
 };
 
-export const avatarImageMDs = [bunnyMD];
+export const cowMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.COW,
+  avatarInitialName: 'cow',
+  avatarProfileSrc: './assets/spaceMain/avatars/cowFace_Mute.png',
+};
+
+export const pigMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.PIG,
+  avatarInitialName: 'pig',
+  avatarProfileSrc: './assets/spaceMain/avatars/pigFace_Mute.png',
+};
+
+export const avatarImageMDs = [bunnyMD, cowMD, pigMD];
 
 export interface Formant {
   label: string;

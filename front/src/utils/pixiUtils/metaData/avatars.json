@@ -45,6 +45,102 @@
       }
     ],
     "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20},
-    "faceTexture": ["bunnyFace_Mute", "bunnyFace_A", "bunnyFace_E", "bunnyFace_I", "bunnyFace_O", "bunnyFace_U"]
+    "faceTexture": ["bunnyFace_Mute.png", "bunnyFace_A.png", "bunnyFace_E.png", "bunnyFace_I.png", "bunnyFace_O.png", "bunnyFace_U.png"]
+  },
+  "cow": {
+    "parts": [
+      {
+        "name": "leftArm",
+        "spriteSheet": "avatars.json",
+        "textureName": "cowArm.png",
+        "position": {"x": 8, "y": 5},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "leftLeg",
+        "spriteSheet": "avatars.json",
+        "textureName": "cowArm.png",
+        "position": {"x": 9, "y": 42},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "body",
+        "spriteSheet": "avatars.json",
+        "textureName": "cowBody.png",
+        "position": {"x": 0, "y": 0},
+        "anchor": {"x": 0.5, "y": 0}
+      },
+      {
+        "name": "rightArm",
+        "spriteSheet": "avatars.json",
+        "textureName": "cowArm.png",
+        "position": {"x": -8, "y": 5},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "rightLeg",
+        "spriteSheet": "avatars.json",
+        "textureName": "cowArm.png",
+        "position": {"x": -8, "y": 42},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "face",
+        "spriteSheet": "avatars.json",
+        "textureName": "cowFace_Mute.png",
+        "position": {"x": 0, "y": 0},
+        "anchor": {"x": 0.45, "y": 0.95}
+      }
+    ],
+    "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20},
+    "faceTexture": ["cowFace_Mute.png", "cowFace_A.png", "cowFace_E.png", "cowFace_I.png", "cowFace_O.png", "cowFace_U.png"]
+  },
+  "pig": {
+    "parts": [
+      {
+        "name": "leftArm",
+        "spriteSheet": "avatars.json",
+        "textureName": "pigArm.png",
+        "position": {"x": 8, "y": 5},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "leftLeg",
+        "spriteSheet": "avatars.json",
+        "textureName": "pigArm.png",
+        "position": {"x": 9, "y": 42},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "body",
+        "spriteSheet": "avatars.json",
+        "textureName": "pigBody.png",
+        "position": {"x": 0, "y": 0},
+        "anchor": {"x": 0.5, "y": 0}
+      },
+      {
+        "name": "rightArm",
+        "spriteSheet": "avatars.json",
+        "textureName": "pigArm.png",
+        "position": {"x": -8, "y": 5},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "rightLeg",
+        "spriteSheet": "avatars.json",
+        "textureName": "pigArm.png",
+        "position": {"x": -8, "y": 42},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "face",
+        "spriteSheet": "avatars.json",
+        "textureName": "pigFace_Mute.png",
+        "position": {"x": 0, "y": 0},
+        "anchor": {"x": 0.45, "y": 0.95}
+      }
+    ],
+    "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20},
+    "faceTexture": ["pigFace_Mute.png", "pigFace_A.png", "pigFace_E.png", "pigFace_I.png", "pigFace_O.png", "pigFace_U.png"]
   }
 }

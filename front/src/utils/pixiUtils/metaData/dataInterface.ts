@@ -22,4 +22,5 @@ export interface DisplayContainerData {
   position?: Vec2;
   parts: PartsData[];
   collisionBox?: collisionBoxData;
+  faceTexture?: string[];
 }

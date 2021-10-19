@@ -1,4 +1,4 @@
-import {AvatarFaceEnum} from '../ImageMetaData';
+import {AvatarFaceEnum} from './metaData/ImageMetaData';
 import PeerManager, {Vec2} from '../RTCGameUtils';
 import {MyAvatar} from './MyAvatar';
 import {World} from './World';
