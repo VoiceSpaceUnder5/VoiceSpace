@@ -3,7 +3,6 @@ import {RouteComponentProps} from 'react-router-dom';
 import io from 'socket.io-client';
 import PeerManager, {AudioAnalyser, Me, Vec2} from '../../utils/RTCGameUtils';
 import Navigation from '../../components/Navigation';
-import {forestMapMMI} from '../../utils/ImageMetaData';
 import SpaceCanvas2 from '../../components/SpaceCanvas2';
 import './space.css';
 import {message} from 'antd';
@@ -115,7 +114,6 @@ function Space(props: RouteComponentProps): JSX.Element {
   if (!isQueryValid(query)) {
     props.history.push(`/setting?roomId=${query.roomId}`);
   }
-  const mapMakingInfo = forestMapMMI; // 추후 query.worldMapIdx 값에 따라 변경되는 코드로 작성.
   //ref
   const spaceMainContainerRef = useRef<HTMLDivElement>(null);
   const audioContainerRef = useRef<HTMLDivElement>(null);
@@ -131,7 +129,7 @@ function Space(props: RouteComponentProps): JSX.Element {
       spaceMainContainerRef.current,
       audioContainerRef.current,
       query,
-      {...mapMakingInfo.respawnPosition},
+      {x: 150, y: 150},
       (peerManager: PeerManager) => {
         setPeerManager(peerManager);
       },

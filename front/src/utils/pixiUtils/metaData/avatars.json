@@ -44,6 +44,7 @@
         "anchor": {"x": 0.45, "y": 0.95}
       }
     ],
-    "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20}
+    "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20},
+    "faceTexture": ["bunnyFace_Mute", "bunnyFace_A", "bunnyFace_E", "bunnyFace_I", "bunnyFace_O", "bunnyFace_U"]
   }
 }

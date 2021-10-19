@@ -12,13 +12,13 @@ import {World} from './World';
 import {checkIntersect} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
-import {AvatarPartImageEnum} from '../ImageMetaData';
+import {AvatarFaceEnum} from '../ImageMetaData';
 import {Sprite} from '@pixi/sprite';
 import avatarMD from './metaData/avatars.json';
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
-  public avatarFace: AvatarPartImageEnum;
+  public avatarFace: AvatarFaceEnum;
   public avatarFaceScale: number;
   public partRotateDegree: number[];
   private referenceDegree: number;
@@ -33,7 +33,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     super(world);
 
     this.avatar = avatar;
-    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
     this.avatarFaceScale = 1.0;
     this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.referenceDegree = 0;

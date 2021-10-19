@@ -1,4 +1,4 @@
-import {AvatarPartImageEnum} from '../ImageMetaData';
+import {AvatarFaceEnum} from '../ImageMetaData';
 import PeerManager, {Vec2} from '../RTCGameUtils';
 import {MyAvatar} from './MyAvatar';
 import {World} from './World';
@@ -20,7 +20,7 @@ export class GameData {
   public static getMyAvatar(): number {
     return this.peerManager.me.avatar;
   }
-  public static getMyAvatarFace(): AvatarPartImageEnum {
+  public static getMyAvatarFace(): AvatarFaceEnum {
     return this.peerManager.me.audioAnalyser.getAvatarFaceDtoByAudioAnalysis()
       .avatarFace;
   }
@@ -87,7 +87,7 @@ export class GameData {
 
   public static getPeerAvatarFace(
     socketID: string,
-  ): AvatarPartImageEnum | undefined {
+  ): AvatarFaceEnum | undefined {
     if (!this.peerManager.peers.has(socketID)) {
       console.error("Error: There's No matching Peer ID");
       return undefined;

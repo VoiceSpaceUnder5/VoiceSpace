@@ -2,11 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import '../pages/spacePage/space.css';
-import {
-  AvatarImageEnum,
-  avatarImageMDs,
-  AvatarPartImageEnum,
-} from '../utils/ImageMetaData';
+import {AvatarImageEnum, avatarImageMDs} from '../utils/ImageMetaData';
 import {ProfileDropdownOnOff} from './Navigation';
 
 export interface ProfileProps {
@@ -90,11 +86,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
             </button>
             <img
               className="avatar_preview"
-              src={
-                avatarImageMDs[newAvatar].avatarMDInfos[
-                  AvatarPartImageEnum.FACE_MUTE
-                ].src
-              }
+              src={avatarImageMDs[newAvatar].avatarProfileSrc}
             ></img>
             <button>
               <RightCircleFilled

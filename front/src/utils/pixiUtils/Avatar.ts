@@ -1,13 +1,13 @@
 import {Texture} from '@pixi/core';
 import {Sprite} from '@pixi/sprite';
-import {AvatarImageEnum, AvatarPartImageEnum} from '../ImageMetaData';
+import {AvatarImageEnum, AvatarFaceEnum} from '../ImageMetaData';
 import {DisplayContainer} from './DisplayContainer';
 import {DisplayContainerData, PartsData} from './metaData/DataInterface';
 import {ResourceManager} from './ResourceManager';
 
 export interface Avatar {
   avatar: number;
-  avatarFace: AvatarPartImageEnum;
+  avatarFace: AvatarFaceEnum;
   avatarFaceScale: number;
   partRotateDegree: number[];
 }
@@ -52,7 +52,7 @@ function makeSpriteFromMD(part: PartsData): Sprite | undefined {
 export function swapFace(
   avatar: AvatarImageEnum,
   face: Sprite,
-  vowel: AvatarPartImageEnum,
+  vowel: AvatarFaceEnum,
 ): void {
   const faceState = [
     'Face_Mute.png',
@@ -62,11 +62,9 @@ export function swapFace(
     'Face_O.png',
     'Face_U.png',
   ];
-  let index = vowel - 7;
-  if (index < 0) index = 0;
   const name = avatarName[avatar];
   const texture = ResourceManager.getTexture(
-    name + faceState[index],
+    name + faceState[vowel],
     'avatars.json',
   );
   if (texture) face.texture = texture;

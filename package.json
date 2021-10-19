@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "pixi-viewport": "^4.33.0",
-    "pixi.js": "^6.1.3"
-  }
-}

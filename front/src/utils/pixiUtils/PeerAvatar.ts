@@ -1,5 +1,5 @@
 import {Sprite} from '@pixi/sprite';
-import {AvatarPartImageEnum} from '../ImageMetaData';
+import {AvatarFaceEnum} from '../ImageMetaData';
 import {Avatar, AvatarParts, newAvatar, swapFace} from './Avatar';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
@@ -9,7 +9,7 @@ import avatarMD from './metaData/avatars.json';
 
 export class PeerAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
-  public avatarFace: AvatarPartImageEnum;
+  public avatarFace: AvatarFaceEnum;
   public avatarFaceScale: number;
   public partRotateDegree: number[];
   public socketID: string;
@@ -23,7 +23,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
       console.error("Error: This Peer's Avatar undefined");
     }
     this.avatar = avatar || 0;
-    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
     this.avatarFaceScale = 1.0;
     this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.socketID = socketID;
