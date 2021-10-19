@@ -1,5 +1,5 @@
 import {Popover} from 'antd';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Formant} from '../utils/ImageMetaData';
 import './vowelDetect.css';
 import {SmileOutlined} from '@ant-design/icons';
@@ -167,9 +167,25 @@ function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
 }
 
 function VowelDetectButton(props: VowelDetectButtonProps): JSX.Element {
+  const [visible, setVisible] = useState(false);
+
+  const onESCKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', onESCKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onESCKeyDown);
+    };
+  }, []);
   return (
     <>
       <Popover
+        visible={visible}
+        onVisibleChange={setVisible}
         trigger={['click']}
         content={<VowelDetect {...props}></VowelDetect>}
       >

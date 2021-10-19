@@ -442,6 +442,11 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
   );
   const [isVisible, setIsVisible] = useState(false);
 
+  const onESCKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsVisible(false);
+    }
+  };
   const screenShareOnClick = async () => {
     setIsVisible(false);
     if (
@@ -528,6 +533,12 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
       });
     }
   };
+  useEffect(() => {
+    window.addEventListener('keydown', onESCKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onESCKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     props.setTrackEventHandler(trackEventHandler);

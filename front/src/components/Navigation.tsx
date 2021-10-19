@@ -290,6 +290,7 @@ function Navigation(props: NavigationProps): JSX.Element {
           avatar={props.peerManager.me.avatar}
           setNickname={setNickName}
           setAvatar={setAvatar}
+          setVisible={null}
         />
       </div>
       <div className="navbar_center">
