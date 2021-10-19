@@ -68,7 +68,7 @@ export class DrawHelper {
     this.context = null;
     this.drawStartPositions = new Map();
   }
-  setUp(canvas: HTMLCanvasElement) {
+  setUp(canvas: HTMLCanvasElement): void {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     if (!this.context) console.error('can not create context in DrawHelper');
