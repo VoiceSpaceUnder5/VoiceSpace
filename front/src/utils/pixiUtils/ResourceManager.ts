@@ -3,7 +3,9 @@ import {Loader} from '@pixi/loaders';
 
 export class ResourceManager {
   public static add(jsonUrl: string): void {
-    Loader.shared.add(this.parseName(jsonUrl), jsonUrl);
+    const resourceName = this.parseName(jsonUrl);
+    if (Loader.shared.resources[resourceName]) return;
+    Loader.shared.add(resourceName, jsonUrl);
   }
 
   private static parseName(url: string): string {

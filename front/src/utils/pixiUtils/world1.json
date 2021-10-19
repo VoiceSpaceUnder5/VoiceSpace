@@ -1,6 +1,5 @@
 {
   "background": {
-    "spriteSheet": "backgrounds.json",
     "textureName": "background01.png",
     "width": 3072,
     "height": 3072

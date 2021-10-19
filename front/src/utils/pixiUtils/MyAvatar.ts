@@ -3,8 +3,8 @@ import {
   Avatar,
   AvatarParts,
   PARTS_ROTATE_SPEED,
-  newAvatar,
   swapFace,
+  newAvatar2,
 } from './Avatar';
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
@@ -14,6 +14,7 @@ import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {AvatarPartImageEnum} from '../ImageMetaData';
 import {Sprite} from '@pixi/sprite';
+import avatarMD from './metaData/avatars.json';
 
 export class MyAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
@@ -45,7 +46,8 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.keyboard = new PlayerKeyboard(this, 'KeyA', 'KeyD', 'KeyW', 'KeyS');
     this.position.copyFrom(world.startPosition);
     this.viewport = viewport;
-    newAvatar(this, avatar);
+    // newAvatar(this, avatar);
+    newAvatar2(this, avatarMD.bunny);
   }
 
   //setter

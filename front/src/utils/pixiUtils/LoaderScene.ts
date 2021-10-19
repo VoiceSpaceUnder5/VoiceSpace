@@ -1,19 +1,18 @@
 import {Container, Loader} from 'pixi.js';
-import {assets} from './assets_meta';
 import {ResourceManager} from './ResourceManager';
 import {Scene} from './Scene';
 
 const resourceUrls = [
   './assets/spaceMain/spritesheet/stuffs.json',
   './assets/spaceMain/spritesheet/avatars.json',
-  // './assets/background.json',
+  './assets/spaceMain/background/forestVer1.png',
 ];
 
 export class LoaderScene extends Container implements Scene {
   constructor(afterLoad: Loader.OnCompleteSignal) {
     super();
 
-    Loader.shared.add(assets);
+    // Loader.shared.add(assets);
     resourceUrls.forEach(resourceUrl => {
       ResourceManager.add(resourceUrl);
     });

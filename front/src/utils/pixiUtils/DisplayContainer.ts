@@ -1,11 +1,8 @@
 import {Container} from '@pixi/display';
-import {Loader} from '@pixi/loaders';
 import {Sprite} from '@pixi/sprite';
 import {CollisionBox} from './CollisionBox';
 import {World} from './World';
-import {Resource, Texture} from 'pixi.js';
-
-const resources = Loader.shared.resources;
+import {ResourceManager} from './ResourceManager';
 
 export class DisplayContainer extends Container {
   world: World;
@@ -41,12 +38,22 @@ export class DisplayContainer extends Container {
 
   addParts(textureName: string[]): void {
     textureName.forEach(part => {
-      if (resources[part].texture === undefined) {
+      const texture = ResourceManager.getTexture(part);
+      if (texture === undefined) {
         console.error('Error: Resource parts undefined');
         return;
       }
-      const partTexture = resources[part].texture as Texture<Resource>;
-      this.parts.push(Sprite.from(partTexture));
+      this.parts.push(Sprite.from(texture));
+    });
+  }
+
+  addPart(sprite: Sprite): void {
+    this.parts.push(sprite);
+  }
+
+  addPartsToChild(): void {
+    this.parts.forEach(part => {
+      this.addChild(part);
     });
   }
 }

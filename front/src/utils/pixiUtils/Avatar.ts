@@ -1,9 +1,8 @@
 import {Texture} from '@pixi/core';
-import {Loader} from '@pixi/loaders';
 import {Sprite} from '@pixi/sprite';
 import {AvatarImageEnum, AvatarPartImageEnum} from '../ImageMetaData';
-import {CollisionBox} from './CollisionBox';
 import {DisplayContainer} from './DisplayContainer';
+import {ResourceManager} from './ResourceManager';
 
 export interface Avatar {
   avatar: number;
@@ -19,6 +18,19 @@ export enum AvatarParts {
   RIGHT_ARM,
   RIGHT_LEG,
   FACE,
+}
+
+interface AvatarPartsMD {
+  name: string;
+  spritesheet: string;
+  textureName: string;
+  position: {x: number; y: number};
+  anchor: {x: number; y: number};
+}
+
+interface AvatarMD {
+  parts: AvatarPartsMD[];
+  collisionBox: {x: number; y: number; width: number; height: number} | null;
 }
 
 export const PARTS_ROTATE_SPEED = 2;
@@ -44,7 +56,32 @@ export function newAvatar(
   });
 
   setPartsPosition(avatar);
-  addCollisionBox(avatar, -15, avatar.height / 2 - 40, 30, 20);
+  avatar.addCollisionBox(-15, avatar.height / 2 - 40, 30, 20);
+}
+
+export function newAvatar2(
+  container: DisplayContainer,
+  avatarMD: AvatarMD,
+): void {
+  avatarMD.parts.forEach(part => {
+    const sprite = makeSpriteFromMD(part);
+    if (sprite) container.addPart(sprite);
+  });
+  container.addPartsToChild();
+  const box = avatarMD.collisionBox;
+  if (box) container.addCollisionBox(box.x, box.y, box.width, box.height);
+}
+
+function makeSpriteFromMD(part: AvatarPartsMD): Sprite | undefined {
+  const texture = ResourceManager.getTextureFromSheet(
+    part.textureName,
+    part.spritesheet,
+  );
+  if (!texture) return;
+  const sprite = Sprite.from(texture);
+  sprite.position.set(part.position.x, part.position.y);
+  sprite.anchor.set(part.anchor.x, part.anchor.y);
+  return sprite;
 }
 
 export function swapFace(
@@ -52,11 +89,21 @@ export function swapFace(
   face: Sprite,
   vowel: AvatarPartImageEnum,
 ): void {
-  const faceState = ['FaceMute', 'FaceA', 'FaceE', 'FaceI', 'FaceO', 'FaceU'];
+  const faceState = [
+    'Face_Mute.png',
+    'Face_A.png',
+    'Face_E.png',
+    'Face_I.png',
+    'Face_O.png',
+    'Face_U.png',
+  ];
   let index = vowel - 7;
   if (index < 0) index = 0;
   const name = avatarName[avatar];
-  const texture = Loader.shared.resources[name + faceState[index]].texture;
+  const texture = ResourceManager.getTextureFromSheet(
+    name + faceState[index],
+    'avatars.json',
+  );
   if (texture) face.texture = texture;
 }
 
@@ -79,16 +126,4 @@ export function setPartsPosition(avatar: DisplayContainer): void {
 
   avatar.parts[AvatarParts.RIGHT_LEG].anchor.set(0.5, 0.2);
   avatar.parts[AvatarParts.RIGHT_LEG].position.set(-8, 42);
-}
-
-export function addCollisionBox(
-  parent: DisplayContainer,
-  offsetX: number,
-  offsetY: number,
-  width: number,
-  height: number,
-): void {
-  const collisionBox = new CollisionBox(offsetX, offsetY, width, height);
-  parent.collisionBox = collisionBox;
-  parent.addChild(collisionBox);
 }

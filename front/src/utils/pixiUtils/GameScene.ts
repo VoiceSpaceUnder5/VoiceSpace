@@ -19,7 +19,7 @@ export class GameScene extends Container implements Scene {
   constructor() {
     super();
 
-    const backgroundTexture = resources['background']
+    const backgroundTexture = resources['forestVer1.png']
       .texture as Texture<Resource>;
     const world = new World(backgroundTexture);
     this.world = world;
