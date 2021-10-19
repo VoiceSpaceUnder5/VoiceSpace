@@ -4,7 +4,7 @@ import {
   AvatarParts,
   PARTS_ROTATE_SPEED,
   swapFace,
-  newAvatar2,
+  newAvatar,
 } from './Avatar';
 import {PlayerKeyboard} from './PlayerKeyboard';
 import {Viewport} from 'pixi-viewport';
@@ -47,7 +47,7 @@ export class MyAvatar extends DisplayContainer implements Avatar {
     this.position.copyFrom(world.startPosition);
     this.viewport = viewport;
     // newAvatar(this, avatar);
-    newAvatar2(this, avatarMD.bunny);
+    newAvatar(this, avatarMD.bunny);
   }
 
   //setter

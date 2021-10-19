@@ -3,26 +3,15 @@ import {checkIntersect} from './CheckCollision';
 import {DisplayContainer} from './DisplayContainer';
 import {ResourceManager} from './ResourceManager';
 import {World} from './World';
-
-interface StuffPartMD {
-  spriteSheet: string;
-  textureName: string;
-  position: {x: number; y: number};
-  anchor: {x: number; y: number};
-}
-interface StuffMD {
-  position: {x: number; y: number};
-  parts: StuffPartMD[];
-  collisionBox: {x: number; y: number; width: number; height: number} | null;
-}
+import {DisplayContainerData} from './metaData/DataInterface';
 
 export class Stuff extends DisplayContainer {
-  constructor(world: World, metaData: StuffMD) {
+  constructor(world: World, data: DisplayContainerData) {
     super(world);
 
-    this.position.set(metaData.position.x, metaData.position.y);
-    metaData.parts.forEach(part => {
-      const texture = ResourceManager.getTextureFromSheet(
+    if (data.position) this.position.set(data.position.x, data.position.y);
+    data.parts.forEach(part => {
+      const texture = ResourceManager.getTexture(
         part.textureName,
         part.spriteSheet,
       );
@@ -33,10 +22,7 @@ export class Stuff extends DisplayContainer {
       sprite.anchor.set(part.anchor.x, part.anchor.y);
       this.addChild(sprite);
 
-      if (metaData.collisionBox) {
-        const box = metaData.collisionBox;
-        this.addCollisionBox(box.x, box.y, box.width, box.height);
-      }
+      if (data.collisionBox) this.addCollisionBox(data.collisionBox);
     });
     this.zIndex = this.y;
   }

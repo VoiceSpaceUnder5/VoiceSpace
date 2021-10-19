@@ -2,6 +2,7 @@ import {Texture} from '@pixi/core';
 import {Sprite} from '@pixi/sprite';
 import {AvatarImageEnum, AvatarPartImageEnum} from '../ImageMetaData';
 import {DisplayContainer} from './DisplayContainer';
+import {DisplayContainerData, PartsData} from './metaData/DataInterface';
 import {ResourceManager} from './ResourceManager';
 
 export interface Avatar {
@@ -20,62 +21,26 @@ export enum AvatarParts {
   FACE,
 }
 
-interface AvatarPartsMD {
-  name: string;
-  spritesheet: string;
-  textureName: string;
-  position: {x: number; y: number};
-  anchor: {x: number; y: number};
-}
-
-interface AvatarMD {
-  parts: AvatarPartsMD[];
-  collisionBox: {x: number; y: number; width: number; height: number} | null;
-}
-
 export const PARTS_ROTATE_SPEED = 2;
 
 export const avatarName = ['bunny'];
+
 export function newAvatar(
-  avatar: DisplayContainer,
-  avatarEnum: AvatarImageEnum,
-): void {
-  const partsTextureNames = [
-    avatarName[avatarEnum] + 'Arm',
-    avatarName[avatarEnum] + 'Arm',
-    avatarName[avatarEnum] + 'Body',
-    avatarName[avatarEnum] + 'Arm',
-    avatarName[avatarEnum] + 'Arm',
-    avatarName[avatarEnum] + 'FaceMute',
-  ];
-
-  avatar.addParts(partsTextureNames);
-
-  avatar.parts.forEach(part => {
-    avatar.addChild(part);
-  });
-
-  setPartsPosition(avatar);
-  avatar.addCollisionBox(-15, avatar.height / 2 - 40, 30, 20);
-}
-
-export function newAvatar2(
   container: DisplayContainer,
-  avatarMD: AvatarMD,
+  data: DisplayContainerData,
 ): void {
-  avatarMD.parts.forEach(part => {
+  data.parts.forEach(part => {
     const sprite = makeSpriteFromMD(part);
     if (sprite) container.addPart(sprite);
   });
   container.addPartsToChild();
-  const box = avatarMD.collisionBox;
-  if (box) container.addCollisionBox(box.x, box.y, box.width, box.height);
+  if (data.collisionBox) container.addCollisionBox(data.collisionBox);
 }
 
-function makeSpriteFromMD(part: AvatarPartsMD): Sprite | undefined {
-  const texture = ResourceManager.getTextureFromSheet(
+function makeSpriteFromMD(part: PartsData): Sprite | undefined {
+  const texture = ResourceManager.getTexture(
     part.textureName,
-    part.spritesheet,
+    part.spriteSheet,
   );
   if (!texture) return;
   const sprite = Sprite.from(texture);
@@ -100,7 +65,7 @@ export function swapFace(
   let index = vowel - 7;
   if (index < 0) index = 0;
   const name = avatarName[avatar];
-  const texture = ResourceManager.getTextureFromSheet(
+  const texture = ResourceManager.getTexture(
     name + faceState[index],
     'avatars.json',
   );

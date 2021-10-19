@@ -35,7 +35,6 @@ export class SceneManager {
 
     // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', SceneManager.resize);
-
     console.log('Scene SceneManager Initialized! ');
   }
 
@@ -51,6 +50,11 @@ export class SceneManager {
     console.log('Add new Scene to SceneManager! ');
     SceneManager.currentScene = newScene;
     SceneManager.application.stage.addChild(SceneManager.currentScene);
+  }
+
+  public static destroy(): void {
+    window.removeEventListener('resize', SceneManager.resize);
+    SceneManager.app.destroy();
   }
 
   public static resize(): void {

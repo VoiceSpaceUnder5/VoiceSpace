@@ -3,42 +3,42 @@
     "parts": [
       {
         "name": "leftArm",
-        "spritesheet": "avatars.json",
+        "spriteSheet": "avatars.json",
         "textureName": "bunnyArm.png",
         "position": {"x": 8, "y": 5},
         "anchor": {"x": 0.5, "y": 0.2}
       },
       {
         "name": "leftLeg",
-        "spritesheet": "avatars.json",
+        "spriteSheet": "avatars.json",
         "textureName": "bunnyArm.png",
         "position": {"x": 9, "y": 42},
         "anchor": {"x": 0.5, "y": 0.2}
       },
       {
         "name": "body",
-        "spritesheet": "avatars.json",
+        "spriteSheet": "avatars.json",
         "textureName": "bunnyBody.png",
         "position": {"x": 0, "y": 0},
         "anchor": {"x": 0.5, "y": 0}
       },
       {
         "name": "rightArm",
-        "spritesheet": "avatars.json",
+        "spriteSheet": "avatars.json",
         "textureName": "bunnyArm.png",
         "position": {"x": -8, "y": 5},
         "anchor": {"x": 0.5, "y": 0.2}
       },
       {
         "name": "rightLeg",
-        "spritesheet": "avatars.json",
+        "spriteSheet": "avatars.json",
         "textureName": "bunnyArm.png",
         "position": {"x": -8, "y": 42},
         "anchor": {"x": 0.5, "y": 0.2}
       },
       {
         "name": "face",
-        "spritesheet": "avatars.json",
+        "spriteSheet": "avatars.json",
         "textureName": "bunnyFace_Mute.png",
         "position": {"x": 0, "y": 0},
         "anchor": {"x": 0.45, "y": 0.95}

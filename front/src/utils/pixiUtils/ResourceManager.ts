@@ -2,10 +2,30 @@ import {Texture} from '@pixi/core';
 import {Loader} from '@pixi/loaders';
 
 export class ResourceManager {
+  public static loadResourcesFrom(resourceUrls: string[]): void {
+    resourceUrls.forEach(url => {
+      this.add(url);
+    });
+  }
+
+  public static runAfterLoaded(callback: () => void): void {
+    Loader.shared.load(callback);
+  }
+
   public static add(jsonUrl: string): void {
     const resourceName = this.parseName(jsonUrl);
-    if (Loader.shared.resources[resourceName]) return;
-    Loader.shared.add(resourceName, jsonUrl);
+    if (!Loader.shared.resources[resourceName])
+      Loader.shared.add(resourceName, jsonUrl);
+  }
+
+  public static setOnProgressCallback(
+    callback: (loader: Loader) => void,
+  ): void {
+    Loader.shared.onProgress.add(callback);
+  }
+
+  public static setOnErrorCallback(callback: (error: Error) => void): void {
+    Loader.shared.onError.add(callback);
   }
 
   private static parseName(url: string): string {
@@ -13,16 +33,14 @@ export class ResourceManager {
     return removeDirPath;
   }
 
-  public static getTextureFromSheet(
+  public static getTexture(
     textureName: string,
-    sheetName: string,
+    sheetName?: string,
   ): Texture | undefined {
-    return Loader.shared.resources[sheetName].spritesheet?.textures[
-      textureName
-    ];
-  }
-
-  public static getTexture(textureName: string): Texture | undefined {
-    return Loader.shared.resources[textureName].texture;
+    if (sheetName) {
+      return Loader.shared.resources[sheetName].spritesheet?.textures[
+        textureName
+      ];
+    } else return Loader.shared.resources[textureName].texture;
   }
 }

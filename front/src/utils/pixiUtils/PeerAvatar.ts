@@ -5,6 +5,7 @@ import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {World} from './World';
 import {Viewport} from 'pixi-viewport';
+import avatarMD from './metaData/avatars.json';
 
 export class PeerAvatar extends DisplayContainer implements Avatar {
   public avatar: number;
@@ -35,7 +36,7 @@ export class PeerAvatar extends DisplayContainer implements Avatar {
     this.position.set(centerPos?.x, centerPos?.y);
 
     //this.addChild(part)
-    newAvatar(this, this.avatar);
+    newAvatar(this, avatarMD.bunny);
   }
 
   update(): void {

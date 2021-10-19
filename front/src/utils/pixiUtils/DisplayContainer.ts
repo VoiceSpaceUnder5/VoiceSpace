@@ -3,6 +3,7 @@ import {Sprite} from '@pixi/sprite';
 import {CollisionBox} from './CollisionBox';
 import {World} from './World';
 import {ResourceManager} from './ResourceManager';
+import {collisionBoxData} from './metaData/DataInterface';
 
 export class DisplayContainer extends Container {
   world: World;
@@ -24,13 +25,13 @@ export class DisplayContainer extends Container {
     return;
   }
 
-  addCollisionBox(
-    offsetX: number,
-    offsetY: number,
-    width: number,
-    height: number,
-  ): void {
-    const collisionBox = new CollisionBox(offsetX, offsetY, width, height);
+  addCollisionBox(data: collisionBoxData): void {
+    const collisionBox = new CollisionBox(
+      data.x,
+      data.y,
+      data.width,
+      data.height,
+    );
     this.addChild(collisionBox);
     this.collisionBox = collisionBox;
     this.collidable = true;
