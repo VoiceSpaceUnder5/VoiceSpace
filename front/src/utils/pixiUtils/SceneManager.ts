@@ -22,6 +22,7 @@ export class SceneManager {
   public static get app(): Application {
     return SceneManager.application;
   }
+
   public static initialize(background: number): void {
     SceneManager.application = new Application({
       view: document.getElementById('game-canvas') as HTMLCanvasElement,

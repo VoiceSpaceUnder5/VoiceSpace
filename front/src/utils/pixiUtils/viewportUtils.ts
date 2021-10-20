@@ -14,7 +14,6 @@ export function createViewport(
     ticker: Ticker.shared,
     interaction: SceneManager.app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
   });
-
   viewport.pinch().wheel().decelerate();
   viewport.clamp({
     left: false, // whether to clamp to the left and at what value

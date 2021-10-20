@@ -8,8 +8,8 @@ export class ResourceManager {
     });
   }
 
-  public static runAfterLoaded(callback: () => void): void {
-    Loader.shared.load(callback);
+  public static run(callAfterLoaded: () => void): void {
+    Loader.shared.load(callAfterLoaded);
   }
 
   public static add(jsonUrl: string): void {

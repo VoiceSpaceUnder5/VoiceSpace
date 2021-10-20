@@ -56,6 +56,7 @@ export class Avatar extends DisplayContainer implements IAvatar {
     this.avatarImageEnum = avatarImageEnum;
     this.changeAvatar(this.getAvatarMD());
   }
+
   protected getAvatarMD(): DisplayContainerData {
     const avatarName = this.getAvatarInitialName();
     return avatarMDs[avatarName];

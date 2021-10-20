@@ -12,14 +12,14 @@ export function pixiCanvasStart(): void {
   ResourceManager.setOnProgressCallback(loader => {
     console.log(loader.progress);
   });
-  ResourceManager.runAfterLoaded(start);
+  ResourceManager.run(start);
+}
 
-  function start() {
-    const gameScene = new GameScene();
-    console.log(gameScene);
-    console.log('changeScene to GameScene');
-    SceneManager.changeScene(gameScene);
-  }
+function start(): void {
+  const gameScene = new GameScene();
+  console.log(gameScene);
+  console.log('changeScene to GameScene');
+  SceneManager.changeScene(gameScene);
 }
 
 export function pixiCanvasDestroy(): void {
