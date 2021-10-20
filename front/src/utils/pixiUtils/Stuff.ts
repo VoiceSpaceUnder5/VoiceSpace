@@ -6,6 +6,8 @@ import {World} from './World';
 import {DisplayContainerData} from './metaData/DataInterface';
 
 export class Stuff extends DisplayContainer {
+  private alphaChangable = true;
+
   constructor(world: World, data: DisplayContainerData) {
     super(world);
 
@@ -16,7 +18,7 @@ export class Stuff extends DisplayContainer {
         part.spriteSheet,
       );
       if (!texture) return;
-
+      if (data.alphaChangable) this.alphaChangable = data.alphaChangable;
       const sprite = Sprite.from(texture);
       sprite.position.set(part.position.x, part.position.y);
       sprite.anchor.set(part.anchor.x, part.anchor.y);
@@ -28,7 +30,7 @@ export class Stuff extends DisplayContainer {
   }
 
   update(): void {
-    this.changeAlpha();
+    if (this.alphaChangable) this.changeAlpha();
   }
 
   private changeAlpha(): void {

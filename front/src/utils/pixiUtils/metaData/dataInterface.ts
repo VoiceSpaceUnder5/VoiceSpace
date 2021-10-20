@@ -23,6 +23,7 @@ export interface DisplayContainerData {
   parts: PartsData[];
   collisionBox?: collisionBoxData;
   faceTexture?: string[];
+  alphaChangable?: boolean;
 }
 
 export interface BackgroundData {
