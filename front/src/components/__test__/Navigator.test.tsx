@@ -8,7 +8,6 @@ import RTCSignalingHelper from '../../utils/RTCSignalingHelper';
 import {EventEmitter} from 'stream';
 import {iceConfig} from '../../utils/IceServerList';
 import {unmountComponentAtNode} from 'react-dom';
-import {message} from 'antd';
 
 let socket: any = null;
 let me: Me | null = null;

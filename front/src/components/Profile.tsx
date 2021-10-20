@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import '../pages/spacePage/space.css';
@@ -21,6 +21,12 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
   const [newNickname, setNewNickname] = useState(props.nickname);
   const [newAvatar, setNewAvatar] = useState(props.avatar);
   const numberOfAvatars = avatarImageMDs.length;
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  setTimeout(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, 10);
 
   const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewNickname(e.target.value);
@@ -68,6 +74,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
         >
           <div className="profile_input">
             <input
+              ref={inputRef}
               data-testid="profileDropdownInputTestId"
               maxLength={10}
               value={newNickname}
@@ -117,7 +124,6 @@ function Profile(props: ProfileProps): JSX.Element {
   const [avatar, setAvatar] = useState(props.avatar);
   const [visible, setVisible] = useState(props.profileDropdownOnOff.on);
 
-  console.log(props.profileDropdownOnOff.on);
   const newSetNickname = (nickname: string): void => {
     props.setNickname(nickname);
     setNickname(nickname);
