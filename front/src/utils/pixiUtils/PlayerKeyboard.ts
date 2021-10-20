@@ -1,5 +1,5 @@
 import {MyAvatar} from './MyAvatar';
-import {keyboard} from './keyboard';
+import {keyboard} from './Keyboard';
 import {Key} from './Key';
 
 const SPEED = 8;
