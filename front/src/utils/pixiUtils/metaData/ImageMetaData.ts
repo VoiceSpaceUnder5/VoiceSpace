@@ -47,7 +47,33 @@ export const hyeonkimMD: AvatarImageMD = {
   avatarProfileSrc: './assets/spaceMain/avatars/hyeonkimFace_Mute.png',
 };
 
-export const avatarImageMDs = [bunnyMD, cowMD, pigMD, hyeonkimMD];
+export const catMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarInitialName: 'cat',
+  avatarProfileSrc: './assets/spaceMain/avatars/catFace_Mute.png',
+};
+
+export const mouseMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarInitialName: 'mouse',
+  avatarProfileSrc: './assets/spaceMain/avatars/mouseFace_Mute.png',
+};
+
+export const sheepMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarInitialName: 'sheep',
+  avatarProfileSrc: './assets/spaceMain/avatars/sheepFace_Mute.png',
+};
+
+export const avatarImageMDs = [
+  bunnyMD,
+  cowMD,
+  pigMD,
+  hyeonkimMD,
+  catMD,
+  mouseMD,
+  sheepMD,
+];
 
 export interface Formant {
   label: string;
