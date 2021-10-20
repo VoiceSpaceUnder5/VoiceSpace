@@ -51,7 +51,7 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
     return <></>;
   }
   return (
-    <>
+    <div>
       <div>출력</div>
       <div className="speaker_select_div">
         <select className="speaker_select" onChange={onChangeOutput}>
@@ -115,7 +115,7 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
         </select>
         <img className="mic_select_img" src="./assets/navigation/mic.png"></img>
       </div>
-    </>
+    </div>
   );
 }
 

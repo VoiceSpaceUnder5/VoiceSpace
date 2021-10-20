@@ -79,7 +79,7 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
           text={`https://giggleforest.com/space?roomId=${props.roomId}`}
           onCopy={props.onCopy}
         >
-          <a>참여 링크 복사</a>
+          <a>참여 링크 복사</a>
         </CopyToClipboard>
       </Menu.Item>
       <Menu.Item key="1" onClick={onClickUserList}>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import '../pages/spacePage/space.css';
@@ -10,7 +10,6 @@ import {ProfileDropdownOnOff} from './Navigation';
 
 export interface ProfileProps {
   profileDropdownOnOff: ProfileDropdownOnOff;
-  profileDropdownSwitch: () => void;
   nickname: string;
   setNickname: (nickname: string) => void;
   avatar: AvatarImageEnum;
@@ -22,6 +21,12 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
   const [newNickname, setNewNickname] = useState(props.nickname);
   const [newAvatar, setNewAvatar] = useState(props.avatar);
   const numberOfAvatars = avatarImageMDs.length;
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  setTimeout(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, 10);
 
   const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewNickname(e.target.value);
@@ -47,7 +52,6 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
     }
     props.setAvatar(newAvatar);
     props.setNickname(nextNickname);
-    props.profileDropdownSwitch();
     if (!props.setVisible) {
       return;
     }
@@ -70,6 +74,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
         >
           <div className="profile_input">
             <input
+              ref={inputRef}
               data-testid="profileDropdownInputTestId"
               maxLength={10}
               value={newNickname}
@@ -129,7 +134,6 @@ function Profile(props: ProfileProps): JSX.Element {
   };
   const profileDropDownProps: ProfileProps = {
     profileDropdownOnOff: props.profileDropdownOnOff,
-    profileDropdownSwitch: props.profileDropdownSwitch,
     nickname: nickname,
     setNickname: newSetNickname,
     avatar: avatar,
@@ -148,6 +152,9 @@ function Profile(props: ProfileProps): JSX.Element {
       window.removeEventListener('keydown', onEscKeyDown);
     };
   }, []);
+  useEffect(() => {
+    props.profileDropdownOnOff.on = visible;
+  }, [visible]);
 
   return (
     <Dropdown
