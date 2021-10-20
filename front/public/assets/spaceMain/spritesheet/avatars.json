@@ -2,7 +2,7 @@
 
 "bunnyArm.png":
 {
-	"frame": {"x":717,"y":474,"w":11,"h":28},
+	"frame": {"x":390,"y":1427,"w":11,"h":28},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":28},
@@ -10,7 +10,7 @@
 },
 "bunnyBody.png":
 {
-	"frame": {"x":717,"y":425,"w":32,"h":47},
+	"frame": {"x":424,"y":1098,"w":32,"h":47},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":47},
@@ -18,7 +18,7 @@
 },
 "bunnyFace_A.png":
 {
-	"frame": {"x":1225,"y":237,"w":100,"h":109},
+	"frame": {"x":204,"y":1141,"w":100,"h":109},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
@@ -26,7 +26,7 @@
 },
 "bunnyFace_E.png":
 {
-	"frame": {"x":1225,"y":348,"w":100,"h":109},
+	"frame": {"x":204,"y":1252,"w":100,"h":109},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
@@ -34,7 +34,7 @@
 },
 "bunnyFace_I.png":
 {
-	"frame": {"x":1326,"y":1,"w":100,"h":109},
+	"frame": {"x":407,"y":734,"w":100,"h":109},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
@@ -42,7 +42,7 @@
 },
 "bunnyFace_Mute.png":
 {
-	"frame": {"x":1326,"y":112,"w":100,"h":109},
+	"frame": {"x":407,"y":845,"w":100,"h":109},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
@@ -50,7 +50,7 @@
 },
 "bunnyFace_O.png":
 {
-	"frame": {"x":1327,"y":223,"w":100,"h":109},
+	"frame": {"x":204,"y":1363,"w":100,"h":109},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
@@ -58,7 +58,7 @@
 },
 "bunnyFace_U.png":
 {
-	"frame": {"x":1327,"y":334,"w":100,"h":109},
+	"frame": {"x":322,"y":1040,"w":100,"h":109},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":100,"h":109},
@@ -66,7 +66,7 @@
 },
 "cowArm.png":
 {
-	"frame": {"x":653,"y":425,"w":62,"h":80},
+	"frame": {"x":407,"y":956,"w":62,"h":80},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":4,"y":4,"w":62,"h":80},
@@ -74,7 +74,7 @@
 },
 "cowBody.png":
 {
-	"frame": {"x":1225,"y":1,"w":116,"h":99},
+	"frame": {"x":407,"y":616,"w":116,"h":99},
 	"rotated": true,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":99},
@@ -82,7 +82,7 @@
 },
 "cowFace_A.png":
 {
-	"frame": {"x":616,"y":1,"w":201,"h":210},
+	"frame": {"x":1,"y":616,"w":201,"h":210},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":7,"w":201,"h":210},
@@ -90,7 +90,7 @@
 },
 "cowFace_E.png":
 {
-	"frame": {"x":616,"y":213,"w":201,"h":210},
+	"frame": {"x":1,"y":828,"w":201,"h":210},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":7,"w":201,"h":210},
@@ -98,7 +98,7 @@
 },
 "cowFace_I.png":
 {
-	"frame": {"x":819,"y":1,"w":201,"h":210},
+	"frame": {"x":204,"y":616,"w":201,"h":210},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":7,"w":201,"h":210},
@@ -106,7 +106,7 @@
 },
 "cowFace_Mute.png":
 {
-	"frame": {"x":1022,"y":213,"w":201,"h":207},
+	"frame": {"x":1,"y":1252,"w":201,"h":207},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":201,"h":207},
@@ -114,7 +114,7 @@
 },
 "cowFace_O.png":
 {
-	"frame": {"x":819,"y":213,"w":201,"h":210},
+	"frame": {"x":1,"y":1040,"w":201,"h":210},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":7,"w":201,"h":210},
@@ -122,24 +122,88 @@
 },
 "cowFace_U.png":
 {
-	"frame": {"x":1022,"y":1,"w":201,"h":210},
+	"frame": {"x":204,"y":828,"w":201,"h":210},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":7,"w":201,"h":210},
 	"sourceSize": {"w":214,"h":219}
 },
+"hyeonkimArm.png":
+{
+	"frame": {"x":1,"y":1461,"w":18,"h":42},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":42},
+	"sourceSize": {"w":18,"h":42}
+},
+"hyeonkimBody.png":
+{
+	"frame": {"x":424,"y":1038,"w":58,"h":50},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":50},
+	"sourceSize": {"w":58,"h":50}
+},
+"hyeonkimFace_A.png":
+{
+	"frame": {"x":306,"y":1151,"w":110,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":14,"w":110,"h":90},
+	"sourceSize": {"w":131,"h":105}
+},
+"hyeonkimFace_E.png":
+{
+	"frame": {"x":306,"y":1243,"w":110,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":14,"w":110,"h":90},
+	"sourceSize": {"w":130,"h":105}
+},
+"hyeonkimFace_I.png":
+{
+	"frame": {"x":306,"y":1335,"w":110,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":14,"w":110,"h":90},
+	"sourceSize": {"w":131,"h":105}
+},
+"hyeonkimFace_Mute.png":
+{
+	"frame": {"x":418,"y":1151,"w":110,"h":90},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":14,"w":110,"h":90},
+	"sourceSize": {"w":130,"h":105}
+},
+"hyeonkimFace_O.png":
+{
+	"frame": {"x":418,"y":1263,"w":110,"h":90},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":14,"w":110,"h":90},
+	"sourceSize": {"w":131,"h":105}
+},
+"hyeonkimFace_U.png":
+{
+	"frame": {"x":418,"y":1375,"w":110,"h":90},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":14,"w":110,"h":90},
+	"sourceSize": {"w":131,"h":105}
+},
 "pigArm.png":
 {
-	"frame": {"x":616,"y":425,"w":35,"h":82},
-	"rotated": false,
+	"frame": {"x":306,"y":1427,"w":35,"h":82},
+	"rotated": true,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":35,"h":82},
 	"sourceSize": {"w":35,"h":82}
 },
 "pigBody.png":
 {
-	"frame": {"x":1225,"y":119,"w":116,"h":99},
-	"rotated": true,
+	"frame": {"x":204,"y":1040,"w":116,"h":99},
+	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":99},
 	"sourceSize": {"w":116,"h":99}
@@ -147,47 +211,47 @@
 "pigFace_A.png":
 {
 	"frame": {"x":1,"y":1,"w":254,"h":203},
-	"rotated": true,
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":3,"w":254,"h":203},
 	"sourceSize": {"w":260,"h":209}
 },
 "pigFace_E.png":
 {
-	"frame": {"x":1,"y":257,"w":254,"h":203},
-	"rotated": true,
+	"frame": {"x":257,"y":1,"w":254,"h":203},
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":3,"w":254,"h":203},
 	"sourceSize": {"w":260,"h":209}
 },
 "pigFace_I.png":
 {
-	"frame": {"x":206,"y":1,"w":254,"h":203},
-	"rotated": true,
+	"frame": {"x":1,"y":206,"w":254,"h":203},
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":3,"w":254,"h":203},
 	"sourceSize": {"w":260,"h":209}
 },
 "pigFace_Mute.png":
 {
-	"frame": {"x":206,"y":257,"w":254,"h":203},
-	"rotated": true,
+	"frame": {"x":257,"y":206,"w":254,"h":203},
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":3,"w":254,"h":203},
 	"sourceSize": {"w":260,"h":209}
 },
 "pigFace_O.png":
 {
-	"frame": {"x":411,"y":1,"w":254,"h":203},
-	"rotated": true,
+	"frame": {"x":1,"y":411,"w":254,"h":203},
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":3,"w":254,"h":203},
 	"sourceSize": {"w":260,"h":209}
 },
 "pigFace_U.png":
 {
-	"frame": {"x":411,"y":257,"w":254,"h":203},
-	"rotated": true,
+	"frame": {"x":257,"y":411,"w":254,"h":203},
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":3,"y":3,"w":254,"h":203},
 	"sourceSize": {"w":260,"h":209}
@@ -197,8 +261,8 @@
 	"version": "1.0",
 	"image": "avatars.png",
 	"format": "RGBA8888",
-	"size": {"w":1428,"h":512},
+	"size": {"w":512,"h":1486},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:1103b0cfb40ab88d533fdcbbdce84503:8c754d9df1b8ca0a54fc3355088f42a6:faac5bc2578b98332342aabac113e789$"
+	"smartupdate": "$TexturePacker:SmartUpdate:dc5d120952aa91525f95584f0c31daf8:cb71b6255ff82549b97eb878b9a62139:faac5bc2578b98332342aabac113e789$"
 }
 }

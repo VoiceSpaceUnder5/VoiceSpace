@@ -47,7 +47,7 @@ export const hyeonkimMD: AvatarImageMD = {
   avatarProfileSrc: './assets/spaceMain/avatars/hyeonkimFace_Mute.png',
 };
 
-export const avatarImageMDs = [bunnyMD, cowMD, pigMD];
+export const avatarImageMDs = [bunnyMD, cowMD, pigMD, hyeonkimMD];
 
 export interface Formant {
   label: string;
