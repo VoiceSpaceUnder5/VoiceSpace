@@ -6,7 +6,7 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
 }
 
 export const AvatarImageEnumMin = AvatarImageEnum.BUNNY;
-export const AvatarImageEnumMax = AvatarImageEnum.BUNNY;
+export const AvatarImageEnumMax = AvatarImageEnum.HYEONKIM;
 
 export enum AvatarFaceEnum { // 무조건 이 순서대로 입력해주세요
   FACE_MUTE,

@@ -3,7 +3,7 @@ import {GameData} from '../utils/pixiUtils/GameData';
 import {
   pixiCanvasDestroy,
   pixiCanvasStart,
-} from '../utils/pixiUtils/pixiCanvas';
+} from '../utils/pixiUtils/PixiCanvas';
 import PeerManager, {PlayerDto, Peer, DataDtoType} from '../utils/RTCGameUtils';
 
 interface spaceCanvasProps {

@@ -367,7 +367,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 <img
                   ref={avatarImgRef}
                   className="settingAvatarImg"
-                  src={avatarImageMDs[AvatarImageEnum.BUNNY].avatarProfileSrc}
+                  src={avatarImageMDs[avatarIdx].avatarProfileSrc}
                 ></img>
                 <div className="settingAvatarButtonContainerDiv">
                   <button
