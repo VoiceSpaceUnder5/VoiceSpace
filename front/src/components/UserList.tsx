@@ -1,6 +1,5 @@
 import React from 'react';
 import {Menu} from 'antd';
-import {LeftCircleFilled} from '@ant-design/icons';
 import {
   AvatarImageEnum,
   avatarImageMDs,
