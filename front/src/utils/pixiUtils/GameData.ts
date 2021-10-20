@@ -11,12 +11,6 @@ export class GameData {
     this.peerManager = peerManager;
   }
 
-  //test용 - 삭제 예정
-  public static testPrint(): void {
-    // console.log(this.peerManager);
-    console.log(this.peerManager.peers);
-  }
-
   public static getMyAvatar(): number {
     return this.peerManager.me.avatar;
   }

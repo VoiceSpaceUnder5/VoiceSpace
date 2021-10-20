@@ -5,7 +5,7 @@ import {MyAvatar} from './MyAvatar';
 import {World} from './World';
 import {GameData} from './GameData';
 import world1Json from './metaData/world1.json';
-import {createViewport} from './viewportUtils';
+import {createViewport} from './ViewportUtils';
 
 export class GameScene extends Container implements Scene {
   private viewport: Viewport;

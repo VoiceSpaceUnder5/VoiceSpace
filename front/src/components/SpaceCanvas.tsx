@@ -3,14 +3,14 @@ import {GameData} from '../utils/pixiUtils/GameData';
 import {
   pixiCanvasDestroy,
   pixiCanvasStart,
-} from '../utils/pixiUtils/pixiCanvas';
+} from '../utils/pixiUtils/PixiCanvas';
 import PeerManager, {PlayerDto, Peer, DataDtoType} from '../utils/RTCGameUtils';
 
 interface spaceCanvasProps {
   peerManager: PeerManager;
 }
 
-function SpaceCanvas2(props: spaceCanvasProps): JSX.Element {
+function SpaceCanvas(props: spaceCanvasProps): JSX.Element {
   useEffect(() => {
     props.peerManager.setDataChannelEventHandler(
       DataDtoType.PLAYER_INFO,
@@ -28,4 +28,4 @@ function SpaceCanvas2(props: spaceCanvasProps): JSX.Element {
   return <canvas id="game-canvas"></canvas>;
 }
 
-export default SpaceCanvas2;
+export default SpaceCanvas;
