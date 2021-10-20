@@ -154,7 +154,6 @@ function Profile(props: ProfileProps): JSX.Element {
   }, []);
   useEffect(() => {
     props.profileDropdownOnOff.on = visible;
-    console.log('visible이 바뀜');
   }, [visible]);
 
   return (
