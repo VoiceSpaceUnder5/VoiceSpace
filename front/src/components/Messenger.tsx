@@ -129,6 +129,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
         <div style={{fontSize: '15px'}}>메시지</div>
         <div>
           <CloseCircleFilled
+            className="messenger_close"
             style={{marginLeft: '10px'}}
             onClick={onClickClose}
           />

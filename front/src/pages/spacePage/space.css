@@ -336,13 +336,21 @@
   background-color: #ac9693;
 }
 .message_popup > *:hover {
-  border-radius: 15px;
+  border-radius: 10px;
   background-color: #ac9693;
 }
 .message_popup {
-  border-radius: 15px;
+  border-radius: 10px;
   border: 4px solid #53150d;
   background-color: #ac9693;
+}
+
+.messenger_close {
+  color: #53150d;
+}
+.messenger_close:hover {
+  color: #764b45;
+  transition: 50ms;
 }
 
 .user_list {

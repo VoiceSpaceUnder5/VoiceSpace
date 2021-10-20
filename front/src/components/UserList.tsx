@@ -27,9 +27,6 @@ export function UserList(props: UsersListProps): JSX.Element {
       <Menu.Item key="10">
         <div className="users_title">
           <div>사용자</div>
-          <div>
-            <LeftCircleFilled onClick={props.onClickPrevious} />
-          </div>
         </div>
       </Menu.Item>
       <Menu.Divider></Menu.Divider>
