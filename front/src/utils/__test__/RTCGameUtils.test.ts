@@ -147,30 +147,4 @@ describe('peer test', () => {
     expect(peer?.textMessageDiv.innerText).toBe(data.textMessage);
     expect(peer?.lookLeft).toBe(data.lookLeft);
   });
-
-  test('peer 의 update 호출 시 자신이 가진 PlayerDto 관련 요소가 모두 매개변수와 같아져야함', () => {
-    const data: PlayerDto = {
-      centerPos: {x: 5, y: 5},
-      nickname: 'honlee',
-      textMessage: 'asdf',
-      avatar: 1,
-      avatarFace: 3,
-      avatarFaceScale: 1.5,
-      partRotatedegree: 3,
-      lookLeft: true,
-      rotateCounterclockwise: true,
-    };
-
-    peer?.update(data);
-    expect(peer?.centerPos).toBe(data.centerPos);
-    expect(peer?.nickname).toBe(data.nickname);
-    expect(peer?.textMessage).toBe(data.textMessage);
-    expect(peer?.avatar).toBe(data.avatar);
-    expect(peer?.avatarFace).toBe(data.avatarFace);
-    expect(peer?.avatarFaceScale).toBe(data.avatarFaceScale);
-    expect(peer?.partRotatedegree).toBe(data.partRotatedegree);
-    expect(peer?.nicknameDiv.innerText).toBe(data.nickname);
-    expect(peer?.textMessageDiv.innerText).toBe(data.textMessage);
-    expect(peer?.lookLeft).toBe(data.lookLeft);
-  });
 });
