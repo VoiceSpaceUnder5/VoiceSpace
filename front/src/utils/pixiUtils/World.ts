@@ -12,6 +12,7 @@ import {
 } from './metaData/DataInterface';
 import {ResourceManager} from './ResourceManager';
 import {Stuff} from './Stuff';
+import {GameData} from './GameData';
 
 interface IWorld {
   startPosition: {x: number; y: number};
@@ -98,7 +99,12 @@ export class World extends Container implements IWorld {
 
     if (this.viewport === null) return;
     const newPeer = new PeerAvatar(this, socketID, this.viewport);
-    console.log(this.addChild);
+    const peerAvatarImageEnum = GameData.getPeerAvatar(socketID);
+    if (!peerAvatarImageEnum) {
+      console.error('Error: No peerAvatarImageEnum or incorrect SocketID!');
+      return;
+    }
+    newPeer.setAvatar(peerAvatarImageEnum);
     this.addChild(newPeer);
     this.peers.set(socketID, newPeer);
   }

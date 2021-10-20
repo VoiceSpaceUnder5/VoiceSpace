@@ -7,7 +7,7 @@ export class PeerAvatar extends Avatar {
   public socketID: string;
 
   constructor(world: World, socketID: string, viewport: Viewport) {
-    super(world, GameData.getPeerAvatar(socketID)!, viewport);
+    super(world, viewport);
     this.socketID = socketID;
 
     const centerPos = GameData.getPeerCenterPos(socketID);
@@ -19,7 +19,9 @@ export class PeerAvatar extends Avatar {
 
   update(): void {
     if (this.isAvatarChanged()) {
-      this.avatarImageEnum = GameData.getPeerAvatar(this.socketID)!;
+      const newAvatarImageEnum = GameData.getPeerAvatar(this.socketID);
+      if (!newAvatarImageEnum) return;
+      this.avatarImageEnum = newAvatarImageEnum;
       this.changeAvatar(this.getAvatarMD());
     }
     this.changePosition();

@@ -2,7 +2,7 @@ import {MyAvatar} from './MyAvatar';
 import {keyboard} from './keyboard';
 import {Key} from './Key';
 
-const SPEED = 20;
+const SPEED = 8;
 
 export class PlayerKeyboard {
   public left: Key;

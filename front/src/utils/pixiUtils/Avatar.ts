@@ -40,24 +40,22 @@ export class Avatar extends DisplayContainer implements IAvatar {
   public partRotateDegree: number[];
   public viewport: Viewport;
 
-  constructor(
-    world: World,
-    avatarImageEnum: AvatarImageEnum,
-    viewport: Viewport,
-  ) {
+  constructor(world: World, viewport: Viewport) {
     super(world);
 
-    this.avatarImageEnum = avatarImageEnum;
+    this.avatarImageEnum = AvatarImageEnum.BUNNY;
     this.avatarFace = AvatarFaceEnum.FACE_MUTE;
     this.avatarFaceScale = 1.0;
     this.partRotateDegree = Array.from({length: 6}, () => 0);
     this.position.copyFrom(world.startPosition);
     this.viewport = viewport;
     this.faceTexture = [];
-
-    this.changeAvatar(this.getAvatarMD());
   }
 
+  public setAvatar(avatarImageEnum: AvatarImageEnum): void {
+    this.avatarImageEnum = avatarImageEnum;
+    this.changeAvatar(this.getAvatarMD());
+  }
   protected getAvatarMD(): DisplayContainerData {
     const avatarName = this.getAvatarInitialName();
     return avatarMDs[avatarName];

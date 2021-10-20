@@ -27,7 +27,8 @@ export class GameScene extends Container implements Scene {
     //viewport-addchild world
     viewport.addChild(world);
     //world-addMyAvatar
-    const player = new MyAvatar(world, GameData.getMyAvatar(), viewport);
+    const player = new MyAvatar(world, viewport);
+    player.setAvatar(GameData.getMyAvatar());
     world.addMyAvatar(player);
     viewport.follow(player);
 

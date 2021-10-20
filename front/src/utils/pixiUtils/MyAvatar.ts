@@ -15,8 +15,8 @@ export class MyAvatar extends Avatar {
   private keyboard: PlayerKeyboard;
   private state: (framesPassed: number) => void;
 
-  constructor(world: World, avatarImageEnum: number, viewport: Viewport) {
-    super(world, avatarImageEnum, viewport);
+  constructor(world: World, viewport: Viewport) {
+    super(world, viewport);
 
     this.referenceDegree = 0;
     this.rotateClockWise = true;
