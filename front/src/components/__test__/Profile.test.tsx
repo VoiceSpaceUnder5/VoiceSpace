@@ -33,9 +33,7 @@ function isImageSrcSame(
   avatar: AvatarImageEnum,
 ): boolean {
   return imageElement.src.includes(
-    avatarImageMDs[avatar].avatarMDInfos[AvatarFaceEnum.FACE_MUTE].src.substr(
-      1,
-    ),
+    avatarImageMDs[avatar].avatarProfileSrc.substr(1),
   );
 }
 
