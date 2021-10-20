@@ -447,7 +447,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   private setSignalingEvent(signalingHelper: RTCSignalingHelper): void {
     // negotitateneeded
     this.onnegotiationneeded = () => {
-      console.log('onnegotiationneeded!!');
+      console.log(`onnegotiationneeded, state: ${this.connectionState}`);
     };
 
     // fire when peer connection is established
@@ -481,6 +481,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
+      console.log(this.getReceivers());
       if (!event.streams[0] && event.track.kind === 'audio') {
         const stream = new MediaStream();
         stream.addTrack(event.track);
@@ -534,6 +535,7 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
  * 이미 생성되어 있는 peer 의 이벤트의 맞는 메소드를 실행 시킨다.
  */
 export default class PeerManager {
+  static readonly nicknameDivClassName = 'canvasOverlay';
   // create new Peer params
   private readonly signalingHelper: RTCSignalingHelper;
   localStream: MediaStream;
@@ -655,35 +657,47 @@ export default class PeerManager {
     this.dataChannelEventHandlers.set(type, handler);
   }
 
-  createNewPeerAndAddPeers(connectedClientSocketID: string): Peer {
+  private createAudioElementAndSetDeviceIfSetSinkIdExist(
+    audioContainer: HTMLDivElement = this.audioContainer,
+  ): HTMLAudioElement {
+    const audio = document.createElement('audio') as HTMLAudioElement;
+    audio.autoplay = true;
+    // eslint-disable-next-line
+    if ((audio as any).setSinkId) {
+      // eslint-disable-next-line
+      (audio as any).setSinkId(this.speakerDeviceID);
+    }
+    audioContainer.appendChild(audio);
+    return audio;
+  }
+
+  private createDivElement(
+    divContainer: HTMLDivElement,
+    className: string,
+  ): HTMLDivElement {
+    const newDiv = document.createElement('div') as HTMLDivElement;
+    newDiv.className = className;
+    divContainer.appendChild(newDiv);
+    return newDiv;
+  }
+
+  private createNewPeerAndAddPeers(connectedClientSocketID: string): Peer {
     if (this.peers.has(connectedClientSocketID)) {
       console.error('create already exists peer');
     }
-
-    const audio = document.createElement('audio') as HTMLAudioElement;
-    audio.autoplay = true;
-    try {
-      // eslint-disable-next-line
-      (audio as any).setSinkId(this.speakerDeviceID);
-    } catch {
-      console.error('speaker deviceID is not valid');
-    }
-    this.audioContainer.appendChild(audio);
-
-    const nicknameDiv = document.createElement('div') as HTMLDivElement;
-    nicknameDiv.className = 'canvasOverlay';
-    this.nicknameContainer.appendChild(nicknameDiv);
-    const textMessageDiv = document.createElement('div') as HTMLDivElement;
-    textMessageDiv.className = 'canvasOverlay';
-    this.nicknameContainer.appendChild(textMessageDiv);
-
     const peer = new Peer(
       this.signalingHelper,
       connectedClientSocketID,
       this.localStream,
-      audio,
-      nicknameDiv,
-      textMessageDiv,
+      this.createAudioElementAndSetDeviceIfSetSinkIdExist(),
+      this.createDivElement(
+        this.nicknameContainer,
+        PeerManager.nicknameDivClassName,
+      ),
+      this.createDivElement(
+        this.nicknameContainer,
+        PeerManager.nicknameDivClassName,
+      ),
       this.pcConfig,
       this.dataChannelEventHandlers,
       this.trackEventHandler,
