@@ -18,7 +18,10 @@ export class GameScene extends Container implements Scene {
     const world = new World(world1Json);
     this.world = world;
     //viewport create
-    const viewport = createViewport(world.width, world.height);
+    const viewport = createViewport(
+      world.background.width,
+      world.background.height,
+    );
     this.viewport = viewport;
     //worldsetViewport
     world.setViewport(viewport);

@@ -4,7 +4,7 @@ import {ResourceManager} from './ResourceManager';
 import resourceUrls from './metaData/resourcesUrl.json';
 
 export function pixiCanvasStart(): void {
-  SceneManager.initialize(0x552227);
+  SceneManager.initialize(0x689f38);
   ResourceManager.loadResourcesFrom(resourceUrls);
   ResourceManager.setOnErrorCallback(error => {
     console.log(error);
