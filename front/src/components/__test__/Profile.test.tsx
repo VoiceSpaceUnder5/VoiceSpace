@@ -6,14 +6,14 @@ import userEvent from '@testing-library/user-event';
 import {
   AvatarImageEnum,
   avatarImageMDs,
-  AvatarPartImageEnum,
-} from '../../utils/ImageMetaData';
+  AvatarFaceEnum,
+} from '../../utils/pixiUtils/metaData/ImageMetaData';
 import {act} from 'react-dom/test-utils';
 
 const mockedProfileDropDownProps: ProfileProps = {
   nickname: 'hyeonkim',
   setNickname: jest.fn(),
-  avatar: AvatarImageEnum.WHITE_RABBIT,
+  avatar: AvatarImageEnum.BUNNY,
   setAvatar: jest.fn(),
   profileDropdownOnOff: {on: false},
   profileDropdownSwitch: jest.fn(),
@@ -22,7 +22,7 @@ const mockedProfileDropDownProps: ProfileProps = {
 const mockedProfileProps: ProfileProps = {
   nickname: 'hyeonkim',
   setNickname: jest.fn(),
-  avatar: AvatarImageEnum.WHITE_RABBIT,
+  avatar: AvatarImageEnum.BUNNY,
   setAvatar: jest.fn(),
   profileDropdownOnOff: {on: false},
   profileDropdownSwitch: jest.fn(),
@@ -33,9 +33,7 @@ function isImageSrcSame(
   avatar: AvatarImageEnum,
 ): boolean {
   return imageElement.src.includes(
-    avatarImageMDs[avatar].avatarMDInfos[
-      AvatarPartImageEnum.FACE_MUTE
-    ].src.substr(1),
+    avatarImageMDs[avatar].avatarProfileSrc.substr(1),
   );
 }
 

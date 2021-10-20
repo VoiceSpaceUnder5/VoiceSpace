@@ -1,7 +1,9 @@
-import GLHelper from './webGLUtils';
-import {AvatarImageEnum, AvatarPartImageEnum} from './ImageMetaData';
+import {
+  AvatarImageEnum,
+  AvatarFaceEnum,
+} from './pixiUtils/metaData/ImageMetaData';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
-import {Formant} from './ImageMetaData';
+import {Formant} from './pixiUtils/metaData/ImageMetaData';
 
 /**
  * DataDto 의 type enum
@@ -13,12 +15,6 @@ export enum DataDtoType {
   SHARED_SCREEN_CLEAR,
   SHARED_SCREEN_DRAWING,
   SHARED_SCREEN_DRAW_START,
-}
-
-enum CollisionDirection {
-  NO_COLLISION,
-  HORIZONTAL,
-  VERTICAL,
 }
 
 /**
@@ -43,7 +39,7 @@ export interface Vec2 {
  * avatarFace 중 어떤 형태의 face 를 적용할지와 얼만큼의 scale 로 적용할지에 대한 정보를 담음.
  */
 export interface AvatarFaceDto {
-  avatarFace: AvatarPartImageEnum;
+  avatarFace: AvatarFaceEnum;
   avatarFaceScale: number;
 }
 
@@ -56,7 +52,7 @@ export interface PlayerDto extends AvatarFaceDto {
   textMessage: string;
   avatar: AvatarImageEnum;
   centerPos: Vec2;
-  partRotatedegree: number;
+  partRotatedegree: number[];
   rotateCounterclockwise: boolean;
   lookLeft: boolean;
 }
@@ -118,7 +114,7 @@ export class AudioAnalyser {
   }
 
   getAvatarFaceDtoByAudioAnalysis(): AvatarFaceDto {
-    let avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    let avatarFace = AvatarFaceEnum.FACE_MUTE;
 
     this.analyser.getByteFrequencyData(this.byteFrequencyDataArray);
 
@@ -132,16 +128,15 @@ export class AudioAnalyser {
     const stringFormants = localStorage.getItem('formants');
     if (stringFormants === null) {
       // get avatarFaceEnum by volume
-      if (volume > this.speakThrashHold)
-        avatarFace = AvatarPartImageEnum.FACE_A;
+      if (volume > this.speakThrashHold) avatarFace = AvatarFaceEnum.FACE_A;
       if (volume > this.speakMouseThrashHold)
-        avatarFace = AvatarPartImageEnum.FACE_A;
+        avatarFace = AvatarFaceEnum.FACE_A;
       return {
         avatarFace: avatarFace,
         avatarFaceScale: scale,
       };
     } else {
-      avatarFace = AvatarPartImageEnum.FACE_MUTE;
+      avatarFace = AvatarFaceEnum.FACE_MUTE;
       const sma = getMonvingAverage(16);
       this.smad.length = 0;
       this.byteFrequencyDataArray.forEach(value => {
@@ -169,16 +164,16 @@ export class AudioAnalyser {
       candidates.sort((a, b) => b.similarity - a.similarity);
 
       if (candidates[0].similarity > 0.9 && candidates[0].distPercent > 0.5) {
-        if (candidates[0].vowel === 'A')
-          avatarFace = AvatarPartImageEnum.FACE_A;
+        // console.log(candidates[0].vowel);
+        if (candidates[0].vowel === 'A') avatarFace = AvatarFaceEnum.FACE_A;
         else if (candidates[0].vowel === 'E')
-          avatarFace = AvatarPartImageEnum.FACE_E;
+          avatarFace = AvatarFaceEnum.FACE_E;
         else if (candidates[0].vowel === 'I')
-          avatarFace = AvatarPartImageEnum.FACE_I;
+          avatarFace = AvatarFaceEnum.FACE_I;
         else if (candidates[0].vowel === 'O')
-          avatarFace = AvatarPartImageEnum.FACE_O;
+          avatarFace = AvatarFaceEnum.FACE_O;
         else if (candidates[0].vowel === 'U')
-          avatarFace = AvatarPartImageEnum.FACE_U;
+          avatarFace = AvatarFaceEnum.FACE_U;
       }
       return {
         avatarFace: avatarFace,
@@ -197,10 +192,10 @@ export class Me implements PlayerDto {
   private _nickname: string; //외부에서 변경하는 것이 아니라, setter 를 통해서 변경. setter 에서는 nickname 이 변경되면 nicknameDiv 의 innerText 도 같이 변경함.
   private _textMessage: string;
   avatar: AvatarImageEnum;
-  avatarFace: AvatarPartImageEnum;
+  avatarFace: AvatarFaceEnum;
   avatarFaceScale: number;
   centerPos: Vec2;
-  partRotatedegree: number;
+  partRotatedegree: number[];
   rotateCounterclockwise: boolean;
   lookLeft: boolean;
 
@@ -218,7 +213,7 @@ export class Me implements PlayerDto {
   isMoving: boolean;
 
   // AudioAnalyser
-  private audioAnalyser: AudioAnalyser;
+  public audioAnalyser: AudioAnalyser;
   constructor(
     nicknameDiv: HTMLDivElement,
     textMessageDiv: HTMLDivElement,
@@ -226,7 +221,7 @@ export class Me implements PlayerDto {
     centerPos: Vec2, // original centerPos
     nickname = '익명의 곰', // 추후 .env 로 이동해야 될듯 (하드코딩 제거)
     textMessage: string,
-    avatar = AvatarImageEnum.WHITE_RABBIT,
+    avatar = AvatarImageEnum.BUNNY,
     velocity = 0.2,
   ) {
     //nickname overlay div
@@ -241,10 +236,10 @@ export class Me implements PlayerDto {
     this._textMessage = textMessage;
     this.textMessage = textMessage;
     this.avatar = avatar;
-    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {...centerPos};
-    this.partRotatedegree = 0;
+    this.partRotatedegree = Array.from({length: 6}, () => 0);
     this.rotateCounterclockwise = false;
     this.lookLeft = false;
 
@@ -291,84 +286,50 @@ export class Me implements PlayerDto {
     };
   }
 
-  private isCollision(glHelper: GLHelper): number {
-    const vertex4: Vec2[] = glHelper.getMy4VertexWorldPosition(this, 1);
-    if (!glHelper.imageInfoProvider.pixelInfos) return 0;
-    for (let i = 0; i < vertex4.length; i++) {
-      let left = vertex4[i];
-      let right = i < vertex4.length - 1 ? vertex4[i + 1] : vertex4[0];
-      if (left.x > right.x) {
-        const temp = left;
-        left = right;
-        right = temp;
-      }
-      const a = (right.y - left.y) / (right.x - left.x);
-      for (let i = 0; i < right.x - left.x; i++) {
-        const posX = Math.round(left.x + i);
-        const posY = Math.round(left.y + a * i);
-        if (posX < 0 || posX >= glHelper.imageInfoProvider.pixelInfos.length) {
-          return CollisionDirection.HORIZONTAL;
-        } else if (
-          posY < 0 ||
-          posY >= glHelper.imageInfoProvider.pixelInfos[0].length ||
-          glHelper.imageInfoProvider.pixelInfos[posX][posY].collisionInfoKey !==
-            0
-        ) {
-          return CollisionDirection.VERTICAL;
-        }
-      }
-    }
-    return 0;
-  }
-
   setAnalyser(analyser: AudioAnalyser): void {
     this.audioAnalyser = analyser;
   }
 
-  update(glHelper: GLHelper): void {
-    const avatarFaceDto = this.audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
-    this.avatarFaceScale = avatarFaceDto.avatarFaceScale;
-    this.avatarFace = avatarFaceDto.avatarFace;
-
-    const millisDiff = Date.now() - this.lastUpdateTimeStamp;
-    this.lastUpdateTimeStamp = Date.now();
-
-    if (this.isMoving) {
-      // saveOldValue
-      const oldCenterPosX = this.centerPos.x;
-      const oldCenterPosY = this.centerPos.y;
-      const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
-      const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
-
-      // position value update
-      this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
-      this.centerPos.x +=
-        this.velocity * this.normalizedDirectionVector.x * millisDiff;
-      this.centerPos.y +=
-        this.velocity * this.normalizedDirectionVector.y * millisDiff;
-      if (this.rotateCounterclockwise === false) {
-        this.partRotatedegree += 1.2;
-      } else {
-        this.partRotatedegree -= 1.2;
-      }
-      if (this.partRotatedegree > 15) {
-        this.rotateCounterclockwise = true;
-      } else if (this.partRotatedegree < -15) {
-        this.rotateCounterclockwise = false;
-      }
-      this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
-
-      //collision detection part
-      // if isCollision -> rollback value
-      const isCollisionDetected = this.isCollision(glHelper);
-      if (isCollisionDetected === CollisionDirection.HORIZONTAL) {
-        this.centerPos.x = oldCenterPosX;
-        this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
-      } else if (isCollisionDetected === CollisionDirection.VERTICAL) {
-        this.centerPos.y = oldCenterPosY;
-        this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
-      }
-    }
+  update(): void {
+    // const avatarFaceDto = this.audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
+    // this.avatarFaceScale = avatarFaceDto.avatarFaceScale;
+    // this.avatarFace = avatarFaceDto.avatarFace;
+    // const millisDiff = Date.now() - this.lastUpdateTimeStamp;
+    // this.lastUpdateTimeStamp = Date.now();
+    // if (this.isMoving) {
+    //   // saveOldValue
+    //   const oldCenterPosX = this.centerPos.x;
+    //   const oldCenterPosY = this.centerPos.y;
+    //   const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
+    //   const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
+    //   // position value update
+    //   this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
+    //   this.centerPos.x +=
+    //     this.velocity * this.normalizedDirectionVector.x * millisDiff;
+    //   this.centerPos.y +=
+    //     this.velocity * this.normalizedDirectionVector.y * millisDiff;
+    //   if (this.rotateCounterclockwise === false) {
+    //     this.partRotatedegree += 1.2;
+    //   } else {
+    //     this.partRotatedegree -= 1.2;
+    //   }
+    //   if (this.partRotatedegree > 15) {
+    //     this.rotateCounterclockwise = true;
+    //   } else if (this.partRotatedegree < -15) {
+    //     this.rotateCounterclockwise = false;
+    //   }
+    //   this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
+    //   //collision detection part
+    //   // if isCollision -> rollback value
+    //   const isCollisionDetected = this.isCollision(glHelper);
+    //   if (isCollisionDetected === CollisionDirection.HORIZONTAL) {
+    //     this.centerPos.x = oldCenterPosX;
+    //     this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
+    //   } else if (isCollisionDetected === CollisionDirection.VERTICAL) {
+    //     this.centerPos.y = oldCenterPosY;
+    //     this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
+    //   }
+    // }
   }
 }
 
@@ -397,10 +358,10 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   nickname: string; //외부에서 변경하는 것이 아니라, setter 를 통해서 변경. setter 에서는 nickname 이 변경되면 nicknameDiv 의 innerText 도 같이 변경함.
   textMessage: string;
   avatar: AvatarImageEnum;
-  avatarFace: AvatarPartImageEnum;
+  avatarFace: AvatarFaceEnum;
   avatarFaceScale: number;
   centerPos: Vec2;
-  partRotatedegree: number;
+  partRotatedegree: number[];
   rotateCounterclockwise: boolean;
   lookLeft: boolean;
 
@@ -447,11 +408,11 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     // PlayerDto
     this.nickname = 'Loading...';
     this.textMessage = '';
-    this.avatar = AvatarImageEnum.WHITE_RABBIT;
-    this.avatarFace = AvatarPartImageEnum.FACE_MUTE;
+    this.avatar = AvatarImageEnum.BUNNY;
+    this.avatarFace = AvatarFaceEnum.FACE_MUTE;
     this.avatarFaceScale = 1;
     this.centerPos = {x: -1000, y: -1000};
-    this.partRotatedegree = 0;
+    this.partRotatedegree = Array.from({length: 5}, () => 0);
     this.rotateCounterclockwise = false;
     this.lookLeft = false;
 

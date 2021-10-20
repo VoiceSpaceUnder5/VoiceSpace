@@ -12,8 +12,8 @@
   display: block;
 }
 
-/* 이름표, 마우스 클릭좌표 받아오기 등 기능 */
-#divContainer {
+/* 이름표, 말풍선, 캔버스 모두를 담는 컨테이너 기능 */
+#spaceMainContainer {
   /* flex: 1; */
   position: absolute;
   left: 0px;
@@ -26,8 +26,13 @@
   /* for Iphone */
   /* height: calc(var(--vh) * 92);
   height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
-  z-index: 10;
   overflow: hidden;
+}
+
+#audioContainer {
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }
 
 .canvasOverlay {
@@ -45,6 +50,7 @@
   line-break: normal;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 5px;
+  z-index: 20;
 }
 .canvasOverlay-textMessage-bottom:after {
   border-top: 10px solid rgba(255, 255, 255, 0.3);
@@ -55,9 +61,10 @@
   position: absolute;
   left: 42%;
   bottom: -20px;
+  z-index: 20;
 }
 /* top */
-/* .canvasOverlay-textMessage-top {
+.canvasOverlay-textMessage-top {
   position: absolute;
   cursor: default;
   max-width: 150px;
@@ -66,6 +73,7 @@
   line-break: normal;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 5px;
+  z-index: 20;
 }
 .canvasOverlay-textMessage-top:after {
   border-top: 10px solid transparent;
@@ -76,9 +84,10 @@
   position: absolute;
   left: 42%;
   top: -20px;
-} */
+  z-index: 20;
+}
 /* left */
-/* .canvasOverlay-textMessage-left {
+.canvasOverlay-textMessage-left {
   position: absolute;
   cursor: default;
   max-width: 150px;
@@ -87,6 +96,7 @@
   line-break: normal;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 5px;
+  z-index: 20;
 }
 .canvasOverlay-textMessage-left:after {
   border-top: 5px solid transparent;
@@ -97,7 +107,8 @@
   position: absolute;
   top: 42%;
   right: 100%;
-} */
+  z-index: 20;
+}
 /* right */
 .canvasOverlay-textMessage-right {
   position: absolute;
@@ -108,6 +119,7 @@
   line-break: normal;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 5px;
+  z-index: 20;
 }
 .canvasOverlay-textMessage-right:after {
   border-top: 5px solid transparent;
@@ -118,6 +130,7 @@
   position: absolute;
   top: 42%;
   left: 100%;
+  z-index: 20;
 }
 
 /* navbar 전체 */
@@ -418,8 +431,8 @@
   /* ios 사파리의 경우 좌우 safe area 고려가 되어있지 않음 */
   /* @media screen and (orientation: landscape) {
     .navbar_left {
-      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);  
-    } 
+      padding-inline-start: calc(env(safe-area-inset-bottom) + 12px);
+    }
   } */
   .navbar_left {
     overflow: hidden;

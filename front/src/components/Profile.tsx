@@ -5,8 +5,7 @@ import '../pages/spacePage/space.css';
 import {
   AvatarImageEnum,
   avatarImageMDs,
-  AvatarPartImageEnum,
-} from '../utils/ImageMetaData';
+} from '../utils/pixiUtils/metaData/ImageMetaData';
 import {ProfileDropdownOnOff} from './Navigation';
 
 export interface ProfileProps {
@@ -90,11 +89,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
             </button>
             <img
               className="avatar_preview"
-              src={
-                avatarImageMDs[newAvatar].avatarMDInfos[
-                  AvatarPartImageEnum.FACE_MUTE
-                ].src
-              }
+              src={avatarImageMDs[newAvatar].avatarProfileSrc}
             ></img>
             <button>
               <RightCircleFilled

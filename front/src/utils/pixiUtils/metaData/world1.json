@@ -1,0 +1,574 @@
+{
+  "startPosition": {"x": 200, "y": 300},
+  "background": {
+    "textureName": "forestVer1.png",
+    "width": 3072,
+    "height": 3072
+  },
+  "stuffs": [
+    {
+      "position": {"x": 1717, "y": 460},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -50, "width": 90, "height": 50}
+    },
+    {
+      "position": {"x": 1681, "y": 811},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -50, "width": 90, "height": 50}
+    },
+    {
+      "position": {"x": 1869, "y": 1128},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -50, "width": 90, "height": 50}
+    },
+    {
+      "position": {"x": 2218, "y": 1209},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_tree02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -70, "y": -50, "width": 90, "height": 50}
+    },
+    {
+      "position": {"x": 2816, "y": 1184},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_tree02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -70, "y": -50, "width": 90, "height": 50}
+    },
+    {
+      "position": {"x": 1675, "y": 456},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2161, "y": 559},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2345, "y": 691},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2809, "y": 645},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2105, "y": 625},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 1656, "y": 868},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 1868, "y": 1148},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2222, "y": 1241},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2778, "y": 1212},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "fallen_leaves02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 1565, "y": 322},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2054, "y": 275},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2503, "y": 858},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2487, "y": 1166},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2671, "y": 263},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2433, "y": 536},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass02.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2350, "y": 350},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2639, "y": 481},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2974, "y": 466},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "autumn_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 355, "y": 898},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -35, "y": -50, "width": 80, "height": 50}
+    },
+    {
+      "position": {"x": 367, "y": 1913},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -35, "y": -50, "width": 80, "height": 50}
+    },
+    {
+      "position": {"x": 337, "y": 2911},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -35, "y": -50, "width": 80, "height": 50}
+    },
+    {
+      "position": {"x": 1514, "y": 3008},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_tree01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -35, "y": -50, "width": 80, "height": 50}
+    },
+    {
+      "position": {"x": 264, "y": 898},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 404, "y": 929},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 130, "y": 1010},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 398, "y": 1278},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 124, "y": 1977},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 501, "y": 2236},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 158, "y": 2252},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 455, "y": 2955},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 869, "y": 2740},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 1187, "y": 2949},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass03.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 241, "y": 1167},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 118, "y": 1406},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 375, "y": 2063},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 146, "y": 2680},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 646, "y": 2817},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 1100, "y": 2818},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 172, "y": 2967},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 946, "y": 3011},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "spring_grass05.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2503, "y": 424},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "rock01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50}
+    },
+    {
+      "position": {"x": 2822, "y": 415},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "rock01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50}
+    },
+    {
+      "position": {"x": 207, "y": 986},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "rock01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50}
+    },
+    {
+      "position": {"x": 519, "y": 2003},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "rock01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50}
+    },
+    {
+      "position": {"x": 1754, "y": 3033},
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "rock01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50}
+    }
+  ]
+}

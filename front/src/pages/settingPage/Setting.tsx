@@ -8,8 +8,7 @@ import {
   AvatarImageEnumMax,
   AvatarImageEnumMin,
   avatarImageMDs,
-  AvatarPartImageEnum,
-} from '../../utils/ImageMetaData';
+} from '../../utils/pixiUtils/metaData/ImageMetaData';
 
 const qs = require('query-string');
 const {Option} = Select;
@@ -189,7 +188,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const [isListenMyMic, setIsListenMyMic] = useState(false);
   const [nickname, setNickname] = useState(nicknameDefaultValue);
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
-    AvatarImageEnum.WHITE_RABBIT,
+    AvatarImageEnum.BUNNY,
   );
   const [isSpeakerChangeable, setIsSpeakerChangeable] = useState(true);
 
@@ -285,9 +284,8 @@ function Setting(props: RouteComponentProps): JSX.Element {
   };
 
   const changeAvatarImgWithIdx = (avatarIdx: AvatarImageEnum) => {
-    const src =
-      avatarImageMDs[avatarIdx].avatarMDInfos[AvatarPartImageEnum.FACE_MUTE]
-        .src;
+    const src = avatarImageMDs[avatarIdx].avatarProfileSrc;
+
     if (avatarImgRef.current) {
       avatarImgRef.current.src = src;
     }
@@ -369,11 +367,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 <img
                   ref={avatarImgRef}
                   className="settingAvatarImg"
-                  src={
-                    avatarImageMDs[AvatarImageEnum.WHITE_RABBIT].avatarMDInfos[
-                      AvatarPartImageEnum.FACE_MUTE
-                    ].src
-                  }
+                  src={avatarImageMDs[AvatarImageEnum.BUNNY].avatarProfileSrc}
                 ></img>
                 <div className="settingAvatarButtonContainerDiv">
                   <button

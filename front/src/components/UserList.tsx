@@ -4,8 +4,7 @@ import {LeftCircleFilled} from '@ant-design/icons';
 import {
   AvatarImageEnum,
   avatarImageMDs,
-  AvatarPartImageEnum,
-} from '../utils/ImageMetaData';
+} from '../utils/pixiUtils/metaData/ImageMetaData';
 import '../pages/spacePage/space.css';
 
 export interface UserInfo {
@@ -46,11 +45,7 @@ export function UserList(props: UsersListProps): JSX.Element {
                 <div>
                   <img
                     className="user_list_avatar"
-                    src={
-                      avatarImageMDs[user.avatar].avatarMDInfos[
-                        AvatarPartImageEnum.FACE_MUTE
-                      ].src
-                    }
+                    src={avatarImageMDs[user.avatar].avatarProfileSrc}
                   ></img>{' '}
                   {user.nickname}
                 </div>
