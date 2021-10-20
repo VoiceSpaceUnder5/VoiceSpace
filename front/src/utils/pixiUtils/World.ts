@@ -100,7 +100,7 @@ export class World extends Container implements IWorld {
     if (this.viewport === null) return;
     const newPeer = new PeerAvatar(this, socketID, this.viewport);
     const peerAvatarImageEnum = GameData.getPeerAvatar(socketID);
-    if (!peerAvatarImageEnum) {
+    if (peerAvatarImageEnum === undefined) {
       console.error('Error: No peerAvatarImageEnum or incorrect SocketID!');
       return;
     }
