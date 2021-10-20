@@ -2,6 +2,7 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   BUNNY,
   COW,
   PIG,
+  HYEONKIM,
 }
 
 export const AvatarImageEnumMin = AvatarImageEnum.BUNNY;
@@ -38,6 +39,12 @@ export const pigMD: AvatarImageMD = {
   avatarType: AvatarImageEnum.PIG,
   avatarInitialName: 'pig',
   avatarProfileSrc: './assets/spaceMain/avatars/pigFace_Mute.png',
+};
+
+export const hyeonkimMD: AvatarImageMD = {
+  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarInitialName: 'hyeonkim',
+  avatarProfileSrc: './assets/spaceMain/avatars/hyeonkimFace_Mute.png',
 };
 
 export const avatarImageMDs = [bunnyMD, cowMD, pigMD];

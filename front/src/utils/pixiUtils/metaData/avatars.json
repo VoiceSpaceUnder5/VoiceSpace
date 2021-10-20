@@ -142,5 +142,53 @@
     ],
     "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20},
     "faceTexture": ["pigFace_Mute.png", "pigFace_A.png", "pigFace_E.png", "pigFace_I.png", "pigFace_O.png", "pigFace_U.png"]
+  },
+  "hyeonkim": {
+    "parts": [
+      {
+        "name": "leftArm",
+        "spriteSheet": "avatars.json",
+        "textureName": "hyeonkimArm.png",
+        "position": {"x": 8, "y": 5},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "leftLeg",
+        "spriteSheet": "avatars.json",
+        "textureName": "hyeonkimArm.png",
+        "position": {"x": 9, "y": 42},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "body",
+        "spriteSheet": "avatars.json",
+        "textureName": "hyeonkimBody.png",
+        "position": {"x": 0, "y": 0},
+        "anchor": {"x": 0.5, "y": 0}
+      },
+      {
+        "name": "rightArm",
+        "spriteSheet": "avatars.json",
+        "textureName": "hyeonkimArm.png",
+        "position": {"x": -8, "y": 5},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "rightLeg",
+        "spriteSheet": "avatars.json",
+        "textureName": "hyeonkimArm.png",
+        "position": {"x": -8, "y": 42},
+        "anchor": {"x": 0.5, "y": 0.2}
+      },
+      {
+        "name": "face",
+        "spriteSheet": "avatars.json",
+        "textureName": "hyeonkimFace_Mute.png",
+        "position": {"x": 0, "y": 0},
+        "anchor": {"x": 0.45, "y": 0.95}
+      }
+    ],
+    "collisionBox": {"x": -15, "y": 45, "width": 30, "height": 20},
+    "faceTexture": ["hyeonkimFace_Mute.png", "hyeonkimFace_A.png", "hyeonkimFace_E.png", "hyeonkimFace_I.png", "hyeonkimFace_O.png", "hyeonkimFace_U.png"]
   }
 }
