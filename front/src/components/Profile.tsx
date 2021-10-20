@@ -10,7 +10,6 @@ import {ProfileDropdownOnOff} from './Navigation';
 
 export interface ProfileProps {
   profileDropdownOnOff: ProfileDropdownOnOff;
-  profileDropdownSwitch: () => void;
   nickname: string;
   setNickname: (nickname: string) => void;
   avatar: AvatarImageEnum;
@@ -47,7 +46,6 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
     }
     props.setAvatar(newAvatar);
     props.setNickname(nextNickname);
-    props.profileDropdownSwitch();
     if (!props.setVisible) {
       return;
     }
@@ -119,6 +117,7 @@ function Profile(props: ProfileProps): JSX.Element {
   const [avatar, setAvatar] = useState(props.avatar);
   const [visible, setVisible] = useState(props.profileDropdownOnOff.on);
 
+  console.log(props.profileDropdownOnOff.on);
   const newSetNickname = (nickname: string): void => {
     props.setNickname(nickname);
     setNickname(nickname);
@@ -129,7 +128,6 @@ function Profile(props: ProfileProps): JSX.Element {
   };
   const profileDropDownProps: ProfileProps = {
     profileDropdownOnOff: props.profileDropdownOnOff,
-    profileDropdownSwitch: props.profileDropdownSwitch,
     nickname: nickname,
     setNickname: newSetNickname,
     avatar: avatar,
@@ -148,6 +146,10 @@ function Profile(props: ProfileProps): JSX.Element {
       window.removeEventListener('keydown', onEscKeyDown);
     };
   }, []);
+  useEffect(() => {
+    props.profileDropdownOnOff.on = visible;
+    console.log('visible이 바뀜');
+  }, [visible]);
 
   return (
     <Dropdown

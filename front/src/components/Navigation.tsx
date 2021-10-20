@@ -40,9 +40,6 @@ function Navigation(props: NavigationProps): JSX.Element {
   const profileDropdownOnOff: ProfileDropdownOnOff = {
     on: false,
   };
-  const profileDropdownSwitch = () => {
-    profileDropdownOnOff.on = !profileDropdownOnOff.on;
-  };
   const exit = () => {
     props.peerManager.close();
     props.goToHome();
@@ -285,7 +282,6 @@ function Navigation(props: NavigationProps): JSX.Element {
       <div className="navbar_left">
         <Profile
           profileDropdownOnOff={profileDropdownOnOff}
-          profileDropdownSwitch={profileDropdownSwitch}
           nickname={props.peerManager.me.nickname}
           avatar={props.peerManager.me.avatar}
           setNickname={setNickName}

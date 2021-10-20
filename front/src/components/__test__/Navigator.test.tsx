@@ -1,14 +1,14 @@
 import React from 'react';
 import {screen, fireEvent} from '@testing-library/react';
+import {act} from 'react-dom/test-utils';
 import {render} from 'react-dom';
 import Navigation from '../Navigation';
-import userEvent from '@testing-library/user-event';
 import PeerManager, {AudioAnalyser, Me, Peer} from '../../utils/RTCGameUtils';
 import RTCSignalingHelper from '../../utils/RTCSignalingHelper';
 import {EventEmitter} from 'stream';
 import {iceConfig} from '../../utils/IceServerList';
 import {unmountComponentAtNode} from 'react-dom';
-import {act} from 'react-dom/test-utils';
+import {message} from 'antd';
 
 let socket: any = null;
 let me: Me | null = null;
@@ -19,8 +19,6 @@ let textMessageDiv: HTMLDivElement | null = null;
 let signalingHelper: RTCSignalingHelper | null = null;
 let peer: Peer | null = null;
 let peerAudioElement: HTMLAudioElement | null = null;
-
-const joinRoomSpy = jest.spyOn(RTCSignalingHelper.prototype, 'joinRoom');
 
 const mockVideoTrack: any = {
   kind: 'audio',
@@ -123,6 +121,17 @@ describe('Navigator test', () => {
     const divElement = screen.queryByText('mijeong');
     expect(divElement).not.toBe(null);
   });
+  test('렌더링 후 엔터를 누르면 메세지창이 떠야함.', async () => {
+    const avatarChangeButtonBefore =
+      screen.queryByPlaceholderText(/메시지를 입력하세요/i);
+    expect(avatarChangeButtonBefore).toBe(null);
+    await act(async () => {
+      fireEvent.keyDown(window, {key: 'Enter'});
+    });
+    const avatarChangeButtonAfter =
+      screen.queryByPlaceholderText(/메시지를 입력하세요/i);
+    expect(avatarChangeButtonAfter).not.toBe(null);
+  });
   test('프로필 버튼을 눌렀을 때 프로필 창이 정상적으로 렌더링 되는지 체크', async () => {
     const avatarChangeButtonBefore = screen.queryByText(/변경/i);
     expect(avatarChangeButtonBefore).toBe(null);
@@ -132,5 +141,75 @@ describe('Navigator test', () => {
     });
     const avatarChangeButtonAfter = screen.queryByText(/변경/i);
     expect(avatarChangeButtonAfter).not.toBe(null);
+  });
+  test('프로필 창이 떠 있는 상태에서 enter를 눌러도 메세지 창이 뜨지 않아야함.', async () => {
+    const profileButton = screen.getByText('mijeong');
+    await act(async () => {
+      fireEvent.click(profileButton);
+    });
+    const avatarChangeButtonBefore =
+      screen.queryByPlaceholderText(/메시지를 입력하세요/i);
+    expect(avatarChangeButtonBefore).toBe(null);
+    await act(async () => {
+      fireEvent.keyDown(window, {key: 'Enter'});
+    });
+    const avatarChangeButtonAfter =
+      screen.queryByPlaceholderText(/메시지를 입력하세요/i);
+    expect(avatarChangeButtonAfter).toBe(null);
+  });
+
+  test('음소거 버튼을 한번 눌렀을 때에 음소거 아이콘이 제대로 변해야함.', async () => {
+    const muteButton = screen.getByLabelText('audio');
+    await act(async () => {
+      fireEvent.click(muteButton);
+    });
+    const muteIcon = screen.getByLabelText('audio-muted');
+    expect(muteIcon).not.toBe(null);
+  });
+  test('음소거 버튼을 두번 눌렀을 때에 음소거 아이콘이 그대로여야함.', async () => {
+    const muteButton = screen.getByLabelText('audio');
+    await act(async () => {
+      fireEvent.click(muteButton);
+    });
+    const muteIcon = screen.getByLabelText('audio-muted');
+    await act(async () => {
+      fireEvent.click(muteIcon);
+    });
+    const originButton = screen.getByLabelText('audio');
+    expect(originButton).not.toBe(null);
+  });
+  test('화면공유 버튼을 눌렀을 때에 화면 공유 창이 떠야함.', async () => {
+    const screenShare = screen.getByLabelText('desktop');
+    await act(async () => {
+      fireEvent.click(screenShare);
+    });
+    const screenShareTab = screen.getByText('화면 공유');
+    expect(screenShareTab).not.toBe(null);
+  });
+  test('음성 세팅 아이콘을 누르면 음성세팅 창이 떠야함.', async () => {
+    const vowelDetect = screen.getByLabelText('smile');
+    await act(async () => {
+      fireEvent.click(vowelDetect);
+    });
+    const vowelDetectTab = screen.getByText(
+      '다음 모음을 발음하며 저장 버튼을 누르세요.',
+    );
+    expect(vowelDetectTab).not.toBe(null);
+  });
+  test('채팅 아이콘을 누르면 채팅 창이 떠야함.', async () => {
+    const messengerIcon = screen.getByLabelText('message');
+    await act(async () => {
+      fireEvent.click(messengerIcon);
+    });
+    const messegerTab = screen.getByText('메시지');
+    expect(messegerTab).not.toBe(null);
+  });
+  test('패널아이콘을 누르면 패널이 떠야함.', async () => {
+    const panelIcon = screen.getByLabelText('up');
+    await act(async () => {
+      fireEvent.click(panelIcon);
+    });
+    const panelTab = screen.getByText('참여 링크 복사');
+    expect(panelTab).not.toBe(null);
   });
 });

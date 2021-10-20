@@ -664,8 +664,10 @@ export default class PeerManager {
     audio.autoplay = true;
     try {
       // eslint-disable-next-line
-      if ((audio as any).setSinkId)
-        (audio as any).setSinkId(this.speakerDeviceID);
+      if ((audio as any).setSinkId){
+        // eslint-disable-next-line
+          (audio as any).setSinkId(this.speakerDeviceID);
+      }
     } catch {
       console.error('speaker deviceID is not valid');
     }

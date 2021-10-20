@@ -98,9 +98,10 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     if (props.profileDropdownOnOff.on === false) {
       if (e.key === 'Enter') {
         setVisible(true);
-      } else if (e.key === 'Escape') {
-        onClickClose();
       }
+    }
+    if (e.key === 'Escape') {
+      onClickClose();
     }
   };
 
