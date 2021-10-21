@@ -1,5 +1,6 @@
 import {Ticker} from '@pixi/ticker';
 import {Viewport} from 'pixi-viewport';
+import {DisplayContainer} from './DisplayContainer';
 import {SceneManager} from './SceneManager';
 
 export function createViewport(
@@ -14,7 +15,6 @@ export function createViewport(
     ticker: Ticker.shared,
     interaction: SceneManager.app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
   });
-  viewport.pinch().wheel().decelerate();
   viewport.clamp({
     left: false, // whether to clamp to the left and at what value
     right: false, // whether to clamp to the right and at what value
@@ -26,9 +26,21 @@ export function createViewport(
   viewport.clampZoom({
     maxScale: 1.2,
     minScale: 0.8,
-    // maxWidth: viewport.worldWidth, // maxHeight: world.height,
-    // minWidth: viewport.worldWidth,
   });
   viewport.moveCenter(worldWidth / 2, worldHeight / 2);
   return viewport;
+}
+
+export function setViewportFollow(
+  viewport: Viewport,
+  target: DisplayContainer,
+): void {
+  viewport
+    .wheel({
+      center: target.position,
+    })
+    .pinch({
+      center: target.position,
+    })
+    .follow(target);
 }
