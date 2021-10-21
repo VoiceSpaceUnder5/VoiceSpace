@@ -196,6 +196,14 @@
   flex-direction: column;
   justify-content: center;
   max-width: min-content;
+
+  border-radius: 15px;
+  border: 4px solid #53150d;
+  background-color: #ac9693;
+}
+.navbar_profile > *:hover {
+  border-radius: 10px;
+  background-color: #ac9693;
 }
 .profile_title,
 .profile_title:hover {
@@ -227,14 +235,18 @@
   height: 20%;
   border: 0;
   outline: 0;
-  background-color: white;
-  color: #2598f1;
-  text-shadow: gray;
 }
 .profile_input > input {
   width: 95%;
   max-width: 150px;
   color: black;
+  border-radius: 10px;
+}
+.profile_input > *:focus {
+  outline: none !important;
+  border-radius: 10px;
+  border-color: #764b45;
+  box-shadow: 0 0 0px #764b45;
 }
 .profile_button,
 .profile_input {
@@ -243,27 +255,42 @@
   margin-top: 0.6vh;
   margin-bottom: 0.6vh;
 }
+.profile_right_button,
+.profile_right_button:first-child,
+.profile_left_button,
+.profile_left_button:first-child {
+  background-color: #ac9693;
+  border-radius: 15px;
+  color: #53150d;
+}
+.profile_right_button:hover,
+.profile_right_button:first-child:hover,
+.profile_left_button:hover,
+.profile_left_button:first-child:hover {
+  background-color: #764b45;
+  border-radius: 15px;
+}
+
 .change_button {
   margin: auto;
   width: 80%;
   border-radius: 5px;
-  background-color: #2598f1;
+  background-color: #53150d;
   color: white;
 }
 .change_button:hover {
   margin: auto;
   width: 80%;
   border-radius: 5px;
-  background-color: skyblue;
-  color: white;
+  background-color: #764b45;
   transition: 0.3s;
 }
 .profile_avatar > button:hover {
-  color: skyblue;
+  color: #764b45;
   transition: 0.3s;
 }
 .profile_button:hover {
-  background-color: white;
+  background-color: default;
 }
 
 /* navbar 중간부분 */
@@ -365,6 +392,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #000;
 }
 .user_list_avatar {
   width: 20px;
@@ -396,11 +424,10 @@
 }
 .users_title > div:last-child,
 .message_title > div:last-child {
-  color: #2598f1;
+  color: #53150d;
 }
 .users_title > div:last-child:hover,
 .message_title > div:last-child:hover {
-  color: skyblue;
   transition: 0.3s;
 }
 .panel_volume {
@@ -437,11 +464,37 @@
   line-break: normal;
   white-space: normal;
 }
+
+.profile_input > input {
+  width: 95%;
+  max-width: 150px;
+  color: black;
+  border-radius: 10px;
+}
 .message_input {
   width: calc(100% - 50px);
+  max-width: 150px;
+  color: black;
+  border-radius: 10px;
 }
+.message_input:focus {
+  outline: none !important;
+  border-radius: 10px;
+  border-color: #764b45;
+  box-shadow: 0 0 0px #764b45;
+}
+
 .message_input_button {
   width: 50px;
+  border-radius: 10px;
+  box-shadow: 0 0 0px #764b45;
+  background-color: #764b45;
+  color: white;
+  outline: none !important;
+}
+.message_input_button:focus {
+  border-radius: 10px;
+  box-shadow: 0 0 0px #764b45;
 }
 
 .vowel-detect {
@@ -482,20 +535,6 @@
     background-color: #2598f1; */
     border-radius: 5px;
     /* box-shadow: 1px 1px 1px 0 gray; */
-  }
-  .change_button {
-    margin: auto;
-    width: 80%;
-    border-radius: 5px;
-    background-color: #2598f1;
-    color: white;
-  }
-  .change_button:hover {
-    margin: auto;
-    width: 80%;
-    border-radius: 5px;
-    background-color: skyblue;
-    color: white;
   }
   .profile_avatar > button:hover {
     color: skyblue;
