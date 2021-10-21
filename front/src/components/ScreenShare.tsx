@@ -657,6 +657,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         })}
       </div>
       <Dropdown
+        placement={'topCenter'}
         overlay={screenshare}
         trigger={['click']}
         visible={isVisible}

@@ -23,9 +23,19 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  setTimeout(() => {
-    if (inputRef.current) inputRef.current.focus();
-  }, 10);
+  const isMobile = (): boolean => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  };
+
+  if (!isMobile()) {
+    if (inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
+  }
 
   const onNicknameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewNickname(e.target.value);
@@ -159,6 +169,7 @@ function Profile(props: ProfileProps): JSX.Element {
 
   return (
     <Dropdown
+      placement={'topLeft'}
       visible={visible}
       data-testid="dropDownTestId"
       onVisibleChange={setVisible}

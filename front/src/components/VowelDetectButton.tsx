@@ -132,11 +132,21 @@ function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
       cancelAnimationFrame(aniNumber);
     };
   }, [props.stream]);
+  let canvasSize = '250px';
+  // mobile 환경 캐치
+  if (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    )
+  ) {
+    canvasSize = '130px';
+  }
 
   return (
     <div id="vowel-detect">
       <div className="vowel-explain">
-        다음 모음을 발음하며 저장 버튼을 누르세요.
+        다음 모음을 발음하며 <br />
+        저장 버튼을 누르세요.
       </div>
       <div className="vowel-button-and-detect">
         <div className="vowel-button-set">
@@ -156,7 +166,7 @@ function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
           })}
         </div>
         <canvas
-          width="200px"
+          width={canvasSize}
           height="160px"
           className="vowel-wave-canvas"
           ref={canvasRef}
@@ -181,9 +191,11 @@ function VowelDetectButton(props: VowelDetectButtonProps): JSX.Element {
       window.removeEventListener('keydown', onESCKeyDown);
     };
   }, []);
+
   return (
     <>
       <Popover
+        placement={'topRight'}
         visible={visible}
         onVisibleChange={setVisible}
         trigger={['click']}

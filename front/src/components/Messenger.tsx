@@ -94,6 +94,12 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     });
   };
 
+  const isMobile = (): boolean => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  };
+
   const onKeyDown = (e: KeyboardEvent) => {
     if (props.profileDropdownOnOff.on === false) {
       if (e.key === 'Enter') {
@@ -108,7 +114,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
   useEffect(() => {
     if (visible) {
       setTimeout(() => {
-        inputRef.current?.focus();
+        if (!isMobile()) inputRef.current?.focus();
       }, 50);
     }
   }, [visible]);
@@ -163,7 +169,12 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     </div>
   );
   return (
-    <Popover visible={visible} content={result} trigger={'click'}>
+    <Popover
+      placement={'topRight'}
+      visible={visible}
+      content={result}
+      trigger={'click'}
+    >
       <div>
         <MessageOutlined
           className="navbar_button"
