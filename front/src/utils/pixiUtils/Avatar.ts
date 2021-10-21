@@ -6,7 +6,7 @@ import {
   avatarImageMDs,
 } from './metaData/ImageMetaData';
 import {DisplayContainer} from './DisplayContainer';
-import {DisplayContainerData} from './metaData/DataInterface';
+import {AvatarData, DisplayContainerData} from './metaData/DataInterface';
 import {ResourceManager} from './ResourceManager';
 import {World} from './World';
 
@@ -57,7 +57,7 @@ export class Avatar extends DisplayContainer implements IAvatar {
     this.changeAvatar(this.getAvatarMD());
   }
 
-  protected getAvatarMD(): DisplayContainerData {
+  protected getAvatarMD(): AvatarData {
     const avatarName = this.getAvatarInitialName();
     return avatarMDs[avatarName];
   }

@@ -3,7 +3,7 @@ export interface Vec2 {
   y: number;
 }
 
-export interface collisionBoxData {
+export interface CollisionBoxData {
   x: number;
   y: number;
   width: number;
@@ -19,11 +19,24 @@ export interface PartsData {
 }
 
 export interface DisplayContainerData {
-  position?: Vec2;
+  position: Vec2;
   parts: PartsData[];
-  collisionBox?: collisionBoxData;
-  faceTexture?: string[];
-  alphaChangable?: boolean;
+  collisionBox?: CollisionBoxData;
+}
+
+export interface StuffData extends DisplayContainerData {
+  alphaChangable: boolean;
+}
+
+export interface AvatarData extends DisplayContainerData {
+  faceTexture: string[];
+}
+
+export interface YoutubeStuffData extends StuffData {
+  interactBox: CollisionBoxData;
+  youtubeContainerLeftPosition: number;
+  youtubeContainerTopPosition: number;
+  youtubeVideoID: string;
 }
 
 export interface BackgroundData {
@@ -35,7 +48,8 @@ export interface BackgroundData {
 export interface WorldData {
   startPosition: Vec2;
   background: BackgroundData;
-  stuffs: DisplayContainerData[];
+  stuffs: StuffData[];
+  youtubeStuffs: YoutubeStuffData[];
 }
 
 export const PLAYER_SPEED = 8;

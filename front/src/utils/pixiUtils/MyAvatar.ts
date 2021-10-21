@@ -7,6 +7,7 @@ import {checkIntersect} from './CheckIntersect';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {PlayerPointer} from './PlayerPointer';
+import {YoutubeStuff} from './Stuff';
 
 export class MyAvatar extends Avatar {
   private referenceDegree: number;
@@ -120,10 +121,13 @@ export class MyAvatar extends Avatar {
   private isCollided(world: World): boolean {
     const stuffs = world.children as DisplayContainer[];
     if (isOutOfWorld(this, this.viewport, 50)) return true;
-    for (let i = 1; i < stuffs.length; ++i) {
+    if (!this.collidable || !this.collisionBox) return false;
+    for (let i = 0; i < stuffs.length; ++i) {
+      if (stuffs[i] instanceof YoutubeStuff) {
+        (stuffs[i] as YoutubeStuff).interact(this.collisionBox);
+      }
       if (
         !(this === stuffs[i]) &&
-        this.collidable &&
         stuffs[i].collidable &&
         checkIntersect(
           this.collisionBox as DisplayObject,
