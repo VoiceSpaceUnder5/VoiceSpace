@@ -156,7 +156,7 @@ function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
           })}
         </div>
         <canvas
-          width="310px"
+          width="200px"
           height="160px"
           className="vowel-wave-canvas"
           ref={canvasRef}
@@ -189,7 +189,9 @@ function VowelDetectButton(props: VowelDetectButtonProps): JSX.Element {
         trigger={['click']}
         content={<VowelDetect {...props}></VowelDetect>}
       >
-        <SmileOutlined className="navbar_button" />
+        <a>
+          <SmileOutlined className="navbar_button" />
+        </a>
       </Popover>
     </>
   );

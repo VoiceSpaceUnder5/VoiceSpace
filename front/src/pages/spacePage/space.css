@@ -139,7 +139,7 @@
   width: 100vw;
   position: fixed;
   display: flex;
-  min-height: 50px;
+  min-height: 60px;
   bottom: 2vh;
   justify-content: space-between;
 
@@ -403,6 +403,7 @@
 
 .navbar_button {
   color: black;
+  height: 100%;
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -497,13 +498,13 @@
   box-shadow: 0 0 0px #764b45;
 }
 
-.vowel-detect {
+/* .vowel-detect {
   position: absolute;
   width: '500px';
   left: 0;
   top: 0;
   z-index: 20;
-}
+} */
 
 /* 네비게이션 모바일 */
 @media screen and (max-width: 1024px) {

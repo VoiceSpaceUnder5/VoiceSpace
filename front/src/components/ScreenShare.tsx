@@ -662,7 +662,7 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
         visible={isVisible}
         onVisibleChange={setIsVisible}
       >
-        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+        <a>
           <DesktopOutlined className="navbar_button" />
         </a>
       </Dropdown>

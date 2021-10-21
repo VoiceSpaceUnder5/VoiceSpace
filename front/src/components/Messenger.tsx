@@ -109,7 +109,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     if (visible) {
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 10);
+      }, 50);
     }
   }, [visible]);
 
@@ -164,11 +164,14 @@ export default function Messenger(props: MessengerProps): JSX.Element {
   );
   return (
     <Popover visible={visible} content={result} trigger={'click'}>
-      <MessageOutlined
-        onClick={() => {
-          setVisible(true);
-        }}
-      />
+      <div>
+        <MessageOutlined
+          className="navbar_button"
+          onClick={() => {
+            setVisible(true);
+          }}
+        />
+      </div>
     </Popover>
   );
 }
