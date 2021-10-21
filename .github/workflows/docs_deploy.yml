@@ -39,7 +39,7 @@ jobs:
           DIR_NAME: coverage-${{ steps.date.outputs.date }}
 
       - name: VoiceSpaceDocs 레포지토리로 docs push
-        uses: dmnemec/copy_file_to_another_repo_action@main
+        uses: dmnemec/copy_file_to_another_repo_action@v1.1.1
         env:
           API_TOKEN_GITHUB: ${{ secrets.LIKILEE_ACCESS_CODE_FOR_REPO }}
         with:
@@ -51,7 +51,7 @@ jobs:
           commit_message: "문서 자동 업데이트 by 깃헙액션"
 
       - name: VoiceSpaceDocs 레포지토리로 coverage push
-        uses: dmnemec/copy_file_to_another_repo_action@main
+        uses: dmnemec/copy_file_to_another_repo_action@v1.1.1
         env:
           API_TOKEN_GITHUB: ${{ secrets.LIKILEE_ACCESS_CODE_FOR_REPO }}
           DIR_NAME: coverage-${{ steps.date.outputs.date }}
