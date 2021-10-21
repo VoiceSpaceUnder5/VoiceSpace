@@ -19,9 +19,11 @@ export class ResourceManager {
   }
 
   public static setOnProgressCallback(
-    callback: (loader: Loader) => void,
+    callback: (loadStatusPercentage: number) => void,
   ): void {
-    Loader.shared.onProgress.add(callback);
+    Loader.shared.onProgress.add((loader: Loader): void => {
+      callback(loader.progress);
+    });
   }
 
   public static setOnErrorCallback(callback: (error: Error) => void): void {

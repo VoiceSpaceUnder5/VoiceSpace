@@ -10,8 +10,8 @@ export function pixiCanvasStart(canvas: HTMLCanvasElement): void {
   ResourceManager.setOnErrorCallback(error => {
     console.log(error);
   });
-  ResourceManager.setOnProgressCallback(loader => {
-    console.log(loader.progress);
+  ResourceManager.setOnProgressCallback(percentage => {
+    console.log(percentage);
   });
   ResourceManager.run(start);
 }
