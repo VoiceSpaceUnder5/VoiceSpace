@@ -1,3 +1,11 @@
+.loadingContainerDiv {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: white;
+  z-index: 99999;
+}
+
 .loadingInnerImg {
   position: absolute;
   width: 400px;

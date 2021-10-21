@@ -130,7 +130,7 @@ describe('peer test', () => {
       avatar: 1,
       avatarFace: 3,
       avatarFaceScale: 1.5,
-      partRotatedegree: 3,
+      partRotatedegree: [3],
       lookLeft: true,
       rotateCounterclockwise: true,
     };

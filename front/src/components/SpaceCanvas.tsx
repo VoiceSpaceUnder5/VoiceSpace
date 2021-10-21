@@ -1,16 +1,18 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {GameData} from '../utils/pixiUtils/GameData';
 import {
   pixiCanvasDestroy,
   pixiCanvasStart,
 } from '../utils/pixiUtils/PixiCanvas';
 import PeerManager, {PlayerDto, Peer, DataDtoType} from '../utils/RTCGameUtils';
+import SpaceLoading from './SpaceLoading';
 
 interface spaceCanvasProps {
   peerManager: PeerManager;
 }
 
 function SpaceCanvas(props: spaceCanvasProps): JSX.Element {
+  const [loadingPercentage, setLoadingPercentage] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -23,13 +25,20 @@ function SpaceCanvas(props: spaceCanvasProps): JSX.Element {
     );
     // pixi Start
     GameData.setPeerManager(props.peerManager);
-    pixiCanvasStart(canvasRef.current);
+    pixiCanvasStart(canvasRef.current, setLoadingPercentage);
     return () => {
       props.peerManager.close();
       pixiCanvasDestroy();
     };
   }, []);
-  return <canvas ref={canvasRef}></canvas>;
+  return (
+    <>
+      {loadingPercentage < 100 ? (
+        <SpaceLoading loadingPercentage={loadingPercentage} />
+      ) : null}
+      <canvas ref={canvasRef}></canvas>
+    </>
+  );
 }
 
 export default SpaceCanvas;
