@@ -8,6 +8,7 @@
   "stuffs": [
     {
       "position": {"x": 1717, "y": 460},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -20,6 +21,7 @@
     },
     {
       "position": {"x": 1681, "y": 811},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -32,6 +34,7 @@
     },
     {
       "position": {"x": 1869, "y": 1128},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -44,6 +47,7 @@
     },
     {
       "position": {"x": 2218, "y": 1209},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -56,6 +60,7 @@
     },
     {
       "position": {"x": 2816, "y": 1184},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -68,6 +73,7 @@
     },
     {
       "position": {"x": 1675, "y": 456},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -79,6 +85,7 @@
     },
     {
       "position": {"x": 2161, "y": 559},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -90,6 +97,7 @@
     },
     {
       "position": {"x": 2345, "y": 691},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -101,6 +109,7 @@
     },
     {
       "position": {"x": 2809, "y": 645},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -112,6 +121,7 @@
     },
     {
       "position": {"x": 2105, "y": 625},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -123,6 +133,7 @@
     },
     {
       "position": {"x": 1656, "y": 868},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -134,6 +145,7 @@
     },
     {
       "position": {"x": 1868, "y": 1148},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -145,6 +157,7 @@
     },
     {
       "position": {"x": 2222, "y": 1241},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -156,6 +169,7 @@
     },
     {
       "position": {"x": 2778, "y": 1212},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -167,6 +181,7 @@
     },
     {
       "position": {"x": 1565, "y": 322},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -178,6 +193,7 @@
     },
     {
       "position": {"x": 2054, "y": 275},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -189,6 +205,7 @@
     },
     {
       "position": {"x": 2503, "y": 858},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -200,6 +217,7 @@
     },
     {
       "position": {"x": 2487, "y": 1166},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -211,6 +229,7 @@
     },
     {
       "position": {"x": 2671, "y": 263},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -222,6 +241,7 @@
     },
     {
       "position": {"x": 2433, "y": 536},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -233,6 +253,7 @@
     },
     {
       "position": {"x": 2350, "y": 350},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -244,6 +265,7 @@
     },
     {
       "position": {"x": 2639, "y": 481},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -255,6 +277,7 @@
     },
     {
       "position": {"x": 2974, "y": 466},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -266,6 +289,7 @@
     },
     {
       "position": {"x": 355, "y": 898},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -278,6 +302,7 @@
     },
     {
       "position": {"x": 367, "y": 1913},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -290,6 +315,7 @@
     },
     {
       "position": {"x": 337, "y": 2911},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -302,6 +328,7 @@
     },
     {
       "position": {"x": 1514, "y": 3008},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -314,6 +341,7 @@
     },
     {
       "position": {"x": 264, "y": 898},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -325,6 +353,7 @@
     },
     {
       "position": {"x": 404, "y": 929},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -336,6 +365,7 @@
     },
     {
       "position": {"x": 130, "y": 1010},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -347,6 +377,7 @@
     },
     {
       "position": {"x": 398, "y": 1278},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -358,6 +389,7 @@
     },
     {
       "position": {"x": 124, "y": 1977},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -369,6 +401,7 @@
     },
     {
       "position": {"x": 501, "y": 2236},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -380,6 +413,7 @@
     },
     {
       "position": {"x": 158, "y": 2252},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -391,6 +425,7 @@
     },
     {
       "position": {"x": 455, "y": 2955},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -402,6 +437,7 @@
     },
     {
       "position": {"x": 869, "y": 2740},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -413,6 +449,7 @@
     },
     {
       "position": {"x": 1187, "y": 2949},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -424,6 +461,7 @@
     },
     {
       "position": {"x": 241, "y": 1167},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -435,6 +473,7 @@
     },
     {
       "position": {"x": 118, "y": 1406},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -446,6 +485,7 @@
     },
     {
       "position": {"x": 375, "y": 2063},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -457,6 +497,7 @@
     },
     {
       "position": {"x": 146, "y": 2680},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -468,6 +509,7 @@
     },
     {
       "position": {"x": 646, "y": 2817},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -479,6 +521,7 @@
     },
     {
       "position": {"x": 1100, "y": 2818},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -490,6 +533,7 @@
     },
     {
       "position": {"x": 172, "y": 2967},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -501,6 +545,7 @@
     },
     {
       "position": {"x": 946, "y": 3011},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -512,6 +557,7 @@
     },
     {
       "position": {"x": 2503, "y": 424},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -524,6 +570,7 @@
     },
     {
       "position": {"x": 2822, "y": 415},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -536,6 +583,7 @@
     },
     {
       "position": {"x": 207, "y": 986},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -548,6 +596,7 @@
     },
     {
       "position": {"x": 519, "y": 2003},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -560,6 +609,7 @@
     },
     {
       "position": {"x": 1754, "y": 3033},
+      "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
@@ -569,6 +619,25 @@
         }
       ],
       "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50}
+    }
+  ],
+  "youtubeStuffs": [
+    {
+      "position": {"x": 2000, "y": 2000},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "stuffs.json",
+          "textureName": "rock01.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.0}
+        }
+      ],
+      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50},
+      "interactBox": {"x": 0, "y": 0, "width": 200, "height": 200},
+      "youtubeContainerLeftPosition": 0,
+      "youtubeContainerTopPosition": 0,
+      "youtubeVideoID": "d2ytH5mymWY"
     }
   ]
 }

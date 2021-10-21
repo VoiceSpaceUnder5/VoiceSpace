@@ -120,10 +120,10 @@ export class MyAvatar extends Avatar {
   private isCollided(world: World): boolean {
     const stuffs = world.children as DisplayContainer[];
     if (isOutOfWorld(this, this.viewport, 50)) return true;
-    for (let i = 1; i < stuffs.length; ++i) {
+    if (!this.collidable || !this.collisionBox) return false;
+    for (let i = 0; i < stuffs.length; ++i) {
       if (
         !(this === stuffs[i]) &&
-        this.collidable &&
         stuffs[i].collidable &&
         checkIntersect(
           this.collisionBox as DisplayObject,

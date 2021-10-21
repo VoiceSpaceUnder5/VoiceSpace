@@ -7,11 +7,12 @@ import {PeerAvatar} from './PeerAvatar';
 import {Viewport} from 'pixi-viewport';
 import {
   BackgroundData,
-  DisplayContainerData,
+  StuffData,
   WorldData,
+  YoutubeStuffData,
 } from './metaData/DataInterface';
 import {ResourceManager} from './ResourceManager';
-import {Stuff} from './Stuff';
+import {Stuff, YoutubeStuff} from './Stuff';
 import {GameData} from './GameData';
 
 interface IWorld {
@@ -44,6 +45,7 @@ export class World extends Container implements IWorld {
     this.changeBackground(data.background);
     this.clearStuffs();
     this.addStuffs(data.stuffs);
+    this.addYoutubeStuffs(data.youtubeStuffs);
   }
 
   changeBackground(data: BackgroundData): void {
@@ -62,9 +64,17 @@ export class World extends Container implements IWorld {
     this.addChild(background);
   }
 
-  addStuffs(datas: DisplayContainerData[]): void {
+  addStuffs(datas: StuffData[]): void {
     datas.forEach(data => {
       const stuff = new Stuff(this, data);
+      this.stuffs.push(stuff);
+      this.addChild(stuff);
+    });
+  }
+
+  addYoutubeStuffs(datas: YoutubeStuffData[]): void {
+    datas.forEach(data => {
+      const stuff = new YoutubeStuff(this, data);
       this.stuffs.push(stuff);
       this.addChild(stuff);
     });
@@ -111,7 +121,10 @@ export class World extends Container implements IWorld {
   }
 
   deletePeerAvatar(socketID: string): void {
-    if (this.peers.has(socketID)) this.peers.get(socketID)?.destroy();
+    if (this.peers.has(socketID)) {
+      this.peers.get(socketID)?.destroy();
+      this.peers.delete(socketID);
+    }
   }
 
   setViewport(viewport: Viewport): void {
