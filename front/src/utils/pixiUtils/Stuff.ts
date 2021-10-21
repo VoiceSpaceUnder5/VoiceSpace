@@ -86,6 +86,13 @@ export class YoutubeStuff extends Stuff implements IInteractStuff {
   isReadyToInteract(target: DisplayObject): boolean {
     return checkIntersect(target, this.interactBox as DisplayObject);
   }
+  changeAlpha(): void {
+    if (this.world.player && this.world.player.collisionBox) {
+      if (checkIntersect(this.world.player.collisionBox, this.children[0])) {
+        this.alpha = 0.5;
+      } else this.alpha = 1;
+    } else this.alpha = 1;
+  }
   update(): void {
     if (this.alphaChangable) this.changeAlpha();
     if (this.world.player && this.world.player.collisionBox)
