@@ -98,8 +98,4 @@ export class PeerAvatar extends Avatar {
     }
     return;
   }
-
-  public removeCollisionBox(): void {
-    this.collisionBox = null;
-  }
 }

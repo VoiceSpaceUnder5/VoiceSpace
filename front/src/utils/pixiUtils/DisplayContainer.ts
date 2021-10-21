@@ -70,4 +70,12 @@ export class DisplayContainer extends Container {
     sprite.anchor.set(part.anchor.x, part.anchor.y);
     return sprite;
   }
+
+  offCollidable(): void {
+    this.collidable = false;
+  }
+
+  onCollidable(): void {
+    this.collidable = true;
+  }
 }
