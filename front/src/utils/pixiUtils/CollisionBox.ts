@@ -6,7 +6,7 @@ export class CollisionBox extends Graphics {
   constructor(data: CollisionBoxData) {
     super();
 
-    this.beginFill(0x0000ff, 0.5);
+    this.beginFill(0x0000ff, 0);
     this.drawRect(data.x, data.y, data.width, data.height);
   }
 }
