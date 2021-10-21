@@ -1,6 +1,8 @@
-/* * {
-  animation-duration: 0s !important;
-} */
+body {
+  height: 100%;
+  /*아예 스크롤이 안먹도록*/
+  position: fixed;
+}
 
 /* canvas */
 .spaceCanvas {
