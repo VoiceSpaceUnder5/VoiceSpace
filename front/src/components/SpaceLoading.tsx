@@ -43,7 +43,7 @@ function SpaceLoading(props: SpaceLoadingProps): JSX.Element {
   }, [Math.round(props.loadingPercentage / 15)]);
 
   return (
-    <>
+    <div className="loadingContainerDiv">
       <img
         className="loadingInnerImg"
         src="./assets/spaceMain/loading/loadingBackGround.png"
@@ -62,7 +62,7 @@ function SpaceLoading(props: SpaceLoadingProps): JSX.Element {
         className="loadingProgressBar"
         percent={props.loadingPercentage}
       ></Progress>
-    </>
+    </div>
   );
 }
 
