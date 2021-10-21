@@ -31,7 +31,12 @@ export class PeerAvatar extends Avatar {
     this.changeAvatarFace();
     this.changeAvatarFaceScale();
     this.changeDivPos();
+    this.changeVolume();
     //Peer의 Avatar번호가 바뀌었으면 바꾸어준다. 아바타를
+  }
+
+  private changeVolume(): void {
+    GameData.updateVolumeByDistance(this.socketID);
   }
 
   private changePosition(): void {
