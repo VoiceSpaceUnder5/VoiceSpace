@@ -3,10 +3,13 @@ export enum AvatarImageEnum { // 무조건 여기 순서대로 입력해주세�
   COW,
   PIG,
   HYEONKIM,
+  CAT,
+  MOUSE,
+  SHEEP,
 }
 
 export const AvatarImageEnumMin = AvatarImageEnum.BUNNY;
-export const AvatarImageEnumMax = AvatarImageEnum.HYEONKIM;
+export const AvatarImageEnumMax = AvatarImageEnum.SHEEP;
 
 export enum AvatarFaceEnum { // 무조건 이 순서대로 입력해주세요
   FACE_MUTE,
@@ -48,19 +51,19 @@ export const hyeonkimMD: AvatarImageMD = {
 };
 
 export const catMD: AvatarImageMD = {
-  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarType: AvatarImageEnum.CAT,
   avatarInitialName: 'cat',
   avatarProfileSrc: './assets/spaceMain/avatars/catFace_Mute.png',
 };
 
 export const mouseMD: AvatarImageMD = {
-  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarType: AvatarImageEnum.MOUSE,
   avatarInitialName: 'mouse',
   avatarProfileSrc: './assets/spaceMain/avatars/mouseFace_Mute.png',
 };
 
 export const sheepMD: AvatarImageMD = {
-  avatarType: AvatarImageEnum.HYEONKIM,
+  avatarType: AvatarImageEnum.SHEEP,
   avatarInitialName: 'sheep',
   avatarProfileSrc: './assets/spaceMain/avatars/sheepFace_Mute.png',
 };
