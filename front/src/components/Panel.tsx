@@ -151,7 +151,7 @@ function Panel(props: PanelProps): JSX.Element {
 
   return (
     <Dropdown
-      placement={'topCenter'}
+      placement={'topRight'}
       visible={visible}
       onVisibleChange={setVisible}
       overlay={PanelDropDown({

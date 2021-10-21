@@ -1,15 +1,16 @@
-/* * {
-  animation-duration: 0s !important;
-} */
+body {
+  height: 100%;
+  /*아예 스크롤이 안먹도록*/
+  position: fixed;
+}
 
 /* canvas */
 .spaceCanvas {
   width: 100vw;
   height: 100vh;
   /* for Iphone */
-  /* height: calc(var(--vh) * 92);
-  height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
-  display: block;
+  /* height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
+  /* display: block; */
 }
 
 /* 이름표, 말풍선, 캔버스 모두를 담는 컨테이너 기능 */
@@ -24,7 +25,7 @@
   /* for Iphone */
   /* height: calc(var(--vh) * 92);
   height: calc(var(--vh) * 92 - env(safe-area-inset-bottom) - 12px); */
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 #audioContainer {
@@ -139,7 +140,7 @@
   width: 100vw;
   position: fixed;
   display: flex;
-  min-height: 50px;
+  min-height: 60px;
   bottom: 2vh;
   justify-content: space-between;
 
@@ -147,17 +148,17 @@
 
   /* visibility: hidden; */
   /* for Iphone */
-  height: calc(var(--vh) * 8 + env(safe-area-inset-bottom) + 12px);
+  /* height: calc(var(--vh) * 8 + env(safe-area-inset-bottom) + 12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
-  font-size: 3vh;
+  font-size: 3vh; */
   /* for Iphone */
-  font-size: calc(var(--vh) * 3);
+  /* font-size: calc(var(--vh) * 3);
   flex-wrap: nowrap;
-  flex-direction: row;
+  flex-direction: row; */
 }
 
 /* navbar text */
@@ -184,8 +185,8 @@
   /* background-color: white; */
 
   /* for Iphone */
-  font-size: calc(var(--vh) * 3);
-  padding-left: 0;
+  /*font-size: calc(var(--vh) * 3);
+  padding-left: 0; */
 }
 .navbar_setting {
   padding: 0 0.5vw 0 0.5vw;
@@ -306,8 +307,8 @@
   /* background-color: white; */
 
   /* for Iphone */
-  font-size: calc(var(--vh) * 3);
-  padding-left: 0;
+  /* font-size: calc(var(--vh) * 3);
+  padding-left: 0; */
 }
 .navbar_center > * {
   padding: 0 1vw;
@@ -403,6 +404,7 @@
 
 .navbar_button {
   color: black;
+  height: 100%;
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -472,7 +474,7 @@
   border-radius: 10px;
 }
 .message_input {
-  width: calc(100% - 50px);
+  width: calc(100% - 55px);
   max-width: 150px;
   color: black;
   border-radius: 10px;
@@ -485,7 +487,8 @@
 }
 
 .message_input_button {
-  width: 50px;
+  width: 55px;
+  height: 100%;
   border-radius: 10px;
   box-shadow: 0 0 0px #764b45;
   background-color: #764b45;
@@ -497,13 +500,13 @@
   box-shadow: 0 0 0px #764b45;
 }
 
-.vowel-detect {
+/* .vowel-detect {
   position: absolute;
   width: '500px';
   left: 0;
   top: 0;
   z-index: 20;
-}
+} */
 
 /* 네비게이션 모바일 */
 @media screen and (max-width: 1024px) {

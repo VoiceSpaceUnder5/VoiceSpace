@@ -39,6 +39,19 @@ export class SceneManager {
 
     // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', SceneManager.resize);
+    // mobile check
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      )
+    ) {
+      window.addEventListener('focusout', () => {
+        window.scrollTo(0, 0);
+      });
+      window.addEventListener('focusin', () => {
+        window.scrollTo(0, 0);
+      });
+    }
     console.log('Scene SceneManager Initialized! ');
   }
 
