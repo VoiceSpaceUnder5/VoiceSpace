@@ -23,7 +23,6 @@ export function pixiCanvasStart(
 
 function start(): void {
   const gameScene = new GameScene();
-  console.log(gameScene);
   console.log('changeScene to GameScene');
   SceneManager.changeScene(gameScene);
 }
