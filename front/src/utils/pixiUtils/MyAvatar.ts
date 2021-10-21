@@ -75,7 +75,7 @@ export class MyAvatar extends Avatar {
 
     this.x += this.vx * delta;
     this.y += this.vy * delta;
-    if (this.isCollided(this.world)) {
+    if (this.collidable && this.isCollided(this.world)) {
       this.x = oldX;
       this.y = oldY;
     }
@@ -125,7 +125,8 @@ export class MyAvatar extends Avatar {
     for (let i = 1; i < stuffs.length; ++i) {
       if (
         !(this === stuffs[i]) &&
-        stuffs[i].collisionBox &&
+        this.collidable &&
+        stuffs[i].collidable &&
         checkIntersect(
           this.collisionBox as DisplayObject,
           stuffs[i].collisionBox as DisplayObject,

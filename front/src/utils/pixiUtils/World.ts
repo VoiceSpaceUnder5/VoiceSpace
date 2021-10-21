@@ -105,7 +105,7 @@ export class World extends Container implements IWorld {
       return;
     }
     newPeer.setAvatar(peerAvatarImageEnum);
-    newPeer.removeCollisionBox();
+    newPeer.offCollidable();
     this.addChild(newPeer);
     this.peers.set(socketID, newPeer);
   }
