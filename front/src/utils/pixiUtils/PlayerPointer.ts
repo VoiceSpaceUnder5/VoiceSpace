@@ -1,5 +1,6 @@
 import {MyAvatar} from './MyAvatar';
 import {InteractionEvent} from 'pixi.js';
+import {PLAYER_SPEED} from './metaData/DataInterface';
 
 export class PlayerPointer {
   public pointerdown: boolean;
@@ -39,8 +40,8 @@ export class PlayerPointer {
       Math.pow(point.x - this.startPosX, 2) +
         Math.pow(point.y - this.startPosY, 2),
     );
-    this.player.vx = (8 * (point.x - this.startPosX)) / diagonal;
-    this.player.vy = (8 * (point.y - this.startPosY)) / diagonal;
+    this.player.vx = (PLAYER_SPEED * (point.x - this.startPosX)) / diagonal;
+    this.player.vy = (PLAYER_SPEED * (point.y - this.startPosY)) / diagonal;
     this.player.scale.x = this.player.vx < 0 ? -1 : 1;
   }
 

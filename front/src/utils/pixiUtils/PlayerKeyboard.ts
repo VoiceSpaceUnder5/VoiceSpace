@@ -1,8 +1,7 @@
 import {MyAvatar} from './MyAvatar';
 import {keyboard} from './Keyboard';
 import {Key} from './Key';
-
-const SPEED = 8;
+import {PLAYER_SPEED} from './metaData/DataInterface';
 
 export class PlayerKeyboard {
   public left: Key;
@@ -25,36 +24,45 @@ export class PlayerKeyboard {
     this.initialize(player);
   }
 
+  public get keyDown(): boolean {
+    return (
+      this.left.isDown ||
+      this.right.isDown ||
+      this.up.isDown ||
+      this.down.isDown
+    );
+  }
+
   private initialize(player: MyAvatar) {
     this.left.press = () => {
-      player.vx -= SPEED;
+      player.vx -= PLAYER_SPEED;
       player.scale.x = -1;
     };
 
     this.left.release = () => {
-      player.vx += SPEED;
+      player.vx += PLAYER_SPEED;
     };
 
     this.up.press = () => {
-      player.vy -= SPEED;
+      player.vy -= PLAYER_SPEED;
     };
     this.up.release = () => {
-      player.vy += SPEED;
+      player.vy += PLAYER_SPEED;
     };
 
     this.right.press = () => {
-      player.vx += SPEED;
+      player.vx += PLAYER_SPEED;
       player.scale.x = 1;
     };
     this.right.release = () => {
-      player.vx -= SPEED;
+      player.vx -= PLAYER_SPEED;
     };
 
     this.down.press = () => {
-      player.vy += SPEED;
+      player.vy += PLAYER_SPEED;
     };
     this.down.release = () => {
-      player.vy -= SPEED;
+      player.vy -= PLAYER_SPEED;
     };
   }
 }

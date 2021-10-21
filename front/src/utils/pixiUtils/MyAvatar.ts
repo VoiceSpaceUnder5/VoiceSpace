@@ -57,13 +57,7 @@ export class MyAvatar extends Avatar {
   }
 
   private isMoving() {
-    return (
-      this.keyboard.left.isDown ||
-      this.keyboard.right.isDown ||
-      this.keyboard.up.isDown ||
-      this.keyboard.down.isDown ||
-      this.pointer.pointerdown
-    );
+    return this.keyboard.keyDown || this.pointer.pointerdown;
   }
 
   private initArmAndLegsAngle() {

@@ -37,3 +37,5 @@ export interface WorldData {
   background: BackgroundData;
   stuffs: DisplayContainerData[];
 }
+
+export const PLAYER_SPEED = 8;
