@@ -7,6 +7,7 @@ import {checkIntersect} from './CheckIntersect';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
 import {PlayerPointer} from './PlayerPointer';
+import {Joystick} from './Joystick';
 
 export class MyAvatar extends Avatar {
   private referenceDegree: number;
@@ -27,7 +28,7 @@ export class MyAvatar extends Avatar {
     this.state = this.stand;
     this.pivot.set(0.5, 0.5);
     this.keyboard = new PlayerKeyboard(this, 'KeyA', 'KeyD', 'KeyW', 'KeyS');
-    this.pointer = new PlayerPointer(this);
+    this.pointer = new PlayerPointer(this, new Joystick());
   }
 
   //setter
