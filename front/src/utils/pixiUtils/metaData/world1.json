@@ -623,18 +623,18 @@
   ],
   "youtubeStuffs": [
     {
-      "position": {"x": 2000, "y": 2000},
+      "position": {"x": 800, "y": 500},
       "alphaChangable": true,
       "parts": [
         {
           "spriteSheet": "stuffs.json",
-          "textureName": "rock01.png",
+          "textureName": "video_sign.png",
           "position": {"x": 0, "y": 0},
           "anchor": {"x": 0.5, "y": 1.0}
         }
       ],
-      "collisionBox": {"x": -60, "y": -55, "width": 130, "height": 50},
-      "interactBox": {"x": 0, "y": 0, "width": 200, "height": 200},
+      "collisionBox": {"x": -65, "y": -40, "width": 130, "height": 40},
+      "interactBox": {"x": -250, "y": -300, "width": 500, "height": 500},
       "youtubeContainerLeftPosition": 0,
       "youtubeContainerTopPosition": 0,
       "youtubeVideoID": "d2ytH5mymWY"

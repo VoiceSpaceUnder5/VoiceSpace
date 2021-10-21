@@ -2,7 +2,7 @@
 
 "autumn_grass01.png":
 {
-	"frame": {"x":608,"y":463,"w":60,"h":34},
+	"frame": {"x":585,"y":103,"w":60,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":34},
@@ -10,16 +10,16 @@
 },
 "autumn_grass02.png":
 {
-	"frame": {"x":528,"y":463,"w":78,"h":41},
-	"rotated": false,
+	"frame": {"x":528,"y":221,"w":78,"h":41},
+	"rotated": true,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":41},
 	"sourceSize": {"w":78,"h":41}
 },
 "autumn_grass03.png":
 {
-	"frame": {"x":670,"y":451,"w":100,"h":55},
-	"rotated": false,
+	"frame": {"x":528,"y":103,"w":100,"h":55},
+	"rotated": true,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":55},
 	"sourceSize": {"w":100,"h":55}
@@ -58,8 +58,8 @@
 },
 "rock01.png":
 {
-	"frame": {"x":528,"y":311,"w":150,"h":116},
-	"rotated": true,
+	"frame": {"x":690,"y":103,"w":150,"h":116},
+	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":116},
 	"sourceSize": {"w":150,"h":116}
@@ -74,8 +74,8 @@
 },
 "spring_grass05.png":
 {
-	"frame": {"x":646,"y":311,"w":138,"h":67},
-	"rotated": true,
+	"frame": {"x":571,"y":221,"w":138,"h":67},
+	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":138,"h":67},
 	"sourceSize": {"w":138,"h":67}
@@ -87,6 +87,14 @@
 	"trimmed": true,
 	"spriteSourceSize": {"x":14,"y":14,"w":511,"h":525},
 	"sourceSize": {"w":525,"h":539}
+},
+"video_sign.png":
+{
+	"frame": {"x":528,"y":311,"w":192,"h":160},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":192,"h":160},
+	"sourceSize": {"w":192,"h":160}
 }},
 "animations": {
 	"autumn_grass": ["autumn_grass01.png","autumn_grass02.png","autumn_grass03.png"],
@@ -101,6 +109,6 @@
 	"format": "RGBA8888",
 	"size": {"w":967,"h":1005},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c25cd8288b65a2a2c9a2ffb1cb3553f0:1939d5a8c92d8d31fd9b9552d4560ba5:89ec996d983500736fca0bec132f0843$"
+	"smartupdate": "$TexturePacker:SmartUpdate:2d463c0587767430eed83ed67080b91a:b77f9b5b8bd294fc8475b4a17c7ff297:89ec996d983500736fca0bec132f0843$"
 }
 }

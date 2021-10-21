@@ -64,10 +64,12 @@ export class YoutubeStuff extends Stuff implements IInteractStuff {
     this.youtubeContainerTopPosition = data.youtubeContainerTopPosition;
     this.youtubeContainer = null;
   }
+
   interact(target: DisplayObject): void {
     if (this.isReadyToInteract(target)) this.interactStart();
     else this.interactEnd();
   }
+
   interactStart(): void {
     if (!this.youtubeContainer) {
       this.youtubeContainer = YoutubeEmbedRenderer.render({
@@ -77,15 +79,18 @@ export class YoutubeStuff extends Stuff implements IInteractStuff {
       });
     }
   }
+
   interactEnd(): void {
     if (this.youtubeContainer) {
       YoutubeEmbedRenderer.delete(this.youtubeContainer);
       this.youtubeContainer = null;
     }
   }
+
   isReadyToInteract(target: DisplayObject): boolean {
     return checkIntersect(target, this.interactBox as DisplayObject);
   }
+
   changeAlpha(): void {
     if (this.world.player && this.world.player.collisionBox) {
       if (checkIntersect(this.world.player.collisionBox, this.children[0])) {
@@ -93,6 +98,7 @@ export class YoutubeStuff extends Stuff implements IInteractStuff {
       } else this.alpha = 1;
     } else this.alpha = 1;
   }
+
   update(): void {
     if (this.alphaChangable) this.changeAlpha();
     if (this.world.player && this.world.player.collisionBox)
