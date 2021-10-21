@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {GameData} from '../utils/pixiUtils/GameData';
 import {
   pixiCanvasDestroy,
@@ -11,21 +11,25 @@ interface spaceCanvasProps {
 }
 
 function SpaceCanvas(props: spaceCanvasProps): JSX.Element {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
+    if (!canvasRef.current) return;
     props.peerManager.setDataChannelEventHandler(
       DataDtoType.PLAYER_INFO,
       (playerDto: PlayerDto, peer: Peer) => {
         peer.update(playerDto);
       },
     );
+    // pixi Start
     GameData.setPeerManager(props.peerManager);
-    pixiCanvasStart();
+    pixiCanvasStart(canvasRef.current);
     return () => {
       props.peerManager.close();
       pixiCanvasDestroy();
     };
   }, []);
-  return <canvas id="game-canvas"></canvas>;
+  return <canvas ref={canvasRef}></canvas>;
 }
 
 export default SpaceCanvas;

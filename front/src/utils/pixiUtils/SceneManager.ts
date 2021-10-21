@@ -4,6 +4,7 @@ import {Scene} from './Scene';
 export class SceneManager {
   private static application: Application;
   private static currentScene: Scene;
+  private static gameCanvas: HTMLCanvasElement | undefined;
 
   // We no longer need to store width and height since now it is literally the size of the screen.
   // We just modify our getters
@@ -24,8 +25,10 @@ export class SceneManager {
   }
 
   public static initialize(background: number): void {
+    if (!SceneManager.gameCanvas)
+      throw new Error('Do not call before changeCanvas()');
     SceneManager.application = new Application({
-      view: document.getElementById('game-canvas') as HTMLCanvasElement,
+      view: SceneManager.gameCanvas,
       resizeTo: window, // This line here handles the actual resize!
       resolution: 1,
       backgroundColor: background,
@@ -51,6 +54,10 @@ export class SceneManager {
     console.log('Add new Scene to SceneManager! ');
     SceneManager.currentScene = newScene;
     SceneManager.application.stage.addChild(SceneManager.currentScene);
+  }
+
+  public static changeCanvas(newCanvas: HTMLCanvasElement): void {
+    SceneManager.gameCanvas = newCanvas;
   }
 
   public static destroy(): void {
