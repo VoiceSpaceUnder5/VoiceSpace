@@ -9,7 +9,7 @@ import {DisplayObject} from 'pixi.js';
 import YoutubeEmbedRenderer from '../../components/YoutubeEmbed';
 
 export class Stuff extends DisplayContainer {
-  private alphaChangable = true;
+  protected alphaChangable = true;
 
   constructor(world: World, data: StuffData) {
     super(world);
@@ -36,7 +36,7 @@ export class Stuff extends DisplayContainer {
     if (this.alphaChangable) this.changeAlpha();
   }
 
-  private changeAlpha(): void {
+  protected changeAlpha(): void {
     if (this.world.player === null) return;
     if (this.world.player.collisionBox === null) return;
     if (checkIntersect(this.world.player.collisionBox, this)) {
@@ -85,5 +85,10 @@ export class YoutubeStuff extends Stuff implements IInteractStuff {
   }
   isReadyToInteract(target: DisplayObject): boolean {
     return checkIntersect(target, this.interactBox as DisplayObject);
+  }
+  update(): void {
+    if (this.alphaChangable) this.changeAlpha();
+    if (this.world.player && this.world.player.collisionBox)
+      this.interact(this.world.player.collisionBox);
   }
 }
