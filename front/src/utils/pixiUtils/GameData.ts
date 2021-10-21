@@ -269,4 +269,10 @@ export class GameData {
     toOn.style.visibility = 'visible';
     toOff.style.visibility = 'hidden';
   }
+
+  public static updateVolumeByDistance(socketID: string): void {
+    this.peerManager.peers
+      .get(socketID)
+      ?.updateSoundFromVec2(this.peerManager.me.centerPos);
+  }
 }

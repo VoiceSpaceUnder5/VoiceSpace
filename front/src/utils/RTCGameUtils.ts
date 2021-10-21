@@ -289,48 +289,6 @@ export class Me implements PlayerDto {
   setAnalyser(analyser: AudioAnalyser): void {
     this.audioAnalyser = analyser;
   }
-
-  update(): void {
-    // const avatarFaceDto = this.audioAnalyser.getAvatarFaceDtoByAudioAnalysis();
-    // this.avatarFaceScale = avatarFaceDto.avatarFaceScale;
-    // this.avatarFace = avatarFaceDto.avatarFace;
-    // const millisDiff = Date.now() - this.lastUpdateTimeStamp;
-    // this.lastUpdateTimeStamp = Date.now();
-    // if (this.isMoving) {
-    //   // saveOldValue
-    //   const oldCenterPosX = this.centerPos.x;
-    //   const oldCenterPosY = this.centerPos.y;
-    //   const oldnormalizedDirectionVectorX = this.normalizedDirectionVector.x;
-    //   const oldnormalizedDirectionVectorY = this.normalizedDirectionVector.y;
-    //   // position value update
-    //   this.normalizedDirectionVector = {...this.nextNormalizedDirectionVector};
-    //   this.centerPos.x +=
-    //     this.velocity * this.normalizedDirectionVector.x * millisDiff;
-    //   this.centerPos.y +=
-    //     this.velocity * this.normalizedDirectionVector.y * millisDiff;
-    //   if (this.rotateCounterclockwise === false) {
-    //     this.partRotatedegree += 1.2;
-    //   } else {
-    //     this.partRotatedegree -= 1.2;
-    //   }
-    //   if (this.partRotatedegree > 15) {
-    //     this.rotateCounterclockwise = true;
-    //   } else if (this.partRotatedegree < -15) {
-    //     this.rotateCounterclockwise = false;
-    //   }
-    //   this.lookLeft = this.centerPos.x < oldCenterPosX ? true : false;
-    //   //collision detection part
-    //   // if isCollision -> rollback value
-    //   const isCollisionDetected = this.isCollision(glHelper);
-    //   if (isCollisionDetected === CollisionDirection.HORIZONTAL) {
-    //     this.centerPos.x = oldCenterPosX;
-    //     this.normalizedDirectionVector.x = oldnormalizedDirectionVectorX;
-    //   } else if (isCollisionDetected === CollisionDirection.VERTICAL) {
-    //     this.centerPos.y = oldCenterPosY;
-    //     this.normalizedDirectionVector.y = oldnormalizedDirectionVectorY;
-    //   }
-    // }
-  }
 }
 
 /**
