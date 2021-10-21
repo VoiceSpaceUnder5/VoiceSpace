@@ -4,7 +4,6 @@ import {
   pixiCanvasDestroy,
   pixiCanvasStart,
 } from '../utils/pixiUtils/PixiCanvas';
-import {SceneManager} from '../utils/pixiUtils/SceneManager';
 import PeerManager, {PlayerDto, Peer, DataDtoType} from '../utils/RTCGameUtils';
 
 interface spaceCanvasProps {
@@ -23,9 +22,8 @@ function SpaceCanvas(props: spaceCanvasProps): JSX.Element {
       },
     );
     // pixi Start
-    SceneManager.changeCanvas(canvasRef.current);
     GameData.setPeerManager(props.peerManager);
-    pixiCanvasStart();
+    pixiCanvasStart(canvasRef.current);
     return () => {
       props.peerManager.close();
       pixiCanvasDestroy();
