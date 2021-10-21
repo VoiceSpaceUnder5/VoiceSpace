@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Menu, Dropdown} from 'antd';
-import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
 import '../pages/spacePage/space.css';
 import {
   AvatarImageEnum,
@@ -81,32 +80,34 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
               onChange={onNicknameInput}
             />
           </div>
-          <div className="avatar_title">아바타</div>
-          <div className="profile_avatar">
-            <button>
-              <LeftCircleFilled
-                data-testid="profileDropdownLeftButtonTestId"
-                onClick={e => {
-                  e.preventDefault();
-                  onLeftClick();
-                }}
-              />
-            </button>
-            <img
-              className="avatar_preview"
-              src={avatarImageMDs[newAvatar].avatarProfileSrc}
-            ></img>
-            <button>
-              <RightCircleFilled
-                data-testid="profileDropdownRightButtonTestId"
-                onClick={e => {
-                  e.preventDefault();
-                  onRightClick();
-                }}
-              />
-            </button>
-          </div>
         </form>
+        <div className="avatar_title">아바타</div>
+        <div className="profile_avatar">
+          <button
+            className="profile_left_button"
+            data-testid="profileDropdownLeftButtonTestId"
+            onClick={e => {
+              e.preventDefault();
+              onLeftClick();
+            }}
+          >
+            <img src="./assets/navigation/profile_left_button.png"></img>
+          </button>
+          <img
+            className="avatar_preview"
+            src={avatarImageMDs[newAvatar].avatarProfileSrc}
+          ></img>
+          <button
+            className="profile_right_button"
+            data-testid="profileDropdownRightButtonTestId"
+            onClick={e => {
+              e.preventDefault();
+              onRightClick();
+            }}
+          >
+            <img src="./assets/navigation/profile_right_button.png"></img>
+          </button>
+        </div>
       </Menu.Item>
       <Menu.Item
         key="3"

@@ -25,6 +25,16 @@
 
 .save-button {
   border-radius: 15px;
+  width: 50px;
+  border-radius: 10px;
+  box-shadow: 0 0 0px #325932;
+  background-color: #764b45;
+  color: white;
+  outline: none !important;
+}
+.save-button:focus {
+  border-radius: 10px;
+  box-shadow: 0 0 0px #325932;
 }
 
 .vowel-wave-canvas {
