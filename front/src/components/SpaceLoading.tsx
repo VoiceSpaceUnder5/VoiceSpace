@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect} from 'react';
 import {Progress} from 'antd';
 import './spaceLoading.css';
 
@@ -25,18 +25,8 @@ class LoadingMessageProvider {
 }
 
 function SpaceLoading(props: SpaceLoadingProps): JSX.Element {
-  const loadingImgRef = useRef<HTMLImageElement>(null);
   const progressBarWidth = 230;
-
-  useEffect(() => {
-    if (loadingImgRef.current) {
-      const img = loadingImgRef.current;
-      const leftShiftValue =
-        (progressBarWidth / 100) * props.loadingPercentage -
-        (progressBarWidth / 2 + img.width / 2);
-      img.style.left = `calc(50% + ${leftShiftValue}px`;
-    }
-  }, [props.loadingPercentage]);
+  const birdImgWidth = 50;
 
   useEffect(() => {
     LoadingMessageProvider.shuffleMessage();
@@ -52,7 +42,13 @@ function SpaceLoading(props: SpaceLoadingProps): JSX.Element {
         {props.message ? props.message : LoadingMessageProvider.message}
       </div>
       <img
-        ref={loadingImgRef}
+        style={{
+          left: `calc(50% + ${
+            (progressBarWidth / 100) * props.loadingPercentage -
+            (progressBarWidth / 2 + birdImgWidth / 2)
+          }px`,
+          width: birdImgWidth,
+        }}
         className="loadingImg"
         src="./assets/spaceMain/loading/forestBird.png"
       ></img>
