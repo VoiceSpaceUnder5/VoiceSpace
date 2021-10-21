@@ -6,6 +6,7 @@ import {World} from './World';
 import {checkIntersect} from './CheckIntersect';
 import {DisplayContainer} from './DisplayContainer';
 import {GameData} from './GameData';
+import {PlayerPointer} from './PlayerPointer';
 
 export class MyAvatar extends Avatar {
   private referenceDegree: number;
@@ -13,6 +14,7 @@ export class MyAvatar extends Avatar {
   public vx: number;
   public vy: number;
   private keyboard: PlayerKeyboard;
+  private pointer: PlayerPointer;
   private state: (framesPassed: number) => void;
 
   constructor(world: World, viewport: Viewport) {
@@ -25,6 +27,7 @@ export class MyAvatar extends Avatar {
     this.state = this.stand;
     this.pivot.set(0.5, 0.5);
     this.keyboard = new PlayerKeyboard(this, 'KeyA', 'KeyD', 'KeyW', 'KeyS');
+    this.pointer = new PlayerPointer(this);
   }
 
   //setter
@@ -58,7 +61,8 @@ export class MyAvatar extends Avatar {
       this.keyboard.left.isDown ||
       this.keyboard.right.isDown ||
       this.keyboard.up.isDown ||
-      this.keyboard.down.isDown
+      this.keyboard.down.isDown ||
+      this.pointer.pointerdown
     );
   }
 
