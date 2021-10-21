@@ -5,7 +5,7 @@ import {MyAvatar} from './MyAvatar';
 import {World} from './World';
 import {GameData} from './GameData';
 import world1Json from './metaData/world1.json';
-import {createViewport} from './ViewportUtils';
+import {createViewport, setViewportFollow} from './ViewportUtils';
 
 export class GameScene extends Container implements Scene {
   private viewport: Viewport;
@@ -33,7 +33,7 @@ export class GameScene extends Container implements Scene {
     const player = new MyAvatar(world, viewport);
     player.setAvatar(GameData.getMyAvatar());
     world.addMyAvatar(player);
-    viewport.follow(player);
+    setViewportFollow(viewport, player);
 
     //Peer를 World에 추가하고 제거하는 기능
     GameData.addExistingPeers(world);
