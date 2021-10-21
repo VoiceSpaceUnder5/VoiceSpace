@@ -112,7 +112,16 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
           seletedOutputDevice={props.seletedOutputDevice}
         />
       </Menu.Item>
-      <Menu.Item key="3" onClick={props.exit}>
+      <Menu.Item key="3">
+        <a
+          rel="noreferrer"
+          href="https://github.com/VoiceSpaceUnder5/VoiceSpace/issues"
+          target="_blank"
+        >
+          문제 해결 및 도움말
+        </a>
+      </Menu.Item>
+      <Menu.Item key="4" onClick={props.exit}>
         나가기
       </Menu.Item>
     </Menu>
