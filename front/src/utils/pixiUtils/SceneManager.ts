@@ -78,7 +78,12 @@ export class SceneManager {
   public static resize(): void {
     // if we have a scene, we let it know that a resize happened!
     if (SceneManager.currentScene) {
-      SceneManager.currentScene.resize(SceneManager.width, SceneManager.height);
+      setTimeout(() => {
+        SceneManager.currentScene.resize(
+          SceneManager.width,
+          SceneManager.height,
+        );
+      }, 50);
     }
   }
 
