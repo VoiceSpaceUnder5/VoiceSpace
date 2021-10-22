@@ -70,26 +70,13 @@ function VowelInput(props: VowelInputProps) {
   );
 }
 
+const smad: number[] = [];
 function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const smad: number[] = [];
 
   const saveVowelDataToBrowser = () => {
     localStorage.setItem('formants', JSON.stringify(formants));
   };
-
-  const loadVowelDataFromBrowserIfExist = () => {
-    const tmp = localStorage.getItem('formants');
-    if (tmp === null) return;
-    const parsedFormants = JSON.parse(tmp);
-    formants.forEach((content, index) => {
-      content = parsedFormants[index];
-    });
-  };
-
-  useEffect(() => {
-    loadVowelDataFromBrowserIfExist();
-  }, [props.stream]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
