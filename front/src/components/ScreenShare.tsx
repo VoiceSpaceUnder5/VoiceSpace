@@ -6,6 +6,7 @@ import './screenShare.css';
 import {SwitchChangeEventHandler} from 'antd/lib/switch';
 import {HexColorPicker} from 'react-colorful';
 import {DataDtoType, Peer, Vec2} from '../utils/RTCGameUtils';
+import {isMobile} from '../utils/AgentCheck';
 
 interface ScreenViewerProps {
   nickname: string;
@@ -448,6 +449,10 @@ function ScreenShare(props: ScreenShareProps): JSX.Element {
     }
   };
   const screenShareOnClick = async () => {
+    if (isMobile()) {
+      message.error('모바일 환경에서는 사용 하실 수 없는 기능입니다.');
+      return;
+    }
     setIsVisible(false);
     if (
       screenShareDatas.find(data => {

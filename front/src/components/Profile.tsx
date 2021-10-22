@@ -6,6 +6,7 @@ import {
   avatarImageMDs,
 } from '../utils/pixiUtils/metaData/ImageMetaData';
 import {ProfileDropdownOnOff} from './Navigation';
+import {isMobile} from '../utils/AgentCheck';
 
 export interface ProfileProps {
   profileDropdownOnOff: ProfileDropdownOnOff;
@@ -22,12 +23,6 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
   const numberOfAvatars = avatarImageMDs.length;
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const isMobile = (): boolean => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-  };
 
   if (!isMobile()) {
     if (inputRef.current) {

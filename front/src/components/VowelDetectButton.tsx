@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Formant} from '../utils/pixiUtils/metaData/ImageMetaData';
 import './vowelDetect.css';
 import {SmileOutlined} from '@ant-design/icons';
+import {isMobile} from '../utils/AgentCheck';
 
 function getMonvingAverage(period: number) {
   const arr: number[] = [];
@@ -134,11 +135,7 @@ function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
   }, [props.stream]);
   let canvasSize = '250px';
   // mobile 환경 캐치
-  if (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    )
-  ) {
+  if (isMobile()) {
     canvasSize = '130px';
   }
 

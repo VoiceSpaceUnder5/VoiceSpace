@@ -3,6 +3,7 @@ import {Popover} from 'antd';
 import {CloseCircleFilled, MessageOutlined} from '@ant-design/icons';
 import {DataDto, DataDtoType} from '../utils/RTCGameUtils';
 import {ProfileDropdownOnOff} from './Navigation';
+import {isMobile} from '../utils/AgentCheck';
 
 export interface Message {
   type: string;
@@ -92,12 +93,6 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     setMessageArray(before => {
       return [...before, newMessage];
     });
-  };
-
-  const isMobile = (): boolean => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
