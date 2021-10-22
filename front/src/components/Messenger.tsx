@@ -106,6 +106,10 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     }
   };
 
+  const onOffButton = () => {
+    setVisible(!visible);
+  };
+
   useEffect(() => {
     if (visible) {
       setTimeout(() => {
@@ -170,7 +174,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
       content={result}
       trigger={'click'}
     >
-      <div>
+      <div onClick={onOffButton}>
         <MessageOutlined
           className="navbar_button"
           onClick={() => {
