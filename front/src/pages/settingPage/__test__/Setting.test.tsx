@@ -211,8 +211,8 @@ describe('Setting test', () => {
       const nicknameInputElement = screen.getByDisplayValue(
         new RegExp(nicknameDefaultValue, 'i'),
       );
-      fireEvent.change(nicknameInputElement, {target: {value: 'honleeRabbit'}});
-      expect(nicknameInputElement).toHaveValue('honleeRabbit');
+      fireEvent.change(nicknameInputElement, {target: {value: 'honleeit'}});
+      expect(nicknameInputElement).toHaveValue('honleeit');
     }
   });
   test('getUserMedia 성공, Enumberate 성공, setSinkId 있음, avatar 선택 좌측 버튼 테스트', async () => {
