@@ -118,7 +118,7 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
           href="https://github.com/VoiceSpaceUnder5/VoiceSpace/issues"
           target="_blank"
         >
-          문제 해결 및 도움말
+          버그 리포트
         </a>
       </Menu.Item>
       <Menu.Item key="4" onClick={props.exit}>
