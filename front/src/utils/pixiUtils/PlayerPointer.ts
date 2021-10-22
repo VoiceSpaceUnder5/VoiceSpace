@@ -23,10 +23,10 @@ export class PlayerPointer {
   public initailizePointer(): void {
     this.player.world.interactive = true;
     this.player.world
-      .on('pointerdown', this.onPointerDown.bind(this))
-      .on('pointermove', this.onPointerMove.bind(this))
-      .on('pointerup', this.onPointerUp.bind(this))
-      .on('pointerupoutside', this.onPointerUp.bind(this));
+      .on('touchdown', this.onPointerDown.bind(this))
+      .on('touchmove', this.onPointerMove.bind(this))
+      .on('touchup', this.onPointerUp.bind(this))
+      .on('touchupoutside', this.onPointerUp.bind(this));
   }
 
   private onPointerDown(e: InteractionEvent) {
