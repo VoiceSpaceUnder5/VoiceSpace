@@ -23,7 +23,9 @@ export class PeerAvatar extends Avatar {
       if (!newAvatarImageEnum) return;
       this.avatarImageEnum = newAvatarImageEnum;
       this.changeAvatar(this.getAvatarMD());
+      this.offCollidable();
     }
+
     this.changePosition();
     this.changeZIndex();
     this.changePartRotationDegree();
