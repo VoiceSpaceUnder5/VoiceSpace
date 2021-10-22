@@ -1,4 +1,5 @@
 import {Application} from 'pixi.js';
+import {isMobile} from '../AgentCheck';
 import {Scene} from './Scene';
 
 export class SceneManager {
@@ -40,11 +41,7 @@ export class SceneManager {
     // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', SceneManager.resize);
     // mobile check
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
-      )
-    ) {
+    if (isMobile()) {
       window.addEventListener('focusout', () => {
         window.scrollTo(0, 0);
       });

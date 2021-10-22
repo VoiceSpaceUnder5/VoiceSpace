@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Formant} from '../utils/pixiUtils/metaData/ImageMetaData';
 import './vowelDetect.css';
 import {SmileOutlined} from '@ant-design/icons';
+import {isMobile} from '../utils/AgentCheck';
 
 function getMonvingAverage(period: number) {
   const arr: number[] = [];
@@ -69,26 +70,13 @@ function VowelInput(props: VowelInputProps) {
   );
 }
 
+const smad: number[] = [];
 function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const smad: number[] = [];
 
   const saveVowelDataToBrowser = () => {
     localStorage.setItem('formants', JSON.stringify(formants));
   };
-
-  const loadVowelDataFromBrowserIfExist = () => {
-    const tmp = localStorage.getItem('formants');
-    if (tmp === null) return;
-    const parsedFormants = JSON.parse(tmp);
-    formants.forEach((content, index) => {
-      content = parsedFormants[index];
-    });
-  };
-
-  useEffect(() => {
-    loadVowelDataFromBrowserIfExist();
-  }, [props.stream]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -134,11 +122,7 @@ function VowelDetect(props: VowelDetectButtonProps): JSX.Element {
   }, [props.stream]);
   let canvasSize = '250px';
   // mobile 환경 캐치
-  if (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    )
-  ) {
+  if (isMobile()) {
     canvasSize = '130px';
   }
 
