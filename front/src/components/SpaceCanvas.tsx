@@ -6,6 +6,7 @@ import {
 } from '../utils/pixiUtils/PixiCanvas';
 import PeerManager, {PlayerDto, Peer, DataDtoType} from '../utils/RTCGameUtils';
 import SpaceLoading from './SpaceLoading';
+import YoutubeEmbedRenderer from './YoutubeEmbed';
 
 interface spaceCanvasProps {
   peerManager: PeerManager;
@@ -29,6 +30,7 @@ function SpaceCanvas(props: spaceCanvasProps): JSX.Element {
     return () => {
       props.peerManager.close();
       pixiCanvasDestroy();
+      YoutubeEmbedRenderer.clear();
     };
   }, []);
   return (

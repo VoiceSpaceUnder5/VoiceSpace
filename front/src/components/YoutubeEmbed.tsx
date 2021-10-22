@@ -11,6 +11,7 @@ export interface YoutubeEmbedProps {
 
 class YoutubeEmbedRenderer {
   private static lastComponentContainer: HTMLDivElement | null = null;
+  private static containers = new Set<HTMLDivElement>();
 
   static render(props: YoutubeEmbedProps): HTMLDivElement {
     const componentContainer = document.createElement('div');
@@ -20,15 +21,28 @@ class YoutubeEmbedRenderer {
       componentContainer,
     );
     this.lastComponentContainer = componentContainer;
+    this.containers.add(componentContainer);
     return componentContainer;
   }
 
-  static delete(componentContainer: HTMLDivElement): void {
+  private static deleteContainer(componentContainer: HTMLDivElement) {
     ReactDOM.unmountComponentAtNode(componentContainer);
     document.body.removeChild(componentContainer);
+  }
+
+  static delete(componentContainer: HTMLDivElement): void {
+    this.deleteContainer(componentContainer);
+    this.containers.delete(componentContainer);
     if (componentContainer === this.lastComponentContainer) {
       this.lastComponentContainer = null;
     }
+  }
+
+  static clear(): void {
+    this.containers.forEach(con => {
+      this.deleteContainer(con);
+    });
+    this.containers.clear();
   }
 
   static deleteLastRenderedComponent(): void {
