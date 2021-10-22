@@ -131,14 +131,26 @@ function Navigation(props: NavigationProps): JSX.Element {
     });
   };
 
+  const trackInTracks = (
+    track: MediaStreamTrack,
+    tracks: MediaStreamTrack[],
+  ): boolean => {
+    return (
+      tracks.filter(t => {
+        return t.id === track.id;
+      }).length > 0
+    );
+  };
+
   const removeVideoTrack = (): void => {
-    props.peerManager.screenVideoTracks =
-      props.peerManager.screenVideoTracks.filter(track => {
-        return track.kind !== 'video';
-      });
+    console.log('removeVideoTrackCalled');
     props.peerManager.forEachPeer(peer => {
       peer.getSenders().forEach(sender => {
-        if (sender.track?.kind === 'video') peer.removeTrack(sender);
+        if (
+          sender.track &&
+          trackInTracks(sender.track, props.peerManager.screenVideoTracks)
+        )
+          peer.removeTrack(sender);
       });
       const data: DataDto = {
         type: DataDtoType.SHARED_SCREEN_CLOSE,
@@ -146,6 +158,7 @@ function Navigation(props: NavigationProps): JSX.Element {
       };
       peer.transmitUsingDataChannel(JSON.stringify(data));
     });
+    props.peerManager.screenVideoTracks.length = 0;
   };
 
   const setOtherSideDrawStartPos = (
