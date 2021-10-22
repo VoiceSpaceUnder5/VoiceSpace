@@ -280,7 +280,9 @@ function Setting(props: RouteComponentProps): JSX.Element {
   };
 
   const nickNameOnInput: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setNickname(e.target.value);
+    if (e.target.value.length <= 10) {
+      setNickname(e.target.value);
+    }
   };
 
   const changeAvatarImgWithIdx = (avatarIdx: AvatarImageEnum) => {
