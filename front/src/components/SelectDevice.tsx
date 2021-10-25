@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import AudioStreamHelper from '../utils/AudioStreamHelper';
 // import {} from '../utils/RTCGameUtils';
 
 // HTMLMediaElement.setSinkId(sinkId).then(function() { ... })
@@ -28,34 +29,47 @@ interface SelectDeviceProps {
 }
 
 // audioElement에 소리를
-function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
+function SelectOption(): JSX.Element {
   const onChangeOutput: React.ReactEventHandler<HTMLSelectElement> = event => {
     const selectedOption = event.target as HTMLOptionElement;
     const deviceId = selectedOption.value;
     // eslint-disable-next-line
-    props.setSelectOutputDevice(deviceId);
-    props.changeEachAudio(deviceId);
+    // props.setSelectOutputDevice(deviceId);
+    // props.changeEachAudio(deviceId);
   };
   const onChangeInput: React.ReactEventHandler<HTMLSelectElement> = event => {
     const selectedOption = event.target as HTMLOptionElement;
     const deviceId = selectedOption.value;
-    props.setSelectInputDevice(deviceId);
+    // props.setSelectInputDevice(deviceId);
     navigator.mediaDevices
       .getUserMedia({video: false, audio: {deviceId: deviceId}})
       .then(stream => {
         console.log(`onChangeInput 안에 input 스트림`);
-        props.changeInputStream(stream);
+        // props.changeInputStream(stream);
       });
   };
-  if (!props.deviceInfos) {
-    return <></>;
-  }
+  // if (!props.deviceInfos) {
+  //   return <></>;
+  // }
   return (
     <div>
       <div>출력</div>
       <div className="speaker_select_div">
         <select className="speaker_select" onChange={onChangeOutput}>
-          {props.deviceInfos.map(deviceInfo => {
+          {AudioStreamHelper.getSpeakerDevices().then(speakerDevices => {
+            speakerDevices.map(speakerDevice => {
+              return (
+                <option
+                  key={speakerDevice.deviceId}
+                  value={speakerDevice.deviceId}
+                  selected
+                >
+                  {speakerDevice.label}
+                </option>
+              );
+            });
+          })}
+          {/* {props.deviceInfos.map(deviceInfo => {
             if (deviceInfo.kind === 'audiooutput') {
               // 선택한 deviceInfo이면 selected
               if (props.seletedOutputDevice === deviceInfo.deviceId) {
@@ -78,7 +92,7 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
             } else {
               return;
             }
-          })}
+          })} */}
         </select>
         <img
           className="speaker_select_img"
@@ -88,29 +102,18 @@ function SelectOption(props: SelectDeviceOptionProps): JSX.Element {
       <div>입력</div>
       <div className="mic_select_div">
         <select className="mic_select" onChange={onChangeInput}>
-          {props.deviceInfos.map(deviceInfo => {
-            if (deviceInfo.kind === 'audioinput') {
-              // 선택한 deviceInfo이면 selected
-              if (props.seletedInputDevice === deviceInfo.deviceId) {
-                return (
-                  <option
-                    key={deviceInfo.deviceId}
-                    value={deviceInfo.deviceId}
-                    selected
-                  >
-                    {deviceInfo.label}
-                  </option>
-                );
-              } else {
-                return (
-                  <option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
-                    {deviceInfo.label}
-                  </option>
-                );
-              }
-            } else {
-              return;
-            }
+          {AudioStreamHelper.getMicDevices().then(micDevices => {
+            micDevices.map(micDevice => {
+              return (
+                <option
+                  key={micDevice.deviceId}
+                  value={micDevice.deviceId}
+                  selected
+                >
+                  {micDevice.label}
+                </option>
+              );
+            });
           })}
         </select>
         <img className="mic_select_img" src="./assets/navigation/mic.png"></img>
@@ -134,13 +137,13 @@ export default function SelectDevice(props: SelectDeviceProps): JSX.Element {
     <>
       {deviceList ? (
         <SelectOption
-          deviceInfos={deviceList}
-          changeEachAudio={props.changeEachAudio}
-          changeInputStream={props.changeInputStream}
-          setSelectOutputDevice={props.setSelectOutputDevice}
-          seletedOutputDevice={props.seletedOutputDevice}
-          setSelectInputDevice={props.setSelectInputDevice}
-          seletedInputDevice={props.seletedInputDevice}
+        // deviceInfos={deviceList}
+        // changeEachAudio={props.changeEachAudio}
+        // changeInputStream={props.changeInputStream}
+        // setSelectOutputDevice={props.setSelectOutputDevice}
+        // seletedOutputDevice={props.seletedOutputDevice}
+        // setSelectInputDevice={props.setSelectInputDevice}
+        // seletedInputDevice={props.seletedInputDevice}
         ></SelectOption>
       ) : (
         <div>loading...</div>
