@@ -146,6 +146,7 @@ export default class AudioStreamHelper {
       const audio = document.createElement('audio');
       audio.autoplay = true;
       audio.hidden = true;
+      this.audioContainer.elementContainer?.appendChild(audio);
       const stream = new MediaStream();
       audio.srcObject = stream;
       this.audioContainer.audios.set(Id, {audio: audio, stream: stream});

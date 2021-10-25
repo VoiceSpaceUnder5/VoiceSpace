@@ -22,10 +22,6 @@ export interface PanelProps {
   ) => void;
   exit: () => void;
   // Options props
-  changeEachAudio: (deviceId: string) => void;
-  changeInputStream: (stream: MediaStream) => void;
-  seletedOutputDevice: string;
-  seletedInputDevice: string;
 }
 
 interface MenuItemProps {
@@ -41,11 +37,6 @@ export interface PanelDropDownProps {
   getUsers: () => UserInfo[];
   hidePanel: () => void;
   exit: () => void;
-  // Options props
-  changeEachAudio: (deviceId: string) => void;
-  changeInputStream: (stream: MediaStream) => void;
-  seletedOutputDevice: string;
-  seletedInputDevice: string;
 }
 
 export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
@@ -104,13 +95,7 @@ export function PanelDropDown(props: PanelDropDownProps): JSX.Element {
         </Dropdown>
       </Menu.Item>
       <Menu.Item key="2" onClick={onClickOption}>
-        <Options
-          onClickOption={onClickOption}
-          changeEachAudio={props.changeEachAudio}
-          changeInputStream={props.changeInputStream}
-          seletedInputDevice={props.seletedInputDevice}
-          seletedOutputDevice={props.seletedOutputDevice}
-        />
+        <Options onClickOption={onClickOption} />
       </Menu.Item>
       <Menu.Item key="3">
         <a
@@ -172,10 +157,6 @@ function Panel(props: PanelProps): JSX.Element {
         onChangeVolume: onChangeVolume,
         hidePanel: hidePanel,
         exit: props.exit,
-        changeEachAudio: props.changeEachAudio,
-        changeInputStream: props.changeInputStream,
-        seletedOutputDevice: props.seletedOutputDevice,
-        seletedInputDevice: props.seletedInputDevice,
       })}
       trigger={['click']}
     >

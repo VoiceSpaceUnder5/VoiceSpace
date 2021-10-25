@@ -3,10 +3,6 @@ import {Dropdown} from 'antd';
 import SettingDropDown from './Setting';
 
 interface OptionsProps {
-  changeEachAudio: (deviceId: string) => void;
-  changeInputStream: (stream: MediaStream) => void;
-  seletedOutputDevice: string;
-  seletedInputDevice: string;
   onClickOption: () => void;
 }
 

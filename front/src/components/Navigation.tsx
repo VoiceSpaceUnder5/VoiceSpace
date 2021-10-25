@@ -325,10 +325,6 @@ function Navigation(props: NavigationProps): JSX.Element {
       </div>
       <div className="navbar_right">
         <Panel
-          changeEachAudio={changeEachAudio}
-          changeInputStream={changeInputStream}
-          seletedInputDevice={props.peerManager.micDeviceID}
-          seletedOutputDevice={props.peerManager.speakerDeviceID}
           profileDropdownOnOff={profileDropdownOnOff}
           getMyNickname={getMyNickname}
           getUsers={getUsers}

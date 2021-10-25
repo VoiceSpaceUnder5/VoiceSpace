@@ -4,6 +4,7 @@ import {
 } from './pixiUtils/metaData/ImageMetaData';
 import RTCSignalingHelper, {IceDto, OfferAnswerDto} from './RTCSignalingHelper';
 import {Formant} from './pixiUtils/metaData/ImageMetaData';
+import AudioStreamHelper from './AudioStreamHelper';
 
 /**
  * DataDto 의 type enum
@@ -213,7 +214,7 @@ export class Me implements PlayerDto {
   isMoving: boolean;
 
   // AudioAnalyser
-  public audioAnalyser: AudioAnalyser;
+  public audioAnalyser: AudioAnalyser | null;
   constructor(
     nicknameDiv: HTMLDivElement,
     textMessageDiv: HTMLDivElement,
@@ -249,8 +250,13 @@ export class Me implements PlayerDto {
     this.nextNormalizedDirectionVector = {x: 0, y: 1};
     this.isMoving = false;
 
+    this.audioAnalyser = null;
+
     // AudioAnalyser
-    this.audioAnalyser = audioAnalyser;
+    const callback = (audioStream: MediaStream) => {
+      this.audioAnalyser = new AudioAnalyser(audioStream);
+    };
+    AudioStreamHelper.getLocalAudioStreamAndAddCB(callback);
   }
 
   set nickname(nickname: string) {
@@ -305,7 +311,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   private readonly dc: RTCDataChannel;
 
   // for audio stream
-  audio: HTMLAudioElement;
   volumnMultiplyValue: number;
 
   // for sound control by distance between peer and peer
@@ -337,8 +342,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
   constructor(
     signalingHelper: RTCSignalingHelper,
     connectedClientSocketID: string,
-    localStream: MediaStream,
-    audio: HTMLAudioElement,
     nicknameDiv: HTMLDivElement,
     textMessageDiv: HTMLDivElement,
     pcConfig: RTCConfiguration,
@@ -356,7 +359,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.dc = this.createDataChannel('dc');
 
     // for audio stream
-    this.audio = audio;
     this.volumnMultiplyValue = 1;
 
     // for sound control by distance between peer and peer
@@ -386,9 +388,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     this.dataChannelEventHandlers = dataChannelEventHandlers;
 
     //    connect localStream
-    localStream.getTracks().forEach(track => {
-      this.addTrack(track);
-    });
 
     // event setting
     this.setSignalingEvent(signalingHelper);
@@ -438,12 +437,12 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
     });
 
     this.addEventListener('track', event => {
-      console.log(this.getReceivers());
-      if (!event.streams[0] && event.track.kind === 'audio') {
-        const stream = new MediaStream();
-        stream.addTrack(event.track);
-        this.audio.srcObject = stream;
-      } else {
+      if (event.track.kind === 'audio') {
+        AudioStreamHelper.addAudioTrack(
+          this.connectedClientSocketID,
+          event.track,
+        );
+      } else if (event.track.kind === 'video') {
         this.trackEventHandler(this.connectedClientSocketID, event);
       }
     });
@@ -468,7 +467,6 @@ export class Peer extends RTCPeerConnection implements PlayerDto {
         Math.pow(this.centerPos.y - pos.y, 2),
     );
     const volumeValue = Math.max(0, 1 - distance / this.maxSoundDistance);
-    this.audio.volume = volumeValue * this.volumnMultiplyValue;
   }
 
   /**
@@ -577,14 +575,6 @@ export default class PeerManager {
     };
   }
 
-  changeEachAudio(deviceId: string): void {
-    this.speakerDeviceID = deviceId;
-    this.forEachPeer((peer: Peer) => {
-      // eslint-disable-next-line
-      const audio = peer.audio as any;
-      audio.setSinkId(deviceId);
-    });
-  }
   forEachPeer(callback: (peer: Peer) => void): void {
     this.peers.forEach(peer => callback(peer));
   }
@@ -595,20 +585,6 @@ export default class PeerManager {
     handler: (data: any, peer: Peer) => void,
   ): void {
     this.dataChannelEventHandlers.set(type, handler);
-  }
-
-  private createAudioElementAndSetDeviceIfSetSinkIdExist(
-    audioContainer: HTMLDivElement = this.audioContainer,
-  ): HTMLAudioElement {
-    const audio = document.createElement('audio') as HTMLAudioElement;
-    audio.autoplay = true;
-    // eslint-disable-next-line
-    if ((audio as any).setSinkId) {
-      // eslint-disable-next-line
-      (audio as any).setSinkId(this.speakerDeviceID);
-    }
-    audioContainer.appendChild(audio);
-    return audio;
   }
 
   private createDivElement(
@@ -628,8 +604,6 @@ export default class PeerManager {
     const peer = new Peer(
       this.signalingHelper,
       connectedClientSocketID,
-      this.localStream,
-      this.createAudioElementAndSetDeviceIfSetSinkIdExist(),
       this.createDivElement(
         this.nicknameContainer,
         PeerManager.nicknameDivClassName,
@@ -745,7 +719,6 @@ export default class PeerManager {
       const exitedPeer = this.peers.get(exitedSocketID);
       if (exitedPeer) {
         this.peers.delete(exitedSocketID);
-        this.audioContainer.removeChild(exitedPeer.audio);
         this.nicknameContainer.removeChild(exitedPeer.nicknameDiv);
         this.nicknameContainer.removeChild(exitedPeer.textMessageDiv);
         this.onPeerDeleted(exitedSocketID);
