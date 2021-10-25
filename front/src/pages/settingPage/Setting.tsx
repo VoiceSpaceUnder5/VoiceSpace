@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import {Button, Select, message, Switch} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
@@ -9,6 +9,7 @@ import {
   AvatarImageEnumMin,
   avatarImageMDs,
 } from '../../utils/pixiUtils/metaData/ImageMetaData';
+import AudioStreamHelper from '../../utils/AudioStreamHelper';
 
 const qs = require('query-string');
 const {Option} = Select;
@@ -18,26 +19,25 @@ interface SettingQuery {
   isNew: boolean;
 }
 
-interface AudioVisualizerProps {
-  audioStream: MediaStream;
-}
+function SoundControll(): JSX.Element {
+  const [micDeviceInfos, setMicDeviceInfos] = useState<MediaDeviceInfo[]>([]);
+  const [speakerDeviceInfos, setSpeakerDeviceInfos] = useState<
+    MediaDeviceInfo[]
+  >([]);
 
-interface SoundControllProps {
-  deviceInfos: MediaDeviceInfo[];
-  selectedMicDeviceID: string;
-  selectedSpeakerDeviceID: string;
-  setSelectedMicDeviceAndSetAudioStream: (deviceID: string) => void;
-  setSelectedSpeakerDeviceWithTest: (deviceID: string) => void;
-  isSpeakerDeviceChange: boolean;
-}
-
-function SoundControll(props: SoundControllProps): JSX.Element {
-  const onSpeakerChange = (deviceID: string) => {
-    props.setSelectedSpeakerDeviceWithTest(deviceID);
+  const setStates = async () => {
+    const newMicDeviceInfos = await AudioStreamHelper.getMicDevices();
+    const newSpeakerDeviceInfos = await AudioStreamHelper.getSpeakerDevices();
+    setMicDeviceInfos(newMicDeviceInfos);
+    setSpeakerDeviceInfos(newSpeakerDeviceInfos);
   };
 
-  const onMicChange = (deviceID: string) => {
-    props.setSelectedMicDeviceAndSetAudioStream(deviceID);
+  useEffect(() => {
+    setStates();
+  });
+
+  const speakerDeviceIdChange = (speakerId: string) => {
+    AudioStreamHelper.speakerDeviceId = speakerId;
   };
 
   return (
@@ -48,12 +48,13 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           src="./assets/navigation/speaker.png"
         ></img>
         <Select
-          disabled={!props.isSpeakerDeviceChange}
+          disabled={!AudioStreamHelper.isSpeakerChangeable()}
           className="soundControllSelect"
-          onChange={onSpeakerChange}
-          value={props.selectedSpeakerDeviceID}
+          onChange={speakerDeviceIdChange}
+          value={AudioStreamHelper.speakerDeviceId}
         >
-          {props.deviceInfos
+          {/* {AudioStreamHelper.} */}
+          {/* {props.deviceInfos
             .filter(deviceInfo => {
               return deviceInfo.kind === 'audiooutput';
             })
@@ -63,7 +64,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
                   {deviceInfo.label}
                 </Option>
               );
-            })}
+            })} */}
         </Select>
       </div>
       <div className="soundControllSelectDiv">
@@ -72,7 +73,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           src="./assets/navigation/mic.png"
           style={{width: '20%', height: 32}}
         ></img>
-        <Select
+        {/* <Select
           className="soundControllSelect"
           onChange={onMicChange}
           value={props.selectedMicDeviceID}
@@ -88,7 +89,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
                 </Option>
               );
             })}
-        </Select>
+        </Select> */}
       </div>
     </div>
   );
@@ -122,19 +123,16 @@ class AudioVisualizerHelper {
   }
 }
 
-function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
+function AudioVisualizer(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const avHelper = useMemo(() => {
-    return new AudioVisualizerHelper(props.audioStream);
-  }, []);
   const byteFrequencyDataArray = useMemo(() => {
     return new Uint8Array(16);
   }, []);
-
   let aniNumber = 0;
-  useEffect(() => {
-    avHelper.setStream(props.audioStream);
+
+  const callback = useCallback((localAudioStream: MediaStream): void => {
+    const avHelper = new AudioVisualizerHelper(localAudioStream);
     if (canvasRef.current) {
       const context = canvasRef.current.getContext('2d');
       if (!context) {
@@ -159,11 +157,15 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
         aniNumber = requestAnimationFrame(animationLoop);
       };
       aniNumber = requestAnimationFrame(animationLoop);
-      return () => {
-        cancelAnimationFrame(aniNumber);
-      };
     }
-  }, [props.audioStream]);
+  }, []);
+
+  useEffect(() => {
+    AudioStreamHelper.getLocalAudioStream(callback);
+    return () => {
+      cancelAnimationFrame(aniNumber);
+    };
+  });
 
   return <canvas className="settingAudioVisualizer" ref={canvasRef}></canvas>;
 }
@@ -179,103 +181,31 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const avatarIdxMin = AvatarImageEnumMin;
 
   //states
-  const [deviceInfos, setDeviceInfos] = useState<MediaDeviceInfo[]>([]);
-  const [selectedMicDeviceID, setSelectedMicDeviceID] = useState('default');
-  const [selectedSpeakerDeviceID, setSelectedSpeakerDeviceID] =
-    useState('default');
-  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isListenMyMic, setIsListenMyMic] = useState(false);
   const [nickname, setNickname] = useState(nicknameDefaultValue);
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
     AvatarImageEnum.BUNNY,
   );
-  const [isSpeakerChangeable, setIsSpeakerChangeable] = useState(true);
 
   //ref
-  const testAudioRef = useRef<HTMLAudioElement>(null);
   const avatarImgRef = useRef<HTMLImageElement>(null);
-
-  // functions
-  const getAudioStreamFromDeviceID = (
-    deviceID: string,
-  ): Promise<MediaStream> => {
-    return navigator.mediaDevices.getUserMedia({audio: {deviceId: deviceID}});
-  };
 
   const getDeviceInfos = (): Promise<MediaDeviceInfo[]> => {
     return navigator.mediaDevices.enumerateDevices();
   };
 
-  const setSelectedMicDeviceAndSetAudioStream = (deviceID: string) => {
-    setIsLoading(true);
-    getAudioStreamFromDeviceID(deviceID)
-      .then(audioStream => {
-        setSelectedMicDeviceID(deviceID);
-        setAudioStream(audioStream);
-      })
-      .catch(() => {
-        message.error(
-          '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  // const setSelectedMicDeviceAndSetAudioStream = (deviceID: string) => {};
 
-  const setSelectedSpeakerDeviceWithTest = (deviceID: string) => {
-    setIsLoading(true);
-    try {
-      if (!testAudioRef.current) {
-        throw 'testAudioRef is not found';
-      }
-      const audio = testAudioRef.current;
-      // eslint-disable-next-line
-      (audio as any)
-        .setSinkId(deviceID)
-        .then(() => {
-          setSelectedSpeakerDeviceID(deviceID);
-        })
-        .catch(() => {
-          message.error(
-            '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-          );
-        });
-    } catch (error) {
-      message.error(
-        '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const setSelectedSpeakerDeviceWithTest = (deviceID: string) => {};
 
   const reloadDeviceInfoClick = () => {
     setIsLoading(true);
-    getDeviceInfos()
-      .then(deviceInfos => {
-        setDeviceInfos(deviceInfos);
-        setSelectedMicDeviceID('default');
-        setSelectedMicDeviceAndSetAudioStream('default');
-        if (isSpeakerChangeable) {
-          setSelectedSpeakerDeviceID('default');
-          setSelectedSpeakerDeviceWithTest('default');
-        }
-      })
-      .catch(() => {
-        message.error(
-          '장치를 재검색 하는데 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
   };
 
   const enterClick = () => {
     props.history.push(
-      `/space?roomId=${query.roomId}&avatarIdx=${avatarIdx}&nickname=${nickname}&speakerDeviceID=${selectedSpeakerDeviceID}&micDeviceID=${selectedMicDeviceID}`,
+      `/space?roomId=${query.roomId}&avatarIdx=${avatarIdx}&nickname=${nickname}`,
     );
   };
 
@@ -306,47 +236,6 @@ function Setting(props: RouteComponentProps): JSX.Element {
     changeAvatarImgWithIdx(nextAvatarIdx);
     setAvatarIdx(nextAvatarIdx);
   };
-
-  // useEffects
-  useEffect(() => {
-    getAudioStreamFromDeviceID('default')
-      .then(audioStream => {
-        setAudioStream(audioStream);
-        return getDeviceInfos();
-      })
-      .then(deviceInfos => {
-        setDeviceInfos(deviceInfos);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        message.error(
-          '음향 장치를 가져오는데 실패하였습니다. 장치 연결상태나 권한을 확인해 주세요.',
-        );
-      });
-  }, []);
-
-  useEffect(() => {
-    if (testAudioRef.current) {
-      testAudioRef.current.srcObject = audioStream;
-    }
-    return () => {
-      if (testAudioRef.current) {
-        testAudioRef.current.srcObject = null;
-      }
-    };
-  }, [audioStream]);
-
-  useEffect(() => {
-    if (testAudioRef.current) {
-      // eslint-disable-next-line
-      const audio = testAudioRef.current as any;
-      if (audio.setSinkId) {
-        audio.setSinkId(selectedSpeakerDeviceID);
-      } else {
-        setIsSpeakerChangeable(false);
-      }
-    }
-  }, [selectedSpeakerDeviceID]);
 
   return (
     <>
@@ -388,18 +277,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
               </div>
             </div>
             <div className="soundControllContainerDiv">
-              <SoundControll
-                deviceInfos={deviceInfos}
-                selectedMicDeviceID={selectedMicDeviceID}
-                selectedSpeakerDeviceID={selectedSpeakerDeviceID}
-                setSelectedMicDeviceAndSetAudioStream={
-                  setSelectedMicDeviceAndSetAudioStream
-                }
-                setSelectedSpeakerDeviceWithTest={
-                  setSelectedSpeakerDeviceWithTest
-                }
-                isSpeakerDeviceChange={isSpeakerChangeable}
-              ></SoundControll>
+              <SoundControll></SoundControll>
               <Button
                 className="soundControllReloadButton"
                 onClick={reloadDeviceInfoClick}
@@ -415,9 +293,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 defaultChecked={false}
                 onChange={setIsListenMyMic}
               ></Switch>
-              {audioStream ? (
-                <AudioVisualizer audioStream={audioStream}></AudioVisualizer>
-              ) : null}
+              <AudioVisualizer></AudioVisualizer>
             </div>
           </div>
           <div className="enterButtonContainerDiv">
@@ -432,7 +308,6 @@ function Setting(props: RouteComponentProps): JSX.Element {
           </div>
         </div>
       </div>
-      <audio ref={testAudioRef} autoPlay={true} muted={!isListenMyMic}></audio>
     </>
   );
 }
