@@ -217,7 +217,6 @@ export class Me implements PlayerDto {
   constructor(
     nicknameDiv: HTMLDivElement,
     textMessageDiv: HTMLDivElement,
-    audioAnalyser: AudioAnalyser,
     centerPos: Vec2, // original centerPos
     nickname = '익명의 곰', // 추후 .env 로 이동해야 될듯 (하드코딩 제거)
     textMessage: string,
@@ -496,7 +495,6 @@ export default class PeerManager {
   static readonly nicknameDivClassName = 'canvasOverlay';
   // create new Peer params
   private readonly signalingHelper: RTCSignalingHelper;
-  localStream: MediaStream;
   private readonly audioContainer: HTMLDivElement;
   readonly nicknameContainer: HTMLDivElement;
   private readonly pcConfig: RTCConfiguration;
@@ -523,29 +521,19 @@ export default class PeerManager {
   // my socket ID
   readonly socketID: string;
 
-  // speakerDeviceID (for sink)
-  speakerDeviceID: string;
-
-  // micDeviceID (stream)
-  readonly micDeviceID: string;
-
   // events for Pixi
   onPeerCreated: (createdPeerSocketID: string) => void;
   onPeerDeleted: (deletedPeerSocketID: string) => void;
   constructor(
     signalingHelper: RTCSignalingHelper,
-    localStream: MediaStream,
     audioContainer: HTMLDivElement,
     nicknameContainer: HTMLDivElement,
     pcConfig: RTCConfiguration,
     roomID: string,
     me: Me,
-    speakerDeviceID = 'default',
-    micDeviceID = 'default',
   ) {
     // create new Peer params
     this.signalingHelper = signalingHelper;
-    this.localStream = localStream;
 
     this.audioContainer = audioContainer;
     this.nicknameContainer = nicknameContainer;
@@ -573,12 +561,6 @@ export default class PeerManager {
 
     // my socket ID
     this.socketID = signalingHelper.getSocketID();
-
-    // speaker Device ID
-    this.speakerDeviceID = speakerDeviceID;
-
-    // micDeviceID
-    this.micDeviceID = micDeviceID;
 
     // setEvent
     this.setSignalingEvent();

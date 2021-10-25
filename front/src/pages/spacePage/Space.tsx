@@ -9,6 +9,7 @@ import {message} from 'antd';
 import RTCSignalingHelper from '../../utils/RTCSignalingHelper';
 import {iceConfig} from '../../utils/IceServerList';
 import SpaceLoading from '../../components/SpaceLoading';
+import AudioStreamHelper from '../../utils/AudioStreamHelper';
 
 const qs = require('query-string');
 
@@ -16,8 +17,6 @@ interface SpaceQuery {
   roomId: string;
   nickname: string;
   avatarIdx: number;
-  speakerDeviceID: string;
-  micDeviceID: string;
 }
 
 export interface LoadingInfo {
@@ -30,59 +29,41 @@ function setNewPeerManager(
   audioContainer: HTMLDivElement,
   query: SpaceQuery,
   initialCenterPos: Vec2,
-  successCallBack: (arg0: PeerManager) => void,
-  failCallBack: () => void,
 ): void {
-  navigator.mediaDevices
-    .getUserMedia({video: false, audio: {deviceId: query.micDeviceID}}) // 오디오 연결
-    .then((stream: MediaStream) => {
-      const socket = io(`${process.env.REACT_APP_SOCKET_URL}`, {
-        reconnection: false,
-      });
-      if (!socket) {
-        failCallBack();
-        return;
-      }
-      socket.on('connect', () => {
-        const signalingHelper = new RTCSignalingHelper(socket);
-        const audioAnalyser = new AudioAnalyser(stream);
-        const nicknameDiv = document.createElement('div') as HTMLDivElement;
-        nicknameDiv.className = 'canvasOverlay';
-        spaceMainContainer.appendChild(nicknameDiv);
+  const socket = io(`${process.env.REACT_APP_SOCKET_URL}`, {
+    reconnection: false,
+  });
+  if (!socket) {
+    return;
+  }
+  socket.on('connect', () => {
+    const signalingHelper = new RTCSignalingHelper(socket);
+    const nicknameDiv = document.createElement('div') as HTMLDivElement;
+    nicknameDiv.className = 'canvasOverlay';
+    spaceMainContainer.appendChild(nicknameDiv);
 
-        const textMessageDiv = document.createElement('div') as HTMLDivElement;
-        textMessageDiv.className = 'canvasOverlay';
-        spaceMainContainer.appendChild(textMessageDiv);
+    const textMessageDiv = document.createElement('div') as HTMLDivElement;
+    textMessageDiv.className = 'canvasOverlay';
+    spaceMainContainer.appendChild(textMessageDiv);
 
-        const me = new Me(
-          nicknameDiv,
-          textMessageDiv,
-          audioAnalyser,
-          initialCenterPos,
-          query.nickname,
-          '',
-          Number(query.avatarIdx),
-        );
+    const me = new Me(
+      nicknameDiv,
+      textMessageDiv,
+      initialCenterPos,
+      query.nickname,
+      '',
+      Number(query.avatarIdx),
+    );
 
-        const peerManager = new PeerManager(
-          signalingHelper,
-          stream,
-          audioContainer,
-          spaceMainContainer,
-          iceConfig,
-          query.roomId,
-          me,
-          query.speakerDeviceID,
-          query.micDeviceID,
-        );
-        successCallBack(peerManager);
-        console.log('socket connected');
-      });
-    })
-    .catch(() => {
-      failCallBack();
-    });
-
+    const peerManager = new PeerManager(
+      signalingHelper,
+      audioContainer,
+      spaceMainContainer,
+      iceConfig,
+      query.roomId,
+      me,
+    );
+  });
   return;
 }
 
@@ -93,16 +74,11 @@ function isQueryValid(query: SpaceQuery) {
   if (!query.avatarIdx) {
     return false;
   }
-  if (!query.micDeviceID) {
-    query.micDeviceID = 'default';
-  }
-  if (!query.speakerDeviceID) {
-    query.speakerDeviceID = 'default';
-  }
   return true;
 }
 
 function Space(props: RouteComponentProps): JSX.Element {
+  console.log(AudioStreamHelper.micDeviceId, AudioStreamHelper.speakerDeviceId);
   //state
   const [peerManager, setPeerManager] = useState<PeerManager | null>(null);
   //query validate part
@@ -130,12 +106,6 @@ function Space(props: RouteComponentProps): JSX.Element {
       audioContainerRef.current,
       query,
       {x: 150, y: 150},
-      (peerManager: PeerManager) => {
-        setPeerManager(peerManager);
-      },
-      () => {
-        console.error('setNewPeerManager error');
-      },
     );
     return () => {
       if (peerManager) peerManager.close();

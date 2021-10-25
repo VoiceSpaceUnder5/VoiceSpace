@@ -101,13 +101,13 @@ describe('AudioStreamHelper test', () => {
   });
   test('getLocalAudioStream 호출 시, 콜백 호출', async () => {
     const cb = jest.fn();
-    AudioStreamHelper.getLocalAudioStream(cb);
+    AudioStreamHelper.getLocalAudioStreamAndAddCB(cb);
     await new Promise((r: any) => setTimeout(r, 5));
     expect(cb).toBeCalledWith(mockMediaStream);
   });
   test('micDeivcedId 변경 시, 기존 콜백 정상적으로 호출 되는지', async () => {
     const cb = jest.fn();
-    AudioStreamHelper.getLocalAudioStream(cb);
+    AudioStreamHelper.getLocalAudioStreamAndAddCB(cb);
     await new Promise((r: any) => setTimeout(r, 5));
     expect(cb).toBeCalledWith(mockMediaStream);
     const newMediaStream = new MediaStream();

@@ -19,25 +19,31 @@ interface SettingQuery {
   isNew: boolean;
 }
 
-function SoundControll(): JSX.Element {
-  const [micDeviceInfos, setMicDeviceInfos] = useState<MediaDeviceInfo[]>([]);
-  const [speakerDeviceInfos, setSpeakerDeviceInfos] = useState<
-    MediaDeviceInfo[]
-  >([]);
+interface SoundControllProps {
+  micDeviceInfos: MediaDeviceInfo[];
+  speakerDeviceInfos: MediaDeviceInfo[];
+  audioRef: React.RefObject<HTMLAudioElement>;
+}
 
-  const setStates = async () => {
-    const newMicDeviceInfos = await AudioStreamHelper.getMicDevices();
-    const newSpeakerDeviceInfos = await AudioStreamHelper.getSpeakerDevices();
-    setMicDeviceInfos(newMicDeviceInfos);
-    setSpeakerDeviceInfos(newSpeakerDeviceInfos);
+function SoundControll(props: SoundControllProps): JSX.Element {
+  const setForceRerender = useState(0)[1];
+
+  const forUpdate = () => {
+    setForceRerender(before => {
+      return before + 1;
+    });
   };
-
-  useEffect(() => {
-    setStates();
-  });
 
   const speakerDeviceIdChange = (speakerId: string) => {
     AudioStreamHelper.speakerDeviceId = speakerId;
+    if (AudioStreamHelper.isSpeakerChangeable() && props.audioRef.current) {
+      (props.audioRef.current as any).setSinkId(speakerId);
+    }
+    forUpdate();
+  };
+  const micDeivceIdChagne = (micId: string) => {
+    AudioStreamHelper.micDeviceId = micId;
+    forUpdate();
   };
 
   return (
@@ -53,18 +59,13 @@ function SoundControll(): JSX.Element {
           onChange={speakerDeviceIdChange}
           value={AudioStreamHelper.speakerDeviceId}
         >
-          {/* {AudioStreamHelper.} */}
-          {/* {props.deviceInfos
-            .filter(deviceInfo => {
-              return deviceInfo.kind === 'audiooutput';
-            })
-            .map(deviceInfo => {
-              return (
-                <Option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
-                  {deviceInfo.label}
-                </Option>
-              );
-            })} */}
+          {props.speakerDeviceInfos.map(device => {
+            return (
+              <Option key={device.deviceId} value={device.deviceId}>
+                {device.label}
+              </Option>
+            );
+          })}
         </Select>
       </div>
       <div className="soundControllSelectDiv">
@@ -73,23 +74,19 @@ function SoundControll(): JSX.Element {
           src="./assets/navigation/mic.png"
           style={{width: '20%', height: 32}}
         ></img>
-        {/* <Select
+        <Select
           className="soundControllSelect"
-          onChange={onMicChange}
-          value={props.selectedMicDeviceID}
+          onChange={micDeivceIdChagne}
+          value={AudioStreamHelper.micDeviceId}
         >
-          {props.deviceInfos
-            .filter(deviceInfo => {
-              return deviceInfo.kind === 'audioinput';
-            })
-            .map(deviceInfo => {
-              return (
-                <Option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
-                  {deviceInfo.label}
-                </Option>
-              );
-            })}
-        </Select> */}
+          {props.micDeviceInfos.map(device => {
+            return (
+              <Option key={device.deviceId} value={device.deviceId}>
+                {device.label}
+              </Option>
+            );
+          })}
+        </Select>
       </div>
     </div>
   );
@@ -161,9 +158,10 @@ function AudioVisualizer(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    AudioStreamHelper.getLocalAudioStream(callback);
+    AudioStreamHelper.getLocalAudioStreamAndAddCB(callback);
     return () => {
       cancelAnimationFrame(aniNumber);
+      AudioStreamHelper.removeOnLocalAudioStream(callback);
     };
   });
 
@@ -187,20 +185,37 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
     AvatarImageEnum.BUNNY,
   );
+  const [micDeviceInfos, setMicDeviceInfos] = useState<MediaDeviceInfo[]>([]);
+  const [speakerDeviceInfos, setSpeakerDeviceInfos] = useState<
+    MediaDeviceInfo[]
+  >([]);
 
   //ref
   const avatarImgRef = useRef<HTMLImageElement>(null);
-
-  const getDeviceInfos = (): Promise<MediaDeviceInfo[]> => {
-    return navigator.mediaDevices.enumerateDevices();
-  };
-
-  // const setSelectedMicDeviceAndSetAudioStream = (deviceID: string) => {};
-
-  // const setSelectedSpeakerDeviceWithTest = (deviceID: string) => {};
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const reloadDeviceInfoClick = () => {
     setIsLoading(true);
+    reloadDeviceInfos();
+  };
+
+  const reloadDeviceInfos = async () => {
+    const isAuth = await AudioStreamHelper.tryAuth();
+    if (isAuth) {
+      setIsLoading(false);
+      AudioStreamHelper.speakerDeviceId = 'default';
+      AudioStreamHelper.micDeviceId = 'default';
+      const getAudioStreamCallBack = async () => {
+        const micInfos = await AudioStreamHelper.getMicDevices();
+        const speakerInfos = await AudioStreamHelper.getSpeakerDevices();
+        setMicDeviceInfos(micInfos);
+        setSpeakerDeviceInfos(speakerInfos);
+        if (AudioStreamHelper.isSpeakerChangeable() && audioRef.current) {
+          (audioRef.current as any).setSinkId('default');
+        }
+      };
+      AudioStreamHelper.getLocalAudioStream(getAudioStreamCallBack);
+    }
   };
 
   const enterClick = () => {
@@ -236,6 +251,24 @@ function Setting(props: RouteComponentProps): JSX.Element {
     changeAvatarImgWithIdx(nextAvatarIdx);
     setAvatarIdx(nextAvatarIdx);
   };
+
+  const callback = useCallback((localAudioStream: MediaStream) => {
+    if (!audioRef.current) return;
+    audioRef.current.srcObject = localAudioStream;
+  }, []);
+
+  useEffect(() => {
+    reloadDeviceInfos();
+    AudioStreamHelper.addOnLocalAudioStream(callback);
+    return () => {
+      AudioStreamHelper.removeOnLocalAudioStream(callback);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.muted = !isListenMyMic;
+  }, [isListenMyMic]);
 
   return (
     <>
@@ -277,7 +310,11 @@ function Setting(props: RouteComponentProps): JSX.Element {
               </div>
             </div>
             <div className="soundControllContainerDiv">
-              <SoundControll></SoundControll>
+              <SoundControll
+                micDeviceInfos={micDeviceInfos}
+                speakerDeviceInfos={speakerDeviceInfos}
+                audioRef={audioRef}
+              ></SoundControll>
               <Button
                 className="soundControllReloadButton"
                 onClick={reloadDeviceInfoClick}
@@ -308,6 +345,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
           </div>
         </div>
       </div>
+      <audio ref={audioRef} muted={true} autoPlay={true}></audio>
     </>
   );
 }

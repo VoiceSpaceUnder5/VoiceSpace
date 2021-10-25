@@ -47,10 +47,15 @@ export default class AudioStreamHelper {
 
   // 호출 시 .getUserMeida 를 호출 하여 resolve 시 this.localAudioStream 을 교체하고,
   // 해당 localAudioStream 으로 onLocalAudioStreams 에 있는 모든 콜백을 호출함.
-  private static loadLocalAudioStream(): void {
+  private static loadLocalAudioStream(
+    onceCB: (arg0: MediaStream) => void = () => {
+      return;
+    },
+  ): void {
     navigator.mediaDevices
       .getUserMedia({video: false, audio: {deviceId: this._micDeivceId}})
       .then((localAudioStream: MediaStream) => {
+        onceCB(localAudioStream);
         this.localAudioStream = localAudioStream;
         this.onLocalAudioStreams.forEach(cb => {
           cb(localAudioStream);
@@ -76,7 +81,7 @@ export default class AudioStreamHelper {
   // 우선 onLocalAudioStreams 에 콜백을 집어 넣은 후,
   // 현재 localAudioStream 을 가지고 있는 상태라면 들어온 콜백을 그대로 호출,
   // 가지고 있지 않은 상태라면 loadLocalAudioStream 을 호출한다.
-  static getLocalAudioStream(
+  static getLocalAudioStreamAndAddCB(
     onLocalAudioStream: (newLocalAudioStream: MediaStream) => void,
   ): void {
     this.addOnLocalAudioStream(onLocalAudioStream);
@@ -85,6 +90,12 @@ export default class AudioStreamHelper {
     } else {
       this.loadLocalAudioStream();
     }
+  }
+
+  static getLocalAudioStream(
+    onLocalAudioStream: (newLocalAudioStream: MediaStream) => void,
+  ): void {
+    this.loadLocalAudioStream(onLocalAudioStream);
   }
 
   // 들어온 kind 값을 가진 MediaDeviceInfo 중에, default 와 겹치는 것을 제외하고 리턴해줌.
@@ -178,6 +189,17 @@ export default class AudioStreamHelper {
       return true;
     }
     return false;
+  }
+
+  static async tryAuth(): Promise<boolean> {
+    return navigator.mediaDevices
+      .getUserMedia({video: false, audio: true})
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
   }
 
   static clear() {
