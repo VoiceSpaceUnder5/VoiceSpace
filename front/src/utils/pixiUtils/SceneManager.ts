@@ -1,11 +1,13 @@
 import {Application} from 'pixi.js';
 import {isMobile} from '../AgentCheck';
 import {Scene} from './Scene';
+import {tickerWorker} from './Ticker';
 
 export class SceneManager {
   private static application: Application;
   private static currentScene: Scene;
   private static gameCanvas: HTMLCanvasElement | undefined;
+  private static tickerWorker: Worker;
 
   // We no longer need to store width and height since now it is literally the size of the screen.
   // We just modify our getters
@@ -36,7 +38,9 @@ export class SceneManager {
       antialias: true,
     });
 
-    SceneManager.application.ticker.add(SceneManager.update);
+    // WebWorker
+    SceneManager.addTickerWorker();
+    SceneManager.runTickerWorker();
 
     // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', SceneManager.resize);
@@ -50,6 +54,29 @@ export class SceneManager {
       });
     }
     console.log('Scene SceneManager Initialized! ');
+  }
+  private static addTickerWorker(): void {
+    const tickerWorkerBlob = new Blob(
+      [tickerWorker.toString().replace(/^function .+\{?|\}$/g, '')],
+      {type: 'text/javascript'},
+    );
+    const workerBlobUrl = URL.createObjectURL(tickerWorkerBlob);
+    SceneManager.tickerWorker = new Worker(workerBlobUrl);
+  }
+
+  private static runTickerWorker(): void {
+    SceneManager.tickerWorker.postMessage({run: true});
+
+    SceneManager.tickerWorker.onmessage = event => {
+      if (event.data.message === 'run') {
+        SceneManager.update(1);
+      }
+    };
+  }
+
+  private static destroyTickerWorker(): void {
+    SceneManager.tickerWorker.postMessage({run: false});
+    SceneManager.tickerWorker.terminate();
   }
 
   public static changeScene(newScene: Scene): void {
@@ -72,6 +99,7 @@ export class SceneManager {
 
   public static destroy(): void {
     window.removeEventListener('resize', SceneManager.resize);
+    SceneManager.destroyTickerWorker();
     SceneManager.app.destroy();
   }
 
