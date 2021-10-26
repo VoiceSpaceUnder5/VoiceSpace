@@ -21,8 +21,7 @@ export class PeerAvatar extends Avatar {
     if (this.isAvatarChanged()) {
       const newAvatarImageEnum = GameData.getPeerAvatar(this.socketID);
       if (newAvatarImageEnum === undefined) return;
-      this.avatarImageEnum = newAvatarImageEnum;
-      this.changeAvatar(this.getAvatarMD());
+      this.setAvatar(newAvatarImageEnum);
       this.offCollidable();
     }
 
