@@ -1,7 +1,6 @@
 import {Application} from 'pixi.js';
 import {isMobile} from '../AgentCheck';
 import {Scene} from './Scene';
-import {tickerWorker} from './TickerWorker';
 
 export class SceneManager {
   private static application: Application;
@@ -74,15 +73,10 @@ export class SceneManager {
   }
 
   private static addTickerWorker(): void {
-    const tickerWorkerBlob = new Blob(
-      [tickerWorker.toString().replace(/^function .+\{?|\}$/g, '')],
-      {type: 'text/javascript'},
-    );
-    const workerBlobUrl = URL.createObjectURL(tickerWorkerBlob);
-    SceneManager.tickerWorker = new Worker(workerBlobUrl);
+    console.log('addTickerWorker');
+    SceneManager.tickerWorker = new Worker('./TickerWorker.js');
     console.log(
       `AddTickerWorker: `,
-      tickerWorker.toString().replace(/^function .+\{?|\}$/g, ''),
       SceneManager.tickerWorker,
       SceneManager.tickerWorker.onmessage,
       SceneManager.tickerWorker.postMessage,
