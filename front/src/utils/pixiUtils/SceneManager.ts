@@ -1,11 +1,13 @@
 import {Application} from 'pixi.js';
 import {isMobile} from '../AgentCheck';
 import {Scene} from './Scene';
+import {tickerWorker} from './TickerWorker';
 
 export class SceneManager {
   private static application: Application;
   private static currentScene: Scene;
   private static gameCanvas: HTMLCanvasElement | undefined;
+  private static tickerWorker: Worker;
 
   // We no longer need to store width and height since now it is literally the size of the screen.
   // We just modify our getters
@@ -36,9 +38,15 @@ export class SceneManager {
       antialias: true,
     });
 
+    //visibility === visible 일 때 돌아갈 Ticker
     SceneManager.application.ticker.add(SceneManager.update);
+    //visibility === hidden 일 때 돌아갈 Ticker
+    SceneManager.addTickerWorker();
+    document.addEventListener(
+      'visibilitychange',
+      SceneManager.handleVisibilityChange,
+    );
 
-    // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', SceneManager.resize);
     // mobile check
     if (isMobile()) {
@@ -50,6 +58,41 @@ export class SceneManager {
       });
     }
     console.log('Scene SceneManager Initialized! ');
+  }
+
+  private static handleVisibilityChange(): void {
+    if (document.visibilityState === 'hidden') {
+      SceneManager.runTickerWorker();
+      SceneManager.application.ticker.stop();
+    } else if (document.visibilityState === 'visible') {
+      SceneManager.stopTickerWorker();
+      SceneManager.application.ticker.start();
+    }
+  }
+
+  private static addTickerWorker(): void {
+    const tickerWorkerBlob = new Blob(
+      [tickerWorker.toString().replace(/^function .+\{?|\}$/g, '')],
+      {type: 'text/javascript'},
+    );
+    const workerBlobUrl = URL.createObjectURL(tickerWorkerBlob);
+    SceneManager.tickerWorker = new Worker(workerBlobUrl);
+  }
+
+  private static runTickerWorker(): void {
+    SceneManager.tickerWorker.postMessage({run: true});
+    SceneManager.tickerWorker.onmessage = event => {
+      if (event.data.message === 'run') SceneManager.update(1);
+    };
+  }
+
+  private static stopTickerWorker() {
+    SceneManager.tickerWorker.postMessage({run: false});
+  }
+
+  private static removeTickerWorker(): void {
+    SceneManager.tickerWorker.postMessage({run: false});
+    SceneManager.tickerWorker.terminate();
   }
 
   public static changeScene(newScene: Scene): void {
@@ -72,6 +115,7 @@ export class SceneManager {
 
   public static destroy(): void {
     window.removeEventListener('resize', SceneManager.resize);
+    SceneManager.removeTickerWorker();
     SceneManager.app.destroy();
   }
 

@@ -68,39 +68,47 @@ export class MyAvatar extends Avatar {
     this.parts[AvatarParts.RIGHT_LEG].angle = 0;
   }
 
-  private move(delta: number): void {
+  private move(framesPassed: number): void {
     const oldX = this.x;
     const oldY = this.y;
 
-    this.x += this.vx * delta;
-    this.y += this.vy * delta;
+    this.x += this.vx * framesPassed;
+    this.y += this.vy * framesPassed;
     if (this.collidable && this.isCollided(this.world)) {
       this.x = oldX;
       this.y = oldY;
     }
     this.zIndex = this.y + this.height / 2;
-    this.moveGesture();
+    this.moveGesture(framesPassed);
   }
 
-  private stand(): void {
-    this.standGesture();
+  private stand(framesPassed: number): void {
+    this.standGesture(framesPassed);
   }
 
-  private moveGesture() {
+  private moveGesture(framesPassed: number) {
     this.updateReferenceAngle();
-    this.parts[AvatarParts.RIGHT_LEG].angle = -this.referenceDegree * 1;
-    this.parts[AvatarParts.RIGHT_ARM].angle = this.referenceDegree * 2;
-    this.parts[AvatarParts.LEFT_LEG].angle = this.referenceDegree * 1;
-    this.parts[AvatarParts.LEFT_ARM].angle = -this.referenceDegree * 2;
-    this.parts[AvatarParts.FACE].angle = this.referenceDegree * 0.3;
+    this.parts[AvatarParts.RIGHT_LEG].angle =
+      -this.referenceDegree * 1 * framesPassed;
+    this.parts[AvatarParts.RIGHT_ARM].angle =
+      this.referenceDegree * 2 * framesPassed;
+    this.parts[AvatarParts.LEFT_LEG].angle =
+      this.referenceDegree * 1 * framesPassed;
+    this.parts[AvatarParts.LEFT_ARM].angle =
+      -this.referenceDegree * 2 * framesPassed;
+    this.parts[AvatarParts.FACE].angle =
+      this.referenceDegree * 0.3 * framesPassed;
     this.updatePartRotateAngle();
   }
 
-  private standGesture() {
+  private standGesture(framesPassed: number) {
     this.updateReferenceAngle();
-    this.parts[AvatarParts.RIGHT_ARM].angle = this.referenceDegree * 1;
-    this.parts[AvatarParts.LEFT_ARM].angle = -this.referenceDegree * 1;
-    this.parts[AvatarParts.FACE].angle = this.referenceDegree * 0.1;
+    this.parts[AvatarParts.RIGHT_ARM].angle =
+      this.referenceDegree * 1 * framesPassed;
+    this.parts[AvatarParts.LEFT_ARM].angle =
+      -this.referenceDegree * 1 * framesPassed;
+    this.parts[AvatarParts.FACE].angle =
+      this.referenceDegree * 0.1 * framesPassed;
     this.updatePartRotateAngle();
   }
 
