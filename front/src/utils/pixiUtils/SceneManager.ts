@@ -86,6 +86,7 @@ export class SceneManager {
   private static runTickerWorker(): void {
     SceneManager.tickerWorker.postMessage({run: true});
     SceneManager.tickerWorker.onmessage = event => {
+      console.log(`OnMessage: ${event.data.message}`);
       if (event.data.message === 'run') SceneManager.update(1);
     };
     console.log(`RunTickerWorker: ${SceneManager.tickerWorker}`);
