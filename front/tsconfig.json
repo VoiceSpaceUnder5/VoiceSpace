@@ -16,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "public/workers/TickerWorker.js"],
+  "include": ["src"],
   "exclude": ["src/setupTests.ts"],
   "typedocOptions": {
     "out": "VoiceSpace 프론트앤드",
