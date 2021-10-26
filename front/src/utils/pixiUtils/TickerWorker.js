@@ -3,10 +3,11 @@ export function tickerWorker() {
   let intervalId;
 
   addEventListener('message', event => {
+    console.log('message event fired');
     if (event.data.run === true) {
       intervalId = setInterval(() => {
         // console.log(`SendMessage: `, event.data.run);
-        // console.log(event);
+        console.log(event);
         postMessage({message: 'run'});
       }, 1000 / 60);
     }
