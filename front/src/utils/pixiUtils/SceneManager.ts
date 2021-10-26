@@ -80,21 +80,27 @@ export class SceneManager {
     );
     const workerBlobUrl = URL.createObjectURL(tickerWorkerBlob);
     SceneManager.tickerWorker = new Worker(workerBlobUrl);
-    console.log(`AddTickerWorker: ${SceneManager.tickerWorker}`);
+    console.log(
+      `AddTickerWorker: `,
+      tickerWorker.toString().replace(/^function .+\{?|\}$/g, ''),
+      SceneManager.tickerWorker,
+      SceneManager.tickerWorker.onmessage,
+      SceneManager.tickerWorker.postMessage,
+    );
   }
 
   private static runTickerWorker(): void {
     SceneManager.tickerWorker.postMessage({run: true});
     SceneManager.tickerWorker.onmessage = event => {
-      console.log(`OnMessage: ${event.data.message}`);
+      console.log(`OnMessage:`, event.data.message);
       if (event.data.message === 'run') SceneManager.update(1);
     };
-    console.log(`RunTickerWorker: ${SceneManager.tickerWorker}`);
+    console.log(`RunTickerWorker: `, SceneManager.tickerWorker);
   }
 
   private static stopTickerWorker() {
     SceneManager.tickerWorker.postMessage({run: false});
-    console.log(`StopTickerWorker: ${SceneManager.tickerWorker}`);
+    console.log(`StopTickerWorker: `, SceneManager.tickerWorker);
   }
 
   private static removeTickerWorker(): void {

@@ -4,8 +4,7 @@ export function tickerWorker(): void {
   self.addEventListener('message', event => {
     if (event.data.run === true) {
       intervalId = setInterval(() => {
-        console.log(`SendMessage: ${event.data.run}`);
-
+        console.log(`SendMessage: `, event.data.run);
         self.postMessage({message: 'run'});
       }, 1000 / 60);
     }
