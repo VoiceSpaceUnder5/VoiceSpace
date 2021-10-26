@@ -5,7 +5,7 @@ export function tickerWorker(): void {
     if (event.data.run === true) {
       intervalId = setInterval(() => {
         self.postMessage({message: 'run'});
-      }, 16.66);
+      }, 1000 / 60);
     }
 
     if (event.data.run === false) {

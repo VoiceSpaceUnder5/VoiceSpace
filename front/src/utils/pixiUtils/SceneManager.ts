@@ -1,7 +1,7 @@
 import {Application} from 'pixi.js';
 import {isMobile} from '../AgentCheck';
 import {Scene} from './Scene';
-import {tickerWorker} from './Ticker';
+import {tickerWorker} from './TickerWorker';
 
 export class SceneManager {
   private static application: Application;
@@ -38,11 +38,15 @@ export class SceneManager {
       antialias: true,
     });
 
-    // WebWorker
+    //visibility === visible 일 때 돌아갈 Ticker
+    SceneManager.application.ticker.add(SceneManager.update);
+    //visibility === hidden 일 때 돌아갈 Ticker
     SceneManager.addTickerWorker();
-    SceneManager.runTickerWorker();
+    document.addEventListener(
+      'visibilitychange',
+      SceneManager.handleVisibilityChange,
+    );
 
-    // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', SceneManager.resize);
     // mobile check
     if (isMobile()) {
@@ -55,6 +59,17 @@ export class SceneManager {
     }
     console.log('Scene SceneManager Initialized! ');
   }
+
+  private static handleVisibilityChange(): void {
+    if (document.visibilityState === 'hidden') {
+      SceneManager.runTickerWorker();
+      SceneManager.application.ticker.stop();
+    } else if (document.visibilityState === 'visible') {
+      SceneManager.stopTickerWorker();
+      SceneManager.application.ticker.start();
+    }
+  }
+
   private static addTickerWorker(): void {
     const tickerWorkerBlob = new Blob(
       [tickerWorker.toString().replace(/^function .+\{?|\}$/g, '')],
@@ -66,15 +81,16 @@ export class SceneManager {
 
   private static runTickerWorker(): void {
     SceneManager.tickerWorker.postMessage({run: true});
-
     SceneManager.tickerWorker.onmessage = event => {
-      if (event.data.message === 'run') {
-        SceneManager.update(1);
-      }
+      if (event.data.message === 'run') SceneManager.update(1);
     };
   }
 
-  private static destroyTickerWorker(): void {
+  private static stopTickerWorker() {
+    SceneManager.tickerWorker.postMessage({run: false});
+  }
+
+  private static removeTickerWorker(): void {
     SceneManager.tickerWorker.postMessage({run: false});
     SceneManager.tickerWorker.terminate();
   }
@@ -99,7 +115,7 @@ export class SceneManager {
 
   public static destroy(): void {
     window.removeEventListener('resize', SceneManager.resize);
-    SceneManager.destroyTickerWorker();
+    SceneManager.removeTickerWorker();
     SceneManager.app.destroy();
   }
 
