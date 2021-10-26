@@ -56,45 +56,31 @@ export class SceneManager {
         window.scrollTo(0, 0);
       });
     }
-    console.log('Scene SceneManager Initialized! ');
   }
 
   private static handleVisibilityChange(): void {
-    console.log(`Handle Visible: ${document.visibilityState}`);
     if (document.visibilityState === 'hidden') {
-      console.log('Is hidden');
       SceneManager.runTickerWorker();
       SceneManager.application.ticker.stop();
     } else if (document.visibilityState === 'visible') {
-      console.log('Is Visible');
       SceneManager.stopTickerWorker();
       SceneManager.application.ticker.start();
     }
   }
 
   private static addTickerWorker(): void {
-    console.log('addTickerWorker');
-    SceneManager.tickerWorker = new Worker('./TickerWorker.js');
-    console.log(
-      `AddTickerWorker: `,
-      SceneManager.tickerWorker,
-      SceneManager.tickerWorker.onmessage,
-      SceneManager.tickerWorker.postMessage,
-    );
+    SceneManager.tickerWorker = new Worker('./workers/TickerWorker.js');
   }
 
   private static runTickerWorker(): void {
     SceneManager.tickerWorker.postMessage({run: true});
     SceneManager.tickerWorker.onmessage = event => {
-      console.log(`OnMessage:`, event.data.message);
       if (event.data.message === 'run') SceneManager.update(1);
     };
-    console.log(`RunTickerWorker: `, SceneManager.tickerWorker);
   }
 
   private static stopTickerWorker() {
     SceneManager.tickerWorker.postMessage({run: false});
-    console.log(`StopTickerWorker: `, SceneManager.tickerWorker);
   }
 
   private static removeTickerWorker(): void {
@@ -105,13 +91,11 @@ export class SceneManager {
   public static changeScene(newScene: Scene): void {
     // Remove and destroy old scene... if we had one..
     if (SceneManager.currentScene) {
-      console.log('Destroy current Scene!! ');
       SceneManager.application.stage.removeChild(SceneManager.currentScene);
       SceneManager.currentScene.destroy();
     }
 
     // Add the new one
-    console.log('Add new Scene to SceneManager! ');
     SceneManager.currentScene = newScene;
     SceneManager.application.stage.addChild(SceneManager.currentScene);
   }
