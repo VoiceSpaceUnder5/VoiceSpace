@@ -61,10 +61,13 @@ export class SceneManager {
   }
 
   private static handleVisibilityChange(): void {
+    console.log(`Handle Visible: ${document.visibilityState}`);
     if (document.visibilityState === 'hidden') {
+      console.log('Is hidden');
       SceneManager.runTickerWorker();
       SceneManager.application.ticker.stop();
     } else if (document.visibilityState === 'visible') {
+      console.log('Is Visible');
       SceneManager.stopTickerWorker();
       SceneManager.application.ticker.start();
     }
@@ -77,6 +80,7 @@ export class SceneManager {
     );
     const workerBlobUrl = URL.createObjectURL(tickerWorkerBlob);
     SceneManager.tickerWorker = new Worker(workerBlobUrl);
+    console.log(`AddTickerWorker: ${SceneManager.tickerWorker}`);
   }
 
   private static runTickerWorker(): void {
@@ -84,10 +88,12 @@ export class SceneManager {
     SceneManager.tickerWorker.onmessage = event => {
       if (event.data.message === 'run') SceneManager.update(1);
     };
+    console.log(`RunTickerWorker: ${SceneManager.tickerWorker}`);
   }
 
   private static stopTickerWorker() {
     SceneManager.tickerWorker.postMessage({run: false});
+    console.log(`StopTickerWorker: ${SceneManager.tickerWorker}`);
   }
 
   private static removeTickerWorker(): void {
