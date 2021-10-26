@@ -1,7 +1,6 @@
 import {Application} from 'pixi.js';
 import {isMobile} from '../AgentCheck';
 import {Scene} from './Scene';
-import {tickerWorker} from './TickerWorker';
 
 export class SceneManager {
   private static application: Application;
@@ -57,7 +56,6 @@ export class SceneManager {
         window.scrollTo(0, 0);
       });
     }
-    console.log('Scene SceneManager Initialized! ');
   }
 
   private static handleVisibilityChange(): void {
@@ -71,12 +69,7 @@ export class SceneManager {
   }
 
   private static addTickerWorker(): void {
-    const tickerWorkerBlob = new Blob(
-      [tickerWorker.toString().replace(/^function .+\{?|\}$/g, '')],
-      {type: 'text/javascript'},
-    );
-    const workerBlobUrl = URL.createObjectURL(tickerWorkerBlob);
-    SceneManager.tickerWorker = new Worker(workerBlobUrl);
+    SceneManager.tickerWorker = new Worker('./workers/TickerWorker.js');
   }
 
   private static runTickerWorker(): void {
@@ -98,13 +91,11 @@ export class SceneManager {
   public static changeScene(newScene: Scene): void {
     // Remove and destroy old scene... if we had one..
     if (SceneManager.currentScene) {
-      console.log('Destroy current Scene!! ');
       SceneManager.application.stage.removeChild(SceneManager.currentScene);
       SceneManager.currentScene.destroy();
     }
 
     // Add the new one
-    console.log('Add new Scene to SceneManager! ');
     SceneManager.currentScene = newScene;
     SceneManager.application.stage.addChild(SceneManager.currentScene);
   }
