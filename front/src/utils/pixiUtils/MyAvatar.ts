@@ -78,7 +78,7 @@ export class MyAvatar extends Avatar {
       this.x = oldX;
       this.y = oldY;
     }
-    this.zIndex = this.y + this.height / 2;
+    this.changeZIndexIfChanged();
     this.moveGesture(framesPassed);
   }
 

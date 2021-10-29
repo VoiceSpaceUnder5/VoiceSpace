@@ -25,28 +25,28 @@ export class PeerAvatar extends Avatar {
       this.offCollidable();
     }
 
-    this.changePosition();
-    this.changeZIndex();
+    this.changePositionIfChanged();
+    this.changeZIndexIfChanged();
     this.changePartRotationDegree();
     this.changeLookDirection();
     this.changeAvatarFace();
     this.changeAvatarFaceScale();
     this.changeDivPos();
     this.changeVolume();
-    //Peer의 Avatar번호가 바뀌었으면 바꾸어준다. 아바타를
+    // Peer의 Avatar번호가 바뀌었으면 바꾸어준다. 아바타를
   }
 
   private changeVolume(): void {
     GameData.updateVolumeByDistance(this.socketID);
   }
 
-  private changePosition(): void {
-    const centerPos = GameData.getPeerCenterPos(this.socketID);
-    this.position.set(centerPos?.x, centerPos?.y);
-  }
-
-  private changeZIndex(): void {
-    this.zIndex = this.y + this.height / 2;
+  private changePositionIfChanged(): void {
+    const newCenterPos = GameData.getPeerCenterPos(this.socketID);
+    if (
+      this.position.x !== newCenterPos?.x ||
+      this.position.y !== newCenterPos?.y
+    )
+      this.position.set(newCenterPos?.x, newCenterPos?.y);
   }
 
   private changePartRotationDegree(): void {

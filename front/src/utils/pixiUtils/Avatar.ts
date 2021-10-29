@@ -66,6 +66,11 @@ export class Avatar extends DisplayContainer implements IAvatar {
     return avatarImageMDs[this.avatarImageEnum].avatarInitialName;
   }
 
+  protected changeZIndexIfChanged(): void {
+    const newZindex = this.y + this.height / 2;
+    if (this.zIndex !== newZindex) this.zIndex = newZindex;
+  }
+
   public changeAvatar(data: DisplayContainerData): void {
     const newParts: Sprite[] = [];
     data.parts.forEach(part => {
