@@ -16,10 +16,6 @@ export function createViewport(
     interaction: SceneManager.app.renderer.plugins.interaction, // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
   });
   viewport.clamp({
-    left: false, // whether to clamp to the left and at what value
-    right: false, // whether to clamp to the right and at what value
-    top: false, // whether to clamp to the top and at what value
-    bottom: false, // whether to clamp to the bottom and at what value
     direction: 'all', // (all, x, or y) using clamps of [0, viewport.worldWidth / viewport.worldHeight]; replaces left / right / top / bottom if set
     underflow: 'center', // where to place world if too small for screen (e.g., top - right, center, none, bottomleft)
   });
@@ -44,3 +40,8 @@ export function setViewportFollow(
     })
     .follow(target);
 }
+
+// //viewport Culling 추가
+// this.cull = new Simple();
+// this.cull.addList(world.children);
+// this.cull.cull(viewport.getVisibleBounds());
