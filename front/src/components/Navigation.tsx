@@ -221,6 +221,9 @@ function Navigation(props: NavigationProps): JSX.Element {
     trackEventHandler: (peerId: string, event: RTCTrackEvent) => void,
   ) => {
     props.peerManager.trackEventHandler = trackEventHandler;
+    props.peerManager.forEachPeer(peer => {
+      peer.trackEventHandler = trackEventHandler;
+    });
   };
   const getUsers = (): UserInfo[] => {
     const result: UserInfo[] = [
