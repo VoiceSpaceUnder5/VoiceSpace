@@ -93,10 +93,10 @@ export class World extends Container implements IWorld {
   }
 
   update(framesPassed: number): void {
-    const children = this.children as DisplayContainer[];
-    children.forEach(child => {
-      child.update(framesPassed);
-    });
+    const numOfChild = this.children.length;
+    for (let i = 0; i < numOfChild; ++i) {
+      (this.children[i] as DisplayContainer).update(framesPassed);
+    }
   }
 
   addMyAvatar(myAvatar: MyAvatar): void {
