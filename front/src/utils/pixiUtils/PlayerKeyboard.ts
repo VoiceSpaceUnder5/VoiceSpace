@@ -1,9 +1,9 @@
 import {MyAvatar} from './MyAvatar';
-import {keyboard} from './Keyboard';
 import {Key} from './Key';
 import {PLAYER_SPEED} from './metaData/DataInterface';
 
 export class PlayerKeyboard {
+  public player: MyAvatar;
   public left: Key;
   public right: Key;
   public up: Key;
@@ -16,12 +16,14 @@ export class PlayerKeyboard {
     upKeyCode: string,
     downKeyCode: string,
   ) {
-    this.left = keyboard(leftKeyCode);
-    this.right = keyboard(rightKeyCode);
-    this.up = keyboard(upKeyCode);
-    this.down = keyboard(downKeyCode);
+    this.player = player;
+    this.left = new Key(leftKeyCode);
+    this.right = new Key(rightKeyCode);
+    this.up = new Key(upKeyCode);
+    this.down = new Key(downKeyCode);
 
     this.initialize(player);
+    window.addEventListener('blur', this.reset.bind(this), false);
   }
 
   public get keyDown(): boolean {
@@ -34,35 +36,45 @@ export class PlayerKeyboard {
   }
 
   private initialize(player: MyAvatar) {
-    this.left.press = () => {
+    this.left.setPress(() => {
       player.vx -= PLAYER_SPEED;
       player.scale.x = -1;
-    };
+    });
 
-    this.left.release = () => {
+    this.left.setRelease(() => {
       player.vx += PLAYER_SPEED;
-    };
+    });
 
-    this.up.press = () => {
+    this.up.setPress(() => {
       player.vy -= PLAYER_SPEED;
-    };
-    this.up.release = () => {
+    });
+    this.up.setRelease(() => {
       player.vy += PLAYER_SPEED;
-    };
+    });
 
-    this.right.press = () => {
+    this.right.setPress(() => {
       player.vx += PLAYER_SPEED;
       player.scale.x = 1;
-    };
-    this.right.release = () => {
+    });
+    this.right.setRelease(() => {
       player.vx -= PLAYER_SPEED;
-    };
+    });
 
-    this.down.press = () => {
+    this.down.setPress(() => {
       player.vy += PLAYER_SPEED;
-    };
-    this.down.release = () => {
+    });
+
+    this.down.setRelease(() => {
       player.vy -= PLAYER_SPEED;
-    };
+    });
+  }
+
+  public reset(): void {
+    this.left.reset();
+    this.right.reset();
+    this.up.reset();
+    this.down.reset();
+    this.player.vx = 0;
+    this.player.vy = 0;
   }
 }

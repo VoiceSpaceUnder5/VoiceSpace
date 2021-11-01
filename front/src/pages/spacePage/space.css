@@ -383,7 +383,7 @@ body {
 
 .user_list {
   width: 15vw;
-  min-width: 200px;
+  min-width: 225px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -437,6 +437,7 @@ body {
 }
 .panel_volume_bar {
   width: 5vw;
+  min-width: 50px;
   vertical-align: middle;
   margin-bottom: 2px;
 }
@@ -469,13 +470,11 @@ body {
 
 .profile_input > input {
   width: 95%;
-  max-width: 150px;
   color: black;
   border-radius: 10px;
 }
 .message_input {
   width: calc(100% - 55px);
-  max-width: 150px;
   color: black;
   border-radius: 10px;
 }

@@ -99,6 +99,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     if (props.profileDropdownOnOff.on === false) {
       if (e.key === 'Enter') {
         setVisible(true);
+        inputRef.current?.focus();
       }
     }
     if (e.key === 'Escape') {
@@ -155,6 +156,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
         <form onSubmit={onSubmit}>
           <input
             ref={inputRef}
+            maxLength={100}
             className="message_input"
             type="text"
             placeholder="메시지를 입력하세요"
