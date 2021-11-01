@@ -53,6 +53,7 @@ export function ProfileDropDown(props: ProfileProps): JSX.Element {
     let nextNickname = newNickname;
     if (newNickname === '') {
       nextNickname = `익명의 ${avatarImageMDs[newAvatar].avatarInitialName}`;
+      setNewNickname(nextNickname);
     }
     props.setAvatar(newAvatar);
     props.setNickname(nextNickname);
