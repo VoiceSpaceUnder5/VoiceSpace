@@ -469,13 +469,11 @@ body {
 
 .profile_input > input {
   width: 95%;
-  max-width: 150px;
   color: black;
   border-radius: 10px;
 }
 .message_input {
   width: calc(100% - 55px);
-  max-width: 150px;
   color: black;
   border-radius: 10px;
 }
