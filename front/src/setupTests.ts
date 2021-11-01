@@ -41,7 +41,13 @@ class mockAnalyserNode {
 }
 
 class mockMediaStream {
-  tracks = [];
+  tracks = [
+    {
+      getSettings: () => {
+        return {deviceId: 'default'};
+      },
+    },
+  ];
   addTrack = track => {
     this.tracks.push(track);
   };

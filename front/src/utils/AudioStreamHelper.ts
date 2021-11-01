@@ -1,201 +1,147 @@
 // navigator.meidaDevices 아래에 우리가 호출하는 모든 메소드를 추상화 하고,
 // device 변경에 대한 모든 것을 컨트롤하고,
 // audioStream 에 대한 모든 실제 출력 엘리멘트 컨트롤을 대신한다.
-interface AudioContainer {
-  elementContainer: HTMLDivElement | null;
-  audios: Map<string, AudioAndStream>;
-}
-
-interface AudioAndStream {
-  audio: HTMLAudioElement;
-  stream: MediaStream;
-}
 
 export default class AudioStreamHelper {
-  private static onLocalAudioStreams: Set<
-    (newLocalAudioStream: MediaStream) => void
-  > = new Set();
-  private static _speakerDeviceId = 'default';
-  private static _micDeivceId = 'default';
-  private static audioContainer: AudioContainer = {
-    elementContainer: null,
-    audios: new Map(),
-  };
-  private static testAudio: HTMLAudioElement = document.createElement('audio');
+  private onLocalAudioStreams: Set<(newLocalAudioStream: MediaStream) => void>;
+  private _speakerDeviceId: string;
+  private _micDeivceId: string;
+  private _isSpeakerChangeable: boolean;
 
-  static get speakerDeviceId(): string {
+  constructor() {
+    this._speakerDeviceId = 'default';
+    this._micDeivceId = 'undefined';
+    this.onLocalAudioStreams = new Set();
+    this._isSpeakerChangeable = false;
+    navigator.mediaDevices.ondevicechange = async () => {
+      await this.getDefaultDevice();
+      await this.loadLocalAudioStream();
+    };
+  }
+
+  onDeviceChange(cb: (() => void) | null) {
+    navigator.mediaDevices.ondevicechange = async () => {
+      await this.getDefaultDevice();
+      await this.loadLocalAudioStream();
+      if (cb) cb();
+    };
+  }
+
+  async getDefaultDevice() {
+    this._isSpeakerChangeable = false;
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: false,
+      audio: true,
+    });
+    this._micDeivceId = stream.getAudioTracks()[0].getSettings().deviceId!;
+    const testAudio = document.createElement('audio');
+    testAudio.muted = true;
+    testAudio.srcObject = stream;
+    if ((testAudio as any).setSinkId) {
+      this._isSpeakerChangeable = true;
+    }
+    if ((testAudio as any).sinkId) {
+      if ((testAudio as any).sinkId === '') this._speakerDeviceId = 'default';
+      else this._speakerDeviceId = (testAudio as any).sinkId;
+    }
+  }
+
+  get isSpeakerChangeable() {
+    return this._isSpeakerChangeable;
+  }
+
+  getSpeakerDeviceId() {
     return this._speakerDeviceId;
   }
-  static set speakerDeviceId(speakerDeviceId: string) {
-    this._speakerDeviceId = speakerDeviceId;
-    this.audioContainer.audios.forEach(audioAndStream => {
-      const audio = audioAndStream.audio;
-      this.changeSpeakerIdIfCan(audio, this._speakerDeviceId);
-    });
+
+  async setSpeakerDeviceId(speakerDeviceId: string) {
+    const isValid = await this.deviceIdValidCheck(
+      'audiooutput',
+      speakerDeviceId,
+    );
+    if (isValid) this._speakerDeviceId = speakerDeviceId;
+    else throw `${speakerDeviceId} is not connected device`;
   }
 
-  static get micDeviceId(): string {
+  getMicDeviceId(): string {
     return this._micDeivceId;
   }
 
-  static set micDeviceId(micDeviceId: string) {
-    // micDeviceId 가 바뀌면, 다시 loadLocalAudioStream 을 호출해준다.
-    this._micDeivceId = micDeviceId;
-    this.loadLocalAudioStream();
+  async setMicDeviceId(micDeviceId: string) {
+    const isValid = await this.deviceIdValidCheck('audioinput', micDeviceId);
+    if (isValid) {
+      // micDeviceId 가 바뀌면, 다시 loadLocalAudioStream 을 호출해준다.
+      this._micDeivceId = micDeviceId;
+      this.loadLocalAudioStream();
+    } else throw `${micDeviceId} is not connected device`;
+  }
+
+  private async deviceIdValidCheck(kind: MediaDeviceKind, micDeviceId: string) {
+    const micDeviceList = await this.getDevices(kind);
+    if (
+      micDeviceList.filter(mdi => {
+        return mdi.deviceId === micDeviceId;
+      })
+    )
+      return true;
+    return false;
   }
 
   // 호출 시 .getUserMeida 를 호출 하여 resolve 시 this.localAudioStream 을 교체하고,
   // 해당 localAudioStream 으로 onLocalAudioStreams 에 있는 모든 콜백을 호출함.
-  private static loadLocalAudioStream(
-    onceCB: (arg0: MediaStream) => void = () => {
-      return;
-    },
-  ): void {
-    navigator.mediaDevices
-      .getUserMedia({video: false, audio: {deviceId: this._micDeivceId}})
-      .then((localAudioStream: MediaStream) => {
-        onceCB(localAudioStream);
-        this.onLocalAudioStreams.forEach(cb => {
-          cb(localAudioStream);
-        });
-      })
-      .catch(() => {
-        throw new Error('navigator.mediaDevices.getUserMedia Fail');
-      });
+  private async loadLocalAudioStream() {
+    const audioStream = await this.getLocalAudioStream();
+    this.onLocalAudioStreams.forEach(cb => {
+      cb(audioStream);
+    });
   }
 
-  static addOnLocalAudioStream(
+  addOnLocalAudioStream(
     onLocalAudioStream: (newLocalAudioStream: MediaStream) => void,
   ): void {
     this.onLocalAudioStreams.add(onLocalAudioStream);
   }
 
-  static removeOnLocalAudioStream(
+  removeOnLocalAudioStream(
     onLocalAudioStream: (newLocalAudioStream: MediaStream) => void,
   ): void {
     this.onLocalAudioStreams.delete(onLocalAudioStream);
   }
 
-  static getLocalAudioStream(
-    onLocalAudioStream: (newLocalAudioStream: MediaStream) => void,
-  ): void {
-    this.loadLocalAudioStream(onLocalAudioStream);
+  async getLocalAudioStream(): Promise<MediaStream> {
+    return navigator.mediaDevices.getUserMedia({
+      audio: {deviceId: this._micDeivceId},
+      video: false,
+    });
   }
 
-  // 들어온 kind 값을 가진 MediaDeviceInfo 중에, default 와 겹치는 것을 제외하고 리턴해줌.
-  private static async getDevices(
-    kind: MediaDeviceKind,
-  ): Promise<MediaDeviceInfo[]> {
+  // 들어온 kind 값을 가진 MediaDeviceInfo 배열을 리턴
+  private async getDevices(kind: MediaDeviceKind): Promise<MediaDeviceInfo[]> {
     return navigator.mediaDevices
       .enumerateDevices()
       .then(mediaDeviceInfos => {
-        // mediaDeviceInfos 에서, default 와 라벨이 겹치는 것 하나만 제외하고 inputDevices 그대로 리턴해줌.
-        const kindFiltered = mediaDeviceInfos.filter(mid => {
+        return mediaDeviceInfos.filter(mid => {
           return mid.kind === kind;
         });
-        const defaultDevice = kindFiltered.filter(mdi => {
-          return mdi.deviceId.indexOf('default');
-        });
-        return kindFiltered
-          .filter(mdi => {
-            return mdi.label.indexOf(defaultDevice[0].label);
-          })
-          .filter(mid => {
-            return mid.kind === kind;
-          });
       })
       .catch(() => {
         throw new Error('navigator.mediaDevices.enumerateDevices() Fail!');
       });
   }
 
-  static async getMicDevices(): Promise<MediaDeviceInfo[]> {
+  async getMicDevices(): Promise<MediaDeviceInfo[]> {
     return this.getDevices('audioinput');
   }
 
-  static async getSpeakerDevices(): Promise<MediaDeviceInfo[]> {
+  async getSpeakerDevices(): Promise<MediaDeviceInfo[]> {
     return this.getDevices('audiooutput');
   }
 
-  private static initAudioContainerIfNotInited(): void {
-    if (!this.audioContainer.elementContainer) {
-      this.audioContainer.elementContainer = document.createElement('div');
-      this.audioContainer.elementContainer.className = 'css 적용할 것';
-      document.body.appendChild(this.audioContainer.elementContainer);
-    }
-  }
-
-  private static addDefaultValueToAudiosIfNotHas(Id: string): void {
-    if (!this.audioContainer.audios.has(Id)) {
-      const audio = document.createElement('audio');
-      audio.autoplay = true;
-      audio.hidden = true;
-      this.audioContainer.elementContainer?.appendChild(audio);
-      const stream = new MediaStream();
-      audio.srcObject = stream;
-      this.audioContainer.audios.set(Id, {audio: audio, stream: stream});
-    }
-  }
-
-  private static changeSpeakerIdIfCan(
-    audio: HTMLAudioElement,
-    speakerDeviceId: string,
-  ): void {
-    if ((audio as any).setSinkId) {
-      (audio as any).setSinkId(speakerDeviceId);
-    }
-  }
-
-  static addAudioTrack(Id: string, track: MediaStreamTrack): void {
-    this.initAudioContainerIfNotInited();
-    this.addDefaultValueToAudiosIfNotHas(Id);
-    // eslint-disable-next-line
-    const audio = this.audioContainer.audios.get(Id)!.audio;
-    // eslint-disable-next-line
-    const stream = this.audioContainer.audios.get(Id)!.stream;
-    // 새로운 스트림을 만듦
-    const newStream = new MediaStream();
-    stream.getTracks().forEach(oldTrack => {
-      newStream.addTrack(oldTrack);
-    });
-    newStream.addTrack(track);
-    // 기존 데이터 교체
-    audio.srcObject = newStream;
-    this.audioContainer.audios.get(Id)!.stream = newStream;
-  }
-
-  static removeAllAudioTrack(Id: string): void {
-    this.audioContainer.audios.delete(Id);
-    this.addDefaultValueToAudiosIfNotHas(Id);
-  }
-
-  static isSpeakerChangeable(): boolean {
-    if ((this.testAudio as any).setSinkId) {
-      return true;
-    }
-    return false;
-  }
-
-  static async tryAuth(): Promise<boolean> {
-    return navigator.mediaDevices
-      .getUserMedia({video: false, audio: true})
-      .then(() => {
-        return true;
-      })
-      .catch(() => {
-        return false;
-      });
-  }
-
-  static clear() {
-    this.onLocalAudioStreams.clear();
-    this._micDeivceId = 'default';
-    this._speakerDeviceId = 'default';
-    if (this.audioContainer.elementContainer)
-      document.body.removeChild(this.audioContainer.elementContainer);
-    this.audioContainer = {
-      elementContainer: null,
-      audios: new Map(),
-    };
+  clear() {
+    navigator.mediaDevices.ondevicechange = null;
+    this.onLocalAudioStreams = new Set();
+    this._speakerDeviceId = 'undefined';
+    this._micDeivceId = 'undefined';
+    this._isSpeakerChangeable = false;
   }
 }

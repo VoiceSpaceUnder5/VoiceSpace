@@ -59,80 +59,51 @@ const setGUMSuccessAndEDSuccess = (ms: any, ed: any) => {
   });
 };
 
-const getLocalAudioStreamAndAwait5ms = async (
-  cb: (arg0: MediaStream) => void = () => {
-    return;
-  },
-) => {
-  AudioStreamHelper.getLocalAudioStream(cb);
-  await new Promise((r: any) => setTimeout(r, 5));
-};
+let audioStreamHelper: AudioStreamHelper | null = null;
 
-beforeEach(() => {
+beforeEach(async () => {
   setGUMSuccessAndEDSuccess(mockMediaStream, mockEnumerateDevices);
+  audioStreamHelper = new AudioStreamHelper();
+  await audioStreamHelper.getDefaultDevice();
 });
 
 afterEach(() => {
-  AudioStreamHelper.clear();
+  audioStreamHelper = null;
 });
 
 describe('AudioStreamHelper test', () => {
   test('getMicDevices 호출시, inputDevices 만 리턴 해줌 (.kind === "audioinput").', async () => {
-    const result = await AudioStreamHelper.getMicDevices();
+    const result = await audioStreamHelper!.getMicDevices();
     result.forEach(mediaDeviceInfo => {
       expect(mediaDeviceInfo.kind).toBe('audioinput');
     });
   });
-  test('getMicDevices 호출시, default 와 라벨이 겹치는 것 하나만 제외하고 inputDevices 그대로 리턴해줌.', async () => {
-    const result = await AudioStreamHelper.getMicDevices();
-    // default 와 라벨 겹치는게 없는지 테스트
-    expect(result.length).not.toBe(0);
-    const filtered = result.filter(mdi => {
-      return mdi.label === 'InputLabel1' && mdi.deviceId !== 'default';
-    });
-    expect(filtered.length).toBe(0);
-  });
-  test('getSpeakerDevices 호출시, default 와 라벨이 겹치는 것 하나만 제외하고 outputDevices 그대로 리턴해줌.', async () => {
-    const result = await AudioStreamHelper.getSpeakerDevices();
+  test('getSpeakerDevices 호출시, outputDevices 만 리턴 해줌 (.kind === "audiooutput").', async () => {
+    const result = await audioStreamHelper!.getSpeakerDevices();
     result.forEach(mediaDeviceInfo => {
       expect(mediaDeviceInfo.kind).toBe('audiooutput');
     });
   });
-  test('getSpeakerDevices 호출시, default 와 라벨이 겹치는 것 하나만 제외하고 outputDevices 그대로 리턴해줌.', async () => {
-    const result = await AudioStreamHelper.getSpeakerDevices();
-    // default 와 라벨 겹치는게 없는지 테스트
-    expect(result.length).not.toBe(0);
-
-    const filtered = result.filter(mdi => {
-      return mdi.label === 'outputLabel1' && mdi.deviceId !== 'default';
-    });
-    expect(filtered.length).toBe(0);
-  });
-  test('getLocalAudioStream 호출 시, 콜백 호출', async () => {
-    const cb = jest.fn();
-    await getLocalAudioStreamAndAwait5ms(cb);
-    expect(cb).toBeCalledWith(mockMediaStream);
-  });
-  test('micDeivcedId 변경 시, 기존 콜백 정상적으로 호출 되는지', async () => {
-    const cb = jest.fn();
-    AudioStreamHelper.addOnLocalAudioStream(cb);
-    await getLocalAudioStreamAndAwait5ms(cb);
-    expect(cb).toBeCalledWith(mockMediaStream);
-    const newMediaStream = new MediaStream();
-    setGUMSuccessAndEDSuccess(newMediaStream, mockEnumerateDevices);
-    AudioStreamHelper.micDeviceId = 'mijeong';
-    await new Promise((r: any) => setTimeout(r, 5));
-    expect(cb).toBeCalledWith(newMediaStream);
-  });
-  test('callback 집어넣고, removeOnLocalAudioStream 했을때 정상적으로 사라지는지', async () => {
-    const cb = jest.fn();
-    AudioStreamHelper.addOnLocalAudioStream(cb);
-    await getLocalAudioStreamAndAwait5ms();
-    expect(cb).toBeCalledTimes(1);
-    await getLocalAudioStreamAndAwait5ms();
-    expect(cb).toBeCalledTimes(2);
-    AudioStreamHelper.removeOnLocalAudioStream(cb);
-    await getLocalAudioStreamAndAwait5ms();
-    expect(cb).toBeCalledTimes(2);
-  });
+  // test('micDeivcedId 변경 시, 기존 콜백 정상적으로 호출 되는지', async () => {
+  //   const cb = jest.fn();
+  //   AudioStreamHelper.addOnLocalAudioStream(cb);
+  //   await getLocalAudioStreamAndAwait5ms(cb);
+  //   expect(cb).toBeCalledWith(mockMediaStream);
+  //   const newMediaStream = new MediaStream();
+  //   setGUMSuccessAndEDSuccess(newMediaStream, mockEnumerateDevices);
+  //   AudioStreamHelper.micDeviceId = 'mijeong';
+  //   await new Promise((r: any) => setTimeout(r, 5));
+  //   expect(cb).toBeCalledWith(newMediaStream);
+  // });
+  // test('callback 집어넣고, removeOnLocalAudioStream 했을때 정상적으로 사라지는지', async () => {
+  //   const cb = jest.fn();
+  //   AudioStreamHelper.addOnLocalAudioStream(cb);
+  //   await getLocalAudioStreamAndAwait5ms();
+  //   expect(cb).toBeCalledTimes(1);
+  //   await getLocalAudioStreamAndAwait5ms();
+  //   expect(cb).toBeCalledTimes(2);
+  //   AudioStreamHelper.removeOnLocalAudioStream(cb);
+  //   await getLocalAudioStreamAndAwait5ms();
+  //   expect(cb).toBeCalledTimes(2);
+  // });
 });

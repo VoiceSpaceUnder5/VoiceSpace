@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 import {Button, Select, message, Switch} from 'antd';
 import {LeftCircleFilled, RightCircleFilled} from '@ant-design/icons';
@@ -9,6 +9,7 @@ import {
   AvatarImageEnumMin,
   avatarImageMDs,
 } from '../../utils/pixiUtils/metaData/ImageMetaData';
+import AudioStreamHelper from '../../utils/AudioStreamHelper';
 
 const qs = require('query-string');
 const {Option} = Select;
@@ -23,22 +24,37 @@ interface AudioVisualizerProps {
 }
 
 interface SoundControllProps {
-  deviceInfos: MediaDeviceInfo[];
-  selectedMicDeviceID: string;
-  selectedSpeakerDeviceID: string;
-  setSelectedMicDeviceAndSetAudioStream: (deviceID: string) => void;
-  setSelectedSpeakerDeviceWithTest: (deviceID: string) => void;
-  isSpeakerDeviceChange: boolean;
+  audioStreamHelper: AudioStreamHelper;
 }
 
 function SoundControll(props: SoundControllProps): JSX.Element {
-  const onSpeakerChange = (deviceID: string) => {
-    props.setSelectedSpeakerDeviceWithTest(deviceID);
+  const [micInfos, setMicInfos] = useState<MediaDeviceInfo[]>([]);
+  const [speakerInfos, setSpeakerInfos] = useState<MediaDeviceInfo[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const getInfos = useCallback(async () => {
+    setIsLoading(true);
+    setMicInfos(await props.audioStreamHelper.getMicDevices());
+    setSpeakerInfos(await props.audioStreamHelper.getSpeakerDevices());
+    setIsLoading(false);
+  }, []);
+
+  const onSpeakerChange = async (speakerId: string) => {
+    setIsLoading(true);
+    await props.audioStreamHelper.setSpeakerDeviceId(speakerId);
+    setIsLoading(false);
   };
 
-  const onMicChange = (deviceID: string) => {
-    props.setSelectedMicDeviceAndSetAudioStream(deviceID);
+  const onMicChange = async (micId: string) => {
+    setIsLoading(true);
+    await props.audioStreamHelper.setMicDeviceId(micId);
+    setIsLoading(false);
   };
+
+  useEffect(() => {
+    getInfos();
+    props.audioStreamHelper.onDeviceChange = getInfos;
+  }, []);
 
   return (
     <div className="soundControllMainDiv">
@@ -48,22 +64,19 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           src="./assets/navigation/speaker.png"
         ></img>
         <Select
-          disabled={!props.isSpeakerDeviceChange}
+          loading={isLoading}
+          disabled={!props.audioStreamHelper.isSpeakerChangeable}
           className="soundControllSelect"
           onChange={onSpeakerChange}
-          value={props.selectedSpeakerDeviceID}
+          value={props.audioStreamHelper.getSpeakerDeviceId()}
         >
-          {props.deviceInfos
-            .filter(deviceInfo => {
-              return deviceInfo.kind === 'audiooutput';
-            })
-            .map(deviceInfo => {
-              return (
-                <Option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
-                  {deviceInfo.label}
-                </Option>
-              );
-            })}
+          {speakerInfos.map(deviceInfo => {
+            return (
+              <Option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
+                {deviceInfo.label}
+              </Option>
+            );
+          })}
         </Select>
       </div>
       <div className="soundControllSelectDiv">
@@ -73,21 +86,18 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           style={{width: '20%', height: 32}}
         ></img>
         <Select
+          loading={isLoading}
           className="soundControllSelect"
           onChange={onMicChange}
-          value={props.selectedMicDeviceID}
+          value={props.audioStreamHelper.getMicDeviceId()}
         >
-          {props.deviceInfos
-            .filter(deviceInfo => {
-              return deviceInfo.kind === 'audioinput';
-            })
-            .map(deviceInfo => {
-              return (
-                <Option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
-                  {deviceInfo.label}
-                </Option>
-              );
-            })}
+          {micInfos.map(deviceInfo => {
+            return (
+              <Option key={deviceInfo.deviceId} value={deviceInfo.deviceId}>
+                {deviceInfo.label}
+              </Option>
+            );
+          })}
         </Select>
       </div>
     </div>
@@ -191,6 +201,8 @@ function Setting(props: RouteComponentProps): JSX.Element {
     AvatarImageEnum.BUNNY,
   );
   const [isSpeakerChangeable, setIsSpeakerChangeable] = useState(true);
+  const [audioStreamHelper, setAudioStreamHelper] =
+    useState<AudioStreamHelper | null>(null);
 
   //ref
   const testAudioRef = useRef<HTMLAudioElement>(null);
@@ -309,6 +321,12 @@ function Setting(props: RouteComponentProps): JSX.Element {
 
   // useEffects
   useEffect(() => {
+    const temp = async () => {
+      const ash = new AudioStreamHelper();
+      await ash.getDefaultDevice();
+      setAudioStreamHelper(ash);
+    };
+    temp();
     getAudioStreamFromDeviceID('default')
       .then(audioStream => {
         setAudioStream(audioStream);
@@ -388,18 +406,12 @@ function Setting(props: RouteComponentProps): JSX.Element {
               </div>
             </div>
             <div className="soundControllContainerDiv">
-              <SoundControll
-                deviceInfos={deviceInfos}
-                selectedMicDeviceID={selectedMicDeviceID}
-                selectedSpeakerDeviceID={selectedSpeakerDeviceID}
-                setSelectedMicDeviceAndSetAudioStream={
-                  setSelectedMicDeviceAndSetAudioStream
-                }
-                setSelectedSpeakerDeviceWithTest={
-                  setSelectedSpeakerDeviceWithTest
-                }
-                isSpeakerDeviceChange={isSpeakerChangeable}
-              ></SoundControll>
+              {audioStreamHelper ? (
+                <SoundControll
+                  audioStreamHelper={audioStreamHelper}
+                ></SoundControll>
+              ) : null}
+
               <Button
                 className="soundControllReloadButton"
                 onClick={reloadDeviceInfoClick}
