@@ -23,7 +23,7 @@ export class PlayerKeyboard {
     this.down = new Key(downKeyCode);
 
     this.initialize(player);
-    window.addEventListener('visibilitychange', this.reset.bind(this), false);
+    window.addEventListener('blur', this.reset.bind(this), false);
   }
 
   public get keyDown(): boolean {
