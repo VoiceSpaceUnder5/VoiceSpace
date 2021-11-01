@@ -1,0 +1,155 @@
+{
+  "frames": {
+    "hut_floor.png": {
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 1224,
+        "h": 832
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1224,
+        "h": 832
+      },
+      "sourceSize": {
+        "w": 1224,
+        "h": 832
+      }
+    },
+    "hut_roof.png": {
+      "frame": {
+        "x": 1227,
+        "y": 1,
+        "w": 1439,
+        "h": 1017
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1439,
+        "h": 1017
+      },
+      "sourceSize": {
+        "w": 1439,
+        "h": 1017
+      }
+    },
+    "hut_wall_backLeft.png": {
+      "frame": {
+        "x": 2668,
+        "y": 1,
+        "w": 205,
+        "h": 200
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 205,
+        "h": 200
+      },
+      "sourceSize": {
+        "w": 205,
+        "h": 200
+      }
+    },
+    "hut_wall_backRight.png": {
+      "frame": {
+        "x": 1,
+        "y": 1020,
+        "w": 538,
+        "h": 200
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 538,
+        "h": 200
+      },
+      "sourceSize": {
+        "w": 538,
+        "h": 200
+      }
+    },
+    "hut_wall_frontLeft.png": {
+      "frame": {
+        "x": 541,
+        "y": 1020,
+        "w": 538,
+        "h": 200
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 538,
+        "h": 200
+      },
+      "sourceSize": {
+        "w": 538,
+        "h": 200
+      }
+    },
+    "hut_wall_frontRight.png": {
+      "frame": {
+        "x": 2668,
+        "y": 203,
+        "w": 438,
+        "h": 200
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 438,
+        "h": 200
+      },
+      "sourceSize": {
+        "w": 438,
+        "h": 200
+      }
+    },
+    "hut_wall_side.png": {
+      "frame": {
+        "x": 2668,
+        "y": 405,
+        "w": 34,
+        "h": 1032
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 34,
+        "h": 1032
+      },
+      "sourceSize": {
+        "w": 34,
+        "h": 1032
+      }
+    }
+  },
+  "meta": {
+    "app": "http://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "hut.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 3107,
+      "h": 1438
+    },
+    "scale": "1"
+  }
+}

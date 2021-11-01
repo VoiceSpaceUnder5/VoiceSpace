@@ -20,7 +20,12 @@ export class Stuff extends DisplayContainer {
         part.textureName,
         part.spriteSheet,
       );
-      if (!texture) return;
+      if (!texture) {
+        console.log('No texture:', texture);
+        console.log(part.textureName);
+        console.log(part.spriteSheet);
+        return;
+      }
       this.alphaChangable = data.alphaChangable;
       const sprite = Sprite.from(texture);
       sprite.position.set(part.position.x, part.position.y);

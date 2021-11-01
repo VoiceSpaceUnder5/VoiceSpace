@@ -6,6 +6,110 @@
     "height": 3072
   },
   "stuffs": [
+
+    {
+      "position": {"x": 1700, "y": 1700},
+      "alphaChangable": false,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_floor.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 0.0}
+        }
+      ]
+    },
+    {
+      "position": {"x": 2050, "y": 1700},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_wall_backRight.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1}
+        }
+      ],
+      "collisionBox": {"x": -270, "y": -50, "width": 530, "height": 50}
+    },
+    {
+      "position": {"x": 1185, "y": 1700},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_wall_backLeft.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1}
+        }
+      ],
+      "collisionBox": {"x": -100, "y": -50, "width": 200, "height": 50}
+    },
+    {
+      "position": {"x": 1072, "y": 2532},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_wall_side.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1}
+        }
+      ],
+      "collisionBox": {"x": -16.5, "y": -880, "width": 33, "height": 880}
+    },
+    {
+      "position": {"x": 2328, "y": 2532},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_wall_side.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1}
+        }
+      ],
+      "collisionBox": {"x": -16.5, "y": -880, "width": 33, "height": 880}
+    },
+    {
+      "position": {"x": 1083, "y": 2532},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_wall_frontLeft.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0, "y": 1}
+        }
+      ],
+      "collisionBox": {"x": 0, "y": -50, "width": 533, "height": 50}
+    },
+    {
+      "position": {"x": 1878, "y": 2532},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_wall_frontRight.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0, "y": 1}
+        }
+      ],
+      "collisionBox": {"x": 0, "y": -50, "width": 433, "height": 50}
+    },
+    {
+      "position": {"x": 1700, "y": 2900},
+      "alphaChangable": true,
+      "parts": [
+        {
+          "spriteSheet": "hut.json",
+          "textureName": "hut_roof.png",
+          "position": {"x": 0, "y": 0},
+          "anchor": {"x": 0.5, "y": 1.5}
+        }
+      ]
+    },
+
     {
       "position": {"x": 1717, "y": 460},
       "alphaChangable": true,
