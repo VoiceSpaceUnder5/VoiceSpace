@@ -99,6 +99,7 @@ export default function Messenger(props: MessengerProps): JSX.Element {
     if (props.profileDropdownOnOff.on === false) {
       if (e.key === 'Enter') {
         setVisible(true);
+        inputRef.current?.focus();
       }
     }
     if (e.key === 'Escape') {
