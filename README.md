@@ -55,7 +55,7 @@ Accordingly, we started development with the purpose of creating a service that 
 - Therefore, when a user connects for the first time, the p2p connection is established using the back signaling server.
 - After that, when the connection is completed, the transmitted audio stream is continuously played, and animation is drawn every frame with webGL technology through the transmitted avatar information.
 
-![image](https://user-images.githubusercontent.com/74593890/131950983-cf735bf4-3a74-4074-bf3d-1bf79e3fc6cd.png)
+![image](https://user-images.githubusercontent.com/74593890/139775166-f036b4c0-1584-4ecd-9444-5a1788fec82c.png)
 
 #### Multiple peer connection architecture
 - Because we aim for a project that anyone can service on their own server, In order to minimize the role of the back server, a number of p2p connections were established in **Full Mesh**.
