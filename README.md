@@ -66,24 +66,24 @@ Accordingly, we started development with the purpose of creating a service that 
 
 ### Main function
 
-- WebGL 을 이용한 굉장히 부드러운 애니메이션 (눈의 피로감 감소)
-- WebRTC 를 이용한 현실과 같은 매우 낮은 레이턴시의 음성채팅 (딜레이로부터 오는 피로감 감소)
-- Avatar 끼리의 거리가 멀어질수록, 음성 볼륨도 낮아지는 기능 (현실감 있는 음성 채팅)
-- 목소리 크기에 따라 아바타의 얼굴 크기가 변함 (현실감 있는 음성 시각화)
+- Super smooth animation using WebGL (reducing eye fatigue)
+- Real-time voice chat with very low latency using WebRTC (reducing fatigue from delay)
+- As the distance between Avatars increases, the voice volume also decreases (like realistic meeting)
+- A function that analyzes the voice and changes the shape of the avatar's mouth to match the pronunciation (like realistic meeting)
+- The size of the avatar's face changes according to the volume of the voice. (realistic voice visualization)
   ![gif](https://user-images.githubusercontent.com/74593890/131952354-8176e60f-da09-4b66-9d6a-1356eb40a7d6.gif)
 
-### [**여기**](https://giggleforest.com)에서 바로 체험해보실 수 있습니다.
+### you can try it right [**here**](https://giggleforest.com)
 
 ---
 
-### 주요 추가중인 기능 (고도화)
+### Main features being added (Advancement)
 
-- 음성을 분석하여 해당 발음에 맞게 아바타의 입모양이 바뀌는 기능 (현실감 있는 음성 채팅)
-- 아바타들이 움직이는 맵을 커스터마이징 하는 기능
+- map customization
 
 ---
 
-### 프로젝트 시작하기
+### Start project
 
 in back folder
 
@@ -99,33 +99,31 @@ npm install
 npm run start
 ```
 
-- front 폴더의 .env.development 에서 백엔드 주소를 변경 하실 수 있습니다.
+- You can change the backend address in **.env.development** in the front folder.
 
 ---
 
-### 프로젝트 배포하기
+### Deploy the project
 
 #### Front
 
-1. npm run build (in front folder) (.env.production) 의 값이 적용됩니다.
-2. 위 스크립트의 아웃풋으로 나온 build 폴더를 root 로 하여 serve (저희팀은 nginx 를 사용하였습니다.)
-
+1. npm run build (in front folder) The value of (.env.production) applies.
+2. Serve the build folder output from the above script as root (our team used nginx)
 #### Back
 
-1. npm run build (in back folder) (이때 만약 https 로 설정하시길 원하신다면 main.ts 의 내용을 바꿔주세요 (주석참조))
-2. 위 스크립트의 아웃풋으로 나온 dist 폴더의 main.js 를 nodeJS 로 실행하세요.
+1. npm run build (in back folder) (In this case, if you want to set it to https, please change the contents of main.ts (see comments))
+2. Execute main.js in the dist folder as the output of the above script as NodeJS.
 
 ---
 
 ### 문서
-
-- 각종 Component, Class, Function 정보는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/)에서 확인 하실 수 있습니다.
+- Information on various components, classes, and functions can be found [here](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/).
 
 ---
 
-### 테스트
+### Test
 
-#### front 폴더에서
+#### In front folder
 - unit test
 ```
 npm run test
@@ -135,24 +133,22 @@ npm run test
 ```
 npm run testCover
 ```
-
-- 현재 master 의 커버리지 레포트는 [여기](https://voicespaceunder5.github.io/VoiceSpaceDocs/coverage/)에서 보실 수 있습니다.
+- The current master's coverage report can be viewed [here](https://voicespaceunder5.github.io/VoiceSpaceDocs/coverage/)
 
 ---
 
-### 라이센스
+### License
 
 - [MIT](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/LICENSE)
 
 ---
 
-### 팀원
+### Team Information
 
 | Name     | Email                                       | Role | Major Part                    | Minor Part | Tech Stack                                   |
 | -------- | ------------------------------------------- | ---- | ----------------------------- | ---------- | -------------------------------------------- |
-| kilee    | [gnsdlrl@daum.net](mailto:gnsdlrl@daum.net) | 팀장 | 디자인, 프로젝트 배포 및 관리 | Front      | AWS, Github Action, CI/CD, React, Typescript |
+| kilee    | [gnsdlrl@daum.net](mailto:gnsdlrl@daum.net) | 팀장 | Design, project deployment and management | Front      | AWS, Github Action, CI/CD, React, Typescript |
 | honlee   | kij753@naver.com                            | 팀원 | Front                         | Back       | AWS, React, NestJS, Typescript               |
 | hyeonkim | hyongtiii@gmail.com                         | 팀원 | Back                          | Front      | React, NestJS, Typescript                    |
 | mijeong  | minje70@naver.com                           | 팀원 | Front                         | Back       | React, NestJS, Typescript                    |
-
 
