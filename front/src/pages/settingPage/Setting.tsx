@@ -20,7 +20,8 @@ interface SettingQuery {
 }
 
 interface AudioVisualizerProps {
-  audioStream: MediaStream;
+  audioStreamHelper: AudioStreamHelper;
+  isLoading: boolean;
 }
 
 interface SoundControllProps {
@@ -37,12 +38,12 @@ function SoundControll(props: SoundControllProps): JSX.Element {
     setSpeakerInfos(await props.audioStreamHelper.getSpeakerDevices());
   }, []);
 
-  const onSpeakerChange = async (speakerId: string) => {
-    await props.audioStreamHelper.setSpeakerDeviceId(speakerId);
+  const onSpeakerChange = (speakerId: string) => {
+    props.audioStreamHelper.setSpeakerDeviceId(speakerId);
   };
 
-  const onMicChange = async (micId: string) => {
-    await props.audioStreamHelper.setMicDeviceId(micId);
+  const onMicChange = (micId: string) => {
+    props.audioStreamHelper.setMicDeviceId(micId);
   };
 
   useEffect(() => {
@@ -127,17 +128,14 @@ class AudioVisualizerHelper {
 
 function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const avHelper = useMemo(() => {
-    return new AudioVisualizerHelper(props.audioStream);
-  }, []);
   const byteFrequencyDataArray = useMemo(() => {
     return new Uint8Array(16);
   }, []);
 
   let aniNumber = 0;
-  useEffect(() => {
-    avHelper.setStream(props.audioStream);
+
+  const micChangeCallback = useCallback(async newStream => {
+    const avHelper = new AudioVisualizerHelper(newStream);
     if (canvasRef.current) {
       const context = canvasRef.current.getContext('2d');
       if (!context) {
@@ -162,11 +160,16 @@ function AudioVisualizer(props: AudioVisualizerProps): JSX.Element {
         aniNumber = requestAnimationFrame(animationLoop);
       };
       aniNumber = requestAnimationFrame(animationLoop);
-      return () => {
-        cancelAnimationFrame(aniNumber);
-      };
     }
-  }, [props.audioStream]);
+  }, []);
+
+  useEffect(() => {
+    props.audioStreamHelper.addOnMicChange(micChangeCallback);
+    return () => {
+      props.audioStreamHelper.removeOnMicChange(micChangeCallback);
+      cancelAnimationFrame(aniNumber);
+    };
+  }, []);
 
   return <canvas className="settingAudioVisualizer" ref={canvasRef}></canvas>;
 }
@@ -182,105 +185,30 @@ function Setting(props: RouteComponentProps): JSX.Element {
   const avatarIdxMin = AvatarImageEnumMin;
 
   //states
-  const [deviceInfos, setDeviceInfos] = useState<MediaDeviceInfo[]>([]);
-  const [selectedMicDeviceID, setSelectedMicDeviceID] = useState('default');
-  const [selectedSpeakerDeviceID, setSelectedSpeakerDeviceID] =
-    useState('default');
-  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isListenMyMic, setIsListenMyMic] = useState(false);
   const [nickname, setNickname] = useState(nicknameDefaultValue);
   const [avatarIdx, setAvatarIdx] = useState<AvatarImageEnum>(
     AvatarImageEnum.BUNNY,
   );
-  const [isSpeakerChangeable, setIsSpeakerChangeable] = useState(true);
-  const [audioStreamHelper, setAudioStreamHelper] =
-    useState<AudioStreamHelper | null>(null);
 
   //ref
   const testAudioRef = useRef<HTMLAudioElement>(null);
   const avatarImgRef = useRef<HTMLImageElement>(null);
 
+  // memo
+  const audioStreamHelper = useMemo(() => {
+    return new AudioStreamHelper(setIsLoading);
+  }, []);
+
   // functions
-  const getAudioStreamFromDeviceID = (
-    deviceID: string,
-  ): Promise<MediaStream> => {
-    return navigator.mediaDevices.getUserMedia({audio: {deviceId: deviceID}});
-  };
-
-  const getDeviceInfos = (): Promise<MediaDeviceInfo[]> => {
-    return navigator.mediaDevices.enumerateDevices();
-  };
-
-  const setSelectedMicDeviceAndSetAudioStream = (deviceID: string) => {
-    setIsLoading(true);
-    getAudioStreamFromDeviceID(deviceID)
-      .then(audioStream => {
-        setSelectedMicDeviceID(deviceID);
-        setAudioStream(audioStream);
-      })
-      .catch(() => {
-        message.error(
-          '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  const setSelectedSpeakerDeviceWithTest = (deviceID: string) => {
-    setIsLoading(true);
-    try {
-      if (!testAudioRef.current) {
-        throw 'testAudioRef is not found';
-      }
-      const audio = testAudioRef.current;
-      // eslint-disable-next-line
-      (audio as any)
-        .setSinkId(deviceID)
-        .then(() => {
-          setSelectedSpeakerDeviceID(deviceID);
-        })
-        .catch(() => {
-          message.error(
-            '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-          );
-        });
-    } catch (error) {
-      message.error(
-        '해당 장치 설정에 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const reloadDeviceInfoClick = () => {
-    setIsLoading(true);
-    getDeviceInfos()
-      .then(deviceInfos => {
-        setDeviceInfos(deviceInfos);
-        setSelectedMicDeviceID('default');
-        setSelectedMicDeviceAndSetAudioStream('default');
-        if (isSpeakerChangeable) {
-          setSelectedSpeakerDeviceID('default');
-          setSelectedSpeakerDeviceWithTest('default');
-        }
-      })
-      .catch(() => {
-        message.error(
-          '장치를 재검색 하는데 실패하였습니다. 장치 연결 상태를 확인하여 주세요.',
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    audioStreamHelper.loadInitDeviceSetting();
   };
 
   const enterClick = () => {
     props.history.push(
-      `/space?roomId=${query.roomId}&avatarIdx=${avatarIdx}&nickname=${nickname}&speakerDeviceID=${selectedSpeakerDeviceID}&micDeviceID=${selectedMicDeviceID}`,
+      `/space?roomId=${query.roomId}&avatarIdx=${avatarIdx}&nickname=${nickname}`,
     );
   };
 
@@ -292,7 +220,6 @@ function Setting(props: RouteComponentProps): JSX.Element {
 
   const changeAvatarImgWithIdx = (avatarIdx: AvatarImageEnum) => {
     const src = avatarImageMDs[avatarIdx].avatarProfileSrc;
-
     if (avatarImgRef.current) {
       avatarImgRef.current.src = src;
     }
@@ -312,51 +239,25 @@ function Setting(props: RouteComponentProps): JSX.Element {
     setAvatarIdx(nextAvatarIdx);
   };
 
-  // useEffects
-  useEffect(() => {
-    const temp = async () => {
-      const ash = new AudioStreamHelper(setIsLoading);
-      setAudioStreamHelper(ash);
-    };
-    temp();
-    getAudioStreamFromDeviceID('default')
-      .then(audioStream => {
-        setAudioStream(audioStream);
-        return getDeviceInfos();
-      })
-      .then(deviceInfos => {
-        setDeviceInfos(deviceInfos);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        message.error(
-          '음향 장치를 가져오는데 실패하였습니다. 장치 연결상태나 권한을 확인해 주세요.',
-        );
-      });
+  const changeTestAudioStream = useCallback((newStream: MediaStream) => {
+    console.log('changeTestAudioStream', newStream);
+    // if (testAudioRef.current) {
+    //   testAudioRef.current.srcObject = newStream;
+    // }
   }, []);
-
-  useEffect(() => {
-    if (testAudioRef.current) {
-      testAudioRef.current.srcObject = audioStream;
+  const changeTestAudioSinkId = useCallback((newSpeakerId: string) => {
+    if (testAudioRef.current && audioStreamHelper.isSpeakerChangeable) {
+      (testAudioRef.current as any).setSinkId(newSpeakerId);
     }
+  }, []);
+  useEffect(() => {
+    audioStreamHelper.addOnMicChange(changeTestAudioStream);
+    audioStreamHelper.addOnSpeakerChange(changeTestAudioSinkId);
     return () => {
-      if (testAudioRef.current) {
-        testAudioRef.current.srcObject = null;
-      }
+      audioStreamHelper.removeOnMicChange(changeTestAudioStream);
+      audioStreamHelper.removeOnSpeakerChange(changeTestAudioSinkId);
     };
-  }, [audioStream]);
-
-  useEffect(() => {
-    if (testAudioRef.current) {
-      // eslint-disable-next-line
-      const audio = testAudioRef.current as any;
-      if (audio.setSinkId) {
-        audio.setSinkId(selectedSpeakerDeviceID);
-      } else {
-        setIsSpeakerChangeable(false);
-      }
-    }
-  }, [selectedSpeakerDeviceID]);
+  }, []);
 
   return (
     <>
@@ -398,12 +299,10 @@ function Setting(props: RouteComponentProps): JSX.Element {
               </div>
             </div>
             <div className="soundControllContainerDiv">
-              {audioStreamHelper ? (
-                <SoundControll
-                  audioStreamHelper={audioStreamHelper}
-                  isLoading={isLoading}
-                ></SoundControll>
-              ) : null}
+              <SoundControll
+                audioStreamHelper={audioStreamHelper}
+                isLoading={isLoading}
+              ></SoundControll>
 
               <Button
                 className="soundControllReloadButton"
@@ -420,9 +319,10 @@ function Setting(props: RouteComponentProps): JSX.Element {
                 defaultChecked={false}
                 onChange={setIsListenMyMic}
               ></Switch>
-              {audioStream ? (
-                <AudioVisualizer audioStream={audioStream}></AudioVisualizer>
-              ) : null}
+              <AudioVisualizer
+                audioStreamHelper={audioStreamHelper}
+                isLoading={isLoading}
+              ></AudioVisualizer>
             </div>
           </div>
           <div className="enterButtonContainerDiv">
