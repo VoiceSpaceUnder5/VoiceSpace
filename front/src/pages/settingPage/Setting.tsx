@@ -241,9 +241,13 @@ function Setting(props: RouteComponentProps): JSX.Element {
 
   const changeTestAudioStream = useCallback((newStream: MediaStream) => {
     console.log('changeTestAudioStream', newStream);
-    // if (testAudioRef.current) {
-    //   testAudioRef.current.srcObject = newStream;
-    // }
+    if (testAudioRef.current) {
+      const oldStream = testAudioRef.current.srcObject;
+      if (oldStream) {
+        (oldStream as MediaStream).getTracks().forEach(track => track.stop());
+      }
+      testAudioRef.current.srcObject = newStream;
+    }
   }, []);
   const changeTestAudioSinkId = useCallback((newSpeakerId: string) => {
     if (testAudioRef.current && audioStreamHelper.isSpeakerChangeable) {
