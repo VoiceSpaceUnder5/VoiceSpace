@@ -147,8 +147,8 @@ npm run testCover
 
 | Name     | Email                                       | Role | Major Part                    | Minor Part | Tech Stack                                   |
 | -------- | ------------------------------------------- | ---- | ----------------------------- | ---------- | -------------------------------------------- |
-| kilee    | [gnsdlrl@daum.net](mailto:gnsdlrl@daum.net) | 팀장 | Design, project deployment and management | Front      | AWS, Github Action, CI/CD, React, Typescript |
-| honlee   | kij753@naver.com                            | 팀원 | Front                         | Back       | AWS, React, NestJS, Typescript               |
-| hyeonkim | hyongtiii@gmail.com                         | 팀원 | Back                          | Front      | React, NestJS, Typescript                    |
-| mijeong  | minje70@naver.com                           | 팀원 | Front                         | Back       | React, NestJS, Typescript                    |
+| kilee    | [gnsdlrl@daum.net](mailto:gnsdlrl@daum.net) | Leader | Design, project deployment and management | Front      | AWS, Github Action, CI/CD, React, Typescript |
+| honlee   | kij753@naver.com                            | member | Front                         | Back       | AWS, React, NestJS, Typescript               |
+| hyeonkim | hyongtiii@gmail.com                         | member | Back                          | Front      | React, NestJS, Typescript                    |
+| mijeong  | minje70@naver.com                           | member | Front                         | Back       | React, NestJS, Typescript                    |
 
