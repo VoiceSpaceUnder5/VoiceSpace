@@ -71,7 +71,7 @@ Accordingly, we started development with the purpose of creating a service that 
 - As the distance between Avatars increases, the voice volume also decreases (like realistic meeting)
 - A function that analyzes the voice and changes the shape of the avatar's mouth to match the pronunciation (like realistic meeting)
 - The size of the avatar's face changes according to the volume of the voice. (realistic voice visualization)
-  ![gif](https://user-images.githubusercontent.com/74593890/131952354-8176e60f-da09-4b66-9d6a-1356eb40a7d6.gif)
+  ![gif](https://user-images.githubusercontent.com/68804133/139776993-f7d43f8f-adab-426d-a89d-3af94902d6e6.gif)
 
 ### you can try it right [**here**](https://giggleforest.com)
 
