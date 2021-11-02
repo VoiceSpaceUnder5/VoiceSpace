@@ -25,36 +25,29 @@ interface AudioVisualizerProps {
 
 interface SoundControllProps {
   audioStreamHelper: AudioStreamHelper;
+  isLoading: boolean;
 }
 
 function SoundControll(props: SoundControllProps): JSX.Element {
   const [micInfos, setMicInfos] = useState<MediaDeviceInfo[]>([]);
   const [speakerInfos, setSpeakerInfos] = useState<MediaDeviceInfo[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getInfos = useCallback(async () => {
-    setIsLoading(true);
     setMicInfos(await props.audioStreamHelper.getMicDevices());
     setSpeakerInfos(await props.audioStreamHelper.getSpeakerDevices());
-    setIsLoading(false);
   }, []);
 
   const onSpeakerChange = async (speakerId: string) => {
-    setIsLoading(true);
     await props.audioStreamHelper.setSpeakerDeviceId(speakerId);
-    setIsLoading(false);
   };
 
   const onMicChange = async (micId: string) => {
-    setIsLoading(true);
     await props.audioStreamHelper.setMicDeviceId(micId);
-    setIsLoading(false);
   };
 
   useEffect(() => {
     getInfos();
-    props.audioStreamHelper.onDeviceChange = getInfos;
-  }, []);
+  }, [props.isLoading]);
 
   return (
     <div className="soundControllMainDiv">
@@ -64,7 +57,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           src="./assets/navigation/speaker.png"
         ></img>
         <Select
-          loading={isLoading}
+          loading={props.isLoading}
           disabled={!props.audioStreamHelper.isSpeakerChangeable}
           className="soundControllSelect"
           onChange={onSpeakerChange}
@@ -86,7 +79,7 @@ function SoundControll(props: SoundControllProps): JSX.Element {
           style={{width: '20%', height: 32}}
         ></img>
         <Select
-          loading={isLoading}
+          loading={props.isLoading}
           className="soundControllSelect"
           onChange={onMicChange}
           value={props.audioStreamHelper.getMicDeviceId()}
@@ -322,8 +315,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
   // useEffects
   useEffect(() => {
     const temp = async () => {
-      const ash = new AudioStreamHelper();
-      await ash.getDefaultDevice();
+      const ash = new AudioStreamHelper(setIsLoading);
       setAudioStreamHelper(ash);
     };
     temp();
@@ -409,6 +401,7 @@ function Setting(props: RouteComponentProps): JSX.Element {
               {audioStreamHelper ? (
                 <SoundControll
                   audioStreamHelper={audioStreamHelper}
+                  isLoading={isLoading}
                 ></SoundControll>
               ) : null}
 

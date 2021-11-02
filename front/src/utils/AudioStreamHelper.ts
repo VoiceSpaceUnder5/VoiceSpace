@@ -7,43 +7,40 @@ export default class AudioStreamHelper {
   private _speakerDeviceId: string;
   private _micDeivceId: string;
   private _isSpeakerChangeable: boolean;
+  private setIsLoading: (isLoading: boolean) => void;
 
-  constructor() {
-    this._speakerDeviceId = 'default';
-    this._micDeivceId = 'undefined';
+  constructor(setIsLoading: (isLoading: boolean) => void) {
+    this._speakerDeviceId = '';
+    this._micDeivceId = '';
     this.onLocalAudioStreams = new Set();
-    this._isSpeakerChangeable = false;
-    navigator.mediaDevices.ondevicechange = async () => {
-      await this.getDefaultDevice();
-      await this.loadLocalAudioStream();
+    this._isSpeakerChangeable = this.checkSpeakerChangeable();
+    this.setIsLoading = setIsLoading;
+    this.loadInitDeviceSetting();
+    navigator.mediaDevices.ondevicechange = () => {
+      this.loadInitDeviceSetting();
+      this.loadLocalAudioStream();
     };
   }
 
-  onDeviceChange(cb: (() => void) | null) {
-    navigator.mediaDevices.ondevicechange = async () => {
-      await this.getDefaultDevice();
-      await this.loadLocalAudioStream();
-      if (cb) cb();
-    };
+  private checkSpeakerChangeable(): boolean {
+    const tempAudio = document.createElement('audio');
+    if ((tempAudio as any).setSinkId) return true;
+    return false;
   }
 
-  async getDefaultDevice() {
-    this._isSpeakerChangeable = false;
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: false,
-      audio: true,
-    });
-    this._micDeivceId = stream.getAudioTracks()[0].getSettings().deviceId!;
-    const testAudio = document.createElement('audio');
-    testAudio.muted = true;
-    testAudio.srcObject = stream;
-    if ((testAudio as any).setSinkId) {
-      this._isSpeakerChangeable = true;
+  async loadInitDeviceSetting() {
+    this.setIsLoading(true);
+    const micDeviceList = await this.getMicDevices();
+    const speakerDeivceList = await this.getSpeakerDevices();
+    if (micDeviceList.length === 0) {
+      throw new Error('can not find micDeivce at all!');
     }
-    if ((testAudio as any).sinkId) {
-      if ((testAudio as any).sinkId === '') this._speakerDeviceId = 'default';
-      else this._speakerDeviceId = (testAudio as any).sinkId;
+    if (speakerDeivceList.length === 0) {
+      throw new Error('can not find speakerDeivce at all!');
     }
+    await this.setMicDeviceId(micDeviceList[0].deviceId);
+    await this.setSpeakerDeviceId(speakerDeivceList[0].deviceId);
+    this.setIsLoading(false);
   }
 
   get isSpeakerChangeable() {
@@ -55,12 +52,14 @@ export default class AudioStreamHelper {
   }
 
   async setSpeakerDeviceId(speakerDeviceId: string) {
+    this.setIsLoading(true);
     const isValid = await this.deviceIdValidCheck(
       'audiooutput',
       speakerDeviceId,
     );
     if (isValid) this._speakerDeviceId = speakerDeviceId;
     else throw `${speakerDeviceId} is not connected device`;
+    this.setIsLoading(false);
   }
 
   getMicDeviceId(): string {
@@ -68,16 +67,20 @@ export default class AudioStreamHelper {
   }
 
   async setMicDeviceId(micDeviceId: string) {
+    this.setIsLoading(true);
     const isValid = await this.deviceIdValidCheck('audioinput', micDeviceId);
     if (isValid) {
       // micDeviceId 가 바뀌면, 다시 loadLocalAudioStream 을 호출해준다.
       this._micDeivceId = micDeviceId;
       this.loadLocalAudioStream();
     } else throw `${micDeviceId} is not connected device`;
+    this.setIsLoading(false);
   }
 
   private async deviceIdValidCheck(kind: MediaDeviceKind, micDeviceId: string) {
+    this.setIsLoading(true);
     const micDeviceList = await this.getDevices(kind);
+    this.setIsLoading(false);
     if (
       micDeviceList.filter(mdi => {
         return mdi.deviceId === micDeviceId;
@@ -90,10 +93,12 @@ export default class AudioStreamHelper {
   // 호출 시 .getUserMeida 를 호출 하여 resolve 시 this.localAudioStream 을 교체하고,
   // 해당 localAudioStream 으로 onLocalAudioStreams 에 있는 모든 콜백을 호출함.
   private async loadLocalAudioStream() {
+    this.setIsLoading(true);
     const audioStream = await this.getLocalAudioStream();
     this.onLocalAudioStreams.forEach(cb => {
       cb(audioStream);
     });
+    this.setIsLoading(false);
   }
 
   addOnLocalAudioStream(
