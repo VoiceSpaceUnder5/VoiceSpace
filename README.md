@@ -68,7 +68,7 @@ As we go through the COVID-19, most of the 'meeting places' are rapidly moving t
 - The more a distance between avatars increases, the more voice volume also decreases (like realistic meeting)
 - A function that analyzes the voice and changes the shape of the avatar's mouth to match the pronunciation (like realistic meeting)
 - The size of the avatar's face changes according to the volume of the voice. (realistic voice visualization)
-  ![gif](https://user-images.githubusercontent.com/68804133/139776993-f7d43f8f-adab-426d-a89d-3af94902d6e6.gif)
+- ![gif](https://user-images.githubusercontent.com/68804133/139776993-f7d43f8f-adab-426d-a89d-3af94902d6e6.gif)
 
 ### you can try it [**right here**](https://giggleforest.com)
 
@@ -114,7 +114,7 @@ npm run start
 
 ---
 
-### 문서
+### Document
 
 - Information on various components, classes, and functions can be found [here](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/).
 
