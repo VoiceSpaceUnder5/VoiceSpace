@@ -1,3 +1,4 @@
+
 ## ![img](https://user-images.githubusercontent.com/35288028/131969010-2f6197cc-2bd6-409e-b1f7-f23ccb77881a.png) Giggle Forest (project.VoiceSpace) by Team - under5
 
 ### Development Goals
@@ -57,7 +58,40 @@ As we go through the COVID-19, most of the 'meeting places' are rapidly moving t
 
 - So we aim for a project that anyone can service on their own server, that a number of P2P connections were established in **Full Mesh** in order to minimize the role of the back server.
 - If we launch this service, the architecture may be restructured using **SFU**.
-  ![Advantages and disadvantages of mesh topology - IT Release](https://www.itrelease.com/wp-content/uploads/2021/06/Full-Mesh-Topology-1024x640.jpg)
+<img src="https://www.itrelease.com/wp-content/uploads/2021/06/Full-Mesh-Topology-1024x640.jpg" width="600" height="400">
+
+#### Page Infomation
+1. Home Page
+<img src="https://user-images.githubusercontent.com/74593890/140017019-76c02218-0044-498d-a08e-10981f3b3ef5.png" width="200"> 
+
+|                        |  | 
+| --------------- | -----------  |
+| Component Path  | [/front/src/pages/homePage/Home.tsx](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/pages/homePage/Home.tsx)                |
+| URL| /               |
+| Role                  | Route to SettingComponent (/setting) with random or specific(input) roomId               |
+| Remark | **자세히 알아보세요** is connected with this github page                   |
+---
+2. Setting Page
+<img src="https://user-images.githubusercontent.com/74593890/140028049-f3f2217f-ec49-40fe-ad9e-058d97e0c0ab.png" width="200"> 
+
+|                        |  | 
+| --------------- | -----------  |
+| Component Path  | [/front/src/pages/settingPage/Setting.tsx](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/pages/settingPage/Setting.tsx)                |
+| URL| /setting               |
+| Role                  | Select mic, speaker device and avatar information (nickname and avatarImage) and route to SpaceComponent with selected values               |
+| Remark | Only Chrome browser is fully supported                   |
+
+---
+
+3. Space Page
+<img src="https://user-images.githubusercontent.com/74593890/140028152-07059817-a7b0-44be-bdc3-03a1093f623d.png" width="200"> 
+
+|                        |  | 
+| --------------- | -----------  |
+| Component Path  | [/front/src/pages/spacePage/Space.tsx](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/pages/spacePage/Space.tsx)                |
+| URL| /space               |
+| Role                  | - Draw map and avatars using [pixiUtils](https://github.com/VoiceSpaceUnder5/VoiceSpace/tree/master/front/src/utils/pixiUtils) <br/> - Establish P2P connection and transfer avatar data using [Peer](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/classes/utils_RTCGameUtils.Peer.html), [PeerManager](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/classes/utils_RTCGameUtils.default.html) <br/> - Analyze voice for lip sync using [AudioAnalyer](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/classes/utils_RTCGameUtils.AudioAnalyser.html) <br/> - Control all of settings (with [Navigation Component](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/components/Navigation.tsx)               |
+| Remark | - If you want to customize world map, see [World.ts](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/utils/pixiUtils/World.ts) and [world1.json](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/utils/pixiUtils/metaData/world1.json) <br/> - If you want to add some special stuff (like Youtube sign), see [Stuff.ts](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/utils/pixiUtils/Stuff.ts) <br/> - If you want to Improve lip sync logic, see [AudioAnalyer](https://voicespaceunder5.github.io/VoiceSpaceDocs/docs/classes/utils_RTCGameUtils.AudioAnalyser.html) <br/> - If you want to develop your own signaling server, see [RTCSignalingHelper.ts](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/utils/RTCSignalingHelper.ts) <br/> - If you want to add stun/turn server, see [IceServerList.ts](https://github.com/VoiceSpaceUnder5/VoiceSpace/blob/master/front/src/utils/IceServerList.ts)                   |
 
 ---
 
