@@ -13,7 +13,7 @@ As we go through the COVID-19, most of the 'meeting places' are rapidly moving t
 
 ### Introduction Video (with Korean language)
 
-## [![YoutubeVideo](https://img.youtube.com/vi/Tdtk7nvgxqo/maxresdefault.jpg)](https://youtu.be/Tdtk7nvgxqo)
+## [![YoutubeVideo](https://img.youtube.com/vi/ufxFfA7_ntU/maxresdefault.jpg)](https://youtu.be/ufxFfA7_ntU)
 
 ### Demo Website Link
 
