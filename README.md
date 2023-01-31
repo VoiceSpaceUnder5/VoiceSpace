@@ -16,9 +16,9 @@ As we go through the COVID-19, most of the 'meeting places' are rapidly moving t
 ## [![YoutubeVideo](https://img.youtube.com/vi/ufxFfA7_ntU/maxresdefault.jpg)](https://youtu.be/ufxFfA7_ntU)
 
 ### Demo Website Link
-
-- url : https://giggleforest.com
-- you can try it right [**here**](https://giggleforest.com)
+Under construction of demo website.
+- url : ~~https://giggleforest.com~~
+- you can try it right ~~[**here**](https://giggleforest.com)~~
 
 ---
 
