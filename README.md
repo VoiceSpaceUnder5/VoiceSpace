@@ -104,7 +104,7 @@ Under construction of demo website.
 - The size of the avatar's face changes according to the volume of the voice. (realistic voice visualization)
 - ![gif](https://user-images.githubusercontent.com/68804133/139776993-f7d43f8f-adab-426d-a89d-3af94902d6e6.gif)
 
-### you can try it [**right here**](https://giggleforest.com)
+### you can try it ~~[**right here**](https://giggleforest.com)~~
 
 ---
 
